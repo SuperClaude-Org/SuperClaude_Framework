@@ -18,7 +18,7 @@ Philosophy: Code>docs | Simple→complex | Security first
 Communication: Concise format | Symbols: →|&:» | Bullets>prose
 Workflow: TodoRead()→TodoWrite(3+)→Execute | Update immediate
 Stack: React|TS|Vite + Node|Express|PostgreSQL + Git|ESLint|Jest
-Commands: /user:<command> [flags] | Ex: /user:build --init
+Commands: /user:<command> [flags] | /task:<action> | Ex: /user:build --init
 ```
 
 ## Thinking Modes
@@ -72,6 +72,17 @@ Efficiency: Min tokens | Cache results | Batch ops
 Files: *.tsx→frontend | *.sql→data | Docker→devops | *.test→qa
 Keywords: bug|error→debugger | optimize→performance | secure→security
 Context: TypeError→trace | Module error→deps | Permission→security
+Tasks: Auto-detect complexity→seamless task creation | .tasks/in-progress→auto-resume
+```
+
+## Task Management
+
+```yaml
+Mode: Automatic | No user prompts | Seamless activation
+Detection: ≥8 complexity points→auto-create | 5-7→brief notify | <5→normal
+Triggers: "build|create|implement" + "system|feature" + complexity flags
+Flow: requirement→analyze→create→breakdown→implement | Background operation
+Recovery: Auto-resume active tasks | Context preservation | Git integration
 ```
 
 ## Performance

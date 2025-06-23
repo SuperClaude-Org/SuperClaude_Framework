@@ -1,0 +1,153 @@
+# todo-task-integration.yml - Seamless Todo + Task System
+
+## Two-Tier Architecture
+```yaml
+hierarchy:
+  level_1_tasks: High-level features (.tasks/ folders)
+    purpose: Session persistence, git branching, requirement tracking
+    scope: Features spanning multiple sessions
+    examples: "build auth system", "implement dashboard", "create API"
+    
+  level_2_todos: Immediate actionable steps (TodoWrite/TodoRead)
+    purpose: Context switching, progress tracking, focus management
+    scope: Small chunks within current session
+    examples: "create user model", "add login endpoint", "write tests"
+
+integration_principle:
+  - Tasks provide persistence across sessions
+  - Todos provide focus within sessions
+  - Both work together seamlessly
+  - No duplication, clear boundaries
+```
+
+## Workflow Integration
+```yaml
+complex_requirement_flow:
+  1_auto_detect: complexity ≥8 → create task
+  2_breakdown: task phases → TodoWrite immediate steps
+  3_execute: work on todos → update task progress
+  4_session_break: preserve both systems
+  5_resume: restore task + todos state
+  
+simple_requirement_flow:
+  1_detect: complexity <5 → TodoWrite only
+  2_execute: work on todos directly
+  3_complete: mark todos done
+  
+medium_requirement_flow:
+  1_detect: complexity 5-7 → brief task creation
+  2_immediate: convert to TodoWrite steps
+  3_execute: work on todos with light task tracking
+```
+
+## Automatic Breakdown Logic
+```yaml
+task_to_todos_conversion:
+  when_task_starts:
+    - parse task breakdown sections
+    - extract actionable steps
+    - convert to TodoWrite format
+    - preserve task context
+    
+  step_extraction:
+    analysis_phase: → pending todos
+    implementation_phase: → pending todos  
+    testing_phase: → pending todos
+    completion_phase: → pending todos
+    
+  todo_format:
+    - id: auto-generated
+    - content: actionable step from task
+    - status: pending
+    - priority: inherit from task
+    - task_id: link back to parent task
+
+## Context Preservation
+```yaml
+session_state_tracking:
+  task_context:
+    - active task ID
+    - current phase
+    - architectural decisions
+    - git branch info
+    
+  todo_context:
+    - current todo list
+    - in_progress item
+    - completed items
+    - blocking issues
+    
+  combined_state:
+    - task progress percentage
+    - todos completion ratio
+    - session focus area
+    - next recommended action
+
+recovery_on_startup:
+  1_scan_tasks: check .tasks/in-progress/
+  2_restore_todos: rebuild TodoWrite from task state
+  3_identify_focus: determine current todo
+  4_resume_message: "Resuming {task} - working on {current_todo}"
+```
+
+## Smart Synchronization
+```yaml
+todo_completion_updates_task:
+  on_todo_complete:
+    - calculate task progress
+    - update task file
+    - move to next logical step
+    - create checkpoint if needed
+    
+  progress_calculation:
+    total_steps: count all todos from task
+    completed_steps: count completed todos
+    percentage: completed / total * 100
+    
+task_completion_clears_todos:
+  on_task_complete:
+    - mark all todos complete
+    - clear TodoWrite state
+    - archive task to completed/
+    - create final git checkpoint
+
+## Error Recovery
+```yaml
+state_mismatch_handling:
+  task_exists_no_todos:
+    - regenerate todos from task breakdown
+    - resume from last known position
+    
+  todos_exist_no_task:
+    - continue with todos only
+    - warn about missing task context
+    
+  both_missing:
+    - start fresh workflow
+    - no recovery needed
+    
+context_corruption:
+  - fallback to task file data
+  - regenerate todos if possible
+  - manual recovery prompts
+```
+
+## User Experience Examples
+```yaml
+example_1_complex:
+  user: "Build user authentication system"
+  system: "[Task created: auth-20250623-143052]"
+  todos: ["Create user model", "Add registration endpoint", "Implement JWT"]
+  work: Focus on current todo with task context preserved
+  
+example_2_simple:
+  user: "Fix login button styling"
+  system: No task created
+  todos: ["Update button CSS", "Test responsive design"]
+  work: Direct todo completion
+  
+example_3_session_break:
+  before_break: Working on "Add registration endpoint" (todo 2/8)
+  after_resume: "Resuming auth system - continuing with registration endpoint"
+  state: Task context + todo position fully restored
+```

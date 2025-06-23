@@ -1,0 +1,179 @@
+# task-management.yml - Task Management & Session Recovery
+
+## Automatic Task Detection
+```yaml
+complexity_indicators:
+  high_complexity:
+    - mentions: ["system", "architecture", "integration", "authentication", "database"]
+    - scope: ["full-stack", "end-to-end", "complete", "entire"]
+    - actions: ["build", "create", "implement", "develop", "add feature"]
+    - files: >5 estimated files
+    - time: >2 hours estimated
+    - sessions: likely >1 session
+    
+  medium_complexity:
+    - mentions: ["component", "module", "service", "API"]
+    - scope: ["frontend", "backend", "single area"]
+    - files: 3-5 estimated files
+    - time: 1-2 hours estimated
+    
+  low_complexity:
+    - mentions: ["fix", "update", "modify", "adjust"]
+    - scope: ["single file", "small change"]
+    - files: 1-2 files
+    - time: <1 hour
+
+auto_task_thresholds:
+  always_create: high_complexity
+  suggest_create: medium_complexity + multi_step
+  never_create: low_complexity
+  
+detection_keywords:
+  trigger_words: ["build", "create", "implement", "develop", "add", "design", "system"]
+  scope_words: ["feature", "functionality", "component", "service", "integration"]
+  complexity_words: ["authentication", "database", "API", "architecture", "full-stack"]
+```
+
+## Hybrid Todo + Task System
+```yaml
+two_tier_approach:
+  task_level: high-level features (.tasks/ folders)
+  todo_level: immediate steps (TodoWrite/TodoRead)
+  
+integration_flow:
+  1. Complex requirement → auto-create Task
+  2. Task breakdown → TodoWrite for immediate steps
+  3. Work on todos → update task progress
+  4. Session break → preserve both systems
+  5. Resume → restore task + active todos
+  
+seamless_operation:
+  task_creates_todos: task breakdown → TodoWrite steps
+  todos_update_task: completed todos → task progress
+  context_preserves_both: session state includes task + todos
+  recovery_restores_both: startup → resume task + todos
+
+## Task Status Flow
+```yaml
+status_transitions:
+  pending → in-progress: /task:start {id} + TodoWrite breakdown
+  in-progress → completed: all todos complete + /task:complete {id}
+  in-progress → pending: /task:pause {id} + preserve todos
+  any → cancelled: /task:cancel {id} + clear todos
+  
+folder_mapping:
+  pending: .tasks/pending/
+  in-progress: .tasks/in-progress/ + active TodoWrite
+  completed: .tasks/completed/ + archived todos
+```
+
+## Session Recovery
+```yaml
+startup_check:
+  - scan .tasks/in-progress/
+  - identify active tasks
+  - restore context from task files
+  - suggest next steps
+  
+context_preservation:
+  key_decisions: important architectural choices
+  blockers: issues preventing progress
+  session_state: variables, file paths, current focus
+  
+recovery_prompts:
+  - "Resuming task: {title}"
+  - "Last context: {context}"
+  - "Next steps: {next_steps}"
+```
+
+## Task File Structure
+```yaml
+naming: {type}-{id}-{slug}.md
+types: [feature, bugfix, refactor, docs, test]
+id_format: YYYYMMDD-HHMMSS
+slug: kebab-case description
+
+metadata_required:
+  - id, title, status, priority
+  - created, updated timestamps
+  - git branch information
+  
+content_sections:
+  - requirement description
+  - step-by-step breakdown
+  - affected files list
+  - context preservation
+  - checkpoint history
+```
+
+## Git Integration
+```yaml
+branch_naming: {type}/{task_id}
+commit_messages: "[{task_id}] {description}"
+checkpoints:
+  - before major changes
+  - after each phase completion
+  - before session breaks
+  
+cleanup:
+  - merge completed branches
+  - archive old task files
+  - clean up temporary files
+```
+
+## Automatic Task Creation Flow
+```yaml
+detection_process:
+  step_1_analyze:
+    - parse user requirement
+    - count complexity indicators
+    - estimate files affected
+    - assess time/session requirements
+    
+  step_2_decide:
+    high_complexity: auto_create_task
+    medium_complexity: brief_confirmation
+    low_complexity: proceed_normally
+    
+  step_3_execute:
+    auto_create:
+      - generate task ID
+      - create task file from requirement
+      - move to pending folder
+      - create git branch
+      - breakdown into TodoWrite steps
+      - start immediately with active todos
+    brief_confirm:
+      - "Creating task for multi-step work. Proceeding..."
+      - auto-create without waiting
+      - convert steps to TodoWrite
+    
+seamless_activation:
+  no_interruption: true
+  minimal_prompts: true
+  auto_start: true
+  background_setup: true
+  
+user_experience:
+  before: "I need to build user authentication"
+  after: "[Auto-creating task: user-auth-20250623-143052] Starting implementation..."
+  flow: requirement → auto-detect → create → start → implement
+```
+
+## Commands Integration
+```yaml
+task_commands:
+  create: /task:create {title} --type {type} --priority {priority}
+  list: /task:list --status {status}
+  start: /task:start {id}
+  pause: /task:pause {id}
+  complete: /task:complete {id}
+  resume: /task:resume {id}
+  cancel: /task:cancel {id}
+  
+auto_detection:
+  - scan for .tasks/ on startup
+  - auto-create for complex requirements (no prompts)
+  - auto-pause tasks on context limits
+  - auto-resume on session start
+```

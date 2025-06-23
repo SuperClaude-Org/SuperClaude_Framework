@@ -1,0 +1,144 @@
+# session-recovery.yml - Session Recovery & Context Preservation
+
+## Startup Detection
+```yaml
+scan_on_startup:
+  locations:
+    - .tasks/in-progress/*.md
+    - .tasks/pending/*.md (overdue)
+  
+  parse_tasks:
+    - extract metadata
+    - check git branch status
+    - identify next steps
+    - restore context variables
+    
+  recovery_prompt:
+    found_tasks: "Found {count} active tasks. Resume work?"
+    no_tasks: "No active tasks found. Ready for new work."
+    overdue: "Task {id} overdue. Continue or reschedule?"
+```
+
+## Context Preservation
+```yaml
+session_state:
+  file_paths: currently modified files
+  variables: important data & settings
+  decisions: architectural choices made
+  blockers: issues & solutions attempted
+  
+auto_save_triggers:
+  - major code changes
+  - before risky operations
+  - session timeout warnings
+  - manual /task:pause
+  
+context_format:
+  ```yaml
+  session_state:
+    current_files: [path1, path2]
+    key_variables:
+      api_endpoint: "https://api.example.com"
+      database_name: "myapp_prod"
+    decisions:
+      - "Used React over Vue for better team familiarity"
+      - "Chose PostgreSQL for ACID compliance"
+    blockers:
+      - issue: "CORS error on API calls"
+        attempted: ["added headers", "proxy setup"]
+        solution: "needed server-side CORS config"
+  ```
+```
+
+## Hybrid Recovery Process  
+```yaml
+step_1_identify:
+  - scan .tasks/in-progress/
+  - parse task metadata
+  - check git branch status
+  - validate file existence
+  - restore previous TodoWrite state
+
+step_2_restore_both_systems:
+  task_context:
+    - load session context
+    - summarize previous work
+    - identify blocking issues
+  todo_context:
+    - regenerate TodoWrite from task breakdown
+    - identify last completed todo
+    - set current focus todo
+    - preserve todo progress
+
+step_3_seamless_resume:
+  no_prompts: true
+  auto_continue: true
+  template: |
+    Resuming {task_title} - working on: {current_todo}
+    Progress: {completed_todos}/{total_todos} todos, {task_progress}% complete
+    
+hybrid_state_restoration:
+  both_systems_sync:
+    - task provides persistence
+    - todos provide immediate focus
+    - progress tracked in both
+    - no duplication of effort
+```
+
+## Git Integration
+```yaml
+branch_tracking:
+  - verify branch exists
+  - check for uncommitted changes
+  - identify merge conflicts
+  - track remote status
+  
+checkpoint_restoration:
+  - list available checkpoints
+  - show diff since last checkpoint
+  - offer rollback options
+  - suggest merge strategies
+```
+
+## Session Break Handling
+```yaml
+graceful_pause:
+  auto_triggers:
+    - context >90% full
+    - long inactivity
+    - error thresholds
+    
+  pause_actions:
+    - save current context
+    - create git checkpoint
+    - update progress status
+    - log session summary
+    
+  resume_preparation:
+    - validate environment
+    - check dependencies
+    - restore file states
+    - prepare tools
+```
+
+## Multi-Task Management
+```yaml
+concurrent_tasks:
+  max_active: 3
+  priority_rules:
+    - high priority blocks others
+    - related tasks can be parallel
+    - different areas can overlap
+    
+task_switching:
+  - auto-save current context
+  - create checkpoint
+  - switch git branch
+  - restore new context
+  
+conflict_resolution:
+  - file modification conflicts
+  - git merge requirements
+  - dependency overlaps
+  - resource constraints
+```

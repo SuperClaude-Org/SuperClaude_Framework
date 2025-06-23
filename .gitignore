@@ -5,6 +5,9 @@ logs/
 # Claude operations documentation
 .claudedocs/
 
+# Task management (project-specific)
+.tasks/
+
 # System files
 .DS_Store
 Thumbs.db

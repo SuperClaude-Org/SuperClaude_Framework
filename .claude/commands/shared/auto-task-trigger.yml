@@ -1,0 +1,112 @@
+# auto-task-trigger.yml - Seamless Automatic Task Mode
+
+## Complexity Analysis Engine
+```yaml
+requirement_parser:
+  extract_keywords:
+    trigger_verbs: ["build", "create", "implement", "develop", "design", "add", "integrate"]
+    scope_nouns: ["system", "feature", "functionality", "component", "service", "application"]
+    complexity_flags: ["authentication", "database", "API", "full-stack", "architecture", "integration"]
+    
+  scoring_system:
+    base_score: 0
+    trigger_verb: +2 points
+    scope_noun: +2 points  
+    complexity_flag: +3 points
+    multi_step_indicator: +3 points
+    file_estimate: files * 1 point
+    
+  thresholds:
+    auto_create: ≥8 points
+    suggest_create: 5-7 points
+    proceed_normal: <5 points
+
+pattern_detection:
+  high_complexity_patterns:
+    - "build a * system"
+    - "create * authentication"
+    - "implement * database"
+    - "develop * application"
+    - "full-stack *"
+    - "end-to-end *"
+    
+  multi_session_indicators:
+    - "complete *"
+    - "entire *"
+    - "comprehensive *"
+    - mentions of multiple technologies
+    - frontend + backend mentions
+    - database + API mentions
+```
+
+## Seamless Auto-Creation
+```yaml
+execution_flow:
+  1_silent_analysis:
+    - parse requirement in background
+    - calculate complexity score
+    - no user interruption
+    
+  2_instant_decision:
+    score ≥8: auto_create_immediately
+    score 5-7: brief_notification_then_create
+    score <5: proceed_without_task
+    
+  3_background_setup:
+    - generate task ID
+    - create task file
+    - setup git branch
+    - move to in-progress
+    - begin implementation
+    
+user_notification:
+  high_complexity: "[Task created: {id}] {brief_description}"
+  medium_complexity: "[Multi-step work detected - creating task] {brief_description}"
+  format: single_line_notification
+  timing: after_creation_before_work
+  
+no_interruption_policy:
+  - never ask "should I create a task?"
+  - never wait for confirmation
+  - never pause workflow
+  - seamless background operation
+```
+
+## Context Preservation
+```yaml
+auto_save_triggers:
+  context_threshold: >70% full
+  session_timeout: >30min inactive
+  error_recovery: on failures
+  manual_break: user requests pause
+  
+seamless_recovery:
+  startup_scan: check .tasks/in-progress/
+  auto_resume: highest priority active task
+  context_restore: previous session state
+  notification: "Resuming: {task_title}"
+  
+session_continuity:
+  preserve_state: file paths, variables, decisions
+  track_progress: completed steps, current focus
+  handle_blockers: previous issues & solutions
+  maintain_context: architectural decisions
+```
+
+## Integration Patterns
+```yaml
+command_integration:
+  /user:build → auto-detect complexity → create task if needed → proceed
+  /user:implement → always create task → breakdown → execute
+  /user:create → analyze scope → task if multi-step → proceed
+  
+persona_activation:
+  architect: high complexity systems
+  frontend: UI/component requests  
+  backend: API/database work
+  security: authentication/authorization
+  
+workflow_chains:
+  detect → create → breakdown → branch → implement → test → complete
+  requirement → task → steps → code → validation → merge
+```
