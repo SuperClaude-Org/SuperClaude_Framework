@@ -221,7 +221,7 @@ Infrastructure_Security:
 Validation_Levels:
   Quick_Scan:
     Scope: "Critical security issues only"
-    Time: "< 30 seconds"
+    Time: "Brief duration"
     Focus: ["Hardcoded secrets", "SQL injection", "XSS", "Known CVEs"]
     Output: "High-priority findings only"
     

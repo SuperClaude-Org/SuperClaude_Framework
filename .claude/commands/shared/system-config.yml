@@ -13,7 +13,7 @@
 ```yaml
 Session_Settings:
   Memory_Management:
-    Context_Limit: "70% warning, 90% critical"
+    Context_Limit: "High usage warning, very high critical"
     Cache_Duration: "30 minutes active session"
     Auto_Cleanup: "Clear expired context every 5 minutes"
     Persistence: "Store successful workflows across sessions"

@@ -18,13 +18,13 @@
 Standard_Lifecycle:
   Pre_Execution:
     Risk_Assessment:
-      Calculate: "Score operation risk 1-10"
+      Calculate: "Assess operation risk level"
       Factors: ["Data loss potential", "Irreversibility", "Scope", "Security"]
       Actions:
-        Low_1_3: "Proceed w/ monitoring"
-        Med_4_6: "Warn & log"
-        High_7_9: "Require confirmation"
-        Critical_10: "Block & alert"
+        Low: "Proceed w/ monitoring"
+        Medium: "Warn & log"
+        High: "Require confirmation"
+        Critical: "Block & alert"
     Environment_Validation:
       Check: ["Required tools", "Permissions", "Resources", "Dependencies"]
       Verify: ["Git state", "Network access", "Disk space", "Memory"]
@@ -65,32 +65,32 @@ Servers:
   Context7:
     Purpose: "Library documentation and code examples"
     Best_For: ["API usage", "framework patterns", "library integration"]
-    Token_Cost: "Low-Medium (100-2000 tokens)"
+    Token_Cost: "Low-Medium usage"
     Capabilities:
       - resolve-library-id: "Find Context7-compatible library ID"
       - get-library-docs: "Fetch up-to-date documentation"
-    Success_Rate: "95% for popular libraries"
+    Success_Rate: "Very high for popular libraries"
     Fallback: "WebSearch official docs"
     
   Sequential:
     Purpose: "Step-by-step complex problem solving"
     Best_For: ["Architecture", "debugging", "system design", "root cause analysis"]
-    Token_Cost: "Medium-High (500-10000 tokens)"
+    Token_Cost: "Medium-High usage"
     Capabilities:
       - sequentialthinking: "Adaptive multi-step reasoning"
-    Success_Rate: "90% for complex problems"
+    Success_Rate: "High for complex problems"
     Fallback: "Native step-by-step analysis"
     
   Magic:
     Purpose: "UI component generation with 21st.dev"
     Best_For: ["React/Vue components", "UI patterns", "prototypes"]
-    Token_Cost: "Medium (500-2000 tokens)"
+    Token_Cost: "Medium usage"
     Capabilities:
       - 21st_magic_component_builder: "Generate UI components"
       - 21st_magic_component_refiner: "Improve existing components"
       - 21st_magic_component_inspiration: "Search component library"
       - logo_search: "Find company logos in TSX/JSX/SVG"
-    Success_Rate: "85% for common components"
+    Success_Rate: "High for common components"
     Fallback: "Search existing components in project"
     
   Puppeteer:
@@ -104,7 +104,7 @@ Servers:
       - click: "Click elements"
       - fill: "Fill form inputs"
       - evaluate: "Execute JavaScript"
-    Success_Rate: "98% for standard web interactions"
+    Success_Rate: "Very high for standard web interactions"
     Fallback: "Manual testing guidance"
 
 MCP_Control_Flags:
@@ -181,7 +181,7 @@ Full_Stack_Development:
   Chain: "load→analyze→design→build→test→scan→deploy"
   Flags: ["--think", "--magic", "--validate"]
   MCP_Usage: ["--c7 for docs", "--magic for UI", "--seq for design"]
-  Time: "45-90 minutes"
+  Time: "Typical development session"
   Context_Handoff:
     load→analyze: "Project understanding"
     analyze→design: "Issues & architecture"
@@ -194,19 +194,19 @@ Feature_Implementation:
   Chain: "analyze --code→design --feature→build --feature→test→git --commit"
   Flags: ["--think", "--magic"]
   MCP_Usage: ["--magic for components", "--c7 for patterns"]
-  Time: "20-45 minutes"
+  Time: "Moderate duration"
 
 Bug_Investigation_Fix:
   Chain: "troubleshoot --investigate→analyze --code→improve --quality→test→git --commit"
   Flags: ["--think-hard", "--seq"]
   MCP_Usage: ["--seq for investigation", "--c7 for solutions"]
-  Time: "15-60 minutes"
+  Time: "Variable duration"
 
 Tech_Debt_Reduction:
   Chain: "analyze --architecture→design --refactor→improve --quality→test→document"
   Flags: ["--think-hard", "--refactor", "--quality"]
   MCP_Usage: ["--seq for analysis", "--c7 for patterns"]
-  Time: "60-180 minutes"
+  Time: "Extended session"
 ```
 
 ## Git Integration Patterns
@@ -270,10 +270,10 @@ Checkpoint_Management:
       - "Production deployments"
       - "Data migrations"
     Risk_Based:
-      Score_7_9: "Create checkpoint"
-      Score_10: "Checkpoint + backup"
+      High_Score: "Create checkpoint"
+      Critical_Score: "Checkpoint + backup"
     Time_Based:
-      Interval: "Every 30 min during long ops"
+      Interval: "Regular intervals during long ops"
       
   Checkpoint_Contents:
     State_Snapshot:
@@ -309,10 +309,10 @@ Checkpoint_Management:
 
 ```yaml
 Cost_Categories:
-  Native_Tools: "0 tokens"
-  Light_MCP: "100-500 tokens"
-  Medium_MCP: "500-2000 tokens"
-  Heavy_MCP: "2000-10000 tokens"
+  Native_Tools: "No token cost"
+  Light_MCP: "Minimal usage"
+  Medium_MCP: "Moderate usage"
+  Heavy_MCP: "Extensive usage"
   
 Budget_Escalation:
   1: "Native first for simple tasks"
@@ -321,7 +321,7 @@ Budget_Escalation:
   4: "Combine MCPs for synergy"
   
 Abort_Conditions:
-  Context_Usage: ">50% context → native tools"
+  Context_Usage: "High context usage → native tools"
   Timeout_Errors: "MCP timeout/error → fallback"
   Diminishing_Returns: "Poor results → stop MCP usage"
 
@@ -367,19 +367,19 @@ Performance_Tracking:
     Update: "Update weekly"
     Analysis: "Identify regressions"
   Alert_Thresholds:
-    Build_Time: "> 50% from baseline"
-    Bundle_Size: "> 20% from baseline"
-    Test_Time: "> 30% from baseline"
-    Memory: "> 2x baseline"
-    MCP_Timeout: "> 30 seconds"
+    Build_Time: "Significant increase from baseline"
+    Bundle_Size: "Notable increase from baseline"
+    Test_Time: "Substantial increase from baseline"
+    Memory: "Major increase from baseline"
+    MCP_Timeout: "Extended duration"
   Storage: ".claudedocs/metrics/performance-{YYYY-MM-DD}.jsonl"
 
 Server_Performance:
   Response_Times:
-    Context7: "1-5 seconds (network dependent)"
-    Sequential: "5-30 seconds (complexity dependent)"
-    Magic: "3-15 seconds (component complexity)"
-    Puppeteer: "1-10 seconds (page load dependent)"
+    Context7: "Fast response (network dependent)"
+    Sequential: "Moderate duration (complexity dependent)"
+    Magic: "Fast to moderate (component complexity)"
+    Puppeteer: "Fast to moderate (page load dependent)"
     
   Resource_Usage:
     Context7: "Low CPU, Medium Network"
@@ -388,10 +388,10 @@ Server_Performance:
     Puppeteer: "Medium CPU, Low Network"
     
   Reliability_Scores:
-    Context7: "95% (dependent on library availability)"
-    Sequential: "98% (internal processing)"
-    Magic: "90% (external service dependency)"
-    Puppeteer: "95% (browser dependency)"
+    Context7: "Very high (dependent on library availability)"
+    Sequential: "Very high (internal processing)"
+    Magic: "High (external service dependency)"
+    Puppeteer: "Very high (browser dependency)"
 ```
 
 ## Command Integration

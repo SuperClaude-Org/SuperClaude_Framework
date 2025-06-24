@@ -168,32 +168,32 @@ Severity_Levels:
 
 ```yaml
 Time_Limits:
-  Quick_Operation: "< 5 seconds"
-  Standard_Operation: "< 30 seconds"
-  Long_Operation: "< 120 seconds"
-  Critical_Timeout: "300 seconds (5 minutes)"
-  Session_Timeout: "1800 seconds (30 minutes)"
+  Quick_Operation: "Fast"
+  Standard_Operation: "Moderate duration"
+  Long_Operation: "Extended duration"
+  Critical_Timeout: "Maximum allowed duration"
+  Session_Timeout: "Extended session limit"
   
 Token_Limits:
-  Small_Response: "< 500 tokens"
-  Medium_Response: "< 2000 tokens"
-  Large_Response: "< 5000 tokens"
-  Context_Warning: "> 70% context size"
-  Context_Critical: "> 90% context size"
+  Small_Response: "Minimal usage"
+  Medium_Response: "Moderate usage"
+  Large_Response: "Extensive usage"
+  Context_Warning: "High context usage"
+  Context_Critical: "Very high context usage"
   
 File_Size_Limits:
-  Small_File: "< 10 KB"
-  Medium_File: "< 100 KB"
-  Large_File: "< 1 MB"
-  Huge_File: "> 1 MB"
-  Max_Analysis: "5 MB"
+  Small_File: "Minimal size"
+  Medium_File: "Moderate size"
+  Large_File: "Large size"
+  Huge_File: "Very large size"
+  Max_Analysis: "Maximum analyzable size"
   
 Retry_Limits:
-  Default_Retries: 3
-  Network_Retries: 5
-  File_Lock_Retries: 3
-  MCP_Server_Retries: 3
-  Max_Consecutive_Failures: 5
+  Default_Retries: "Multiple attempts"
+  Network_Retries: "Several attempts"
+  File_Lock_Retries: "Multiple attempts"
+  MCP_Server_Retries: "Multiple attempts"
+  Max_Consecutive_Failures: "Several failures"
 ```
 
 ## Standard Priority & Status Values
@@ -206,16 +206,10 @@ Priority_Levels:
   Low: "low"
   
 Severity_Numbers:
-  Critical: 10
-  High_Max: 9
-  High_Mid: 8
-  High_Min: 7
-  Medium_Max: 6
-  Medium_Mid: 5
-  Medium_Min: 4
-  Low_Max: 3
-  Low_Mid: 2
-  Low_Min: 1
+  Critical: "Maximum severity"
+  High: "High severity"
+  Medium: "Medium severity"
+  Low: "Low severity"
   
 Status_Values:
   Pending: "pending"

@@ -21,7 +21,7 @@ Activation_Triggers:
   Manual_Flags: ["--ultracompressed", "--uc"]
   Natural_Language: ["ultracompressed", "minimal tokens", "telegram style", "compress output"]
   Automatic_Triggers:
-    Context_Threshold: ">70% context used"
+    Context_Threshold: "High context usage"
     Token_Budget: "User specifies token limit"
     Session_History: "User previously requested compression"
     Task_Operations: "Always for task files"
@@ -205,12 +205,12 @@ Error_Messages:
 ```yaml
 Compression_Metrics:
   Token_Reduction:
-    Target: "70% reduction"
-    Minimum: "50% reduction"
+    Target: "Substantial reduction"
+    Minimum: "Significant reduction"
     Measure: "Compare before/after token count"
     
   Clarity_Preservation:
-    Requirement: ">80% information retained"
+    Requirement: "Essential information retained"
     Test: "Key facts still accessible"
     Validation: "No critical info lost"
     
@@ -240,7 +240,7 @@ Performance_Guidelines:
 ```yaml
 Context_Sensitive_Compression:
   High_Context_Usage:
-    Threshold: ">70%"
+    Threshold: "High context usage"
     Action: "Auto-enable UC mode"
     Notice: "⚡ UC mode: high context"
     
@@ -256,15 +256,15 @@ Context_Sensitive_Compression:
     
 Progressive_Compression:
   Level_1_Light:
-    Context: "50-70%"
+    Context: "Moderate to high usage"
     Actions: "Remove articles, use common abbreviations"
     
   Level_2_Medium:
-    Context: "70-85%"
+    Context: "High usage"
     Actions: "Full UC mode, all rules active"
     
   Level_3_Heavy:
-    Context: ">85%"
+    Context: "Very high usage"
     Actions: "Extreme compression, summary only"
 ```
 

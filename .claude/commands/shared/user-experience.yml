@@ -98,9 +98,9 @@ Learning from Errors:
 
 ```yaml
 Response Time Expectations:
-  Immediate (<100ms): Command acknowledgment, simple queries
-  Fast (<1s): File operations, simple analysis
-  Moderate (<10s): Complex analysis, building, testing
+  Immediate: Command acknowledgment, simple queries
+  Fast: File operations, simple analysis
+  Moderate: Complex analysis, building, testing
   Long (>10s): Deployment, migration, comprehensive operations
   
 Progress Communication:

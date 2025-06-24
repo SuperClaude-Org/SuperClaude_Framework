@@ -13,28 +13,28 @@
 
 ```yaml
 Severity_Levels:
-  CRITICAL_10:
+  CRITICAL:
     Definition: "Data loss, security breach, production down"
     Response: "Immediate stop, alert, rollback, incident response"
     Recovery: "Manual intervention required"
-    Response_Time: "< 1 second"
+    Response_Time: "Immediate"
     Examples: ["Delete prod data", "Expose secrets", "Force push main"]
     
-  HIGH_7_9:
+  HIGH:
     Definition: "Build failure, test failure, deployment issues"
     Response: "Stop workflow, notify user, suggest fixes"
     Recovery: "Automated retry w/ backoff"
-    Response_Time: "< 10 seconds"
+    Response_Time: "Rapid"
     Examples: ["Syntax error", "Permission denied", "Test failure"]
     
-  MEDIUM_4_6:
+  MEDIUM:
     Definition: "Warning conditions, performance issues, code quality"
     Response: "Continue w/ warning, log for review"
     Recovery: "Attempt optimization, monitor"
-    Response_Time: "< 60 seconds"
+    Response_Time: "Standard"
     Examples: ["Slow operation", "Deprecated API", "Large file"]
     
-  LOW_1_3:
+  LOW:
     Definition: "Info messages, style violations, suggestions"
     Response: "Note in output, continue"
     Recovery: "Background fixes, cleanup"
@@ -67,15 +67,15 @@ Validation_Sequence:
 
 Risk_Assessment:
   Score_Factors:
-    Data_Loss: "+3 | Irreversibility: +2"
-    Scope: "+2 | Security: +3"
-    Backup: "-2 | Test_Coverage: -1"
-    Sandbox: "-2 | Checkpoint: -1"
+    Data_Loss: "High impact | Irreversibility: Moderate impact"
+    Scope: "Moderate impact | Security: High impact"
+    Backup: "Reduces risk | Test_Coverage: Slightly reduces risk"
+    Sandbox: "Reduces risk | Checkpoint: Slightly reduces risk"
   Thresholds:
-    Low_1_3: "Proceed w/ info"
-    Medium_4_6: "Warn & confirm"
-    High_7_9: "Require approval"
-    Critical_10: "Block completely"
+    Low: "Proceed w/ info"
+    Medium: "Warn & confirm"
+    High: "Require approval"
+    Critical: "Block completely"
 ```
 
 ## Error Handling Patterns
@@ -85,7 +85,7 @@ Error_Categories:
   Transient:
     Types: ["Network timeout", "Resource busy", "Rate limit"]
     Strategy: "Exponential backoff retry"
-    Retry: "Base 1s, Max 60s, 3 attempts, ±25% jitter"
+    Retry: "Base short, Max moderate duration, multiple attempts, with jitter"
     
   Permanent:
     Types: ["Syntax error", "Permission denied", "Not found"]
@@ -101,8 +101,8 @@ Error_Categories:
     Strategy: "Monitor, cleanup, queue management"
 
 Circuit_Breaker:
-  Threshold: "3 consecutive failures"
-  Recovery: "5 minutes before re-enable"
+  Threshold: "Multiple consecutive failures"
+  Recovery: "Brief pause before re-enable"
   States:
     Closed: "Normal operation"
     Open: "Blocking calls after threshold"
@@ -114,8 +114,8 @@ Circuit_Breaker:
 ```yaml
 Automatic_Recovery:
   Retry_Patterns:
-    Simple: "3 attempts, 1s delay"
-    Exponential: "1s→2s→4s→8s w/ jitter"
+    Simple: "Multiple attempts, short delay"
+    Exponential: "Progressive backoff w/ jitter"
     Circuit: "Stop after threshold"
   Fallback_Options:
     Alternative: "Use native if MCP fails"
@@ -192,10 +192,10 @@ Context_Preservation:
     Partial: "Use completed work in recovery"
 
 Health_Monitoring:
-  Frequency: "Every 5 min during active use"
-  Timeout: "3 seconds per check"
-  Degradation: ">30s response → switch alternatives"
-  Recovery: "Re-enable after 5 minutes"
+  Frequency: "Regular intervals during active use"
+  Timeout: "Brief timeout per check"
+  Degradation: "Slow response → switch alternatives"
+  Recovery: "Re-enable after brief pause"
 ```
 
 ## Command-Specific Recovery

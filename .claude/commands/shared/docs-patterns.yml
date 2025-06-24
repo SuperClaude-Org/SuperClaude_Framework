@@ -99,7 +99,7 @@ Document_Standards:
     Duration: "Operation time"
 
   UltraCompressed_Mode:
-    Token_Reduction: "~70% from standard format"
+    Token_Reduction: "Substantial reduction from standard format"
     Symbols_Required: "→ & @ ∀ ∃ ∴ ∵ based on legend"
     Structure: "YAML > Tables > Lists > Prose"
     Legend_Requirement: "Auto-generate symbol/abbreviation legend"

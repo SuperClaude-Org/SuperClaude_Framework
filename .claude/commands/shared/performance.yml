@@ -61,43 +61,43 @@ Success_Rate_Monitoring:
 ```yaml
 Command_Benchmarks:
   Simple_Commands:
-    read_file: "<2s, <200 tokens"
-    edit_file: "<3s, <300 tokens"
-    analyze_single_file: "<5s, <500 tokens"
-    git_status: "<3s, <100 tokens"
+    read_file: "fast, minimal tokens"
+    edit_file: "fast, minimal tokens"
+    analyze_single_file: "fast, minimal tokens"
+    git_status: "fast, minimal tokens"
     
   Medium_Commands:
-    build_component: "<30s, <2000 tokens"
-    test_execution: "<45s, <1500 tokens"
-    security_scan: "<60s, <3000 tokens"
-    analyze_multiple_files: "<45s, <2500 tokens"
+    build_component: "moderate duration, moderate tokens"
+    test_execution: "moderate duration, moderate tokens"
+    security_scan: "moderate duration, moderate tokens"
+    analyze_multiple_files: "moderate duration, moderate tokens"
     
   Complex_Commands:
-    full_codebase_analysis: "<120s, <5000 tokens"
-    architecture_design: "<180s, <8000 tokens"
-    comprehensive_security_audit: "<300s, <10000 tokens"
+    full_codebase_analysis: "extended duration, extensive tokens"
+    architecture_design: "extended duration, extensive tokens"
+    comprehensive_security_audit: "extended duration, extensive tokens"
     
   MCP_Server_Performance:
-    Context7: "<5s response, 100-2000 tokens typical"
-    Sequential: "<30s analysis, 500-10000 tokens typical"
-    Magic: "<10s generation, 500-2000 tokens typical"
-    Puppeteer: "<15s operation, minimal tokens"
+    Context7: "fast response, minimal to moderate tokens typical"
+    Sequential: "moderate analysis time, moderate to extensive tokens typical"
+    Magic: "fast generation, moderate tokens typical"
+    Puppeteer: "fast operation, minimal tokens"
 
 Performance_Thresholds:
   Time_Limits:
-    Yellow_Warning: ">30s operations → Consider alternatives"
-    Red_Alert: ">60s → Force timeout, explain delay, offer cancellation"
-    Critical: ">120s → Immediate intervention required"
+    Yellow_Warning: "Extended operations → Consider alternatives"
+    Red_Alert: "Very long operations → Force timeout, explain delay, offer cancellation"
+    Critical: "Excessive duration → Immediate intervention required"
     
   Token_Limits:
-    Moderate_Usage: ">2K tokens single op → Simplify approach"
-    High_Usage: ">5K session → Suggest /compact mode"
-    Critical_Usage: ">10K → Force optimization"
+    Moderate_Usage: "High token usage single op → Simplify approach"
+    High_Usage: "Very high session usage → Suggest /compact mode"
+    Critical_Usage: "Excessive usage → Force optimization"
     
   Error_Patterns:
-    Concern_Level: "3+ retries same operation → Switch strategy"
+    Concern_Level: "Multiple retries same operation → Switch strategy"
     Critical_Level: "Repeated failures → Escalate to manual approach"
-    System_Issue: "5+ consecutive failures → System health check"
+    System_Issue: "Many consecutive failures → System health check"
 ```
 
 ## Adaptive Optimization Strategies
@@ -105,7 +105,7 @@ Performance_Thresholds:
 ```yaml
 Real_Time_Performance_Optimization:
   Slow_Operations_Response:
-    Detection: "Operations exceeding 30s threshold"
+    Detection: "Operations exceeding moderate duration threshold"
     Immediate_Actions:
       - Switch to faster tools (rg vs grep, parallel processing)
       - Reduce operation scope (specific files vs full scan)
@@ -113,7 +113,7 @@ Real_Time_Performance_Optimization:
       - Break large operations into smaller chunks
       
   High_Token_Usage_Response:
-    Detection: ">70% context or >5K tokens in single operation"
+    Detection: "High context usage or extensive tokens in single operation"
     Immediate_Actions:
       - Auto-suggest UltraCompressed mode (--uc)
       - Cache repeated content and use references
@@ -122,7 +122,7 @@ Real_Time_Performance_Optimization:
       
   Error_Pattern_Response:
     Repeated_Failures:
-      Detection: "3+ failures of same operation type"
+      Detection: "Multiple failures of same operation type"
       Actions:
         - Switch to alternative tool/approach
         - Adjust strategy based on error type
@@ -165,7 +165,7 @@ When_Errors_Occur:
 ```yaml
 Data_Collection:
   Lightweight_Tracking:
-    Performance_Impact: "<1% overhead on operations"
+    Performance_Impact: "Minimal overhead on operations"
     Background_Collection: "No user interruption during monitoring"
     Privacy_Preserving: "Local storage only, no external transmission"
     User_Configurable: "Can be disabled via settings"

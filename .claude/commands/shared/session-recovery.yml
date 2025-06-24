@@ -104,7 +104,7 @@ checkpoint_restoration:
 ```yaml
 graceful_pause:
   auto_triggers:
-    - context >90% full
+    - context very high usage
     - long inactivity
     - error thresholds
     

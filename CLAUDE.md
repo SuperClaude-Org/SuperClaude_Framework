@@ -34,7 +34,7 @@ Examples: /analyze --code --think | /design --api --ultrathink
 ## Token Economy
 
 ```yaml
-Targets: Minimal commands | Responses<4 lines | Concise docs
+Targets: Minimal commands | Concise responses | Concise docs
 Symbols: →(leads to) |(separator) &(combine) :(define) »(sequence)
 Remove: the|a|very|really|that|which | "in order to"→to | and→&
 ```
@@ -42,8 +42,8 @@ Remove: the|a|very|really|that|which | "in order to"→to | and→&
 ## UltraCompressed Mode
 
 ```yaml
-Purpose: ~70% token reduction | Telegram-style docs | Symbols & abbrevs
-Activation: --uc flag | Natural language | Auto when context>70%
+Purpose: Substantial token reduction | Telegram-style docs | Symbols & abbrevs
+Activation: --uc flag | Natural language | Auto when context usage high
 Rules: shared/ultracompressed.yml | Remove filler | Use symbols
 Output: Direct info only | No intros/outros | Lists>prose
 Legend: Auto-generate | Used symbols/abbrevs only | Start of docs
@@ -79,7 +79,7 @@ Tasks: Auto-detect complexity→seamless task creation | ./claudedocs/tasks/in-p
 
 ```yaml
 Mode: Automatic | No user prompts | Seamless activation
-Detection: ≥8 complexity points→auto-create | 5-7→brief notify | <5→normal
+Detection: High complexity→auto-create | Medium complexity→brief notify | Low complexity→normal
 Triggers: "build|create|implement" + "system|feature" + complexity flags
 Flow: requirement→analyze→create→breakdown→implement | Background operation
 Recovery: Auto-resume active tasks | Context preservation | Git integration

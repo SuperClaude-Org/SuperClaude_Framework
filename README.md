@@ -7,7 +7,7 @@
 
 **A lightweight framework that transforms generic Claude Code into your specialized development partner – no external tools, no complex setup, just pure configuration magic.**
 
-> **New in v4.0.0**: Template reference system achieves 65% efficiency gains with @pattern includes and validation system
+> **New in v4.0.0**: Template reference system achieves significant efficiency improvements with @pattern includes and validation system
 
 ## 🎯 The Problem
 
@@ -22,7 +22,7 @@ Claude Code is powerful, but let's be honest – it's generic. You find yourself
 Think of it as a brain upgrade for Claude Code. Drop it in once, and suddenly Claude:
 - **Remembers everything** with Git-based checkpoints
 - **Thinks like you want** with 9 specialized personas
-- **Works 65% more efficiently** with @pattern template system (v4.0.0)
+- **Works significantly more efficiently** with @pattern template system (v4.0.0)
 - **Never guesses** – always finds the official docs first
 
 ## 🚀 Zero-Friction Install
@@ -75,7 +75,7 @@ Real shortcuts for real work:
 - **Magic** generates UI components that actually match your style
 - **Puppeteer** tests everything in a real browser
 
-### 🚄 **70% More Efficient**
+### 🚄 **Substantially More Efficient**
 Our UltraCompressed mode strips unnecessary tokens without losing clarity. Plus, the new @pattern template system eliminates command duplication. More context, longer conversations, bigger projects – same token budget.
 
 ## 🎮 Quick Start Examples
@@ -95,7 +95,7 @@ Our UltraCompressed mode strips unnecessary tokens without losing clarity. Plus,
 /troubleshoot --investigate --prod
 /analyze --profile      # Find the real bottleneck
 /persona:performance
-/improve --performance --threshold 90%
+/improve --performance --threshold high
 ```
 
 ### The "Make It Pretty" Flow
@@ -181,7 +181,7 @@ Check out our [Contributing Guide](CONTRIBUTING.md) and join the conversation!
 |---------|-------------------|------------------|
 | **Context** | Lost after errors | Git checkpoints preserve everything |
 | **Personas** | Generic responses | Specialized thinking modes |
-| **Tokens** | Verbose outputs | 65-70% reduction, same information |
+| **Tokens** | Verbose outputs | Substantial reduction, same information |
 | **Docs** | "I think this works" | Always finds official sources |
 | **Workflows** | Repeat instructions | One command, complete flow |
 | **Quality** | Hope for the best | Evidence-based standards |
@@ -200,7 +200,7 @@ Check out our [Contributing Guide](CONTRIBUTING.md) and join the conversation!
 
 > "The frontend persona just *gets* UX. It asks questions I didn't even think of." – *Full-Stack Dev*
 
-> "65-70% token reduction means I can keep entire codebases in context. The @pattern system is brilliant." – *Tech Lead*
+> "Significant token reduction means I can keep entire codebases in context. The @pattern system is brilliant." – *Tech Lead*
 
 ## 🎯 Is SuperClaude For You?
 

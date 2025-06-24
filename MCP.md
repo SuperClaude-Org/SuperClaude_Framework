@@ -39,7 +39,7 @@ Research-First (shared/research-first.yml):
   New component → Magic search REQUIRED or existing pattern
   API integration → WebSearch REQUIRED for official docs
   Unknown pattern → Sequential thinking + research REQUIRED
-  Confidence < 90% → Impl BLOCKED until research complete
+  Low confidence → Impl BLOCKED until research complete
 
 Task Complexity:
   Simple queries → Native tools only (unless flagged)
@@ -65,11 +65,11 @@ Ex: "Dashboard w/ charts" → Magic builder("dashboard","charts") → edit files
 ## Token Economics
 
 ```yaml
-Budget: Native:0 | Light MCP:100-500 | Medium MCP:500-2K | Heavy MCP:2K-10K
+Budget: Native:0 | Light MCP:minimal | Medium MCP:moderate | Heavy MCP:extensive
 Escalation: 1.Native first simple tasks 2.C7 lib questions 3.Sequential complex analysis 4.Combine MCPs synergy
-Abort: >50% context→native | MCP timeout/error→fallback | Diminishing returns→stop MCP
+Abort: High context usage→native | MCP timeout/error→fallback | Diminishing returns→stop MCP
 Cost: Quick→C7 only | Architecture→Sequential | UI→Magic | Else→Native
-UltraCompressed: --uc flag|High context|Token budget | ~70% reduction | Clarity→conciseness | Legend auto-gen
+UltraCompressed: --uc flag|High context|Token budget | Substantial reduction | Clarity→conciseness | Legend auto-gen
 ```
 
 ## Quality Control
@@ -116,7 +116,7 @@ Multi-MCP: Conflict→most reliable source | Resource exhaustion→single best M
 
 DO: Match MCP→user need | Set token budgets | Validate before impl | Cache patterns | Graceful fallback
 Use C7 ALL external lib docs (research-first.yml enforced) | Cite MCP sources in impl
-DON'T: MCPs for simple tasks native handles | Chain w/o validation | Exceed 50% context | Retry failed w/o change | MCPs when immediate needed
+DON'T: MCPs for simple tasks native handles | Chain w/o validation | Exceed high context | Retry failed w/o change | MCPs when immediate needed
 OPTIMIZE: Batch similar calls | Reuse session results | Start least expensive | Prefer native file ops | Document successful patterns
 ```
 

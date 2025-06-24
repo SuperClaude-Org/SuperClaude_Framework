@@ -7,7 +7,7 @@
 | & | and/with | | impl | implementation |
 
 ## Quick Reference
-All commands use `/` prefix. Built with @pattern template system for 65% efficiency gains.
+All commands use `/` prefix. Built with @pattern template system for significant efficiency gains.
 
 Example: `/analyze --code --security --think`
 
@@ -15,12 +15,12 @@ Example: `/analyze --code --security --think`
 
 ### Planning & Thinking
 - `--plan` - Show execution plan before running
-- `--think` - Multi-file analysis (~4K tokens)
-- `--think-hard` - Architecture-level depth (~10K tokens)
-- `--ultrathink` - Critical system analysis (~32K tokens)
+- `--think` - Multi-file analysis (moderate depth)
+- `--think-hard` - Architecture-level depth (comprehensive)
+- `--ultrathink` - Critical system analysis (maximum depth)
 
 ### Documentation Control
-- `--uc` / `--ultracompressed` - ~70% token reduction mode
+- `--uc` / `--ultracompressed` - Substantial token reduction mode
 
 ### MCP Server Control
 - `--c7` / `--no-c7` - Enable/disable Context7 docs lookup
@@ -72,7 +72,7 @@ Example: `/analyze --code --security --think`
 - `--quality` - Code structure improvement
 - `--performance` - Performance optimization
 - `--iterate` - Iterative improvement
-- `--threshold N%` - Quality threshold (default: 85%)
+- `--threshold N%` - Quality threshold (default: high)
 
 ### `/explain` - Technical explanations
 - `--depth [ELI5/Beginner/Intermediate/Expert]` - Explanation depth
@@ -216,7 +216,7 @@ Example: `/analyze --code --security --think`
 ### @pattern Reference System
 - **Command Templates**: Standardized flag & structure definitions
 - **Validation System**: `validate-references.sh` ensures integrity  
-- **Token Efficiency**: 65% reduction in command duplication
+- **Token Efficiency**: Significant reduction in command duplication
 - **Maintenance**: Single source of truth for common elements
 
 ### Quality Assurance

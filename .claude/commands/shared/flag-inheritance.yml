@@ -17,7 +17,7 @@ Universal_Always:
     --plan: "Show execution plan before running"
     
   Compression:
-    --uc: "UltraCompressed mode (~70% token reduction)"
+    --uc: "UltraCompressed mode (substantial token reduction)"
     --ultracompressed: "Alias for --uc"
     
   Thinking_Modes:
@@ -56,7 +56,7 @@ Quality_Assurance:
 Performance:
   --profile: "Detailed performance profiling & metrics"
   --iterate: "Iterative improvement until threshold met"
-  --threshold: "Set target percentage (default 85%)"
+  --threshold: "Set quality target (default high)"
   --watch-perf: "Continuous performance monitoring"
   
 Development:
@@ -95,7 +95,7 @@ Quality_Commands:
     --coverage: "Generate comprehensive test coverage"
     --quality: "Focus on code quality improvements"
     --iterate: "Iterative improvement until threshold"
-    --threshold: "Set target percentage (default 85%)"
+    --threshold: "Set quality target (default high)"
     --all: "Comprehensive operation across all areas"
     --quick: "Fast operation focusing on critical issues"
     
@@ -204,7 +204,7 @@ Template_Usage:
 Duplication_Reduction:
   Before: "~400 lines of flag definitions across 18 commands"
   After: "~80 lines in template + ~120 lines command-specific"
-  Savings: "~200 lines (50% reduction in flag definitions)"
+  Savings: "Significant reduction in flag definitions"
   
 Consistency_Improvements:
   Standardized_Descriptions: "Single source of truth for flag meanings"
