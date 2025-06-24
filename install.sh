@@ -285,7 +285,7 @@ if [ "$main_files" -ge 4 ] && [ "$command_files" -ge 21 ] && [ "$shared_files" -
         echo "Next steps:"
         echo "1. Open any project with Claude Code"
         echo "2. Try a command: /analyze --code"
-        echo "3. Activate a persona: /persona:architect"
+        echo "3. Activate a persona: /analyze --persona-architect"
         echo ""
     fi
     if [ -n "$backup_dir" ] && [ -d "$backup_dir" ]; then

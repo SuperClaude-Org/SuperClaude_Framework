@@ -103,6 +103,7 @@ Checkpoint: shared/checkpoint.yml | Auto before risky | /rollback
 ### Communication [HIGH]
 ```yaml
 Mode: 🎭Persona|🔧Command|✅Complete|🔄Switch | Style: Concise|Structured|Evidence-based|Actionable
+Persona_Flags: --persona-[name] activates behavioral profile | See flag-inheritance.yml#Persona_Control
 Code output: Minimal comments | Concise names | No explanatory text
 Responses: Consistent format | Done→Issues→Next | Remember context
 ```

@@ -84,14 +84,25 @@ Multi-MCP: Results enhance each other | Conflict→Most authoritative | Redundan
 ## Persona Integration
 
 ```yaml
-Persona Preferences:
-  architect: Sequential(design)+C7(patterns)+avoid Magic | frontend: Magic(UI)+Puppeteer(test)+C7(React/Vue docs)
-  backend: C7(API docs)+Sequential(scale analysis)+avoid Magic | analyzer: Sequential(root cause) primary+C7(solutions) secondary
-  security: Sequential(threats)+C7(security patterns)+Puppeteer(test) | mentor: C7(learning)+Sequential(explanations)+avoid Magic
-  refactorer: Sequential(analysis)+C7(patterns)+avoid Magic/Puppeteer | perf: Sequential(bottlenecks)+Puppeteer(metrics)+C7(optimization)
-  qa: Puppeteer(testing)+Sequential(edge cases)+C7(testing frameworks)
+Persona Flag System:
+  Activation: "--persona-[name] flag (e.g., --persona-architect, --persona-frontend)"
+  Reference: "See shared/persona-patterns.yml for full behavioral profiles"
 
-Behaviors: architect→Long Sequential system design | frontend→Quick Magic components | analyzer→Deep Sequential before solutions
+Persona Preferences:
+  --persona-architect: Sequential(design)+C7(patterns)+avoid Magic | Long Sequential system design
+  --persona-frontend: Magic(UI)+Puppeteer(test)+C7(React/Vue docs) | Quick Magic components
+  --persona-backend: C7(API docs)+Sequential(scale analysis)+avoid Magic | API & scalability focus
+  --persona-analyzer: Sequential(root cause) primary+C7(solutions) secondary | Deep Sequential before solutions
+  --persona-security: Sequential(threats)+C7(security patterns)+Puppeteer(test) | Threat modeling priority
+  --persona-mentor: C7(learning)+Sequential(explanations)+avoid Magic | Teaching-focused approach
+  --persona-refactorer: Sequential(analysis)+C7(patterns)+avoid Magic/Puppeteer | Code quality emphasis
+  --persona-performance: Sequential(bottlenecks)+Puppeteer(metrics)+C7(optimization) | Profiling first
+  --persona-qa: Puppeteer(testing)+Sequential(edge cases)+C7(testing frameworks) | Test coverage focus
+
+Flag Integration:
+  Combination: "Personas work with other flags: --persona-architect --ultrathink"
+  Override: "Persona MCP preferences can be overridden: --persona-frontend --no-magic"
+  Priority: "Explicit MCP flags > Persona preferences > Auto-activation"
 ```
 
 ## Command Integration
@@ -99,9 +110,11 @@ Behaviors: architect→Long Sequential system design | frontend→Quick Magic co
 ```yaml
 Planning: Default execute immediately | --plan flag→Forces planning mode | --skip-plan→Skip (redundant w/ default)
 MCP Flags: --c7/--no-c7 | --seq/--no-seq | --magic/--no-magic | --pup/--no-pup | --all-mcp | --no-mcp
+Persona Flags: --persona-[name] activates behavioral profile | See flag-inheritance.yml#Persona_Control
 Auto-Activation (no flags): /build→Magic(UI) if frontend | /analyze→Sequential complex | /design→Sequential+C7
 /explain→C7 if lib mentioned else native | /improve→Sequential→C7 | /scan→Native only (security)
-Priority: Explicit flags>Auto-activation>Context triggers | --no-mcp overrides all | --no-[server] overrides specific
+Persona Activation: /analyze --persona-security→security focus | /build --persona-frontend→UI emphasis
+Priority: Explicit flags>Persona preferences>Auto-activation>Context triggers | --no-mcp overrides all
 Context Share: Sequential→feeds C7 topic selection | C7 docs→inform Magic generation | Magic→tested w/ Puppeteer | All cached
 Execution: Default→Execute immediately | --plan flag→Show plan before changes | User controls→Full control
 ```

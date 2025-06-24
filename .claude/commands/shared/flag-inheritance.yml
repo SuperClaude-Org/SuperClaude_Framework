@@ -36,6 +36,17 @@ Universal_Always:
     --no-seq: "Disable Sequential thinking specifically"
     --no-magic: "Disable Magic UI builder specifically"
     --no-pup: "Disable Puppeteer specifically"
+    
+  Persona_Control:
+    --persona-architect: "Systems architect thinking mode (sequential design, patterns)"
+    --persona-frontend: "Frontend developer mode (UI/UX focus, Magic components)"
+    --persona-backend: "Backend developer mode (API design, scalability focus)"
+    --persona-analyzer: "Deep analysis mode (root cause, evidence-based)"
+    --persona-security: "Security-focused mode (threat modeling, vulnerabilities)"
+    --persona-mentor: "Teaching/mentoring mode (guided learning, explanations)"
+    --persona-refactorer: "Code refactoring mode (quality improvements, cleanup)"
+    --persona-performance: "Performance optimization mode (profiling, bottlenecks)"
+    --persona-qa: "Quality assurance mode (testing, edge cases, validation)"
 ```
 
 ## Common Workflow Flags (3+ Commands)

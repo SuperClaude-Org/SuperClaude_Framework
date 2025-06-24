@@ -47,13 +47,13 @@ Git-integrated checkpoint system lets you jump back to any point in your convers
 Your docs write themselves using our token-optimized templates. Project docs go in `/docs`, while Claude's working notes live in `/.claudedocs`. Everything stays organized, nothing gets lost.
 
 ### 🎭 **9 Instant Personas**
-Switch Claude's entire mindset with one command:
+Switch Claude's entire mindset with persona flags:
 
 ```bash
-/persona:architect    # Big-picture system design mode
-/persona:frontend     # Pixel-perfect UI obsession mode
-/persona:security     # Paranoid threat-modeling mode
-/persona:analyzer     # Sherlock Holmes debugging mode
+/analyze --persona-architect    # Big-picture system design mode
+/build --persona-frontend       # Pixel-perfect UI obsession mode
+/scan --persona-security        # Paranoid threat-modeling mode
+/troubleshoot --persona-analyzer # Sherlock Holmes debugging mode
 ```
 
 Each persona thinks differently, asks different questions, and solves problems their own way.
@@ -82,25 +82,25 @@ Our UltraCompressed mode strips unnecessary tokens without losing clarity. Plus,
 
 ### The "New Project" Flow
 ```bash
-/persona:architect
+--persona-architect
 /design --api --ddd     # Domain-driven design from the start
 /estimate --detailed    # Know what you're getting into
-/persona:backend
+--persona-backend
 /build --api --tdd      # Build it right the first time
 ```
 
 ### The "Something's Broken" Flow
 ```bash
-/persona:analyzer
+--persona-analyzer
 /troubleshoot --investigate --prod
 /analyze --profile      # Find the real bottleneck
-/persona:performance
+--persona-performance
 /improve --performance --threshold high
 ```
 
 ### The "Make It Pretty" Flow
 ```bash
-/persona:frontend
+--persona-frontend
 /build --react --magic  # AI-generated components
 /test --e2e --pup       # See it work in a real browser
 /improve --quality      # Polish until it shines
@@ -227,7 +227,7 @@ Skip if you:
 2. **Test Drive**
    ```bash
    /analyze --code        # See what it finds
-   /persona:architect          # Try a new mindset
+   --persona-architect          # Try a new mindset
    ```
 
 3. **Go Deeper**

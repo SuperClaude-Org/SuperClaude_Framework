@@ -28,6 +28,7 @@ Universal_Flags:
   Compression: "See flag-inheritance.yml"
   MCP_Control: "See flag-inheritance.yml"
   Execution: "See flag-inheritance.yml"
+  Personas: "See flag-inheritance.yml#Persona_Control"
   
 Templates:
   MCP: "See MCP.md"
@@ -106,6 +107,7 @@ Workflow_Flags:
 Instead_Of_Repeating:
   MCP_Explanations: "@see shared/flag-inheritance.yml#MCP_Control"
   Thinking_Modes: "@see shared/flag-inheritance.yml#Thinking_Modes"
+  Persona_Behaviors: "@see shared/persona-patterns.yml"
   Research_Standards: "@see shared/research-flow-templates.yml"
   Validation_Rules: "@see shared/validation.yml"
   Performance_Patterns: "@see shared/performance.yml"
