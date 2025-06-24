@@ -105,10 +105,10 @@ Context: Errors→analyzer | Perf issues→perf | Architecture→architect | Lea
 ## Command Specialization
 
 ```yaml
-security → /user:scan --security | qa → /user:test,/user:scan --validate
-perf → /user:analyze --profile,/user:improve --perf | analyzer → /user:analyze,/user:troubleshoot,/user:explain
-architect → /user:design --api --ddd,/user:estimate | frontend → /user:build --react,/user:explain | backend → /user:build --api
-refactorer → /user:improve --quality,/user:cleanup --code | mentor → /user:explain --depth,/user:document
+security → /scan --security | qa → /test,/scan --validate
+perf → /analyze --profile,/improve --perf | analyzer → /analyze,/troubleshoot,/explain
+architect → /design --api --ddd,/estimate | frontend → /build --react,/explain | backend → /build --api
+refactorer → /improve --quality,/cleanup --code | mentor → /explain --depth,/document
 ```
 
 ---

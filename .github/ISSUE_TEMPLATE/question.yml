@@ -1,3 +1,4 @@
+---
 name: ❓ Question
 description: Ask a question about SuperClaude usage or configuration
 title: "[Question] "
@@ -7,8 +8,8 @@ body:
     attributes:
       value: |
         Have a question about SuperClaude? We're here to help!
-        
-        **Tip:** Consider using [Discussions](../../discussions) for general questions and community help.
+        **Tip:** Consider using [Discussions](../../discussions) for general
+        questions and community help.
 
   - type: dropdown
     id: question-type

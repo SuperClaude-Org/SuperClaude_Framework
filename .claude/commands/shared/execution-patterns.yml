@@ -1,0 +1,431 @@
+# Execution Patterns
+# Unified workflow system, MCP orchestration, git operations, and execution lifecycle
+
+## Legend
+| Symbol | Meaning | | Abbrev | Meaning |
+|--------|---------|---|--------|---------|
+| 🔄 | lifecycle phase | | dev | development |
+| 🔀 | git operation | | exec | execution |
+| 🔧 | MCP server/tool | | wf | workflow |
+| → | sequential flow | | perf | performance |
+| & | parallel flow | | ops | operations |
+| ✓ | validation passed | | chk | checkpoint |
+| ⚡ | optimization | | cost | token cost |
+
+## Universal Execution Lifecycle
+
+```yaml
+Standard_Lifecycle:
+  Pre_Execution:
+    Risk_Assessment:
+      Calculate: "Score operation risk 1-10"
+      Factors: ["Data loss potential", "Irreversibility", "Scope", "Security"]
+      Actions:
+        Low_1_3: "Proceed w/ monitoring"
+        Med_4_6: "Warn & log"
+        High_7_9: "Require confirmation"
+        Critical_10: "Block & alert"
+    Environment_Validation:
+      Check: ["Required tools", "Permissions", "Resources", "Dependencies"]
+      Verify: ["Git state", "Network access", "Disk space", "Memory"]
+      MCP_Health: "Test server connectivity & response"
+    State_Preparation:
+      Create: "Checkpoint before risky ops"
+      Cache: "Previous results for efficiency"
+      Lock: "Prevent concurrent modifications"
+      
+  During_Execution:
+    Progress_Monitoring:
+      Track: ["Operation progress", "Resource usage", "Error rates", "Token consumption"]
+      Alert: ["Performance degradation", "Approaching limits", "Anomalies", "MCP failures"]
+    Dynamic_Optimization:
+      Adapt: ["Adjust parallelism", "Switch strategies", "Cache results", "Fallback to native"]
+      Fallback: ["Use alternatives if primary fails", "Degrade gracefully"]
+    Error_Handling:
+      Detect: "Catch errors immediately"
+      Classify: "Transient vs permanent"
+      Respond: "Retry, fallback, or halt"
+      
+  Post_Execution:
+    Verification:
+      Confirm: ["Expected outcomes achieved", "No side effects", "State consistent"]
+      Validate: ["Output quality", "Performance metrics", "Security compliance"]
+    Cleanup:
+      Remove: ["Temp files", "Locks", "Cached data"]
+      Update: ["Audit logs", "Metrics", "Documentation"]
+    Reporting:
+      Generate: ["Success/failure report", "Performance metrics", "Recommendations"]
+      Store: ".claudedocs/lifecycle/execution-{timestamp}.md"
+```
+
+## MCP Server Registry & Orchestration
+
+```yaml
+Servers:
+  Context7:
+    Purpose: "Library documentation and code examples"
+    Best_For: ["API usage", "framework patterns", "library integration"]
+    Token_Cost: "Low-Medium (100-2000 tokens)"
+    Capabilities:
+      - resolve-library-id: "Find Context7-compatible library ID"
+      - get-library-docs: "Fetch up-to-date documentation"
+    Success_Rate: "95% for popular libraries"
+    Fallback: "WebSearch official docs"
+    
+  Sequential:
+    Purpose: "Step-by-step complex problem solving"
+    Best_For: ["Architecture", "debugging", "system design", "root cause analysis"]
+    Token_Cost: "Medium-High (500-10000 tokens)"
+    Capabilities:
+      - sequentialthinking: "Adaptive multi-step reasoning"
+    Success_Rate: "90% for complex problems"
+    Fallback: "Native step-by-step analysis"
+    
+  Magic:
+    Purpose: "UI component generation with 21st.dev"
+    Best_For: ["React/Vue components", "UI patterns", "prototypes"]
+    Token_Cost: "Medium (500-2000 tokens)"
+    Capabilities:
+      - 21st_magic_component_builder: "Generate UI components"
+      - 21st_magic_component_refiner: "Improve existing components"
+      - 21st_magic_component_inspiration: "Search component library"
+      - logo_search: "Find company logos in TSX/JSX/SVG"
+    Success_Rate: "85% for common components"
+    Fallback: "Search existing components in project"
+    
+  Puppeteer:
+    Purpose: "Browser automation and testing"
+    Best_For: ["E2E tests", "screenshots", "web scraping", "performance testing"]
+    Token_Cost: "Low (minimal tokens, mostly actions)"
+    Capabilities:
+      - connect_active_tab: "Connect to Chrome debugging"
+      - navigate: "Navigate to URLs"
+      - screenshot: "Capture page/element screenshots"
+      - click: "Click elements"
+      - fill: "Fill form inputs"
+      - evaluate: "Execute JavaScript"
+    Success_Rate: "98% for standard web interactions"
+    Fallback: "Manual testing guidance"
+
+MCP_Control_Flags:
+  Individual:
+    --c7: "Enable Context7 only"
+    --no-c7: "Disable Context7"
+    --seq: "Enable Sequential only"
+    --no-seq: "Disable Sequential"
+    --magic: "Enable Magic only"
+    --no-magic: "Disable Magic"
+    --pup: "Enable Puppeteer only"
+    --no-pup: "Disable Puppeteer"
+    
+  Combined:
+    --all-mcp: "Enable all MCP servers"
+    --no-mcp: "Disable all MCP servers (native tools only)"
+    
+  Priority: "Explicit flags > Command defaults > Context triggers"
+  Override: "--no-mcp overrides all individual flags"
+```
+
+## Chain Execution Patterns
+
+```yaml
+Execution_Types:
+  Sequential: "A→B→C | Linear progression w/ context handoff"
+  Parallel: "A&B&C | Concurrent execution w/ result aggregation"
+  Conditional: "A&&B||C | Success/failure branching paths"
+  Iterative: "A→B→check→A | Loop until condition met"
+
+Chain_Control:
+  Success_Rules:
+    Continue: "Pass enriched context to next command"
+    Cache: "Store intermediate results for reuse"
+    Skip: "Skip redundant operations if cached"
+  Failure_Rules:
+    Critical: "STOP: Halt chain, preserve context"
+    Recoverable: "RETRY: 3 attempts w/ exponential backoff"
+    Non_Critical: "CONTINUE: Log warning, proceed degraded"
+    Validation: "BRANCH: Alternative path or manual fix"
+  Context_Flow:
+    Persist: "Maintain context throughout chain"
+    Selective: "Pass only relevant results between commands"
+    Cleanup: "Clear context after chain completion"
+    Checkpoint: "Auto-save state before critical ops"
+
+Intelligent_MCP_Selection:
+  Command_Defaults:
+    analyze + --architecture: "Suggest --seq for system analysis"
+    build + --react: "Suggest --magic for UI components"
+    test + --e2e: "Suggest --pup for browser testing"
+    explain + library_name: "Suggest --c7 for documentation"
+    design + --api: "Suggest --seq --c7 for comprehensive design"
+    troubleshoot + --investigate: "Suggest --seq for root cause analysis"
+    improve + --performance: "Suggest --seq --pup for optimization analysis"
+    
+  Context_Triggers:
+    Import_Errors: "→ C7 lookup REQUIRED"
+    Complex_Debugging: "→ Sequential thinking"
+    UI_Requests: "→ Magic builder"
+    E2E_Testing: "→ Puppeteer automation"
+    
+  Synergistic_Patterns:
+    --magic + --pup: "Generate UI components and test immediately"
+    --seq + --c7: "Complex analysis with authoritative documentation"
+    --seq + --think-hard: "Deep architectural analysis with documentation"
+    --c7 + --uc: "Research with compressed output for token efficiency"
+```
+
+## Development Workflows
+
+```yaml
+Full_Stack_Development:
+  Chain: "load→analyze→design→build→test→scan→deploy"
+  Flags: ["--think", "--magic", "--validate"]
+  MCP_Usage: ["--c7 for docs", "--magic for UI", "--seq for design"]
+  Time: "45-90 minutes"
+  Context_Handoff:
+    load→analyze: "Project understanding"
+    analyze→design: "Issues & architecture"
+    design→build: "Patterns & structure"
+    build→test: "Implementation"
+    test→scan: "Coverage & results"
+    scan→deploy: "Security validation"
+
+Feature_Implementation:
+  Chain: "analyze --code→design --feature→build --feature→test→git --commit"
+  Flags: ["--think", "--magic"]
+  MCP_Usage: ["--magic for components", "--c7 for patterns"]
+  Time: "20-45 minutes"
+
+Bug_Investigation_Fix:
+  Chain: "troubleshoot --investigate→analyze --code→improve --quality→test→git --commit"
+  Flags: ["--think-hard", "--seq"]
+  MCP_Usage: ["--seq for investigation", "--c7 for solutions"]
+  Time: "15-60 minutes"
+
+Tech_Debt_Reduction:
+  Chain: "analyze --architecture→design --refactor→improve --quality→test→document"
+  Flags: ["--think-hard", "--refactor", "--quality"]
+  MCP_Usage: ["--seq for analysis", "--c7 for patterns"]
+  Time: "60-180 minutes"
+```
+
+## Git Integration Patterns
+
+```yaml
+Git_Workflows:
+  Auto_Safety_Checks:
+    Before_Commit:
+      - "git status → Verify intended files"
+      - "git diff --staged → Review changes"
+      - "Run tests if available"
+      - "Check for secrets/credentials"
+    Before_Push:
+      - "Verify target branch & remote"
+      - "Check for force push implications"
+      - "Ensure CI/CD readiness"
+    Before_Merge:
+      - "Test for conflicts"
+      - "Verify branch policies"
+      - "Check approval requirements"
+      
+  Commit_Standards:
+    Format: "{type}: {description}\n\n{body}\n\n🤖 Generated with [Claude Code]\n\nCo-Authored-By: Claude"
+    Types: ["feat", "fix", "docs", "style", "refactor", "test", "chore"]
+    Validation:
+      - "Type matches change nature"
+      - "Description < 50 chars"
+      - "Body explains why, not what"
+      
+  Branch_Management:
+    Strategy:
+      Feature: "feature/{description}"
+      Bugfix: "bugfix/{description}"
+      Release: "release/{version}"
+      Hotfix: "hotfix/{description}"
+    Protection:
+      Main: "No direct push, PR required"
+      Release: "Admin approval required"
+      Feature: "Auto-delete after merge"
+      
+  Conflict_Resolution:
+    Detection: "Auto-detect during pull/merge"
+    Strategies:
+      Simple: "Auto-resolve if non-overlapping"
+      Complex: "Interactive 3-way merge"
+      Binary: "Choose version explicitly"
+    Recovery:
+      Abort: "git merge --abort → restore state"
+      Stash: "git stash → try different approach"
+      Branch: "Create conflict-resolution branch"
+```
+
+## Checkpoint & Recovery System
+
+```yaml
+Checkpoint_Management:
+  Creation_Triggers:
+    Automatic:
+      - "Before destructive operations"
+      - "Major version changes"
+      - "Production deployments"
+      - "Data migrations"
+    Risk_Based:
+      Score_7_9: "Create checkpoint"
+      Score_10: "Checkpoint + backup"
+    Time_Based:
+      Interval: "Every 30 min during long ops"
+      
+  Checkpoint_Contents:
+    State_Snapshot:
+      Files: ["Modified files list", "File contents hash"]
+      Git: ["Branch", "Commit SHA", "Uncommitted changes"]
+      Environment: ["Tool versions", "Config values", "Dependencies"]
+      MCP_State: ["Active servers", "Token usage", "Cache state"]
+    Metadata:
+      Timestamp: "ISO 8601 format"
+      Operation: "Command being executed"
+      Risk_Score: "Calculated risk level"
+      User: "Who initiated operation"
+      
+  Recovery_Options:
+    Quick_Rollback:
+      Command: "/rollback --to-checkpoint {id}"
+      Scope: "Files only, preserve git state"
+    Full_Restore:
+      Command: "/rollback --full {id}"
+      Scope: "Complete state including git"
+    Selective:
+      Command: "/rollback --files {pattern}"
+      Scope: "Specific files only"
+      
+  Storage:
+    Location: ".claudedocs/checkpoints/"
+    Format: "checkpoint-{timestamp}-{operation}.tar.gz"
+    Retention: "7 days or 10 checkpoints"
+    Cleanup: "Auto-remove old checkpoints"
+```
+
+## Token Budget Management
+
+```yaml
+Cost_Categories:
+  Native_Tools: "0 tokens"
+  Light_MCP: "100-500 tokens"
+  Medium_MCP: "500-2000 tokens"
+  Heavy_MCP: "2000-10000 tokens"
+  
+Budget_Escalation:
+  1: "Native first for simple tasks"
+  2: "C7 for library questions"
+  3: "Sequential for complex analysis"
+  4: "Combine MCPs for synergy"
+  
+Abort_Conditions:
+  Context_Usage: ">50% context → native tools"
+  Timeout_Errors: "MCP timeout/error → fallback"
+  Diminishing_Returns: "Poor results → stop MCP usage"
+
+Failover_Chains:
+  Context7_Failure:
+    Primary: "C7 documentation lookup"
+    Fallback_1: "WebSearch official docs"
+    Fallback_2: "Local cache if available"
+    Fallback_3: "Continue w/ warning + note limitation"
+    
+  Sequential_Failure:
+    Primary: "Sequential thinking server"
+    Fallback_1: "Native step-by-step analysis"
+    Fallback_2: "Simplified linear approach"
+    Fallback_3: "Manual breakdown w/ user input"
+    
+  Magic_Failure:
+    Primary: "Magic UI component generation"
+    Fallback_1: "Search existing components in project"
+    Fallback_2: "Generate basic template manually"
+    Fallback_3: "Provide implementation guidance"
+    
+  Puppeteer_Failure:
+    Primary: "Puppeteer browser automation"
+    Fallback_1: "Native testing commands"
+    Fallback_2: "Manual testing instructions"
+    Fallback_3: "Static analysis where possible"
+```
+
+## Performance & Monitoring
+
+```yaml
+Performance_Tracking:
+  Metrics:
+    Build_Times: "Track duration trends"
+    Test_Execution: "Monitor suite performance"
+    Bundle_Sizes: "Track asset size changes"
+    Memory_Usage: "Monitor CLI consumption"
+    MCP_Response_Times: "Track server performance"
+    Token_Consumption: "Monitor MCP usage efficiency"
+  Baselines:
+    Initial: "Capture on first run"
+    Update: "Update weekly"
+    Analysis: "Identify regressions"
+  Alert_Thresholds:
+    Build_Time: "> 50% from baseline"
+    Bundle_Size: "> 20% from baseline"
+    Test_Time: "> 30% from baseline"
+    Memory: "> 2x baseline"
+    MCP_Timeout: "> 30 seconds"
+  Storage: ".claudedocs/metrics/performance-{YYYY-MM-DD}.jsonl"
+
+Server_Performance:
+  Response_Times:
+    Context7: "1-5 seconds (network dependent)"
+    Sequential: "5-30 seconds (complexity dependent)"
+    Magic: "3-15 seconds (component complexity)"
+    Puppeteer: "1-10 seconds (page load dependent)"
+    
+  Resource_Usage:
+    Context7: "Low CPU, Medium Network"
+    Sequential: "High CPU, Low Network"
+    Magic: "Medium CPU, High Network"
+    Puppeteer: "Medium CPU, Low Network"
+    
+  Reliability_Scores:
+    Context7: "95% (dependent on library availability)"
+    Sequential: "98% (internal processing)"
+    Magic: "90% (external service dependency)"
+    Puppeteer: "95% (browser dependency)"
+```
+
+## Command Integration
+
+```yaml
+Chain_Commands:
+  Execute:
+    Predefined: "/chain 'feature-dev' --magic --think"
+    Custom: "/analyze → /build → /test"
+    Conditional: "/test && /deploy || /troubleshoot"
+  Control:
+    Status: "/chain-status | Show current progress"
+    Results: "/chain-results | Show accumulated context"
+    Pause: "/chain-pause | Pause at current step"
+    Resume: "/chain-resume | Continue from pause"
+    Abort: "/chain-abort | Stop and cleanup"
+    Retry: "/chain-retry | Retry failed step"
+
+Command_Hooks:
+  Build_Hooks:
+    Pre: ["Clean artifacts", "Verify dependencies", "Set environment", "Check MCP health"]
+    During: ["Monitor progress", "Cache layers", "Handle errors", "Track token usage"]
+    Post: ["Verify output", "Run smoke tests", "Update manifests", "Log MCP performance"]
+    
+  Test_Hooks:
+    Pre: ["Reset test data", "Start services", "Clear caches", "Connect Puppeteer if needed"]
+    During: ["Track coverage", "Monitor performance", "Capture logs", "Handle browser events"]
+    Post: ["Generate reports", "Clean test data", "Archive results", "Disconnect browser"]
+    
+  Deploy_Hooks:
+    Pre: ["Verify environment", "Check permissions", "Backup current", "Validate with Sequential"]
+    During: ["Monitor health", "Track progress", "Handle rollback", "Log deployment events"]
+    Post: ["Verify deployment", "Run health checks", "Update docs", "Generate deployment report"]
+```
+
+---
+*Execution Patterns v4.0.0 - Unified workflow system, MCP orchestration, git operations, and execution lifecycle*

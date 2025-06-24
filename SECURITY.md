@@ -41,6 +41,7 @@ Please include:
 - No network connections or data transmission
 - Files are stored locally in ~/.claude/
 - Shell scripts have limited system access
+- Template reference system (@pattern) validated for integrity
 
 ### Installation Security
 - install.sh performs file operations only

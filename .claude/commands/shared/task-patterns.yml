@@ -300,7 +300,7 @@ Checkpoints:
     - Todo milestone completion
   Manual:
     - /task:pause command
-    - /user:git --checkpoint
+    - /git --checkpoint
     
 Cleanup_Workflow:
   On_Complete:
@@ -327,9 +327,9 @@ Task_Commands:
   cancel: "/task:cancel {id}"
   
 Auto_Detection_Commands:
-  /user:build → "Analyze complexity → create task if needed → proceed"
-  /user:implement → "Always create task → breakdown → execute"
-  /user:create → "Analyze scope → task if multi-step → proceed"
+  /build → "Analyze complexity → create task if needed → proceed"
+  /implement → "Always create task → breakdown → execute"
+  /create → "Analyze scope → task if multi-step → proceed"
   
 Plan_Mode_Integration:
   exit_plan_mode:
@@ -377,4 +377,4 @@ Example_4_Medium_Complexity:
 ```
 
 ---
-*Task System v1.0 - Seamless integration of persistent tasks with dynamic todos for SuperClaude*
+*Task System v4.0.0 - Seamless integration of persistent tasks with dynamic todos for SuperClaude*

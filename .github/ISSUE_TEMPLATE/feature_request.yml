@@ -1,3 +1,4 @@
+---
 name: ✨ Feature Request
 description: Suggest a new feature or enhancement for SuperClaude
 title: "[Feature] "
@@ -6,7 +7,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for suggesting a feature! Please provide details to help us understand your request.
+        Thanks for suggesting a feature! Please provide details to help us
+        understand your request.
 
   - type: dropdown
     id: feature-type
@@ -40,7 +42,7 @@ body:
       description: Describe the solution you'd like to see
       placeholder: |
         I would like to see...
-        
+
         Example usage:
         /user:newcommand --flag
     validations:
@@ -75,7 +77,7 @@ body:
       placeholder: |
         Command: /user:example --new-flag
         Output: Expected behavior...
-        
+
         Persona usage:
         /persona:newtype → specialized behavior
     validations:

@@ -1,0 +1,254 @@
+# Command Structure Standards
+# Standardized patterns for .md command files (not replacements)
+
+## Legend
+| Symbol | Meaning | | Abbrev | Meaning |
+|--------|---------|---|--------|---------|
+| 📋 | template | | std | standard |
+| 🏗 | structure | | cmd | command |
+| ✅ | required | | opt | optional |
+
+## Standard Command Structure
+
+```yaml
+Required_Sections:
+  1_Header:
+    Format: "# /{command-name} - {Brief Description}"
+    Description: "Clear, concise explanation of command purpose"
+    
+  2_Legend:
+    Pattern: "@common/legend"
+    Content: "Only symbols actually used in this command"
+    
+  3_Purpose:
+    Format: "## Purpose\nSingle sentence describing what this command accomplishes."
+    
+  4_Syntax:
+    Format: "## Syntax\n/{command} [flags] [target]"
+    Include: "All available flags with brief descriptions"
+    
+  5_Flags:
+    Universal: "@common/flags"
+    Command_Specific: "Document unique flags with examples"
+    
+  6_Examples:
+    Required: "At least 3 examples showing different use cases"
+    Format: "Command → Expected outcome"
+    
+  7_Deliverables:
+    What: "What files/outputs are created"
+    Where: "Where outputs are stored"
+    Format: "What format outputs use"
+    
+  8_Integration:
+    Lifecycle: "@common/lifecycle"
+    Prerequisites: "What needs to exist before running"
+    Next_Steps: "What to do after this command"
+
+Optional_Sections:
+  Advanced_Usage: "Complex scenarios and edge cases"
+  Troubleshooting: "Common issues and solutions"
+  Related_Commands: "Commands often used together"
+  Performance_Notes: "Optimization tips"
+```
+
+## Command Categories
+
+```yaml
+Analysis_Commands:
+  Pattern: "analyze, load, explain, troubleshoot"
+  Focus: "Understanding and diagnosis"
+  Common_Flags: "@analyze/flags"
+  Output: "Reports in .claudedocs/analysis/"
+  
+Build_Commands:
+  Pattern: "build, spawn"
+  Focus: "Creating and generating"
+  Common_Flags: "@build/flags"
+  Output: "Generated code and components"
+  
+Quality_Commands:
+  Pattern: "test, scan, improve"
+  Focus: "Validation and enhancement"
+  Common_Flags: "@quality/flags"
+  Output: "Quality reports and fixes"
+  
+Operations_Commands:
+  Pattern: "deploy, migrate, cleanup"
+  Focus: "System operations"
+  Common_Flags: "@ops/flags"
+  Output: "Operation logs and status"
+  
+Documentation_Commands:
+  Pattern: "document, estimate"
+  Focus: "Documentation and planning"
+  Common_Flags: "@docs/flags"
+  Output: "Documentation files"
+```
+
+## Flag Inheritance Rules
+
+```yaml
+Universal_Flags:
+  Always_Available:
+    "--plan": "Show execution plan before proceeding"
+    "--uc": "Use ultra-compressed output format"
+    "--think": "Enable thinking mode for complex operations"
+    "--no-mcp": "Disable all MCP servers"
+    
+MCP_Control_Flags:
+  Context_Research:
+    "--c7": "Force Context7 for documentation lookup"
+    "--no-c7": "Disable Context7"
+  Analysis:
+    "--seq": "Force Sequential thinking"
+    "--no-seq": "Disable Sequential thinking"
+  UI_Generation:
+    "--magic": "Force Magic component generation"
+    "--no-magic": "Disable Magic"
+  Browser_Testing:
+    "--pup": "Force Puppeteer browser automation"
+    "--no-pup": "Disable Puppeteer"
+    
+Quality_Flags:
+  Validation:
+    "--validate": "Extra validation checks"
+    "--strict": "Strict mode with enhanced checks"
+    "--safe": "Conservative mode for critical operations"
+  Output:
+    "--verbose": "Detailed output and logging"
+    "--quiet": "Minimal output"
+    "--format {type}": "Output format (json, yaml, markdown)"
+```
+
+## Example Templates
+
+```yaml
+Minimal_Command:
+  Header: "# /example - Brief description"
+  Legend: "@common/legend"
+  Purpose: "Single sentence purpose"
+  Syntax: "/example [--flag] [target]"
+  Flags: "@common/flags + command-specific"
+  Examples: "3 practical examples"
+  Deliverables: "What is created/modified"
+  Integration: "@common/lifecycle"
+  
+Standard_Command:
+  All_Minimal_Sections: "Plus:"
+  Advanced_Usage: "Complex scenarios"
+  Troubleshooting: "Common issues"
+  Related: "Often used with X, Y, Z"
+  
+Complex_Command:
+  All_Standard_Sections: "Plus:"
+  Performance: "Optimization notes"
+  Security: "Security considerations"
+  Architecture: "System integration details"
+```
+
+## Consistency Patterns
+
+```yaml
+Naming_Conventions:
+  Commands: "Verb form: analyze, build, deploy (not analysis, builder)"
+  Flags: "Kebab-case: --think-hard, --no-magic"
+  Outputs: "{command}-{timestamp}.{ext}"
+  
+Language_Patterns:
+  Present_Tense: "Analyze the codebase" (not "Will analyze")
+  Active_Voice: "Creates components" (not "Components are created")
+  Imperative: "Use this flag to..." (not "This flag can be used")
+  
+Output_Patterns:
+  Success_Messages: "@common/success"
+  Error_Handling: "@common/recovery"
+  Progress_Indicators: "Consistent format across commands"
+  
+Reference_Patterns:
+  Frequent_Includes: "Use @common/* aliases"
+  Template_References: "Point to consolidated templates"
+  Cross_References: "Link related commands and concepts"
+```
+
+## Validation Checklist
+
+```yaml
+Required_Elements:
+  Structure: "All required sections present"
+  Legend: "Only used symbols included"
+  Examples: "At least 3 working examples"
+  Flags: "All documented with descriptions"
+  Integration: "Lifecycle hooks included"
+  
+Quality_Checks:
+  Links: "All @include references valid"
+  Consistency: "Follows naming conventions"
+  Completeness: "No placeholder text"
+  Accuracy: "Examples actually work"
+  
+Optimization_Checks:
+  References: "Uses aliases where possible"
+  Duplication: "No repeated content"
+  Length: "Appropriate level of detail"
+  Format: "Consistent with other commands"
+```
+
+## Migration Guidelines
+
+```yaml
+Existing_Commands:
+  Phase_1: "Update references to use @common/* aliases"
+  Phase_2: "Standardize structure using these patterns"
+  Phase_3: "Enhance with missing sections"
+  Phase_4: "Optimize for consistency"
+  
+New_Commands:
+  Template: "Use standard command template"
+  Review: "Check against validation checklist"
+  Test: "Verify all examples work"
+  Integrate: "Ensure proper lifecycle integration"
+  
+Maintenance:
+  Regular: "Monthly structure review"
+  Updates: "Keep examples current"
+  Optimization: "Reduce duplication"
+  Evolution: "Adapt patterns as needed"
+```
+
+## Command Relationship Matrix
+
+```yaml
+Command_Chains:
+  Feature_Development:
+    Primary: "analyze → design → build → test"
+    Secondary: "scan → document → deploy"
+    
+  Bug_Investigation:
+    Primary: "troubleshoot → analyze → improve"
+    Secondary: "test → document"
+    
+  Quality_Improvement:
+    Primary: "scan → analyze → improve → test"
+    Secondary: "document → deploy"
+    
+  Architecture_Review:
+    Primary: "load → analyze → design → document"
+    Secondary: "estimate → improve"
+
+Prerequisites:
+  build: "analyze (understand codebase)"
+  test: "build (have something to test)"
+  deploy: "test (verify functionality)"
+  improve: "analyze (understand issues)"
+  scan: "load (have codebase loaded)"
+
+Common_Combinations:
+  analysis_workflow: "load + analyze + explain"
+  development_workflow: "build + test + scan + deploy"
+  quality_workflow: "scan + improve + test + document"
+  investigation_workflow: "troubleshoot + analyze + improve"
+```
+
+---
+*Command Structure Standards v4.0.0 - Patterns for consistent, maintainable command definitions*

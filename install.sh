@@ -229,6 +229,24 @@ cp .claude/commands/*.md "$INSTALL_DIR/commands/" 2>/dev/null || true
 # Copy shared resources
 echo "Copying shared resources..."
 cp .claude/commands/shared/*.yml "$INSTALL_DIR/commands/shared/"
+cp .claude/commands/shared/*.md "$INSTALL_DIR/commands/shared/" 2>/dev/null || true
+cp .claude/commands/shared/*.sh "$INSTALL_DIR/commands/shared/" 2>/dev/null || true
+
+# Make scripts executable
+chmod +x "$INSTALL_DIR/commands/shared/"*.sh 2>/dev/null || true
+
+# Expand @ references in command files
+echo "Expanding references in command files..."
+if [[ -f "$INSTALL_DIR/commands/shared/expand-references.sh" ]]; then
+    cd "$INSTALL_DIR/commands/shared" && ./expand-references.sh >/dev/null 2>&1
+    if [[ $? -eq 0 ]]; then
+        echo -e "  ${GREEN}✓ References expanded successfully${NC}"
+    else
+        echo -e "  ${YELLOW}⚠ Reference expansion completed with warnings${NC}"
+    fi
+else
+    echo -e "  ${YELLOW}⚠ Reference expansion script not found${NC}"
+fi
 
 # Verify installation
 echo ""
@@ -237,14 +255,14 @@ echo "Verifying installation..."
 # Count installed files
 main_files=$(ls -1 "$INSTALL_DIR/"*.md 2>/dev/null | wc -l)
 command_files=$(ls -1 "$INSTALL_DIR/commands/"*.md 2>/dev/null | wc -l)
-shared_files=$(ls -1 "$INSTALL_DIR/commands/shared/"*.yml 2>/dev/null | wc -l)
+shared_files=$(find "$INSTALL_DIR/commands/shared/" -name "*.yml" -o -name "*.md" -o -name "*.sh" 2>/dev/null | wc -l)
 
 echo -e "Main config files: ${GREEN}$main_files${NC} (expected: 4)"
-echo -e "Command files: ${GREEN}$command_files${NC} (expected: 19)"
-echo -e "Shared resources: ${GREEN}$shared_files${NC} (expected: 31)"
+echo -e "Command files: ${GREEN}$command_files${NC} (expected: 21)"
+echo -e "Shared resources: ${GREEN}$shared_files${NC} (expected: 25)"
 
 # Check if installation was successful
-if [ "$main_files" -ge 4 ] && [ "$command_files" -ge 19 ] && [ "$shared_files" -ge 31 ]; then
+if [ "$main_files" -ge 4 ] && [ "$command_files" -ge 21 ] && [ "$shared_files" -ge 25 ]; then
     echo ""
     if [[ "$UPDATE_MODE" = true ]]; then
         echo -e "${GREEN}✓ SuperClaude updated successfully!${NC}"
@@ -266,7 +284,7 @@ if [ "$main_files" -ge 4 ] && [ "$command_files" -ge 19 ] && [ "$shared_files" -
         echo ""
         echo "Next steps:"
         echo "1. Open any project with Claude Code"
-        echo "2. Try a command: /user:analyze --code"
+        echo "2. Try a command: /analyze --code"
         echo "3. Activate a persona: /persona:architect"
         echo ""
     fi
@@ -282,8 +300,8 @@ else
     echo ""
     echo "Expected vs Actual file counts:"
     echo "  Main config files: $main_files/4$([ "$main_files" -lt 4 ] && echo " ❌" || echo " ✓")"
-    echo "  Command files: $command_files/19$([ "$command_files" -lt 19 ] && echo " ❌" || echo " ✓")"
-    echo "  Shared resources: $shared_files/31$([ "$shared_files" -lt 31 ] && echo " ❌" || echo " ✓")"
+    echo "  Command files: $command_files/21$([ "$command_files" -lt 21 ] && echo " ❌" || echo " ✓")"
+    echo "  Shared resources: $shared_files/25$([ "$shared_files" -lt 25 ] && echo " ❌" || echo " ✓")"
     echo ""
     echo "Troubleshooting steps:"
     echo "1. Check for error messages above"

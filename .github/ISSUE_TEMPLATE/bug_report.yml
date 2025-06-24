@@ -1,3 +1,4 @@
+---
 name: 🐛 Bug Report
 description: Report a bug or issue with SuperClaude
 title: "[Bug] "
@@ -6,7 +7,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for reporting a bug! Please provide the following information to help us fix it.
+        Thanks for reporting a bug! Please provide the following information
+        to help us fix it.
 
   - type: input
     id: superclaude-version
@@ -55,7 +57,7 @@ body:
       label: Steps to Reproduce
       description: Steps to reproduce the behavior
       placeholder: |
-        1. Run command: /user:analyze --code
+        1. Run command: /analyze --code
         2. Open file X
         3. See error...
     validations:

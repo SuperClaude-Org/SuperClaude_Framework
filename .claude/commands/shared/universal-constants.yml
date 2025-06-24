@@ -1,12 +1,85 @@
-# Constants & Shared Values
+# Universal Constants & Shared Values
+# Single source of truth for all legends, symbols, paths, and common constants
 
-## Legend
+## Universal Legend
 | Symbol | Meaning | | Abbrev | Meaning |
 |--------|---------|---|--------|---------|
-| 📁 | directory/path | | cfg | configuration |
-| 🔢 | number/count | | std | standard |
-| 📝 | text/string | | val | value |
-| ⚙ | setting/config | | def | default |
+| → | leads to | | cfg | configuration |
+| & | and/with | | impl | implementation |
+| w/ | with | | perf | performance |
+| @ | at/located | | ops | operations |
+| > | greater than | | val | validation |
+| ∀ | for all/every | | req | requirements |
+| ∃ | exists/there is | | deps | dependencies |
+| ∴ | therefore | | env | environment |
+| ∵ | because | | db | database |
+| ≡ | equivalent | | api | interface |
+| ≈ | approximately | | docs | documentation |
+| 📁 | directory/path | | std | standard |
+| 🔢 | number/count | | def | default |
+| 📝 | text/string | | ctx | context |
+| ⚙ | setting/config | | err | error |
+| 🎛 | control/flags | | exec | execution |
+| 🔧 | configuration | | qual | quality |
+| 📋 | group/category | | rec | recovery |
+| 🚨 | critical/urgent | | sev | severity |
+| ⚠ | warning/caution | | resp | response |
+| 🔄 | retry/recovery | | esc | escalation |
+| ✅ | success/fixed | | tok | token |
+| ❌ | failure/error | | opt | optimization |
+| ℹ | information | | UX | user experience |
+| ⚡ | fast/quick | | UI | user interface |
+| 🐌 | slow/delayed | | C | critical |
+| ✨ | complete/done | | H | high |
+| 📖 | read operation | | M | medium |
+| ✏ | edit operation | | L | low |
+| 🗑 | delete operation | | |
+
+## Universal Symbols & Process Flow
+
+```yaml
+Process_Flow:
+  Leads_To: "→"
+  Combine: "&"
+  With: "w/"
+  At_Location: "@"
+  Greater_Than: ">"
+  For_All: "∀"
+  Exists: "∃"
+  Therefore: "∴"
+  Because: "∵"
+  Equivalent: "≡"
+  Approximately: "≈"
+  
+Status_Indicators:
+  Success: "✅"
+  Failure: "❌"
+  Warning: "⚠"
+  Information: "ℹ"
+  Critical: "🚨"
+  Fast: "⚡"
+  Slow: "🐌"
+  Progress: "🔄"
+  Complete: "✨"
+  
+File_Operations:
+  Read: "📖"
+  Write: "📝"
+  Edit: "✏"
+  Delete: "🗑"
+  Copy: "📋"
+  Move: "➡"
+  Create: "➕"
+  Directory: "📁"
+  
+Control_Elements:
+  Controls: "🎛"
+  Configuration: "🔧"
+  Settings: "⚙"
+  Group: "📋"
+  Count: "🔢"
+  Text: "📝"
+```
 
 ## Standard Paths & Directories
 
@@ -23,7 +96,7 @@ Documentation_Paths:
   Task_Completed: ".claudedocs/tasks/completed/"
   Task_Cancelled: ".claudedocs/tasks/cancelled/"
   
-Project_Docs:
+Project_Documentation:
   Documentation: "docs/"
   API_Docs: "docs/api/"
   User_Docs: "docs/user/"
@@ -45,69 +118,10 @@ Git_Paths:
   Gitignore: ".gitignore"
 ```
 
-## File Naming Conventions
+## Standard Abbreviations & Technical Terms
 
 ```yaml
-Report_Files:
-  Analysis_Report: "analysis-{type}-{timestamp}.md"
-  Performance_Report: "performance-{date}.md"
-  Security_Report: "security-scan-{timestamp}.md"
-  Daily_Summary: "daily-summary-{YYYY-MM-DD}.md"
-  Weekly_Trends: "weekly-trends-{YYYY-WW}.md"
-  Monthly_Insights: "monthly-insights-{YYYY-MM}.md"
-  
-Task_Files:
-  Task_Format: "{type}-{id}-{slug}.md"
-  Task_ID_Format: "YYYYMMDD-HHMMSS"
-  Task_Types: ["feature", "bugfix", "refactor", "docs", "test"]
-  
-Git_Branches:
-  Task_Branch: "task/{id}-{slug}"
-  Feature_Branch: "feature/{name}"
-  Bugfix_Branch: "bugfix/{name}"
-  Release_Branch: "release/{version}"
-  
-Log_Files:
-  Performance_Log: "performance-{YYYY-MM-DD}.jsonl"
-  Error_Log: "errors-{YYYY-MM-DD}.log"
-  Audit_Log: "audit-{YYYY-MM-DD}.log"
-  Debug_Log: "debug-{timestamp}.log"
-```
-
-## Standard Symbols & Abbreviations
-
-```yaml
-Process_Symbols:
-  Leads_To: "→"
-  Combine: "&"
-  With: "w/"
-  At_Location: "@"
-  For_All: "∀"
-  Exists: "∃"
-  Therefore: "∴"
-  Because: "∵"
-  
-Status_Symbols:
-  Success: "✅"
-  Failure: "❌"
-  Warning: "⚠"
-  Information: "ℹ"
-  Critical: "🚨"
-  Fast: "⚡"
-  Slow: "🐌"
-  Progress: "🔄"
-  Complete: "✨"
-  
-File_Operations:
-  Read: "📖"
-  Write: "📝"
-  Edit: "✏"
-  Delete: "🗑"
-  Copy: "📋"
-  Move: "➡"
-  Create: "➕"
-  
-Common_Abbreviations:
+Technical_Terms:
   Configuration: "cfg"
   Implementation: "impl"
   Performance: "perf"
@@ -127,6 +141,27 @@ Common_Abbreviations:
   Execution: "exec"
   Token: "tok"
   Optimization: "opt"
+  Quality: "qual"
+  Severity: "sev"
+  Response: "resp"
+  Escalation: "esc"
+  
+Action_Abbreviations:
+  Analyze: "anlz"
+  Build: "bld"
+  Deploy: "dply"
+  Test: "tst"
+  Configure: "cfg"
+  Implement: "impl"
+  Validate: "val"
+  Execute: "exec"
+  Optimize: "opt"
+  
+Severity_Levels:
+  Critical: "C"
+  High: "H"
+  Medium: "M"
+  Low: "L"
 ```
 
 ## Standard Time & Size Limits
@@ -161,7 +196,7 @@ Retry_Limits:
   Max_Consecutive_Failures: 5
 ```
 
-## Standard Priority & Severity Values
+## Standard Priority & Status Values
 
 ```yaml
 Priority_Levels:
@@ -208,17 +243,18 @@ MCP_Servers:
   Magic: "mcp__magic__*"
   Puppeteer: "mcp__puppeteer__*"
   
-Common_Commands:
-  Git_Commands: ["status", "add", "commit", "push", "pull", "checkout", "branch", "merge"]
-  Build_Commands: ["build", "test", "lint", "format", "typecheck"]
-  Package_Commands: ["install", "update", "audit", "outdated"]
-  
-Standard_Flags:
+Universal_Flags:
   Planning: "--plan"
   Thinking: ["--think", "--think-hard", "--ultrathink"]
   Compression: ["--uc", "--ultracompressed"]
   MCP_Control: ["--c7", "--seq", "--magic", "--pup", "--all-mcp", "--no-mcp"]
   Execution: ["--dry-run", "--watch", "--interactive", "--force"]
+  Quality: ["--tdd", "--iterate", "--threshold", "--validate", "--security"]
+  
+Common_Commands:
+  Git_Commands: ["status", "add", "commit", "push", "pull", "checkout", "branch", "merge"]
+  Build_Commands: ["build", "test", "lint", "format", "typecheck"]
+  Package_Commands: ["install", "update", "audit", "outdated"]
 ```
 
 ## Standard Messages & Templates
@@ -255,17 +291,38 @@ Report_References:
   Checkpoint_Reference: "🔖 Checkpoint: {id}"
 ```
 
-## Standard Configuration Values
+## File Naming Conventions
 
 ```yaml
-Default_Settings:
-  Max_Retries: 3
-  Timeout_Seconds: 120
-  Context_Warning_Threshold: 0.7
-  Context_Critical_Threshold: 0.9
-  Performance_Alert_Threshold: 30
-  Token_Efficiency_Threshold: 0.5
+Report_Files:
+  Analysis_Report: "analysis-{type}-{timestamp}.md"
+  Performance_Report: "performance-{date}.md"
+  Security_Report: "security-scan-{timestamp}.md"
+  Daily_Summary: "daily-summary-{YYYY-MM-DD}.md"
+  Weekly_Trends: "weekly-trends-{YYYY-WW}.md"
+  Monthly_Insights: "monthly-insights-{YYYY-MM}.md"
   
+Task_Files:
+  Task_Format: "{type}-{id}-{slug}.md"
+  Task_ID_Format: "YYYYMMDD-HHMMSS"
+  Task_Types: ["feature", "bugfix", "refactor", "docs", "test"]
+  
+Git_Branches:
+  Task_Branch: "task/{id}-{slug}"
+  Feature_Branch: "feature/{name}"
+  Bugfix_Branch: "bugfix/{name}"
+  Release_Branch: "release/{version}"
+  
+Log_Files:
+  Performance_Log: "performance-{YYYY-MM-DD}.jsonl"
+  Error_Log: "errors-{YYYY-MM-DD}.log"
+  Audit_Log: "audit-{YYYY-MM-DD}.log"
+  Debug_Log: "debug-{timestamp}.log"
+```
+
+## Environment & Framework Constants
+
+```yaml
 Environment_Types:
   Development: "dev"
   Testing: "test"
@@ -286,26 +343,31 @@ Supported_Frameworks:
   Testing: ["Jest", "Mocha", "Pytest", "JUnit", "Cypress", "Playwright"]
 ```
 
-## Cross-Reference Patterns
+## Reference System
 
 ```yaml
-Reference_Formats:
-  Include_Reference: "@include shared/constants.yml#{section}"
-  See_Reference: "@see shared/constants.yml#{section}"
-  Flag_Reference: "@flags shared/constants.yml#{flag_group}"
+File_Organization:
+  Constants_File: "shared/universal-constants.yml"
+  Patterns_Directory: "shared/*.yml"
+  Commands_Directory: "commands/*.md"
   
 Common_References:
-  Paths: "@include shared/constants.yml#Documentation_Paths"
-  Symbols: "@include shared/constants.yml#Process_Symbols"
-  Limits: "@include shared/constants.yml#Time_Limits"
-  Messages: "@include shared/constants.yml#Success_Messages"
+  Legend: "See Universal Legend section above"
+  Symbols: "See Process Flow section above"
+  Paths: "See Documentation Paths section above"
+  Limits: "See Time Limits section above"
+  Messages: "See Success Messages section above"
+  Flags: "@include shared/universal-constants.yml#Universal_Flags"
   
 Usage_Examples:
-  Command_File: |
-    Report location: @include shared/constants.yml#Documentation_Paths.Reports
-    Success format: @include shared/constants.yml#Success_Messages.Operation_Complete
-    Time limit: @include shared/constants.yml#Time_Limits.Standard_Operation
+  Command_Header: |
+    @include shared/universal-constants.yml#Universal_Legend
+    @include shared/universal-constants.yml#Process_Flow
+  Report_Location: |
+    Reports: @include shared/universal-constants.yml#Documentation_Paths.Reports
+  Success_Format: |
+    @include shared/universal-constants.yml#Success_Messages.Operation_Complete
 ```
 
 ---
-*Constants v1.0 - Shared values, paths, symbols, and standards for SuperClaude consistency*
+*Universal Constants v4.0.0 - Single source of truth for all SuperClaude shared values*

@@ -34,7 +34,7 @@ Evidence: testing confirms|metrics show|benchmarks prove|data indicates
 ```yaml
 Triggers: Natural language OR flags (--think|--think-hard|--ultrathink)
 none: 1file <10lines | think: Multi-file 4K | hard: Architecture 10K | ultra: Critical 32K
-Usage: /user:analyze --think | "think about X" | /user:design --ultrathink
+Usage: /analyze --think | "think about X" | /design --ultrathink
 ```
 
 ## 2. Severity System
@@ -79,7 +79,7 @@ Code: Clean|Conventions|Error handling|No duplication|NO COMMENTS
 ```yaml
 TodoWrite: 3+ steps|Multiple requests | TodoRead: Start|Frequent
 Rules: One in_progress|Update immediate|Track blockers
-Integration: /user:scan --validate→execute | Risky→checkpoint | Failed→rollback
+Integration: /scan --validate→execute | Risky→checkpoint | Failed→rollback
 ```
 
 ### Tools & MCP

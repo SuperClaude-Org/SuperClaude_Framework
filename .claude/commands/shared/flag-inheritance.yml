@@ -1,0 +1,216 @@
+# Flag Inheritance System
+# Consolidated flag definitions for SuperClaude commands
+
+## Legend  
+| Symbol | Meaning | | Abbrev | Meaning |
+|--------|---------|---|--------|---------|
+| 🎛 | control/flags | | std | standard |
+| 🔧 | configuration | | exec | execution |
+| 📋 | group/category | | qual | quality |
+| ⚙ | settings/options | | val | validation |
+
+## Universal Flags (All Commands)
+
+```yaml
+Universal_Always:
+  Planning:
+    --plan: "Show execution plan before running"
+    
+  Compression:
+    --uc: "UltraCompressed mode (~70% token reduction)"
+    --ultracompressed: "Alias for --uc"
+    
+  Thinking_Modes:
+    --think: "Multi-file analysis w/ context (4K tokens)"
+    --think-hard: "Deep architectural analysis (10K tokens)"
+    --ultrathink: "Critical system redesign (32K tokens)"
+    
+  MCP_Control:
+    --c7: "Enable Context7→library documentation lookup"
+    --seq: "Enable Sequential→complex analysis & thinking"
+    --magic: "Enable Magic→UI component generation"
+    --pup: "Enable Puppeteer→browser automation & testing"
+    --all-mcp: "Enable all MCP servers"
+    --no-mcp: "Disable all MCP servers (native tools only)"
+    --no-c7: "Disable Context7 specifically"
+    --no-seq: "Disable Sequential thinking specifically"
+    --no-magic: "Disable Magic UI builder specifically"
+    --no-pup: "Disable Puppeteer specifically"
+```
+
+## Common Workflow Flags (3+ Commands)
+
+```yaml
+Execution_Control:
+  --watch: "Continuous monitoring w/ real-time feedback"
+  --interactive: "Step-by-step guided process w/ user control"
+  --dry-run: "Preview changes without execution"
+  --force: "Override safety checks & confirmations"
+  
+Quality_Assurance:
+  --validate: "Pre-execution safety & validation checks"
+  --security: "Security analysis & vulnerability scanning"
+  --coverage: "Generate comprehensive coverage analysis"
+  --strict: "Zero-tolerance mode w/ enhanced validation"
+  
+Performance:
+  --profile: "Detailed performance profiling & metrics"
+  --iterate: "Iterative improvement until threshold met"
+  --threshold: "Set target percentage (default 85%)"
+  --watch-perf: "Continuous performance monitoring"
+  
+Development:
+  --tdd: "Test-driven development workflow"
+  --feature: "Feature-focused implementation"
+  --init: "Initialize new project/component"
+  --all: "Comprehensive operation across all areas"
+```
+
+## Command Group Templates
+
+```yaml
+Analysis_Commands:
+  # analyze, scan, troubleshoot
+  Standard_Flags:
+    --code: "Analyze code quality & structure"
+    --arch: "Analyze system architecture & design"
+    --perf: "Analyze performance & bottlenecks"
+    --profile: "Detailed performance profiling"
+    --security: "Security vulnerability analysis"
+    --deps: "Dependency analysis & audit"
+    
+Build_Commands:
+  # build, design, deploy  
+  Standard_Flags:
+    --init: "Initialize new project w/ stack setup"
+    --feature: "Implement feature using existing patterns"
+    --api: "API-focused development"
+    --react: "React/frontend focused build"
+    --tdd: "Test-driven development workflow"
+    --magic: "Use Magic for UI component generation"
+    
+Quality_Commands:
+  # test, improve, cleanup
+  Standard_Flags:
+    --coverage: "Generate comprehensive test coverage"
+    --quality: "Focus on code quality improvements"
+    --iterate: "Iterative improvement until threshold"
+    --threshold: "Set target percentage (default 85%)"
+    --all: "Comprehensive operation across all areas"
+    --quick: "Fast operation focusing on critical issues"
+    
+Documentation_Commands:
+  # document, explain
+  Standard_Flags:
+    --api: "API documentation & reference"
+    --user: "User-friendly guides & tutorials"
+    --depth: "Explanation depth (ELI5|beginner|intermediate|expert)"
+    --visual: "Include diagrams & visual aids"
+    --examples: "Include practical code examples"
+    
+Operations_Commands:
+  # deploy, migrate, git
+  Standard_Flags:
+    --env: "Target environment (dev|staging|prod)"
+    --rollback: "Rollback to previous state"
+    --checkpoint: "Create checkpoint before operation"
+    --sync: "Synchronize w/ remote/upstream"
+```
+
+## Flag Usage Templates
+
+```yaml
+High_Risk_Operations:
+  # Commands that can cause data loss/system changes
+  Required_Flags:
+    - "--validate (unless --force)"
+    - "--dry-run recommended"
+  Optional_Safety:
+    - "--checkpoint (auto-create backup)"
+    - "--interactive (step-by-step control)"
+    
+Development_Workflow:
+  # Standard development operations  
+  Recommended_Combinations:
+    - "--tdd --coverage (quality-first development)"
+    - "--watch --interactive (guided real-time development)"
+    - "--profile --iterate (performance optimization)"
+    - "--security --validate (safe deployment)"
+    
+Research_Operations:
+  # Operations requiring external research
+  Auto_Enable:
+    - "--c7 (library documentation lookup)"
+    - "--seq (complex analysis)"
+  Manual_Override:
+    - "--no-mcp (native tools only)"
+    
+Complex_Analysis:
+  # Operations requiring deep thinking
+  Progressive_Flags:
+    - "No flag: Basic single-file operations"
+    - "--think: Multi-file coordination"  
+    - "--think-hard: System architecture analysis"
+    - "--ultrathink: Critical system redesign"
+```
+
+## Flag Inheritance Rules
+
+```yaml
+Inheritance_Priority:
+  1: "Command-specific flags override group flags"
+  2: "Group flags override common flags"
+  3: "Common flags override universal flags"
+  4: "Universal flags always available"
+  
+Conflict_Resolution:
+  --force_overrides: ["--validate", "--dry-run", "--interactive"]
+  --no-mcp_overrides: ["--c7", "--seq", "--magic", "--pup", "--all-mcp"]
+  --strict_enhances: ["--validate", "--security", "--coverage"]
+  
+Auto_Combinations:
+  --all + group_flags: "Enable all flags in command's group"
+  --strict + quality_flags: "Enhanced validation for all quality operations"
+  --watch + interactive: "Real-time guided operation"
+  
+Validation_Rules:
+  Conflicting_Flags:
+    - "--dry-run + --force" → "Warning: dry-run negates force"
+    - "--no-mcp + any MCP flag" → "Warning: no-mcp overrides specific MCP flags"
+    - "--quick + --all" → "Warning: quick mode contradicts comprehensive operation"
+```
+
+## Usage Examples
+
+```yaml
+Template_Usage:
+  Command_File_Header: |
+    @include shared/flag-inheritance.yml#Universal_Always
+    @include shared/flag-inheritance.yml#Execution_Control
+    @include shared/flag-inheritance.yml#Analysis_Commands
+    
+  Flag_Reference: |
+    Universal flags: @see shared/flag-inheritance.yml#Universal_Always
+    Quality flags: @see shared/flag-inheritance.yml#Quality_Assurance
+    
+  Command_Specific_Only: |
+    # Only define flags unique to this command
+    --special-flag: "Command-specific functionality"
+```
+
+## Optimization Metrics
+
+```yaml
+Duplication_Reduction:
+  Before: "~400 lines of flag definitions across 18 commands"
+  After: "~80 lines in template + ~120 lines command-specific"
+  Savings: "~200 lines (50% reduction in flag definitions)"
+  
+Consistency_Improvements:
+  Standardized_Descriptions: "Single source of truth for flag meanings"
+  Unified_Behavior: "Consistent flag behavior across all commands"
+  Reduced_Maintenance: "Update flags in one place affects all commands"
+```
+
+---
+*Flag Inheritance v4.0.0 - Consolidated flag system for consistent command interfaces*

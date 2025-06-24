@@ -1,0 +1,236 @@
+# Command Patterns - Optimized Templates
+
+## Legend
+| Symbol | Meaning | | Abbrev | Meaning |
+|--------|---------|---|--------|---------|
+| → | leads to | | cfg | configuration |
+| & | and/with | | impl | implementation |
+
+## Command Header Template
+
+```yaml
+Command_Header:
+  Execute: "immediate. --plan→show plan first"
+  Legend: "@cmd-specific legend gen"
+  Purpose: "[Action][Subject] in $ARGUMENTS"
+
+## UltraCompressed Command Structure
+
+```yaml
+Cmd_Header:
+  Execute: "immediate. --plan→show plan first"
+  Legend: "@cmd-specific legend gen"
+  Purpose: "[Action][Subject] in $ARGUMENTS"
+
+Universal_Flags:
+  Planning: "See flag-inheritance.yml"
+  Thinking: "See flag-inheritance.yml"
+  Compression: "See flag-inheritance.yml"
+  MCP_Control: "See flag-inheritance.yml"
+  Execution: "See flag-inheritance.yml"
+  
+Templates:
+  MCP: "See MCP.md"
+  Thinking: "See flag-inheritance.yml"
+  Planning: "See execution-patterns.yml"
+  
+Research_Req:
+  Standard: "@research"
+  External_Libs: "@research"
+  Patterns: "@research"
+  Citations: "@report"
+  
+Output:
+  Location: "@structure"
+  Directory: "@lifecycle"
+  Reference: "@report"
+  
+Error_Handling:
+  Classification: "@severity"
+  Recovery: "@recovery"
+  Actions: "@monitoring"
+```
+
+## Cmd Types (UC)
+
+```yaml
+Analysis:
+  Struct: "Analyze [subj] w/ [method]"
+  Flags: "--code --arch --sec --perf"
+  Out: "Reports→.claudedocs/reports/"
+  
+Build:
+  Struct: "Build [type] w/ [req]"
+  Flags: "--init --feat --tdd --watch"
+  Out: "Code+tests+docs"
+  
+Workflow:
+  Struct: "[Action] w/ [pattern]"
+  Flags: "--dry-run --interactive --iterate"
+  Out: "Results+metrics"
+```
+
+## Shared Flag Descriptions
+
+```yaml
+Core_Flags:
+  plan: "Show execution plan before running"
+  think: "Multi-file analysis w/ context (4K)"
+  think_hard: "Deep system analysis (10K)"
+  ultrathink: "Comprehensive analysis (32K)"
+  uc: "UltraCompressed mode (~70% token reduction)"
+  
+MCP_Flags:
+  c7: "Context7→docs & examples"
+  seq: "Sequential→complex thinking"
+  magic: "Magic→UI component generation"
+  pup: "Puppeteer→browser automation"
+  no_mcp: "Disable all MCP servers"
+  
+Quality_Flags:
+  tdd: "Test-driven development"
+  coverage: "Code coverage analysis"
+  validate: "Validation & verification"
+  security: "Security scan & audit"
+  
+Workflow_Flags:
+  dry_run: "Preview w/o execution"
+  watch: "Continuous monitoring"
+  interactive: "Step-by-step guidance"
+  iterate: "Iterative improvement"
+```
+
+## Cross-Reference System
+
+```yaml
+Instead_Of_Repeating:
+  MCP_Explanations: "@see shared/flag-inheritance.yml#MCP_Control"
+  Thinking_Modes: "@see shared/flag-inheritance.yml#Thinking_Modes"
+  Research_Standards: "@see shared/research-flow-templates.yml"
+  Validation_Rules: "@see shared/validation.yml"
+  Performance_Patterns: "@see shared/performance.yml"
+  
+Template_Usage:
+  Command_Files: "Use patterns directly from shared files"
+  Reference_Format: "shared/[file].yml#[section]"
+  Organization: "Each file contains related patterns"
+```
+
+## Token Optimization Patterns
+
+```yaml
+Compression_Rules:
+  Articles: Remove "the|a|an" where clear
+  Conjunctions: Replace "and"→"&" | "with"→"w/"
+  Prepositions: Compress "at"→"@" | "to"→"→"
+  Verbose_Phrases: "in order to"→"to" | "make sure"→"ensure"
+  
+Symbol_Expansion:
+  Mathematics: ∀(all) ∃(exists) ∈(member) ⊂(subset) ∪(union) ∩(intersection)
+  Logic: ∴(therefore) ∵(because) ≡(equivalent) ≈(approximately)
+  Process: ▶(start) ⏸(pause) ⏹(stop) ⚡(fast) 🔄(cycle)
+  Quality: ✅(success) ❌(failure) ⚠(warning) 📊(metrics)
+  
+Structure_Priority:
+  1_YAML: Most compact structured data
+  2_Tables: Comparison & reference data
+  3_Lists: Enumeration & sequences
+  4_Prose: Only when necessary
+  
+Abbreviation_Standards:
+  Technical: cfg(config) impl(implementation) perf(performance) val(validation)
+  Actions: analyze→anlz | build→bld | deploy→dply | test→tst
+  Objects: database→db | interface→api | environment→env | dependency→dep
+```
+
+## Implementation Notes
+
+```yaml
+Usage_Pattern:
+  1_Define_Template: Create in shared/command-templates.yml
+  2_Reference_Template: Use @include in command files
+  3_Override_Specific: Add command-specific details only
+  4_Validate_Consistency: Auto-check cross-references
+  
+Benefits:
+  Token_Reduction: ~40% reduction in command file size
+  Consistency: Standardized patterns across all commands
+  Maintenance: Single source of truth for common elements
+  Scalability: Easy addition of new commands using templates
+  
+Migration_Strategy:
+  Phase_1: Create templates for most common patterns
+  Phase_2: Update existing commands to use templates
+  Phase_3: Implement auto-validation of template usage
+```
+
+## Workflow Integration
+
+```yaml
+Workflow_References:
+  Core_Patterns: "@see shared/execution-patterns.yml#Development_Workflows"
+  Chain_Execution: "@see shared/execution-patterns.yml#Chain_Execution_Patterns"
+  Git_Operations: "@see shared/execution-patterns.yml#Git_Integration_Patterns"
+  
+Common_Workflows:
+  Full_Stack: "load→analyze→design→build→test→scan→deploy"
+  Feature_Dev: "analyze→build→test→improve→commit"
+  Bug_Fix: "troubleshoot→fix→test→verify→commit"
+  Quality: "analyze→improve→scan→test"
+```
+
+## Integration References
+
+```yaml
+Error_Handling: "@see shared/quality-patterns.yml#Severity_Framework"
+Research_Flow: "@see shared/research-patterns.yml#Research_Validation"
+MCP_Patterns: "@see shared/execution-patterns.yml#MCP_Server_Registry"
+```
+
+## Deliverable Templates
+
+```yaml
+Code_Deliverables:
+  Commits: type: description | feat|fix|refactor|perf|test|docs | Why>What
+  Documentation: API(endpoints|params|examples) | Code(JSDoc|README) | User(guides|FAQs)
+  Tests: Unit(functions|logic) | Integration(APIs|services) | E2E(flows|paths)
+
+Report_Deliverables:
+  Performance: Baseline→Current→Improvement% | Time|memory|CPU|network
+  Security: Vulnerabilities→Risk→Fixes | OWASP|deps|auth|data
+  Quality: Coverage|complexity|duplication → Issues→Severity→Resolution
+
+Artifact_Deliverables:
+  Configs: .env|settings|deployment | Scripts: build|test|deploy|migrate
+  Schemas: Database|API|validation | Assets: Images|styles|components
+```
+
+## UltraCompressed Patterns
+
+```yaml
+UC_Activation_Patterns:
+  Manual: --uc flag | "ultracompressed" keyword
+  Auto: Context >70% | Token budget specified
+  Smart: Large docs → Suggest compression
+
+UC_Documentation_Patterns:
+  Start: Legend table | Only used symbols/abbrevs
+  Structure: Lists>prose | Tables>paragraphs | YAML>text
+  Content: Direct info | No fluff | Telegram-style
+  
+UC_Example_Transformations:
+  Normal: "Configure the authentication system by setting environment variables"
+  Compressed: "Auth cfg: set env vars"
+  
+  Normal: "This function processes user input and returns validation result"
+  Compressed: "fn: process usr input→validation"
+  
+UC_Token_Savings:
+  Headers: 60-80% reduction
+  Paragraphs: 70-75% reduction  
+  Lists: 50-60% reduction
+  Overall: ~70% average reduction
+```
+
+---
+*Command Templates v4.0.0 - Enhanced w/ workflow patterns, deliverables & UC templates from patterns.yml*

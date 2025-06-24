@@ -14,6 +14,13 @@ Flag Control:
   --c7: Force Context7→docs | --seq: Force Sequential→analysis | --magic: Force Magic→UI
   --pup: Force Puppeteer→browser | --all-mcp: Enable all | --no-mcp: Disable all
 
+MCP Server Integration:
+  Configuration: "claude mcp add server-name --transport stdio/sse/http"
+  Resource_Access: "@server:protocol://resource/path" syntax
+  Slash_Commands: "/mcp__servername__promptname" format
+  Scopes: local|project|user configuration levels
+  Security: OAuth 2.0 authentication | Verify third-party servers
+
 User Triggers (no flags):
   "docs for X" → C7(resolve-library-id: X) → get-docs
   "how to use Y in Z" → C7(resolve-library-id: Z) → get-docs(topic: Y)
@@ -92,8 +99,8 @@ Behaviors: architect→Long Sequential system design | frontend→Quick Magic co
 ```yaml
 Planning: Default execute immediately | --plan flag→Forces planning mode | --skip-plan→Skip (redundant w/ default)
 MCP Flags: --c7/--no-c7 | --seq/--no-seq | --magic/--no-magic | --pup/--no-pup | --all-mcp | --no-mcp
-Auto-Activation (no flags): /user:build→Magic(UI) if frontend | /user:analyze→Sequential complex | /user:design→Sequential+C7
-/user:explain→C7 if lib mentioned else native | /user:improve→Sequential→C7 | /user:scan→Native only (security)
+Auto-Activation (no flags): /build→Magic(UI) if frontend | /analyze→Sequential complex | /design→Sequential+C7
+/explain→C7 if lib mentioned else native | /improve→Sequential→C7 | /scan→Native only (security)
 Priority: Explicit flags>Auto-activation>Context triggers | --no-mcp overrides all | --no-[server] overrides specific
 Context Share: Sequential→feeds C7 topic selection | C7 docs→inform Magic generation | Magic→tested w/ Puppeteer | All cached
 Execution: Default→Execute immediately | --plan flag→Show plan before changes | User controls→Full control

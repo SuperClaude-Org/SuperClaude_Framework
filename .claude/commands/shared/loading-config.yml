@@ -13,7 +13,7 @@ Global Availability:
   MCP.md: All MCP patterns available automatically
   
 Commands:
-  Trigger: /user:
+  Trigger: /
   Path: .claude/commands/
   Size: ~50 tokens per command
   Cache: Most recent 5 commands
@@ -24,7 +24,7 @@ SharedResources:
   Path: .claude/commands/shared/
   Size: ~150 tokens per YAML
   Examples:
-    - cleanup-patterns.yml→loads w/ /user:cleanup
+    - cleanup-patterns.yml→loads w/ /cleanup
     - git-workflow.yml→loads w/ git ops
     - planning-mode.yml→loads w/ risky commands
 ```

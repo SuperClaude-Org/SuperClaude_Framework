@@ -1,0 +1,300 @@
+# Compression Templates
+# Consolidated from ultracompressed.yml + task-ultracompressed.yml
+
+## Legend
+| Symbol | Meaning | | Abbrev | Meaning |
+|--------|---------|---|--------|---------|
+| → | leads to | | cfg | configuration |
+| & | and/with | | impl | implementation |
+| w/ | with | | req | requirements |
+| w/o | without | | deps | dependencies |
+| ∴ | therefore | | env | environment |
+| ∵ | because | | docs | documentation |
+| ≈ | approximately | | auth | authentication |
+| ∀ | for all | | db | database |
+| ∃ | exists | | api | interface |
+
+## UltraCompressed Mode Configuration
+
+```yaml
+Activation_Triggers:
+  Manual_Flags: ["--ultracompressed", "--uc"]
+  Natural_Language: ["ultracompressed", "minimal tokens", "telegram style", "compress output"]
+  Automatic_Triggers:
+    Context_Threshold: ">70% context used"
+    Token_Budget: "User specifies token limit"
+    Session_History: "User previously requested compression"
+    Task_Operations: "Always for task files"
+    
+Core_Compression_Rules:
+  Remove_Words:
+    Articles: ["the", "a", "an"]
+    Conjunctions: ["and", "or", "but", "however", "therefore", "moreover"]
+    Prepositions: ["of", "in", "on", "at", "to", "for", "with", "from", "by", "about"]
+    Fillers: ["that", "which", "who", "very", "really", "quite", "just", "actually"]
+    Verbose_Phrases:
+      "in order to": "to"
+      "make sure": "ensure"
+      "as well as": "&"
+      "due to the fact that": "∵"
+      "in the event that": "if"
+      
+  Symbol_Mappings:
+    Process_Flow:
+      "→": ["to", "leads to", "results in", "yields", "produces"]
+      "←": ["from", "comes from", "derived from"]
+      "↔": ["bidirectional", "two-way", "mutual"]
+      
+    Logical_Operators:
+      "&": ["and", "with", "plus", "including"]
+      "|": ["or", "alternatively", "either"]
+      "!": ["not", "exclude", "without"]
+      
+    Mathematical:
+      "≈": ["approximately", "about", "roughly", "circa"]
+      "≡": ["equivalent to", "same as", "identical to"]
+      "≠": ["not equal", "different from", "unlike"]
+      "∀": ["for all", "every", "each", "universal"]
+      "∃": ["exists", "there is", "some", "at least one"]
+      
+    Relationships:
+      "⊂": ["subset of", "part of", "contained in"]
+      "∈": ["member of", "belongs to", "in"]
+      "∪": ["union", "combined", "merged"]
+      "∩": ["intersection", "overlap", "common"]
+```
+
+## Standard Abbreviations
+
+```yaml
+Technical_Abbreviations:
+  Core_Terms:
+    cfg: configuration      impl: implementation
+    req: requirements       deps: dependencies
+    env: environment       auth: authentication
+    db: database           api: interface/API
+    fn: function           var: variable
+    param: parameter       arg: argument
+    val: value            ret: return
+    
+  Development_Terms:
+    dev: development       prod: production
+    qa: quality assurance  ci: continuous integration
+    cd: continuous delivery repo: repository
+    pr: pull request       pkg: package
+    lib: library          mod: module
+    
+  Data_Types:
+    str: string           num: number
+    bool: boolean         arr: array
+    obj: object          dict: dictionary
+    int: integer         float: floating point
+    
+  Operations:
+    init: initialize      exec: execute
+    proc: process        gen: generate
+    upd: update          del: delete
+    chk: check           val: validate
+    
+  Status_Terms:
+    err: error           msg: message
+    resp: response       req: request
+    usr: user            sys: system
+    ctx: context         ref: reference
+```
+
+## Structure Formatting Rules
+
+```yaml
+Content_Hierarchy:
+  1_YAML_JSON: "Most token-efficient for structured data"
+  2_Tables: "Compact comparison & reference data"
+  3_Bullet_Lists: "Quick enumeration, no sentences"
+  4_Numbered_Lists: "Sequential steps only"
+  5_Prose: "Avoid unless absolutely necessary"
+  
+Heading_Rules:
+  Max_Length: "20 characters"
+  Format: "No articles, symbols OK"
+  Examples:
+    Bad: "Getting Started with Authentication"
+    Good: "Auth Setup"
+    
+Sentence_Rules:
+  Max_Length: "50 characters"
+  Style: "Telegram-style, minimal punctuation"
+  Examples:
+    Bad: "The function processes the input and returns a validated result."
+    Good: "fn: process input→validated result"
+    
+Paragraph_Rules:
+  Max_Length: "100 characters"
+  Max_Sentences: "3 per paragraph"
+  Preference: "Use lists instead"
+  
+List_Rules:
+  Format: "Bullets > numbers"
+  Content: "Key info only, no full sentences"
+  Nesting: "Max 2 levels"
+```
+
+## Task-Specific Compression
+
+```yaml
+Task_File_Format:
+  Always_Compressed: true
+  No_Exceptions: "All task files use UC format"
+  
+  Header_Template: |
+    # Legend: {used_symbols_only}
+    
+    T: {title}
+    ID: {id} | S: {status} | P: {priority}
+    Branch: {branch}
+    
+  Phase_Format:
+    Template: "- {symbol} {phase}: {brief_description}"
+    Symbols:
+      "□": "pending phase"
+      "◐": "in-progress phase"
+      "✓": "completed phase"
+      "⚠": "blocked phase"
+      
+  Context_Format:
+    Decisions: "Dec: {key_decisions}"
+    Blockers: "Block: {active_blockers}"
+    Files: "Files: {affected_files}"
+    Next: "Next: {immediate_next_step}"
+    
+  Progress_Format:
+    Todos: "Todos: {active}/{total}"
+    Completion: "Done: {percentage}%"
+    Time: "Est: {estimated_remaining}"
+```
+
+## Content Transformation Examples
+
+```yaml
+Documentation_Examples:
+  Before: "This comprehensive guide provides an introduction to getting started with the authentication system"
+  After: "Auth Setup Guide"
+  
+  Before: "In order to configure the database connection, you need to set the following environment variables"
+  After: "DB cfg: set env vars:"
+  
+  Before: "The function takes three parameters and returns a boolean value indicating success or failure"
+  After: "fn(3 params)→bool (success/fail)"
+  
+Code_Comments:
+  Before: "// This method validates the user input and returns true if valid"
+  After: "// validate user input→bool"
+  
+  Before: "/* Configure the application settings based on environment */"
+  After: "/* cfg app per env */"
+  
+Error_Messages:
+  Before: "Unable to connect to the database. Please check your connection settings."
+  After: "DB connect fail. Check cfg."
+  
+  Before: "The requested resource could not be found on the server."
+  After: "Resource not found (404)"
+```
+
+## Quality Assurance
+
+```yaml
+Compression_Metrics:
+  Token_Reduction:
+    Target: "70% reduction"
+    Minimum: "50% reduction"
+    Measure: "Compare before/after token count"
+    
+  Clarity_Preservation:
+    Requirement: ">80% information retained"
+    Test: "Key facts still accessible"
+    Validation: "No critical info lost"
+    
+  Legend_Requirements:
+    Always_Include: "Start of each document"
+    Content: "Only symbols/abbreviations actually used"
+    Format: "Compact table format"
+    Update: "When new symbols introduced"
+
+Performance_Guidelines:
+  When_Most_Effective:
+    - "Large documentation files"
+    - "Repetitive content"
+    - "Status reports"
+    - "Configuration files"
+    - "Task descriptions"
+    
+  When_To_Avoid:
+    - "Legal documents"
+    - "API contracts"
+    - "Security policies"
+    - "User-facing errors"
+```
+
+## Auto-Application Rules
+
+```yaml
+Context_Sensitive_Compression:
+  High_Context_Usage:
+    Threshold: ">70%"
+    Action: "Auto-enable UC mode"
+    Notice: "⚡ UC mode: high context"
+    
+  Token_Budget_Specified:
+    Detection: "User mentions token limit"
+    Action: "Apply compression to fit"
+    Notice: "⚡ UC mode: token budget"
+    
+  Task_Operations:
+    Scope: "All task file operations"
+    Action: "Always use compressed format"
+    Notice: "Task format: UC"
+    
+Progressive_Compression:
+  Level_1_Light:
+    Context: "50-70%"
+    Actions: "Remove articles, use common abbreviations"
+    
+  Level_2_Medium:
+    Context: "70-85%"
+    Actions: "Full UC mode, all rules active"
+    
+  Level_3_Heavy:
+    Context: ">85%"
+    Actions: "Extreme compression, summary only"
+```
+
+## Integration Points
+
+```yaml
+Command_Integration:
+  Flag_Usage:
+    All_Commands: "--uc flag available universally"
+    Auto_Enable: "Task commands always compressed"
+    
+  Report_Generation:
+    Default: "Normal format"
+    With_UC: "Compressed format on request"
+    
+  Documentation:
+    Creation: "Check --uc flag"
+    Updates: "Preserve existing format"
+    
+Usage_Examples:
+  Command_Line:
+    "/analyze --code --uc"
+    "/document --api --uc"
+    "/task:create 'Build auth' (auto-compressed)"
+    
+  Natural_Language:
+    "Analyze code in ultracompressed format"
+    "Create minimal token documentation"
+    "Use telegram style for this report"
+```
+
+---
+*Compression Templates v4.0.0 - Token-efficient communication patterns for SuperClaude*

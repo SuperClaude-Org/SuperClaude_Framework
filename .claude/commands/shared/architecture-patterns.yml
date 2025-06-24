@@ -1,0 +1,326 @@
+# Architecture Patterns & Design Knowledge
+# Extracted architectural patterns for system design and development
+
+@include shared/universal-constants.yml#Universal_Legend
+
+## Domain-Driven Design (DDD) Patterns
+
+```yaml
+DDD_Building_Blocks:
+  Entities:
+    Definition: "Objects w/ unique identity that persist over time"
+    Characteristics: ["Unique identity", "Mutable state", "Business behavior"]
+    Implementation: ["ID field", "Equality by ID", "Lifecycle management"]
+    Examples: ["User", "Order", "Product", "Account"]
+    
+  Value_Objects:
+    Definition: "Immutable objects defined by their attributes"
+    Characteristics: ["No identity", "Immutable", "Replaceable"]
+    Implementation: ["Equality by value", "No setters", "Validation in constructor"]
+    Examples: ["Email", "Money", "Address", "DateRange"]
+    
+  Aggregates:
+    Definition: "Consistency boundaries w/ aggregate roots"
+    Characteristics: ["Transaction boundary", "Consistency rules", "Access via root"]
+    Implementation: ["Aggregate root", "Internal entities", "Business invariants"]
+    Examples: ["Order w/ LineItems", "Customer w/ Addresses"]
+    
+  Domain_Services:
+    Definition: "Business logic that doesn't belong in entities"
+    Characteristics: ["Stateless", "Domain operations", "Cross-entity logic"]
+    Implementation: ["Pure functions", "Domain interfaces", "Business rules"]
+    Examples: ["TransferService", "PricingService", "ValidationService"]
+    
+  Repositories:
+    Definition: "Abstract data access for aggregates"
+    Characteristics: ["Collection-like interface", "Persistence abstraction", "Aggregate-focused"]
+    Implementation: ["Interface in domain", "Implementation in infrastructure", "Unit of work"]
+    Examples: ["UserRepository", "OrderRepository", "ProductCatalog"]
+    
+  Domain_Events:
+    Definition: "Capture significant business events"
+    Characteristics: ["Past tense", "Immutable", "Business significance"]
+    Implementation: ["Event publishing", "Event handlers", "Eventual consistency"]
+    Examples: ["UserRegistered", "OrderPlaced", "PaymentProcessed"]
+    
+  Factories:
+    Definition: "Complex object creation logic"
+    Characteristics: ["Encapsulate creation", "Ensure invariants", "Hide complexity"]
+    Implementation: ["Creation methods", "Builder patterns", "Validation"]
+    Examples: ["OrderFactory", "UserFactory", "AggregateFactory"]
+    
+  Application_Services:
+    Definition: "Orchestrate domain operations for use cases"
+    Characteristics: ["Thin coordination layer", "Transaction boundaries", "DTO translation"]
+    Implementation: ["Use case methods", "Domain orchestration", "Infrastructure coordination"]
+    Examples: ["UserRegistrationService", "OrderProcessingService"]
+```
+
+## DDD Strategic Patterns
+
+```yaml
+Strategic_Design:
+  Bounded_Contexts:
+    Definition: "Clear boundaries for domain models"
+    Purpose: ["Model isolation", "Team autonomy", "Technology independence"]
+    Implementation: ["Context maps", "Anti-corruption layers", "Published language"]
+    Examples: ["Sales Context", "Inventory Context", "Billing Context"]
+    
+  Context_Mapping:
+    Patterns:
+      Shared_Kernel: "Shared code between contexts"
+      Customer_Supplier: "Upstream/downstream relationship"
+      Conformist: "Downstream conforms to upstream"
+      Anti_Corruption_Layer: "Translation layer for external systems"
+      Open_Host_Service: "Published API for multiple consumers"
+      Published_Language: "Common schema/protocol"
+      Separate_Ways: "No integration between contexts"
+      Big_Ball_of_Mud: "Legacy system integration"
+    
+  Ubiquitous_Language:
+    Definition: "Common language between domain experts & developers"
+    Implementation: ["Domain glossary", "Code naming", "Documentation"]
+    Maintenance: ["Regular refinement", "Feedback loops", "Continuous alignment"]
+    
+  Event_Driven_Architecture:
+    Patterns: ["Domain events", "Event sourcing", "CQRS", "Saga patterns"]
+    Implementation: ["Event store", "Event handlers", "Read models", "Process managers"]
+    Benefits: ["Loose coupling", "Scalability", "Audit trail", "Temporal decoupling"]
+```
+
+## API Design Patterns
+
+```yaml
+REST_API_Patterns:
+  Resource_Design:
+    Principles: ["Resource-oriented URLs", "Nouns not verbs", "Hierarchical structure"]
+    URL_Structure: ["Collection: /users", "Resource: /users/123", "Sub-resource: /users/123/orders"]
+    HTTP_Verbs: ["GET (read)", "POST (create)", "PUT (update/replace)", "PATCH (partial update)", "DELETE (remove)"]
+    
+  Response_Design:
+    Status_Codes:
+      Success: ["200 OK", "201 Created", "202 Accepted", "204 No Content"]
+      Client_Error: ["400 Bad Request", "401 Unauthorized", "403 Forbidden", "404 Not Found", "409 Conflict"]
+      Server_Error: ["500 Internal Server Error", "502 Bad Gateway", "503 Service Unavailable"]
+    
+    Response_Format:
+      JSON_Structure: ["Consistent format", "Error objects", "Metadata inclusion"]
+      Pagination: ["Offset/limit", "Cursor-based", "Link headers"]
+      Filtering: ["Query parameters", "Field selection", "Search syntax"]
+      
+  API_Evolution:
+    Versioning_Strategies:
+      URL_Versioning: "/v1/users", "/v2/users"
+      Header_Versioning: "Accept: application/vnd.api+json;version=1"
+      Parameter_Versioning: "/users?version=1"
+    
+    Backward_Compatibility: ["Additive changes", "Optional fields", "Deprecation notices"]
+    
+  Security_Patterns:
+    Authentication: ["JWT tokens", "OAuth 2.0", "API keys", "Basic auth"]
+    Authorization: ["Role-based", "Permission-based", "Resource-based", "Attribute-based"]
+    Rate_Limiting: ["Fixed window", "Sliding window", "Token bucket", "Leaky bucket"]
+    
+  HATEOAS:
+    Definition: "Hypermedia as the Engine of Application State"
+    Implementation: ["Link relations", "Resource navigation", "State transitions"]
+    Benefits: ["Discoverability", "Loose coupling", "Evolvability"]
+```
+
+## GraphQL Patterns
+
+```yaml
+GraphQL_Design:
+  Schema_Design:
+    Type_System: ["Scalar types", "Object types", "Interface types", "Union types", "Enum types"]
+    Field_Design: ["Nullable vs non-null", "Field arguments", "Default values"]
+    Schema_Stitching: ["Multiple services", "Schema federation", "Gateway patterns"]
+    
+  Query_Patterns:
+    Query_Structure: ["Nested queries", "Field selection", "Fragment usage"]
+    Variables: ["Typed variables", "Default values", "Directive usage"]
+    Batching: ["DataLoader patterns", "Query batching", "Request coalescing"]
+    
+  Mutation_Patterns:
+    Mutation_Design: ["Input types", "Payload types", "Error handling"]
+    Optimistic_Updates: ["Client-side updates", "Rollback strategies"]
+    Bulk_Operations: ["Multiple mutations", "Transaction boundaries"]
+    
+  Subscription_Patterns:
+    Real_Time: ["WebSocket connections", "Event-driven updates", "Subscription filtering"]
+    Scalability: ["Connection management", "Memory usage", "Resource cleanup"]
+    
+  Performance_Optimization:
+    N_Plus_1_Prevention: ["DataLoader", "Query optimization", "Eager loading"]
+    Query_Complexity: ["Depth limiting", "Cost analysis", "Query timeout"]
+    Caching: ["Field-level caching", "Query result caching", "CDN integration"]
+```
+
+## Microservices Architecture Patterns
+
+```yaml
+Service_Design:
+  Service_Boundaries:
+    Principles: ["Single responsibility", "Business capability alignment", "Data ownership"]
+    Decomposition: ["Domain-driven boundaries", "Team topology", "Data flow analysis"]
+    Size_Guidelines: ["Small enough to rewrite", "Large enough to be useful", "Team ownership"]
+    
+  Communication_Patterns:
+    Synchronous: ["HTTP/REST", "gRPC", "GraphQL"]
+    Asynchronous: ["Message queues", "Event streaming", "Pub/Sub"]
+    Data_Consistency: ["Eventual consistency", "Saga patterns", "Distributed transactions"]
+    
+  Data_Management:
+    Database_Per_Service: ["Data isolation", "Technology choice", "Schema evolution"]
+    Data_Synchronization: ["Event sourcing", "Change data capture", "API composition"]
+    
+  Deployment_Patterns:
+    Containerization: ["Docker", "Container orchestration", "Service mesh"]
+    CI_CD: ["Pipeline per service", "Independent deployment", "Blue-green deployment"]
+    
+Service_Discovery:
+  Patterns: ["Service registry", "Client-side discovery", "Server-side discovery"]
+  Implementation: ["Consul", "Eureka", "Kubernetes DNS", "API Gateway"]
+  
+Circuit_Breaker:
+  Pattern: "Prevent cascade failures by failing fast"
+  States: ["Closed (normal)", "Open (failing)", "Half-open (testing)"]
+  Implementation: ["Failure threshold", "Timeout", "Recovery testing"]
+  
+Bulkhead_Pattern:
+  Purpose: "Isolate resources to prevent total system failure"
+  Implementation: ["Thread pools", "Connection pools", "Resource isolation"]
+```
+
+## Event-Driven Architecture Patterns
+
+```yaml
+Event_Patterns:
+  Event_Types:
+    Domain_Events: "Business-significant occurrences"
+    Integration_Events: "Cross-service communication"
+    System_Events: "Technical/infrastructure events"
+    
+  Event_Design:
+    Structure: ["Event ID", "Timestamp", "Event type", "Payload", "Metadata"]
+    Naming: ["Past tense", "Business language", "Specific actions"]
+    Versioning: ["Schema evolution", "Backward compatibility", "Event migration"]
+    
+  Event_Sourcing:
+    Concept: "Store events as primary source of truth"
+    Implementation: ["Event store", "Event replay", "Snapshots", "Projections"]
+    Benefits: ["Audit trail", "Temporal queries", "Debugging", "Analytics"]
+    
+  CQRS:
+    Pattern: "Command Query Responsibility Segregation"
+    Implementation: ["Separate models", "Read/write databases", "Event-driven sync"]
+    Benefits: ["Optimized reads", "Scalable writes", "Complex queries"]
+    
+  Saga_Pattern:
+    Purpose: "Manage distributed transactions"
+    Types: ["Orchestration", "Choreography"]
+    Implementation: ["Compensation actions", "State machines", "Event coordination"]
+```
+
+## Layered Architecture Patterns
+
+```yaml
+Clean_Architecture:
+  Layers:
+    Domain: "Core business logic & entities"
+    Application: "Use cases & orchestration"
+    Infrastructure: "External concerns & frameworks"
+    Presentation: "UI/API & user interfaces"
+    
+  Dependency_Rules:
+    Direction: "Dependencies point inward toward domain"
+    Abstraction: "Inner layers define interfaces"
+    Implementation: "Outer layers provide implementations"
+    
+Hexagonal_Architecture:
+  Core: "Application core w/ business logic"
+  Ports: "Interfaces for external communication"
+  Adapters: "Implementations of port interfaces"
+  Benefits: ["Testability", "Technology independence", "Maintainability"]
+  
+Onion_Architecture:
+  Center: "Domain model"
+  Layers: ["Domain services", "Application services", "Infrastructure"]
+  Principles: ["Dependency inversion", "Separation of concerns", "Testability"]
+```
+
+## Scalability Patterns
+
+```yaml
+Horizontal_Scaling:
+  Load_Balancing:
+    Types: ["Round robin", "Least connections", "IP hash", "Geographic"]
+    Implementation: ["Load balancers", "Service mesh", "DNS-based"]
+    
+  Database_Scaling:
+    Read_Replicas: ["Master-slave replication", "Read-only queries", "Consistency trade-offs"]
+    Sharding: ["Horizontal partitioning", "Shard keys", "Cross-shard queries"]
+    
+Vertical_Scaling:
+  Resource_Optimization: ["CPU scaling", "Memory scaling", "Storage scaling"]
+  Limits: ["Hardware constraints", "Cost implications", "Single point of failure"]
+  
+Caching_Strategies:
+  Levels:
+    Application: ["In-memory cache", "Application state", "Computed results"]
+    Database: ["Query result cache", "Connection pooling", "Statement caching"]
+    CDN: ["Static content", "Geographic distribution", "Edge caching"]
+    
+  Patterns:
+    Cache_Aside: "Application manages cache"
+    Write_Through: "Write to cache & database"
+    Write_Behind: "Asynchronous database writes"
+    Refresh_Ahead: "Proactive cache refresh"
+```
+
+## Integration Patterns
+
+```yaml
+Integration_Styles:
+  File_Transfer: ["Batch processing", "Scheduled transfers", "File formats"]
+  Shared_Database: ["Common schema", "Data ownership", "Consistency issues"]
+  Remote_Procedure: ["Synchronous calls", "Strong coupling", "Blocking behavior"]
+  Messaging: ["Asynchronous", "Loose coupling", "Event-driven"]
+  
+Message_Patterns:
+  Point_to_Point: ["Queue-based", "Single consumer", "Load balancing"]
+  Publish_Subscribe: ["Topic-based", "Multiple consumers", "Event broadcasting"]
+  Request_Reply: ["Correlation IDs", "Response routing", "Timeout handling"]
+  
+API_Gateway:
+  Functions: ["Request routing", "Authentication", "Rate limiting", "Response transformation"]
+  Benefits: ["Single entry point", "Cross-cutting concerns", "Protocol translation"]
+  Patterns: ["Backend for frontend", "Micro-gateway", "Service mesh integration"]
+```
+
+## Quality Attribute Patterns
+
+```yaml
+Performance_Patterns:
+  Response_Time: ["Caching", "CDN", "Database optimization", "Algorithm optimization"]
+  Throughput: ["Load balancing", "Horizontal scaling", "Resource pooling"]
+  Resource_Utilization: ["Connection pooling", "Thread management", "Memory optimization"]
+  
+Reliability_Patterns:
+  Fault_Tolerance: ["Circuit breaker", "Bulkhead", "Timeout", "Retry with backoff"]
+  Recovery: ["Health checks", "Graceful degradation", "Failover", "Self-healing"]
+  Monitoring: ["Metrics collection", "Alerting", "Distributed tracing", "Log aggregation"]
+  
+Security_Patterns:
+  Authentication: ["Multi-factor", "Single sign-on", "Token-based", "Certificate-based"]
+  Authorization: ["RBAC", "ABAC", "OAuth", "JWT"]
+  Data_Protection: ["Encryption at rest", "Encryption in transit", "Key management"]
+  
+Maintainability_Patterns:
+  Modularity: ["Loose coupling", "High cohesion", "Interface segregation"]
+  Testability: ["Dependency injection", "Mock objects", "Test doubles"]
+  Documentation: ["Living documentation", "Architecture decision records", "API documentation"]
+```
+
+---
+*Architecture Patterns v4.0.0 - Comprehensive architectural knowledge patterns for SuperClaude design commands*

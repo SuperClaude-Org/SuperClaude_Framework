@@ -1,0 +1,278 @@
+# Quality Patterns
+# Unified validation, severity response, error handling, and quality control framework
+
+## Legend
+| Symbol | Meaning | | Abbrev | Meaning |
+|--------|---------|---|--------|---------|
+| ✅ | valid/pass | | val | validation |
+| ❌ | invalid/fail | | sev | severity |
+| ⚠ | warning | | ctrl | control |
+| 🚨 | critical | | rec | recovery |
+
+## Severity Framework
+
+```yaml
+Severity_Levels:
+  CRITICAL_10:
+    Definition: "Data loss, security breach, production down"
+    Response: "Immediate stop, alert, rollback, incident response"
+    Recovery: "Manual intervention required"
+    Response_Time: "< 1 second"
+    Examples: ["Delete prod data", "Expose secrets", "Force push main"]
+    
+  HIGH_7_9:
+    Definition: "Build failure, test failure, deployment issues"
+    Response: "Stop workflow, notify user, suggest fixes"
+    Recovery: "Automated retry w/ backoff"
+    Response_Time: "< 10 seconds"
+    Examples: ["Syntax error", "Permission denied", "Test failure"]
+    
+  MEDIUM_4_6:
+    Definition: "Warning conditions, performance issues, code quality"
+    Response: "Continue w/ warning, log for review"
+    Recovery: "Attempt optimization, monitor"
+    Response_Time: "< 60 seconds"
+    Examples: ["Slow operation", "Deprecated API", "Large file"]
+    
+  LOW_1_3:
+    Definition: "Info messages, style violations, suggestions"
+    Response: "Note in output, continue"
+    Recovery: "Background fixes, cleanup"
+    Response_Time: "Batch processing"
+    Examples: ["Code style", "Optional update", "Performance tip"]
+```
+
+## Pre-Execution Validation
+
+```yaml
+Validation_Sequence:
+  1_Ambiguity_Check:
+    Detect: ["vague instructions", "missing targets", "unclear scope"]
+    Actions: ["Request clarification", "Block if critical"]
+    
+  2_Security_Validation:
+    Path: "No ../, absolute paths only"
+    Secrets: "Scan for API keys, passwords, tokens"
+    Permissions: "User has required access"
+    
+  3_Dependency_Check:
+    Tools: "Required CLI tools installed"
+    Libraries: "Package dependencies available"
+    Services: "External services accessible"
+    
+  4_State_Validation:
+    Git: "Clean working tree for git ops"
+    Files: "Target files exist & accessible"
+    Resources: "Disk space, memory adequate"
+
+Risk_Assessment:
+  Score_Factors:
+    Data_Loss: "+3 | Irreversibility: +2"
+    Scope: "+2 | Security: +3"
+    Backup: "-2 | Test_Coverage: -1"
+    Sandbox: "-2 | Checkpoint: -1"
+  Thresholds:
+    Low_1_3: "Proceed w/ info"
+    Medium_4_6: "Warn & confirm"
+    High_7_9: "Require approval"
+    Critical_10: "Block completely"
+```
+
+## Error Handling Patterns
+
+```yaml
+Error_Categories:
+  Transient:
+    Types: ["Network timeout", "Resource busy", "Rate limit"]
+    Strategy: "Exponential backoff retry"
+    Retry: "Base 1s, Max 60s, 3 attempts, ±25% jitter"
+    
+  Permanent:
+    Types: ["Syntax error", "Permission denied", "Not found"]
+    Strategy: "No retry, immediate fallback"
+    Response: "Clear error message & guidance"
+    
+  Context:
+    Types: ["Config error", "State conflict", "Version mismatch"]
+    Strategy: "Validation & helpful guidance"
+    
+  Resource:
+    Types: ["Memory", "Disk space", "API limits"]
+    Strategy: "Monitor, cleanup, queue management"
+
+Circuit_Breaker:
+  Threshold: "3 consecutive failures"
+  Recovery: "5 minutes before re-enable"
+  States:
+    Closed: "Normal operation"
+    Open: "Blocking calls after threshold"
+    Half_Open: "Testing recovery, limited calls"
+```
+
+## Recovery Strategies
+
+```yaml
+Automatic_Recovery:
+  Retry_Patterns:
+    Simple: "3 attempts, 1s delay"
+    Exponential: "1s→2s→4s→8s w/ jitter"
+    Circuit: "Stop after threshold"
+  Fallback_Options:
+    Alternative: "Use native if MCP fails"
+    Degraded: "Skip non-essential features"
+    Cached: "Use previous successful outputs"
+  State_Management:
+    Checkpoint: "Save before risky ops"
+    Rollback: "Auto-revert to good state"
+    Cleanup: "Remove partial results"
+
+Manual_Recovery:
+  User_Guidance:
+    Error_Format: "What failed→Why→How to fix"
+    Actions: "Specific steps user can take"
+    Resources: "Relevant help documentation"
+  Intervention:
+    Confirm: "Ask before destructive ops"
+    Override: "Allow skip validation warnings"
+    Custom: "Accept user alternatives"
+```
+
+## Configuration Validation
+
+```yaml
+Required_Files:
+  Global:
+    - "~/.claude/CLAUDE.md"
+    - "~/.claude/RULES.md"
+    - "~/.claude/PERSONAS.md"
+    - "~/.claude/MCP.md"
+  Project:
+    - ".claude/commands/*.md"
+    - ".claude/commands/shared/*.yml"
+
+Syntax_Validation:
+  YAML:
+    Rules: ["Valid syntax", "Proper indent", "No duplicate keys"]
+    Error: "File:Line:Column - Description"
+  Markdown:
+    Check: ["Valid headers", "Code blocks", "References"]
+  References:
+    Include: "@include shared/([^#]+)#([^\\s]+)"
+    See: "@see shared/([^\\s]+)"
+    Validate: ["File exists", "Section exists", "No circular refs"]
+
+Structure_Requirements:
+  Commands:
+    Required: ["Legend", "Description", "Flags", "Examples", "Deliverables"]
+    Flags: ["Universal always available", "Document all unique"]
+  Dependencies:
+    MCP: ["Server configured", "Health check passes"]
+    CLI: ["git ≥2.0", "node ≥16.0", "python ≥3.8"]
+```
+
+## Runtime Monitoring
+
+```yaml
+Execution_Monitoring:
+  Pre:
+    Check: ["Command valid", "Flags recognized", "User authorized"]
+  During:
+    Monitor: ["Progress normal", "Resources in limits", "Catch errors"]
+  Post:
+    Verify: ["Expected outcomes", "No side effects", "Cleanup done"]
+
+Context_Preservation:
+  Checkpoints:
+    Create: "Before destructive ops"
+    Include: ["File states", "Working dir", "Command context"]
+    Location: ".claudedocs/checkpoints/checkpoint-{timestamp}"
+  Chain_Recovery:
+    Isolate: "Don't lose successful steps"
+    Alternative: "Suggest different approaches"
+    Partial: "Use completed work in recovery"
+
+Health_Monitoring:
+  Frequency: "Every 5 min during active use"
+  Timeout: "3 seconds per check"
+  Degradation: ">30s response → switch alternatives"
+  Recovery: "Re-enable after 5 minutes"
+```
+
+## Command-Specific Recovery
+
+```yaml
+Build_Failures:
+  Clean_Retry: "Remove artifacts, clear cache, rebuild"
+  Dependencies: "Update lockfiles, reinstall packages"
+  Compilation: "Suggest fixes, alternative approaches"
+
+Test_Failures:
+  Flaky_Tests: "Retry failed, identify unstable"
+  Environment: "Reset state, check prerequisites"
+  Coverage: "Generate missing tests, update thresholds"
+
+Deploy_Failures:
+  Health_Check: "Rollback, investigate logs"
+  Resources: "Scale up, optimize deployment"
+  Config: "Validate settings, check secrets"
+
+Analysis_Failures:
+  Tool_Unavailable: "Fallback to alternatives"
+  Large_Codebase: "Reduce scope, batch process"
+  Permissions: "Guide user through access setup"
+```
+
+## Quality Reports
+
+```yaml
+Validation_Reports:
+  Location: ".claudedocs/validation/"
+  Filename: "validation-{type}-{timestamp}.md"
+  Sections:
+    Summary: ["Total checks", "✅ Pass | ⚠ Warn | ❌ Fail"]
+    Details: ["File-by-file status", "Reference integrity", "Dependencies"]
+    Recommendations: ["Critical fixes", "Improvements", "Optimizations"]
+
+Auto_Repair:
+  Fixable:
+    Missing_Sections: "Generate from templates"
+    Broken_References: "Update to valid targets"
+    Outdated_Syntax: "Modernize to standards"
+  Manual_Required:
+    Syntax_Errors: "User must fix YAML/Markdown"
+    Missing_Files: "User must create/restore"
+    Permission_Issues: "User must grant access"
+
+Error_Learning:
+  Pattern_Recognition: ["Track common errors", "User patterns", "System issues"]
+  Adaptive_Response: ["Personalized suggestions", "Proactive warnings", "Auto fixes"]
+  Metrics: ["Error frequency", "Recovery success", "User satisfaction"]
+```
+
+## Integration Points
+
+```yaml
+Startup: "Full config validation | Block critical, warn high"
+Command: "Command-specific checks | Validate args, flags, permissions"
+Continuous: "Monitor changes | Daily full validation"
+On_Demand: "/validate --full"
+
+CLI_Commands:
+  Full: "/validate --config --full"
+  Quick: "/validate --quick"
+  Fix: "/validate --fix"
+  Report: "/validate --report"
+
+Usage_Examples:
+  Manual:
+    Full_Report: "/validate --config --report"
+    Quick_Check: "/validate --quick"
+    Auto_Repair: "/validate --fix --verbose"
+  Programmatic:
+    Pre_Execution: "validate_pre_execution()"
+    Background: "validate_config_changes()"
+    Report: "create_validation_report()"
+```
+
+---
+*Quality Patterns v4.0.0 - Unified validation, severity response, error handling, and quality control framework*

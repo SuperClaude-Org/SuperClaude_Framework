@@ -1,0 +1,318 @@
+# Security Patterns & Definitions
+# Extracted security knowledge patterns for reuse across commands
+
+@include shared/universal-constants.yml#Universal_Legend
+
+## OWASP Top 10 Security Patterns
+
+```yaml
+OWASP_Top_10:
+  A01_Injection:
+    Name: "Injection Flaws"
+    Types: ["SQL", "NoSQL", "OS Command", "LDAP", "XPath", "XXE"]
+    Description: "Untrusted data sent to interpreter as part of command/query"
+    Detection: "Input validation gaps, dynamic query construction"
+    Mitigation: "Parameterized queries, input validation, output encoding"
+    
+  A02_Authentication:
+    Name: "Broken Authentication & Session Management"
+    Types: ["Weak passwords", "Session fixation", "Credential stuffing"]
+    Description: "Authentication & session management flaws"
+    Detection: "Weak auth logic, exposed session tokens, poor password policy"
+    Mitigation: "Strong auth, secure session management, MFA"
+    
+  A03_Data_Exposure:
+    Name: "Sensitive Data Exposure"
+    Types: ["Unencrypted data", "Weak crypto", "Data leaks"]
+    Description: "Sensitive data not properly protected"
+    Detection: "Unencrypted storage/transit, weak algorithms"
+    Mitigation: "Strong encryption, data classification, secure storage"
+    
+  A04_XXE:
+    Name: "XML External Entities (XXE)"
+    Types: ["File disclosure", "SSRF", "DoS attacks"]
+    Description: "XML processors w/ external entity references"
+    Detection: "XML parsing w/o entity validation"
+    Mitigation: "Disable external entities, input validation"
+    
+  A05_Access_Control:
+    Name: "Broken Access Control"
+    Types: ["Privilege escalation", "Unauthorized access", "IDOR"]
+    Description: "Access control enforcement failures"
+    Detection: "Missing auth checks, role bypass, direct object refs"
+    Mitigation: "Principle of least privilege, proper auth checks"
+    
+  A06_Configuration:
+    Name: "Security Misconfiguration"
+    Types: ["Default configs", "Open cloud storage", "Verbose errors"]
+    Description: "Insecure default configurations"
+    Detection: "Default accounts, unnecessary features, debug info"
+    Mitigation: "Secure defaults, configuration review, hardening"
+    
+  A07_XSS:
+    Name: "Cross-Site Scripting (XSS)"
+    Types: ["Reflected", "Stored", "DOM-based"]
+    Description: "Untrusted data included in web page"
+    Detection: "Unvalidated input in HTML output"
+    Mitigation: "Input validation, output encoding, CSP headers"
+    
+  A08_Deserialization:
+    Name: "Insecure Deserialization"
+    Types: ["Remote code execution", "Object injection"]
+    Description: "Untrusted data deserialization flaws"
+    Detection: "User-controlled serialization, unsafe deserializers"
+    Mitigation: "Input validation, integrity checks, isolation"
+    
+  A09_Components:
+    Name: "Using Components w/ Known Vulnerabilities"
+    Types: ["Outdated libraries", "Unpatched systems"]
+    Description: "Vulnerable components in application"
+    Detection: "Outdated dependencies, missing patches"
+    Mitigation: "Regular updates, vulnerability scanning, monitoring"
+    
+  A10_Monitoring:
+    Name: "Insufficient Logging & Monitoring"
+    Types: ["Missing logs", "Poor detection", "Slow response"]
+    Description: "Inadequate logging & incident response"
+    Detection: "Missing audit logs, no alerting, delayed detection"
+    Mitigation: "Comprehensive logging, real-time monitoring, incident response"
+```
+
+## Security Analysis Categories
+
+```yaml
+Code_Security_Analysis:
+  Input_Validation:
+    Patterns: ["SQL injection points", "XSS vulnerabilities", "Command injection"]
+    Checks: ["Parameter validation", "Input sanitization", "Type checking"]
+    
+  Output_Encoding:
+    Patterns: ["HTML encoding", "URL encoding", "JavaScript escaping"]
+    Checks: ["Context-aware encoding", "Output validation", "Content-Type headers"]
+    
+  Authentication_Weaknesses:
+    Patterns: ["Weak password policies", "Session management", "Credential storage"]
+    Checks: ["Auth logic review", "Session security", "Password handling"]
+    
+  Authorization_Flaws:
+    Patterns: ["Privilege escalation", "Role bypass", "Resource access"]
+    Checks: ["Access control logic", "Permission validation", "Role assignment"]
+    
+  Cryptographic_Problems:
+    Patterns: ["Weak algorithms", "Key management", "Random number generation"]
+    Checks: ["Crypto implementation", "Key storage", "Algorithm strength"]
+    
+  Error_Handling_Leaks:
+    Patterns: ["Stack traces", "Debug information", "Internal paths"]
+    Checks: ["Error messages", "Exception handling", "Information disclosure"]
+    
+  Session_Management:
+    Patterns: ["Session fixation", "Session hijacking", "Timeout handling"]
+    Checks: ["Session generation", "Session storage", "Session invalidation"]
+    
+  File_Operation_Safety:
+    Patterns: ["Path traversal", "File upload", "Directory listing"]
+    Checks: ["Path validation", "File type checking", "Access controls"]
+```
+
+## Dependency Security Patterns
+
+```yaml
+Dependency_Scanning:
+  CVE_Detection:
+    Description: "Known Common Vulnerabilities & Exposures"
+    Sources: ["NVD database", "GitHub advisories", "Vendor bulletins"]
+    Metrics: ["CVSS score", "Exploitability", "Impact assessment"]
+    
+  Outdated_Packages:
+    Description: "Components w/ available security updates"
+    Checks: ["Version comparison", "Security patch availability", "EOL status"]
+    Priority: ["Critical patches", "High-risk components", "Deprecated packages"]
+    
+  License_Compliance:
+    Description: "Legal & security implications of licenses"
+    Checks: ["GPL compatibility", "Commercial restrictions", "Attribution requirements"]
+    Risks: ["Copyleft obligations", "Patent implications", "Compliance violations"]
+    
+  Transitive_Dependencies:
+    Description: "Indirect dependency vulnerabilities"
+    Analysis: ["Dependency tree", "Version conflicts", "Update paths"]
+    Mitigation: ["Version pinning", "Dependency updates", "Alternative libraries"]
+    
+  Typosquatting_Detection:
+    Description: "Malicious packages w/ similar names"
+    Patterns: ["Character substitution", "Domain squatting", "Namespace confusion"]
+    Validation: ["Package authenticity", "Maintainer verification", "Download patterns"]
+    
+  Security_Patch_Availability:
+    Description: "Available fixes for known vulnerabilities"
+    Tracking: ["Patch release dates", "Compatibility testing", "Update urgency"]
+    Planning: ["Patch scheduling", "Risk assessment", "Rollback procedures"]
+```
+
+## Configuration Security Patterns
+
+```yaml
+Configuration_Security:
+  Hardcoded_Secrets:
+    Patterns: ["API keys", "Passwords", "Tokens", "Certificates"]
+    Detection: ["String patterns", "Entropy analysis", "Known secret formats"]
+    Mitigation: ["Environment variables", "Secret management", "Key rotation"]
+    
+  Environment_Variables:
+    Security: ["Sensitive data exposure", "Injection attacks", "Default values"]
+    Best_Practices: ["Validation", "Sanitization", "Secure defaults"]
+    
+  Permission_Configurations:
+    File_Permissions: ["Read/write/execute", "Owner/group/other", "Special bits"]
+    Service_Permissions: ["User accounts", "Service isolation", "Capability dropping"]
+    Network_Permissions: ["Firewall rules", "Port restrictions", "Protocol filtering"]
+    
+  Network_Exposure:
+    Open_Ports: ["Unnecessary services", "Default ports", "Admin interfaces"]
+    Protocol_Security: ["Unencrypted protocols", "Weak ciphers", "Version vulnerabilities"]
+    
+  TLS_SSL_Settings:
+    Configuration: ["Protocol versions", "Cipher suites", "Certificate validation"]
+    Best_Practices: ["Perfect forward secrecy", "HSTS headers", "Certificate pinning"]
+    
+  CORS_Policies:
+    Misconfiguration: ["Wildcard origins", "Credential sharing", "Permissive headers"]
+    Security: ["Origin validation", "Preflight handling", "Error responses"]
+    
+  Security_Headers:
+    Required: ["CSP", "HSTS", "X-Frame-Options", "X-Content-Type-Options"]
+    Configuration: ["Policy definitions", "Report URIs", "Enforcement modes"]
+```
+
+## Infrastructure Security Patterns
+
+```yaml
+Infrastructure_Security:
+  Network_Security:
+    Open_Ports: "Scan for unnecessary exposed services"
+    Firewall_Rules: "Validate access control lists & policies"
+    Service_Discovery: "Identify running services & versions"
+    
+  Access_Control:
+    User_Accounts: "Review account permissions & privileges"
+    Service_Accounts: "Validate service-to-service authentication"
+    Admin_Access: "Audit administrative privileges"
+    
+  Data_Protection:
+    Encryption_Transit: "Verify TLS/SSL implementation"
+    Encryption_Rest: "Check data storage encryption"
+    Key_Management: "Review cryptographic key handling"
+    
+  Monitoring_Security:
+    Log_Collection: "Ensure comprehensive audit logging"
+    Security_Events: "Monitor for security incidents"
+    Anomaly_Detection: "Implement behavioral analysis"
+    
+  Backup_Security:
+    Backup_Encryption: "Encrypt backup data"
+    Access_Controls: "Restrict backup access"
+    Recovery_Testing: "Validate restore procedures"
+```
+
+## Security Validation Modes
+
+```yaml
+Validation_Levels:
+  Quick_Scan:
+    Scope: "Critical security issues only"
+    Time: "< 30 seconds"
+    Focus: ["Hardcoded secrets", "SQL injection", "XSS", "Known CVEs"]
+    Output: "High-priority findings only"
+    
+  Standard_Scan:
+    Scope: "Comprehensive security analysis"
+    Time: "2-5 minutes"
+    Focus: ["OWASP Top 10", "Dependency vulnerabilities", "Configuration issues"]
+    Output: "Detailed findings w/ remediation"
+    
+  Deep_Scan:
+    Scope: "Thorough security audit"
+    Time: "10-30 minutes"
+    Focus: ["Code analysis", "Architecture review", "Compliance checking"]
+    Output: "Complete security assessment"
+    
+  Compliance_Scan:
+    Scope: "Regulatory compliance validation"
+    Frameworks: ["SOC 2", "PCI DSS", "HIPAA", "GDPR"]
+    Focus: ["Data protection", "Access controls", "Audit trails"]
+    Output: "Compliance report w/ gaps"
+```
+
+## Risk Assessment Templates
+
+```yaml
+Risk_Scoring:
+  Critical_10:
+    Criteria: ["Data breach potential", "System compromise", "Production impact"]
+    Response: "Immediate action required"
+    Examples: ["SQL injection", "Remote code execution", "Credential exposure"]
+    
+  High_7_9:
+    Criteria: ["Significant security impact", "Exploitable vulnerabilities"]
+    Response: "Fix before deployment"
+    Examples: ["XSS vulnerabilities", "Authentication bypass", "Privilege escalation"]
+    
+  Medium_4_6:
+    Criteria: ["Security concerns", "Best practice violations"]
+    Response: "Address in next sprint"
+    Examples: ["Missing headers", "Weak configurations", "Information disclosure"]
+    
+  Low_1_3:
+    Criteria: ["Security improvements", "Hardening opportunities"]
+    Response: "Best practice implementation"
+    Examples: ["Security headers", "Error handling", "Logging improvements"]
+    
+Severity_Factors:
+  Exploitability: ["Attack complexity", "Access requirements", "User interaction"]
+  Impact: ["Confidentiality", "Integrity", "Availability"]
+  Scope: ["System components", "Data sensitivity", "User base"]
+  Context: ["Environment type", "Data classification", "Regulatory requirements"]
+```
+
+## Security Remediation Patterns
+
+```yaml
+Remediation_Strategies:
+  Immediate_Actions:
+    Critical_Issues:
+      - "Disable vulnerable functionality"
+      - "Block attack vectors"
+      - "Implement emergency patches"
+      - "Monitor for exploitation"
+      
+  Short_Term_Fixes:
+    High_Priority:
+      - "Apply security patches"
+      - "Implement input validation"
+      - "Configure security headers"
+      - "Update vulnerable dependencies"
+      
+  Long_Term_Improvements:
+    Security_Architecture:
+      - "Implement security by design"
+      - "Establish security testing"
+      - "Create security policies"
+      - "Train development teams"
+      
+Prevention_Strategies:
+  Secure_Development:
+    - "Security requirements definition"
+    - "Threat modeling"
+    - "Secure coding practices"
+    - "Security testing integration"
+    
+  Operational_Security:
+    - "Regular security assessments"
+    - "Vulnerability management"
+    - "Incident response procedures"
+    - "Security monitoring"
+```
+
+---
+*Security Patterns v4.0.0 - Comprehensive security knowledge patterns for SuperClaude commands*

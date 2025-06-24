@@ -18,7 +18,7 @@ Philosophy: Code>docs | Simple→complex | Security first
 Communication: Concise format | Symbols: →|&:» | Bullets>prose
 Workflow: TodoRead()→TodoWrite(3+)→Execute | Update immediate
 Stack: React|TS|Vite + Node|Express|PostgreSQL + Git|ESLint|Jest
-Commands: /user:<command> [flags] | /task:<action> | Ex: /user:build --init
+Commands: /<command> [flags] | /task:<action> | Ex: /build --init
 ```
 
 ## Thinking Modes
@@ -28,7 +28,7 @@ Activation: Natural language OR command flags
 Flags: --think | --think-hard | --ultrathink
 none: Single file|Basic | think: Multi-file|Standard
 think hard: Architecture|Complex | ultrathink: Redesign|Critical
-Examples: /user:analyze --code --think | /user:design --api --ultrathink
+Examples: /analyze --code --think | /design --api --ultrathink
 ```
 
 ## Token Economy

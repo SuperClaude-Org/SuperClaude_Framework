@@ -1,0 +1,135 @@
+# System Configuration - Consolidated runtime & session settings
+# Consolidates common system-level configuration patterns
+
+## Legend
+| Symbol | Meaning | | Abbrev | Meaning |
+|--------|---------|---|--------|---------|
+| ⚙ | system setting | | cfg | configuration |
+| 🔄 | session/runtime | | perf | performance |
+| 📊 | monitoring | | rec | recovery |
+
+## Session Management
+
+```yaml
+Session_Settings:
+  Memory_Management:
+    Context_Limit: "70% warning, 90% critical"
+    Cache_Duration: "30 minutes active session"
+    Auto_Cleanup: "Clear expired context every 5 minutes"
+    Persistence: "Store successful workflows across sessions"
+    
+  Context_Sharing:
+    Chain_Results: "Auto-pass relevant results between commands"
+    Intelligent_Workflows: "analyze→improve, build→test, scan→fix"
+    Result_Reuse: "Same target+flags within session"
+    Invalidation: "Modified files trigger cache refresh"
+
+Recovery_Settings:
+  Session_Recovery:
+    Auto_Save: "Save state every 10 operations"
+    Checkpoint_Triggers: ["Before risky operations", "Major state changes"]
+    Recovery_Options: ["Resume from checkpoint", "Restart clean"]
+    State_Validation: "Verify system state on recovery"
+    
+  Error_Recovery:
+    Retry_Patterns: "3 attempts with exponential backoff"
+    Fallback_Strategies: "Native tools if MCP fails"
+    User_Guidance: "Clear next steps on failure"
+    Context_Preservation: "Maintain progress during errors"
+```
+
+## Performance Monitoring
+
+```yaml
+Performance_Settings:
+  Timing_Metrics:
+    Command_Duration: "Track start/end times"
+    Phase_Breakdown: "Analysis, execution, reporting phases"
+    Token_Usage: "Monitor MCP server consumption"
+    Resource_Usage: "Memory, CPU, network tracking"
+    
+  Thresholds:
+    Command_Timeout: "300 seconds (5 minutes)"
+    Token_Warning: ">70% of budget consumed"
+    Memory_Alert: ">500MB CLI usage"
+    Performance_Degradation: ">30s typical operations"
+    
+  Optimization:
+    Lazy_Loading: "Load config/patterns on demand"
+    Batch_Operations: "Group similar file operations"
+    Caching_Strategy: "Results, patterns, frequently used data"
+    Resource_Cleanup: "Auto-cleanup temp files and cache"
+```
+
+## Planning & Risk Assessment
+
+```yaml
+Planning_Control:
+  Flag_Based:
+    --plan: "Force planning mode for any command"
+    --skip-plan: "Execute immediately (overrides risk triggers)"
+    default: "Execute immediately unless --plan specified"
+    
+  Risk_Triggers:
+    Production: "deploy --env prod, migrate production data"
+    Data_Loss: "cleanup --all, destructive operations"
+    System_Wide: "spawn agents, global improvements"
+    Security_Critical: "scan --security, auth changes"
+    
+  Assessment_Factors:
+    Scope: "Number of files/systems affected"
+    Reversibility: "Can operation be easily undone"
+    Data_Impact: "Potential for data loss/corruption"
+    Security_Impact: "Authentication, authorization changes"
+```
+
+## User Experience Settings
+
+```yaml
+Interface_Patterns:
+  Progress_Indicators:
+    Long_Operations: "Show progress for >30 second operations"
+    Multi_Step: "Display step N of M for workflows"
+    Real_Time: "Live updates for --watch mode"
+    
+  Feedback_Patterns:
+    Success_Messages: "Clear confirmation of completion"
+    Error_Messages: "What failed, why, how to fix"
+    Warning_Messages: "Potential issues, user confirmation"
+    Info_Messages: "Helpful context, next steps"
+    
+  Output_Formatting:
+    Structured: "Consistent format across commands"
+    Compressed: "Use --uc flag for token efficiency"
+    Visual_Aids: "Tables, bullets, clear hierarchies"
+    File_References: "Clickable paths, line numbers"
+```
+
+## Integration Points
+
+```yaml
+Command_Integration:
+  Pre_Execution:
+    Config_Loading: "Load user, project, system config"
+    Validation: "Check prerequisites, permissions"
+    Risk_Assessment: "Evaluate operation safety"
+    
+  During_Execution:
+    Progress_Tracking: "Monitor operation progress"
+    Resource_Monitoring: "Track performance metrics"
+    Error_Detection: "Catch and handle failures"
+    
+  Post_Execution:
+    Result_Storage: "Cache results for reuse"
+    Cleanup: "Remove temp files, release resources"
+    Reporting: "Generate summaries, logs"
+    
+System_Health:
+  Monitoring: "Track command success rates, performance"
+  Alerting: "Warn on degraded performance, errors"
+  Auto_Maintenance: "Cleanup, optimization, updates"
+  Diagnostics: "Health checks, system validation"
+```
+
+---
+*System Config v4.0.0 - Consolidated runtime, session, performance & UX settings*

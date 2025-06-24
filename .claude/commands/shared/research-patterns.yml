@@ -1,0 +1,366 @@
+# Research Flow Templates
+# Consolidated research patterns for professional implementations
+
+## Legend
+| Symbol | Meaning | | Abbrev | Meaning |
+|--------|---------|---|--------|---------|
+| → | leads to | | req | required |
+| ⚠ | warning/risk | | cfg | configuration |
+| ✓ | verified/confirmed | | impl | implementation |
+| C | critical level | | conf | confidence |
+
+## Mandatory Research Flows
+
+```yaml
+Mandatory_Research_Flows:
+  External_Library_Research:
+    Step_1: "Identify library/framework mentioned"
+    Step_2: "Context7 lookup for official documentation"
+    Step_3: "Verify API patterns and examples"
+    Step_4: "Check version compatibility"
+    Step_5: "Document findings in implementation"
+    
+  Pattern_Research:
+    Step_1: "Search existing codebase for similar patterns"
+    Step_2: "Magic component search if UI-related"
+    Step_3: "WebSearch for official documentation"
+    Step_4: "Validate approach with Sequential thinking"
+    Step_5: "Document pattern choice rationale"
+    
+  API_Integration_Research:
+    Step_1: "Official documentation lookup"
+    Step_2: "Authentication requirements"
+    Step_3: "Rate limiting and error handling"
+    Step_4: "SDK availability and examples"
+    Step_5: "Integration testing approach"
+```
+
+## Research Trigger Patterns
+
+```yaml
+Detection_Triggers:
+  External_Libraries:
+    - import .* from ['"][^./]['"]  # Non-relative imports
+    - require\(['"][^./]['"]  # CommonJS non-relative
+    - from (\w+) import  # Python imports  
+    - using \w+;  # C# namespaces
+    
+  UI_Components:
+    Keywords: [button, form, modal, dialog, dropdown, table, list, grid, card, accordion, nav, menu, sidebar, header, footer, chart, graph, visualization, dashboard]
+    Action: "Check existing→Magic search→WebSearch patterns"
+    
+  API_Integration:
+    Patterns: [REST, GraphQL, WebSocket, SDK, client, endpoint, auth]
+    Required: "Official docs→Authentication→Rate limits→Error formats"
+    
+  Unknown_Patterns:
+    Phrases_To_Block: ["might work", "should probably", "I think this", "typically would", "common pattern is"]
+    Required_Instead: ["According to [source]", "Documentation states", "Verified pattern from"]
+```
+
+## Mandatory Research Flows
+
+```yaml
+Library_Research_Flow:
+  Steps:
+    1: "Detect library reference in code/request"
+    2: "Check if already in package.json/requirements.txt"
+    3: "C7 resolve-library-id → get-docs with topic"
+    4: "If C7 fails → WebSearch '[library] official documentation'"
+    5: "Extract: Installation|Basic usage|Common patterns|Error handling|Best practices"
+    6: "Cache results for session with confidence score"
+    7: "Cite sources in implementation"
+  Blocking_Conditions:
+    - "External library detected without research"
+    - "Confidence score below 90%"
+    - "No official documentation found"
+    
+Component_Research_Flow:
+  Steps:
+    1: "Identify UI component requirement from keywords"
+    2: "Search existing codebase for similar components"
+    3: "Check project's design system/component library"
+    4: "Magic builder search with extracted keywords"
+    5: "If no suitable match → WebSearch '[component] accessibility patterns'"
+    6: "Implement with source citations"
+    7: "Document any deviations from established patterns"
+  Quality_Gates:
+    - "Accessibility compliance verified"
+    - "Responsive design confirmed"
+    - "Pattern source documented"
+    
+API_Research_Flow:
+  Steps:
+    1: "Identify API/service integration need"
+    2: "WebSearch '[service] official API documentation'"
+    3: "Locate authentication requirements"
+    4: "Find endpoint specifications & examples"
+    5: "Check for official SDK/client library"
+    6: "Review error handling & response formats"
+    7: "Document rate limits & usage constraints"
+  Critical_Checks:
+    - "Authentication method documented"
+    - "Error response format understood"
+    - "Rate limits noted"
+    - "API versioning strategy confirmed"
+```
+
+## Confidence Scoring System
+
+```yaml
+Evidence_Scoring:
+  Official_Documentation: 100%
+  Maintainer_Tutorial: 95%
+  Recent_Blog_Post: 85%
+  GitHub_Issue_Resolution: 85%
+  Stack_Overflow_Accepted: 80%
+  Community_Tutorial: 75%
+  No_Evidence: 0%
+  
+Age_Penalties:
+  Current_Year: 0%
+  One_Year_Old: -5%
+  Two_Years_Old: -10%
+  Three_Plus_Years: -15%
+  
+Verification_Bonus:
+  Working_Example: +10%
+  Test_Coverage: +5%
+  Multiple_Sources: +5%
+  
+Minimum_Requirements:
+  Implementation_Threshold: 90%
+  Warning_Threshold: 80%
+  Research_Required: <80%
+```
+
+## Session Research Cache
+
+```yaml
+Cache_Structure:
+  Libraries:
+    Key: "library_name@version"
+    Data: "patterns, examples, best_practices, confidence_score"
+    Validity: "Until version change or session end"
+    
+  Components:
+    Key: "component_type_keywords"
+    Data: "accessibility_patterns, variants, implementation_notes"
+    Validity: "Until design system change"
+    
+  APIs:
+    Key: "service_name_endpoint_group"
+    Data: "auth_methods, endpoints, error_formats, rate_limits"
+    Validity: "24 hours or API version change"
+    
+Cache_Usage:
+  Reuse_Pattern: "Using previously researched pattern for [X]"
+  Invalidation: "Version change detected, re-researching [X]"
+  Update: "Adding new pattern to existing research cache"
+```
+
+## Implementation Citation Requirements
+
+```yaml
+Source_Attribution:
+  Format: "// Source: [URL or Documentation Reference]"
+  Placement_Rules:
+    Code: "Above implementation using external pattern"
+    Functions: "In JSDoc/docstring documentation"  
+    Commits: "In commit message for new external patterns"
+    
+Citation_Examples:
+  Good_Citations:
+    - "// Source: React hooks documentation - https://react.dev/reference/react/useState"
+    - "// Pattern from: Express.js middleware guide v4.18"
+    - "// Based on: AWS S3 SDK documentation v3.45"
+    - "// Accessibility pattern: WCAG 2.1 button guidelines"
+    
+  Blocked_Citations:
+    - "// Common pattern (NO SOURCE)"
+    - "// Standard approach (NO EVIDENCE)"
+    - "// Typical implementation (NO RESEARCH)"
+    
+Professional_Standards:
+  Multiple_Sources: "List all sources when combining patterns"
+  Uncertainty_Handling: "Mark provisional implementations with TODO"
+  Alternative_Suggestions: "Provide backup options when primary unavailable"
+  Deprecation_Notes: "Flag patterns from deprecated documentation"
+```
+
+## Integration with Command System
+
+```yaml
+Pre_Execution_Research:
+  Parse_Request:
+    - "Extract library names from import patterns"
+    - "Identify UI component requirements from keywords"
+    - "Detect API integration needs from service names"
+    - "Check for unfamiliar patterns or frameworks"
+    
+  Validation_Gates:
+    CRITICAL_Block: "External library with no research documentation"
+    HIGH_Warning: "Documentation >2 years old or deprecated patterns"
+    MEDIUM_Note: "Multiple conflicting sources found"
+    
+  Auto_Research_Triggers:
+    Commands: ["build", "improve", "troubleshoot", "design"]
+    File_Types: ["*.tsx", "*.jsx", "*.py", "*.js", "*.ts"]
+    Keywords: ["integrate", "implement", "connect", "use", "add"]
+    
+Command_Specific_Integration:
+  build_command:
+    - "Check all import statements for external libraries"
+    - "Research any unfamiliar framework patterns"
+    - "Verify component library usage patterns"
+    
+  improve_command:
+    - "Research optimization patterns for identified bottlenecks"
+    - "Verify best practice patterns before suggesting changes"
+    - "Check for updated library versions with better patterns"
+    
+  troubleshoot_command:
+    - "Search known issues database first"
+    - "Research error patterns in official documentation"
+    - "Check community solutions with high confidence scores"
+```
+
+## Quality Assurance Patterns
+
+```yaml
+Research_Validation:
+  Before_Implementation:
+    - "Confirm all external references have research backing"
+    - "Verify confidence scores meet minimum thresholds"
+    - "Check that citations are properly formatted"
+    - "Ensure no blocked phrases present in reasoning"
+    
+  During_Implementation:
+    - "Cross-reference implementation with researched patterns"
+    - "Validate that deviations from patterns are documented"
+    - "Ensure error handling follows researched best practices"
+    
+  After_Implementation:
+    - "Verify all external patterns have source attribution"
+    - "Update research cache with any new findings"
+    - "Document successful patterns for future reuse"
+    
+Pattern_Verification:
+  Official_Source_Check: "Primary source must be official documentation"
+  Recency_Validation: "Flag patterns older than 2 years for review"
+  Multiple_Source_Confirmation: "Complex patterns require 2+ sources"
+  Working_Example_Requirement: "Implementation must include tested example"
+```
+
+## Error Prevention & Recovery
+
+```yaml
+Common_Research_Failures:
+  Library_Not_Found:
+    Error: "C7 resolve-library-id returns no matches"
+    Recovery: "Try broader search terms → WebSearch fallback"
+    Prevention: "Cache common library aliases"
+    
+  Documentation_Outdated:
+    Error: "Found docs are >2 years old"
+    Recovery: "Search for recent migration guides or version changes"
+    Prevention: "Always check latest version numbers"
+    
+  Conflicting_Patterns:
+    Error: "Multiple sources suggest different approaches"
+    Recovery: "Choose most recent official source → document alternatives"
+    Prevention: "Prioritize official documentation over community content"
+    
+  No_Examples_Found:
+    Error: "Documentation lacks practical examples"
+    Recovery: "Search GitHub for real implementations → test small example"
+    Prevention: "Combine theoretical docs with practical repositories"
+    
+Research_Failure_Handling:
+  When_Blocked:
+    - "State explicitly: 'Official documentation not found for [X]'"
+    - "Provide rationale: 'Using similar pattern from [Y] because...'"
+    - "Mark provisional: '// TODO: Verify when official docs available'"
+    - "Suggest alternatives: 'Consider documented library [Z] instead'"
+    
+  Partial_Research:
+    - "Document what was found vs what is missing"
+    - "Implement only well-documented portions"
+    - "Create TODO items for missing research"
+    - "Suggest manual verification steps"
+```
+
+## Consolidated: Evidence & Verification Patterns (from evidence.yml)
+
+### Measurement Standards
+```yaml
+Replace Hard Values:
+  Bad: "75% perf improvement"
+  Good: "<measured>% improvement"
+  Best: "<baseline>→<current> (<delta>%)"
+
+Placeholders:
+  <measured_value>: Actual measurement
+  <calculated_result>: Computed outcome
+  <baseline>: Starting point
+  <current>: Current state
+  <delta>: Change amount
+  <threshold>: Target value
+```
+
+### Verification Requirements (from evidence.yml)
+```yaml
+Perf Claims:
+  Required: Measurement method
+  Format: "Measured via <tool>: <metric>"
+  Example: "Measured via Lighthouse: FCP <value>ms"
+
+Quality Metrics:
+  Coverage: "Test coverage: <measured>%"
+  Complexity: "Cyclomatic: <calculated>"
+  Duplication: "DRY score: <measured>%"
+
+Time Estimates:
+  Format: "<min>-<max> <unit> (±<uncertainty>%)"
+  Based on: Historical data|Complexity analysis
+
+Implementation Sources:
+  Required: Documentation reference for external libraries
+  Format: "Source: <official docs URL or reference>"
+  Placement: Above implementation using pattern
+  
+  Examples:
+    Good: "// Source: React docs - useState hook"
+    Bad: "// Common React pattern"
+    
+  No Source = Block: External library usage without documentation
+```
+
+### Evidence Collection (from evidence.yml)
+```yaml
+Before: Baseline measurement
+During: Progress tracking  
+After: Final measurement
+Delta: Calculate improvement
+
+Tools:
+  Performance: Lighthouse|DevTools|APM
+  Code: Coverage reports|Linters|Analyzers
+  Time: Git history|Task tracking
+```
+
+### Reporting Format (from evidence.yml)
+```yaml
+Pattern:
+  Claim: What improved
+  Evidence: How measured
+  Result: Specific values
+  
+Example:
+  Claim: "Optimized query performance"
+  Evidence: "EXPLAIN ANALYZE before/after"
+  Result: "<before>ms → <after>ms (<delta>% faster)"
+```
+
+---
+*Research Flow Templates v4.0.0 - Ensuring evidence-based professional implementations with consolidated research and evidence patterns*

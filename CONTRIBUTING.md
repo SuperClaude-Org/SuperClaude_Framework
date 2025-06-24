@@ -44,6 +44,7 @@ Thanks for contributing to SuperClaude! This guide helps you get started.
 - New slash commands (.claude/commands/)
 - YAML resources (.claude/commands/shared/)
 - Core configs (CLAUDE.md, RULES.md, etc.)
+- Template patterns (@pattern system)
 
 ## Development Guidelines
 
@@ -68,6 +69,7 @@ SuperClaude/
 - Verify slash commands work in Claude Code
 - Check YAML syntax validity
 - Test personas & MCP integration
+- Run `validate-references.sh` to check @pattern system
 
 ## Submission Process
 
@@ -91,7 +93,7 @@ SuperClaude/
 ### 4. Review Process
 - Maintainer review required
 - Address feedback promptly
-- Keep PR up to date
+- Keep PR up-to-date
 - Squash commits if requested
 
 ## Issue Guidelines
@@ -131,14 +133,15 @@ Description & purpose
 - --flag2: Description
 
 ## Examples
-/user:command --flag1
+/command --flag1
 ```
 
-### YAML Resources
+### YAML Resources & Templates
 1. **Location**: `.claude/commands/shared/`
-2. **Purpose**: Reusable configurations
+2. **Purpose**: Reusable configurations & @pattern templates
 3. **Naming**: descriptive-name.yml
 4. **Structure**: Clear, documented sections
+5. **Validation**: Use `validate-references.sh` to check @pattern links
 
 ## Persona Development
 

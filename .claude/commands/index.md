@@ -1,10 +1,63 @@
-# SuperClaude Commands Index
+# /index - SuperClaude Commands Reference
 
-@include shared/constants.yml#Process_Symbols
+## Legend
+| Symbol | Meaning | | Abbrev | Meaning |
+|--------|---------|---|--------|---------|
+| → | leads to | | cfg | configuration |
+| & | and/with | | impl | implementation |
+| w/ | with | | perf | performance |
+| @ | at/located | | ops | operations |
+| > | greater than | | val | validation |
+| ∀ | for all/every | | req | requirements |
+| ∃ | exists/there is | | deps | dependencies |
+| ∴ | therefore | | env | environment |
+| ∵ | because | | db | database |
+| ≡ | equivalent | | api | interface |
+| ≈ | approximately | | docs | documentation |
+| 📁 | directory/path | | std | standard |
+| 🔢 | number/count | | def | default |
+| 📝 | text/string | | ctx | context |
+| ⚙ | setting/config | | err | error |
+| 🎛 | control/flags | | exec | execution |
+| 🔧 | configuration | | qual | quality |
+| 📋 | group/category | | rec | recovery |
+| 🚨 | critical/urgent | | sev | severity |
+| ⚠ | warning/caution | | resp | response |
+| 🔄 | retry/recovery | | esc | escalation |
+| ✅ | success/fixed | | tok | token |
+| ❌ | failure/error | | opt | optimization |
+| ℹ | information | | UX | user experience |
+| ⚡ | fast/quick | | UI | user interface |
+| 🐌 | slow/delayed | | C | critical |
+| ✨ | complete/done | | H | high |
+| 📖 | read operation | | M | medium |
+| ✏ | edit operation | | L | low |
+| 🗑 | delete operation | | |
+
+## Purpose
+Comprehensive reference guide for all SuperClaude commands, workflows, and system capabilities.
+
+## Universal Flags
+--plan: "Show execution plan before running"
+--uc: "UltraCompressed mode (~70% token reduction)"
+--ultracompressed: "Alias for --uc"
+--think: "Multi-file analysis w/ context (4K tokens)"
+--think-hard: "Deep architectural analysis (10K tokens)"
+--ultrathink: "Critical system redesign (32K tokens)"
+--c7: "Enable Context7→library documentation lookup"
+--seq: "Enable Sequential→complex analysis & thinking"
+--magic: "Enable Magic→UI component generation"
+--pup: "Enable Puppeteer→browser automation & testing"
+--all-mcp: "Enable all MCP servers"
+--no-mcp: "Disable all MCP servers (native tools only)"
+--no-c7: "Disable Context7 specifically"
+--no-seq: "Disable Sequential thinking specifically"
+--no-magic: "Disable Magic UI builder specifically"
+--no-pup: "Disable Puppeteer specifically"
 
 ## Command Usage
-All commands use `/user:` prefix. Examples:
-- `/user:build --init` | `/user:analyze --code` | `/user:deploy --env prod`
+All commands use `/` prefix. Examples:
+- `/build --init` | `/analyze --code` | `/deploy --env prod`
 
 ## Universal Flags (All Commands)
 
@@ -28,132 +81,127 @@ All commands use `/user:` prefix. Examples:
 ## Development Commands (3)
 | Command | Purpose | Key Flags |
 |---------|---------|-----------|
-| /user:build | Universal project builder | --init --feature --react --api --tdd |
-| /user:dev-setup | Dev environment & CI/CD | --install --ci --monitor |
-| /user:test | Testing framework | --coverage --watch --e2e |
+| /build | Universal project builder | --init --feature --react --api --tdd |
+| /dev-setup | Dev environment & CI/CD | --install --ci --monitor |
+| /test | Testing framework | --coverage --watch --e2e |
 
 ## Analysis & Improvement Commands (4)
 | Command | Purpose | Key Flags |
 |---------|---------|-----------|
-| /user:analyze | Multi-dimensional analysis | --code --architecture --profile --security |
-| /user:troubleshoot | Debug and fix issues | --investigate --fix --five-whys --prod |
-| /user:improve | Enhance code/performance | --quality --performance --iterate --threshold |
-| /user:explain | Deep explanations | --depth --visual --examples |
+| /analyze | Multi-dimensional analysis | --code --architecture --profile --security |
+| /troubleshoot | Debug and fix issues | --investigate --fix --five-whys --prod |
+| /improve | Enhance code/performance | --quality --performance --iterate --threshold |
+| /explain | Deep explanations | --depth --visual --examples |
 
 ## Operations Commands (6)
 | Command | Purpose | Key Flags |
 |---------|---------|-----------|
-| /user:deploy | Application deployment | --env --rollback |
-| /user:migrate | Database/code migration | --dry-run --rollback |
-| /user:scan | Security & validation | --validate --security --owasp --deps |
-| /user:estimate | Time/complexity predictions | --detailed --worst-case |
-| /user:cleanup | Project cleanup & maintenance | --code --files --deps --git --all --dry-run |
-| /user:git | Git workflow management | --status --commit --branch --sync --merge --stash --history --checkpoint --rollback |
+| /deploy | Application deployment | --env --rollback |
+| /migrate | Database/code migration | --dry-run --rollback |
+| /scan | Security & validation | --validate --security --owasp --deps |
+| /estimate | Time/complexity predictions | --detailed --worst-case |
+| /cleanup | Project cleanup & maintenance | --code --files --deps --git --all --dry-run |
+| /git | Git workflow management | --status --commit --branch --sync --merge --stash --history --checkpoint --rollback |
 
 ## Design & Architecture Commands (1)
 | Command | Purpose | Key Flags |
 |---------|---------|-----------|
-| /user:design | System design | --api --ddd --prd --openapi --graphql --bounded-context |
+| /design | System design | --api --ddd --prd --openapi --graphql --bounded-context |
 
 ## Workflow Commands (2)
 | Command | Purpose | Key Flags |
 |---------|---------|-----------|
-| /user:spawn | Spawn focused agent | --task |
-| /user:document | Documentation creation | --api --user |
+| /spawn | Spawn focused agent | --task |
+| /document | Documentation creation | --api --user |
 
 ## System Commands (1)
 | Command | Purpose | Key Flags |
 |---------|---------|-----------|
-| /user:load | Load project context | --depth |
+| /load | Load project context | --depth |
 
 ## Quick Reference & Workflow Examples
 
 ### Common Development Flows
 ```yaml
 Project Setup:
-  New Project: load → dev-setup --install → build --init → test --coverage
-  Existing: load --depth deep → analyze --architecture → design
+  New Project: /load → /dev-setup --install → /build --init → /test --coverage
+  Existing: /load --depth deep → /analyze --architecture → /design
   
 Full Development Cycle:
-  Feature: load → analyze → design --api → build --tdd → test --e2e → deploy
-  Bug Fix: troubleshoot --investigate → troubleshoot --fix → test → git --commit
-  Refactor: analyze --code → improve --quality → test --coverage → git --commit
+  Feature: /load → /analyze → /design --api → /build --tdd → /test --e2e → /deploy
+  Bug Fix: /troubleshoot --investigate → /troubleshoot --fix → /test → /git --commit
+  Refactor: /analyze --code → /improve --quality → /test --coverage → /git --commit
   
 Quality Workflows:
-  Code Review: analyze --code --think → improve --quality → scan --validate
-  Performance: analyze --profile → improve --performance --iterate → test
-  Security: scan --security --owasp → improve --quality → scan --validate
+  Code Review: /analyze --code --think → /improve --quality → /scan --validate
+  Performance: /analyze --profile → /improve --performance --iterate → /test
+  Security: /scan --security --owasp → /improve --quality → /scan --validate
   
 Maintenance:
-  Cleanup: cleanup --all --dry-run → cleanup --all → analyze → test
-  Update: migrate --dry-run → migrate → test --coverage → deploy --env staging
-  Monitor: analyze --performance --watch → improve --threshold 90%
+  Cleanup: /cleanup --all --dry-run → /cleanup --all → /analyze → /test
+  Update: /migrate --dry-run → /migrate → /test --coverage → /deploy --env staging
+  Monitor: /analyze --performance --watch → /improve --threshold 90%
 ```
 
 ### Advanced Flag Combinations
 ```yaml
 Power User Patterns:
-  Deep Analysis: analyze --architecture --seq --think-hard
-  UI Development: build --react --magic --pup --watch
-  Production Deploy: scan --validate --seq → deploy --env prod --think-hard
-  Emergency Debug: troubleshoot --prod --ultrathink --seq
+  Deep Analysis: /analyze --architecture --seq --think-hard
+  UI Development: /build --react --magic --pup --watch
+  Production Deploy: /scan --validate --seq → /deploy --env prod --think-hard
+  Emergency Debug: /troubleshoot --prod --ultrathink --seq
   
 Research & Learning:
-  Library Study: explain --c7 --seq --depth expert "React hooks"
-  Architecture: design --ddd --seq --think-hard → document --api
-  Performance: analyze --profile --seq → improve --iterate --threshold 95%
+  Library Study: /explain --c7 --seq --depth expert "React hooks"
+  Architecture: /design --ddd --seq --think-hard → /document --api
+  Performance: /analyze --profile --seq → /improve --iterate --threshold 95%
   
 Token Optimization:
-  Compressed Docs: document --uc → explain --uc --c7
-  Efficient Analysis: analyze --uc --no-mcp → improve --uc
-  Rapid Workflow: build --uc → test --uc → deploy --uc
+  Compressed Docs: /document --uc → /explain --uc --c7
+  Efficient Analysis: /analyze --uc --no-mcp → /improve --uc
+  Rapid Workflow: /build --uc → /test --uc → /deploy --uc
 ```
 
 ### Safety & Best Practices
 ```yaml
 Pre-Deployment Safety:
-  Full Gate: test --coverage → scan --security → scan --validate → deploy
-  Staged: deploy --env staging → test --e2e → deploy --env prod --plan
-  Rollback Ready: git --checkpoint → deploy → (if issues) deploy --rollback
+  Full Gate: /test --coverage → /scan --security → /scan --validate → /deploy
+  Staged: /deploy --env staging → /test --e2e → /deploy --env prod --plan
+  Rollback Ready: /git --checkpoint → /deploy → (if issues) /deploy --rollback
   
 Development Safety:
-  Clean First: cleanup --code → build → test → commit
-  Quality Gate: analyze → improve --quality → test → commit
-  Secure: scan --security → fix issues → scan --validate
+  Clean First: /cleanup --code → /build → /test → /git --commit
+  Quality Gate: /analyze → /improve --quality → /test → /git --commit
+  Secure: /scan --security → fix issues → /scan --validate
   
 Planning for Complex Operations:
-  Architecture: design --api --ddd --plan --think-hard
-  Migration: migrate --dry-run → migrate --plan → verify
-  Cleanup: cleanup --all --dry-run → review → cleanup --all
+  Architecture: /design --api --ddd --plan --think-hard
+  Migration: /migrate --dry-run → /migrate --plan → verify
+  Cleanup: /cleanup --all --dry-run → review → /cleanup --all
 ```
 
-## Shared Resources (37 files)
-- `ambiguity-check.yml`: Ambiguity detection & resolution
-- `audit.yml`: Audit configurations & logging
-- `checkpoint.yml`: Checkpoint management & rollback
-- `cleanup-patterns.yml`: Cleanup safety rules & patterns
-- `command-memory.yml`: Enhanced command result sharing & context management
-- `command-templates.yml`: Token-optimized reusable command patterns
-- `constants.yml`: Universal constants & shared values
-- `documentation-dirs.yml`: Documentation directory standards
-- `error-handling.yml`: Error handling & resilience patterns
-- `evidence.yml`: Evidence tracking & validation
-- `execution-lifecycle.yml`: Command execution flow & lifecycle management
-- `git-workflow.yml`: Git integration patterns
-- `implementation.yml`: Implementation hooks & behaviors
-- `loading-config.yml`: Token optimization & lazy loading
-- `mcp-flags.yml`: Enhanced MCP server control via flags
-- `patterns.yml`: Enhanced common workflows & command integration patterns
-- `performance.yml`: Performance monitoring & metrics
-- `planning-mode.yml`: Risk assessment & planning configuration
-- `research-first.yml`: Mandatory research & documentation requirements
-- `severity-levels.yml`: Severity classification & escalation paths
-- `task-system.yml`: Comprehensive task management & workflow system
-- `thinking-modes.yml`: Thinking depth configuration & flags
-- `ultracompressed.yml`: ~70% token reduction documentation mode
-- `user-experience.yml`: User interface & interaction patterns (NEW)
-- `validation.yml`: Validation rules & standards
-- `workflow-chains.yml`: Command chaining & orchestration patterns (NEW)
+## Shared Resources (12 core files)
+
+**Pattern Files:**
+- `architecture-patterns.yml`: DDD/microservices/event patterns
+- `command-patterns.yml`: Reusable command patterns & templates
+- `compression-patterns.yml`: Token reduction & UltraCompressed mode
+- `docs-patterns.yml`: Documentation system & formatting
+- `execution-patterns.yml`: Unified workflow, MCP orchestration & lifecycle
+- `quality-patterns.yml`: Validation, error handling & quality control
+- `research-patterns.yml`: Research flow & evidence validation
+- `security-patterns.yml`: Security patterns & threat controls
+- `task-patterns.yml`: Task management & workflow patterns
+
+**Core System:**
+- `flag-inheritance.yml`: Consolidated flag system with inheritance
+- `reference-patterns.yml`: Optimized reference system with  shortcuts
+- `universal-constants.yml`: Universal constants, symbols & shared values
+
+**Templates & Tools:**
+- `feature-template.md`: Standard feature development template
+- `task-ultracompressed.md`: Ultra-compressed task template
+- `validate-references.sh`: Reference validation & integrity checking
 
 ---
 *SuperClaude v4.0.0 - 18 commands with comprehensive configuration framework*

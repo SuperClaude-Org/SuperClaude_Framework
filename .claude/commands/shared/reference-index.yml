@@ -1,0 +1,76 @@
+# Reference Index - Quick Lookup Guide
+
+## Legend
+| Symbol | Meaning | | Abbrev | Meaning |
+|--------|---------|---|--------|---------|
+| → | maps to | | ref | reference |
+| @ | reference type | | tmpl | template |
+
+## Command Files (19)
+```yaml
+analyze.md: Analyze code/data/performance/architecture
+build.md: Create components/features/systems
+cleanup.md: Remove code/files/resources safely
+deploy.md: Deploy apps/services/infrastructure
+design.md: Design systems/APIs/architectures
+dev-setup.md: Configure dev environments
+document.md: Create/update documentation
+estimate.md: Estimate effort/time/resources
+explain.md: Explain code/concepts/patterns
+git.md: Git operations & workflows
+improve.md: Optimize/refactor/enhance code
+index.md: SuperClaude command reference
+load.md: Bulk file/context operations
+migrate.md: Migrate code/data/systems
+scan.md: Security/quality/compliance scanning
+spawn.md: Create projects/components/agents
+test.md: Testing operations & strategies
+troubleshoot.md: Debug/diagnose/fix issues
+```
+
+## Optimized Shared Resources (12 core)
+```yaml
+Root Level:
+  architecture-patterns.yml: DDD/microservices/event patterns
+  command-patterns.yml: Reusable command patterns
+  feature-template.md: Standard feature template
+  security-patterns.yml: Security patterns & controls
+  task-ultracompressed.md: Ultra-compressed task template
+  universal-constants.yml: Universal constants & values
+
+Consolidated Patterns:
+  compression-patterns.yml: Token reduction patterns
+  execution-patterns.yml: Unified workflow, MCP orchestration & lifecycle
+  docs-patterns.yml: Documentation system patterns
+  flag-inheritance.yml: Flag inheritance rules
+  quality-patterns.yml: Quality control & validation patterns
+  research-patterns.yml: Research flow patterns
+  reference-patterns.yml: Optimized reference system
+  task-patterns.yml: Task management patterns
+```
+
+## Quick Reference Mappings
+```yaml
+Constants: → universal-constants.yml
+Error Handling: → quality-patterns.yml
+Validation: → quality-patterns.yml
+Git Workflows: → execution-patterns.yml
+Compression: → compression-patterns.yml
+Documentation: → docs-patterns.yml
+Research: → research-patterns.yml
+Workflows: → execution-patterns.yml
+MCP Orchestration: → execution-patterns.yml
+References: → reference-patterns.yml
+```
+
+## File Organization
+```yaml
+Commands: .claude/commands/[command].md
+Shared Resources: .claude/commands/shared/[pattern].yml
+Templates: .claude/commands/shared/[template].md
+Project Docs: docs/
+Claude Working Docs: .claudedocs/
+```
+
+---
+*SuperClaude v4.0.0 | Reference index for quick lookups*
