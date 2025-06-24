@@ -199,7 +199,7 @@ Operational_Reports:
     - "Plain text for logs"
 ```
 
-## Standard Notifications
+## Standard_Notifications
 
 ```yaml
 Standard_Notifications:

@@ -1,12 +1,11 @@
-# /test - Create and run comprehensive tests
-
 @include shared/universal-constants.yml#Universal_Legend
 
-## Purpose
-Create or run comprehensive test suites for code specified in $ARGUMENTS using modern testing frameworks and methodologies.
+## Command Execution
+Execute: immediate. --plan→show plan first
+Legend: Generated based on symbols used in command
+Purpose: "[Action][Subject] in $ARGUMENTS"
 
-## Syntax
-`/test [flags] [target]`
+Create or run comprehensive test suites for code specified in $ARGUMENTS using modern testing frameworks and methodologies.
 
 @include shared/flag-inheritance.yml#Universal_Always
 
@@ -76,4 +75,4 @@ Examples:
 
 **Documentation:** Test plan | Test cases | Coverage goals | CI/CD integration
 
-@include shared/universal-constants.yml#Success_Messages
+@include shared/universal-constants.yml#Standard_Messages_Templates

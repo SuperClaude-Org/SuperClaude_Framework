@@ -322,5 +322,183 @@ Maintainability_Patterns:
   Documentation: ["Living documentation", "Architecture decision records", "API documentation"]
 ```
 
+## PRD Templates
+
+```yaml
+PRD_Templates:
+  Executive_Overview:
+    Problem_Statement: "Clear description of problem being solved"
+    Solution_Overview: "High-level approach to solution"
+    Expected_Impact: "Business value & measurable outcomes"
+    Key_Stakeholders: "Primary users, decision makers, affected teams"
+    
+  Goals_Success_Metrics:
+    Primary_Objectives: "Must-have goals for success"
+    Secondary_Goals: "Nice-to-have improvements"
+    Success_KPIs: "Measurable key performance indicators"
+    Measurement_Plan: "How & when metrics will be tracked"
+    
+  User_Stories_Requirements:
+    User_Personas: "Target user profiles & characteristics"
+    User_Journeys: "Key user workflows & interactions"
+    Functional_Requirements: "Core system capabilities"
+    Non_Functional_Requirements: "Performance, security, scalability needs"
+    Acceptance_Criteria: "Definition of done for features"
+    
+  Technical_Specifications:
+    Architecture_Overview: "High-level system design"
+    Technology_Choices: "Selected frameworks, languages, tools"
+    Integration_Points: "External systems & APIs"
+    Security_Requirements: "Auth, data protection, compliance needs"
+    Performance_Targets: "Response times, throughput, availability"
+    
+  Timeline_Risks:
+    Development_Phases: "Major milestones & deliverables"
+    Dependencies_Blockers: "External dependencies & potential blockers"
+    Risk_Assessment: "Technical, resource & timeline risks"
+    Mitigation_Strategies: "Plans to address identified risks"
+    
+  Templates_By_Type:
+    Feature_PRD: "New feature development template"
+    API_PRD: "API product requirements template"
+    Integration_PRD: "System integration requirements"
+    Migration_PRD: "System migration & modernization"
+```
+
+## API Design Patterns
+
+```yaml
+API_Design_Patterns:
+  REST_Design:
+    Resource_Identification:
+      URI_Design: "Nouns not verbs | /users/123 not /getUser/123"
+      Hierarchy: "Logical resource relationships | /users/123/orders/456"
+      Consistency: "Consistent naming conventions | plural nouns"
+      
+    HTTP_Methods:
+      GET: "Retrieve resources | Safe & idempotent | No side effects"
+      POST: "Create new resources | Non-idempotent | Returns 201 Created"
+      PUT: "Update entire resource | Idempotent | Returns 200 or 204"
+      PATCH: "Partial resource update | May be idempotent | Returns 200"
+      DELETE: "Remove resources | Idempotent | Returns 204 No Content"
+      
+    Response_Patterns:
+      Status_Codes: "200 OK | 201 Created | 400 Bad Request | 401 Unauthorized | 404 Not Found | 500 Internal Error"
+      Error_Format: "Consistent error structure | Code, message, details"
+      Pagination: "Offset/limit or cursor-based | Include metadata"
+      
+    Content_Negotiation:
+      Accept_Headers: "application/json | application/xml | text/html"
+      Versioning: "URI path (/v1/) | Header (Accept: application/vnd.api+json;version=1)"
+      
+  GraphQL_Design:
+    Schema_Design:
+      Types: "Strong typing | Scalar, Object, Interface, Union, Enum"
+      Queries: "Read operations | Nested field selection | Efficient data fetching"
+      Mutations: "Write operations | Input types | Clear return types"
+      Subscriptions: "Real-time updates | Event-driven | Resource efficient"
+      
+    Performance_Patterns:
+      DataLoader: "Batch & cache database queries | Solve N+1 problem"
+      Query_Complexity: "Depth limiting | Cost analysis | Rate limiting"
+      Caching: "Field-level caching | Query result caching"
+      
+  Authentication_Authorization:
+    JWT_Patterns:
+      Structure: "Header.Payload.Signature | Stateless tokens"
+      Claims: "Standard (iss, exp, aud) | Custom business claims"
+      Security: "Strong secrets | Token rotation | Expiry management"
+      
+    OAuth2_Flow:
+      Authorization_Code: "Web applications | Server-side token exchange"
+      Client_Credentials: "Service-to-service | Machine authentication"
+      Resource_Owner: "Username/password | Not recommended for new APIs"
+      
+    API_Keys:
+      Usage: "Simple authentication | Rate limiting | Usage tracking"
+      Security: "Rotate regularly | Environment-specific | Never in code"
+      
+  Rate_Limiting:
+    Strategies:
+      Fixed_Window: "Simple implementation | Reset at fixed intervals"
+      Sliding_Window: "More accurate | Higher memory usage"
+      Token_Bucket: "Burst handling | Smooth rate limiting"
+      
+    Implementation:
+      Headers: "X-RateLimit-Limit | X-RateLimit-Remaining | X-RateLimit-Reset"
+      Response: "429 Too Many Requests | Retry-After header"
+      
+  API_Documentation:
+    OpenAPI_Specification:
+      Structure: "Paths, components, security, info"
+      Examples: "Request/response examples | Error scenarios"
+      Validation: "Schema validation | Parameter constraints"
+      
+    Documentation_Standards:
+      Completeness: "All endpoints documented | Examples provided"
+      Clarity: "Clear descriptions | Use cases explained"
+      Maintenance: "Keep docs synchronized with code"
+```
+
+## DDD Patterns
+
+```yaml
+DDD_Patterns:
+  Strategic_Design:
+    Domain_Modeling:
+      Ubiquitous_Language: "Shared vocabulary between domain experts & developers"
+      Bounded_Context: "Explicit boundaries where model is defined & applicable"
+      Context_Mapping: "Relationships between bounded contexts"
+      
+    Context_Boundaries:
+      Identification: "Language changes | Team ownership | Data ownership"
+      Integration_Patterns: "Shared kernel | Customer/supplier | Conformist"
+      Anti_Corruption_Layer: "Protect domain from external influences"
+      
+  Tactical_Design:
+    Building_Blocks:
+      Entities: "Objects with unique identity | Mutable | Business behavior"
+      Value_Objects: "Immutable objects defined by attributes | No identity"
+      Aggregates: "Consistency boundaries | Transaction boundaries | Access via root"
+      Domain_Services: "Business logic that doesn't belong in entities"
+      
+    Aggregate_Design:
+      Root_Entity: "Single entry point | Maintains invariants"
+      Size_Guidelines: "Small aggregates | Minimize transaction scope"
+      Reference_Style: "Reference by ID across aggregates"
+      
+    Repository_Pattern:
+      Purpose: "Encapsulate data access logic | Domain-focused interface"
+      Interface: "Domain layer defines interface | Infrastructure implements"
+      Collections: "Act like in-memory collections | Hide persistence details"
+      
+  Event_Driven_DDD:
+    Domain_Events:
+      Definition: "Something important that happened in the domain"
+      Characteristics: "Immutable | Past tense | Rich with business context"
+      Publishing: "Aggregate publishes events | Infrastructure handles delivery"
+      
+    Event_Sourcing:
+      Concept: "Store events, not current state | Rebuild state from events"
+      Benefits: "Audit trail | Temporal queries | Replay capabilities"
+      Challenges: "Event versioning | Snapshot strategies | Query complexity"
+      
+    CQRS_Pattern:
+      Separation: "Command side (writes) separate from query side (reads)"
+      Benefits: "Optimized models | Independent scaling | Clear responsibility"
+      Implementation: "Separate models | Event synchronization | Eventual consistency"
+      
+  Implementation_Patterns:
+    Layered_Architecture:
+      Domain_Layer: "Core business logic | No dependencies on other layers"
+      Application_Layer: "Use cases | Orchestrates domain objects"
+      Infrastructure_Layer: "External concerns | Database, web, messaging"
+      
+    Hexagonal_Architecture:
+      Core_Principle: "Domain at center | Adapters for external concerns"
+      Ports: "Interfaces defined by domain | Input/output boundaries"
+      Adapters: "Implementations of ports | Framework-specific code"
+```
+
 ---
 *Architecture Patterns v4.0.0 - Comprehensive architectural knowledge patterns for SuperClaude design commands*

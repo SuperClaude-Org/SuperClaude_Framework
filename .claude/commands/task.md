@@ -1,15 +1,19 @@
-# /task - Manage complex features and requirements
-
-## Legend
 @include shared/universal-constants.yml#Universal_Legend
 
-## Purpose
+## Command Execution
+Execute: immediate. --plan→show plan first
+Legend: Generated based on symbols used in command
+Purpose: "[Action][Subject] in $ARGUMENTS"
+
 Manage complex features and requirements across sessions with automatic breakdown, context preservation, and recovery capabilities.
 
-## Syntax
-`/task [operation] [parameters]`
-
 @include shared/flag-inheritance.yml#Universal_Always
+
+Examples:
+- `/task:create "Implement OAuth 2.0 authentication system"` - Create complex feature task
+- `/task:status oauth-task-id` - Check task status  
+- `/task:resume oauth-task-id` - Resume work after break
+- `/task:update oauth-task-id "Found library conflict"` - Update with discoveries
 
 ## Operations
 
@@ -141,3 +145,5 @@ Works with:
 - Implementation artifacts
 - Completion summary
 - Lessons learned
+
+@include shared/universal-constants.yml#Standard_Messages_Templates

@@ -71,3 +71,85 @@ Adaptive Optimization:
   Cache Misses: Adjust caching strategy based on usage patterns
   Performance Degradation: Fall back to minimal loading mode
 ```
+
+## Loading Strategies
+
+```yaml
+Loading_Strategies:
+  Core_Loading:
+    Essential_Files:
+      Always_Load: ["CLAUDE.md", "RULES.md", "PERSONAS.md", "MCP.md"]
+      Token_Budget: "~4600 tokens base cost"
+      Load_Order: "CLAUDE.md → RULES.md → PERSONAS.md → MCP.md"
+      Validation: "Ensure all files exist and are valid before proceeding"
+      
+    Command_Loading:
+      Discovery_Method: "Scan .claude/commands/ directory for .md files"
+      Index_Creation: "Build lightweight index with command names and flags"
+      Lazy_Loading: "Load full command content only when invoked"
+      Cache_Strategy: "Keep last 5 used commands in memory"
+      
+  Progressive_Loading:
+    Minimal_Start:
+      Initial_Load: "Core files + command index only"
+      Token_Cost: "~4650 tokens (base + command index)"
+      Expansion_Triggers: "Command invocation, flag usage, complexity detection"
+      
+    Context_Expansion:
+      Shared_Resources: "Load .yml files from shared/ when referenced"
+      Pattern_Files: "Load specific pattern files based on command needs"
+      MCP_Resources: "Load MCP-specific patterns when MCP flags used"
+      Research_Resources: "Load research patterns when external libs detected"
+      
+  Intelligent_Caching:
+    Usage_Patterns:
+      Frequency_Based: "Cache most frequently used commands permanently"
+      Sequence_Based: "Preload resources for common command chains"
+      Context_Based: "Cache resources relevant to current project type"
+      Time_Based: "Cache recently used resources for quick access"
+      
+    Cache_Management:
+      Size_Limits: "Maximum cache size to prevent memory bloat"
+      Eviction_Policy: "LRU (Least Recently Used) for cache cleanup"
+      Preemptive_Loading: "Load likely-needed resources during idle time"
+      Cache_Warming: "Pre-populate cache with common patterns on startup"
+      
+  Context_Optimization:
+    Token_Management:
+      Budget_Tracking: "Monitor total context token usage continuously"
+      Threshold_Alerts: "Warning at 70%, critical at 85% capacity"
+      Auto_Compression: "Enable UltraCompressed mode when approaching limits"
+      Cleanup_Triggers: "Remove unused resources when space needed"
+      
+    Smart_Compression:
+      Selective_Detail: "Keep summaries, load details on demand"
+      Result_Caching: "Store expensive analysis results for reuse"
+      Pattern_Recognition: "Learn user patterns to optimize loading"
+      Adaptive_Strategies: "Adjust loading based on session characteristics"
+      
+  Performance_Optimization:
+    Loading_Speed:
+      Parallel_Loading: "Load independent resources concurrently"
+      Streaming_Parse: "Process large files incrementally"
+      Incremental_Updates: "Update cache without full reload"
+      Background_Refresh: "Update cached resources during idle periods"
+      
+    Memory_Efficiency:
+      Lazy_Initialization: "Create objects only when needed"
+      Resource_Pooling: "Reuse common objects across commands"
+      Garbage_Collection: "Clean up unused resources periodically"
+      Memory_Profiling: "Track memory usage patterns for optimization"
+      
+  Failure_Handling:
+    Resource_Unavailable:
+      Missing_Files: "Continue with degraded functionality, warn user"
+      Parse_Errors: "Skip corrupted files, use fallback patterns"
+      Permission_Issues: "Graceful degradation with user notification"
+      Network_Failures: "Use cached versions when available"
+      
+    Fallback_Strategies:
+      Minimal_Mode: "Operate with core files only when resources unavailable"
+      Alternative_Sources: "Use backup locations or embedded defaults"
+      Graceful_Degradation: "Reduce functionality rather than complete failure"
+      Recovery_Attempts: "Retry failed loads with exponential backoff"
+```

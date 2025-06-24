@@ -1,7 +1,11 @@
-# /load - Load and analyze project context
-
-## Legend
 @include shared/universal-constants.yml#Universal_Legend
+
+## Command Execution
+Execute: immediate. --plan→show plan first
+Legend: Generated based on symbols used in command
+Purpose: "[Action][Subject] in $ARGUMENTS"
+
+Load and analyze project context in $ARGUMENTS.
 
 ## Purpose
 Load and analyze project context in $ARGUMENTS to build comprehensive understanding of codebase structure, architecture, and patterns.

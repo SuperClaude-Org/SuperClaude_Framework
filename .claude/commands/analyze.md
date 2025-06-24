@@ -1,4 +1,4 @@
-@include shared/universal-constants.yml#Universal Legend
+@include shared/universal-constants.yml#Universal_Legend
 
 ## Command Execution
 Execute: immediate. --plan→show plan first
@@ -34,4 +34,4 @@ Analysis modes:
 
 @include shared/docs-patterns.yml#Standard_Notifications
 
-@include shared/universal-constants.yml#Standard Messages & Templates
+@include shared/universal-constants.yml#Standard_Messages_Templates

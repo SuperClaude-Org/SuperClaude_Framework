@@ -274,5 +274,98 @@ Usage_Examples:
     Report: "create_validation_report()"
 ```
 
+## Code Quality Metrics
+
+```yaml
+Code_Quality_Metrics:
+  Complexity_Metrics:
+    Cyclomatic_Complexity: "Target: <10 per function | Warning: >15 | Critical: >20"
+    Cognitive_Complexity: "Target: <15 per function | Warning: >25 | Critical: >30"
+    Nesting_Depth: "Target: <4 levels | Warning: >5 | Critical: >6"
+    Function_Length: "Target: <50 lines | Warning: >100 | Critical: >150"
+    
+  Maintainability_Metrics:
+    DRY_Score: "Target: >90% | Warning: <80% | Critical: <70%"
+    Code_Duplication: "Target: <5% | Warning: >10% | Critical: >15%"
+    Technical_Debt: "Target: <A rating | Warning: B rating | Critical: C+ rating"
+    
+  Quality_Gates:
+    Coverage: "Minimum 80% line coverage | 75% branch coverage"
+    Linting: "Zero errors | Max 5 warnings per file"
+    Type_Safety: "100% type coverage for TypeScript"
+    Security: "Zero high/critical vulnerabilities"
+```
+
+## Test Quality Standards
+
+```yaml
+Test_Quality_Standards:
+  Coverage_Requirements:
+    Statement_Coverage: "Minimum: 80% | Target: 90% | Excellent: 95%+"
+    Branch_Coverage: "Minimum: 75% | Target: 85% | Excellent: 90%+"
+    Function_Coverage: "Minimum: 90% | Target: 95% | Excellent: 100%"
+    Line_Coverage: "Minimum: 80% | Target: 90% | Excellent: 95%+"
+    
+  Test_Organization:
+    Structure: "AAA (Arrange-Act-Assert) | Given-When-Then (BDD)"
+    Naming: "Descriptive test names | should_[expected_behavior]_when_[condition]"
+    Isolation: "Independent tests | No shared state | Fresh setup/teardown"
+    
+  Test_Types:
+    Unit_Tests: "Fast (<1ms) | Isolated | Mock dependencies | 70-80% of total"
+    Integration_Tests: "Component interaction | Real dependencies | 15-20% of total"
+    E2E_Tests: "Full workflows | Browser automation | 5-10% of total"
+    
+  Quality_Indicators:
+    Test_Reliability: "Flaky test rate <2% | Consistent results"
+    Execution_Speed: "Unit test suite <10s | Full suite <5min"
+    Mutation_Testing: "Mutation score >75% for critical components"
+```
+
+## Root Cause Analysis
+
+```yaml
+Root_Cause_Analysis:
+  Investigation_Framework:
+    Five_Whys:
+      Process: "Ask 'why' 5 times to drill down to root cause"
+      Example: "Bug→Why?→Logic error→Why?→Missing validation→Why?→No requirements→Why?→Rushed timeline→Why?→Poor planning"
+      
+    Fishbone_Analysis:
+      Categories: ["People", "Process", "Technology", "Environment", "Materials", "Measurement"]
+      Application: "Systematic categorization of potential causes"
+      
+    Timeline_Analysis:
+      Sequence: "When did issue start | What changed | Correlation analysis"
+      Events: "Code changes | Deployments | Configuration updates | External factors"
+      
+  Evidence_Collection:
+    System_State:
+      Logs: "Error logs | Application logs | System logs | Network logs"
+      Metrics: "Performance metrics | Resource usage | Error rates"
+      Configuration: "Environment variables | Feature flags | Database state"
+      
+    Change_History:
+      Code_Changes: "Git commits | PR history | Deployment history"
+      Infrastructure: "Server changes | Database migrations | Third-party updates"
+      Process_Changes: "Team changes | Process updates | Tool updates"
+      
+  Resolution_Framework:
+    Immediate_Fix:
+      Stabilize: "Stop the bleeding | Rollback if necessary"
+      Workaround: "Temporary solution to restore service"
+      Monitor: "Verify fix effectiveness | Watch for recurrence"
+      
+    Permanent_Solution:
+      Root_Fix: "Address underlying cause | Not just symptoms"
+      Prevention: "Add safeguards | Improve processes | Update documentation"
+      Validation: "Test fix thoroughly | Verify no new issues introduced"
+      
+    Learning_Integration:
+      Documentation: "RCA report | Lessons learned | Knowledge sharing"
+      Process_Improvement: "Update procedures | Add checks | Training needs"
+      Monitoring: "Add alerts | Improve observability | Early warning systems"
+```
+
 ---
 *Quality Patterns v4.0.0 - Unified validation, severity response, error handling, and quality control framework*

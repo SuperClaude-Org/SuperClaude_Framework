@@ -35,4 +35,4 @@ Templates:
 
 @include shared/execution-patterns.yml#Git_Integration_Patterns
 
-@include shared/universal-constants.yml#Success_Messages
+@include shared/universal-constants.yml#Standard_Messages_Templates

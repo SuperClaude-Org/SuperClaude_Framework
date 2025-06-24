@@ -376,5 +376,77 @@ Example_4_Medium_Complexity:
   User_Experience: "Brief notification, then immediate work start"
 ```
 
+## Task Structure
+
+```yaml
+Task_Structure:
+  File_Format:
+    Location: ".claudedocs/tasks/{status}/{type}-{id}-{slug}.md"
+    Status_Directories: ["pending", "in-progress", "completed", "cancelled"]
+    ID_Format: "YYYYMMDD-HHMMSS (timestamp-based unique identifier)"
+    
+  Task_File_Header:
+    Metadata:
+      ID: "Unique timestamp identifier"
+      Title: "Human-readable task description"
+      Type: "feature|bugfix|refactor|docs|test|analysis"
+      Status: "pending|in_progress|completed|cancelled"
+      Priority: "critical|high|medium|low"
+      Created: "ISO 8601 timestamp"
+      Updated: "ISO 8601 timestamp"
+      Branch: "Git branch name (task/{id}-{slug})"
+      
+  Content_Structure:
+    Overview:
+      Description: "Detailed task description and context"
+      Objectives: "What needs to be accomplished"
+      Success_Criteria: "Definition of done"
+      
+    Implementation_Plan:
+      Phases: "Major development phases"
+      Dependencies: "Other tasks or external dependencies"
+      Risks: "Potential blockers or challenges"
+      
+    Progress_Tracking:
+      Current_Phase: "Which phase is currently active"
+      Completed_Steps: "List of finished work items"
+      Next_Steps: "Immediate next actions"
+      Blockers: "Current obstacles and workarounds"
+      
+    Technical_Context:
+      Architecture_Decisions: "Key design choices made"
+      Files_Modified: "Tracked file changes"
+      Git_Commits: "Related commit history"
+      Testing_Strategy: "How the work will be verified"
+      
+  State_Management:
+    Status_Transitions:
+      pending → in_progress: "Task started, branch created"
+      in_progress → completed: "All objectives met, PR merged"
+      in_progress → cancelled: "Task abandoned or deprioritized"
+      completed → in_progress: "Reopened for additional work"
+      
+    Automatic_Updates:
+      Progress_Calculation: "Based on completed todos vs total"
+      Git_Integration: "Commit references and branch status"
+      Time_Tracking: "Session time spent on task"
+      
+  Integration_Points:
+    Todo_System:
+      Generation: "Create todos from task breakdown"
+      Synchronization: "Todo completion updates task progress"
+      Context_Sharing: "Shared state between systems"
+      
+    Git_Integration:
+      Branch_Creation: "Automatic feature branch creation"
+      Commit_Linking: "Commits reference task ID"
+      Merge_Tracking: "PR completion triggers task completion"
+      
+    Command_System:
+      Auto_Creation: "Complex operations trigger task creation"
+      Status_Updates: "Commands update task progress"
+      Recovery: "Resume interrupted tasks automatically"
+```
+
 ---
 *Task System v4.0.0 - Seamless integration of persistent tasks with dynamic todos for SuperClaude*

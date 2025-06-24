@@ -1,12 +1,11 @@
-# /improve - Enhance code quality, performance and architecture
-
 @include shared/universal-constants.yml#Universal_Legend
 
-## Purpose
-Systematically improve code quality, performance, and architecture in $ARGUMENTS using best practices and optimization techniques.
+## Command Execution
+Execute: immediate. --plan→show plan first
+Legend: Generated based on symbols used in command
+Purpose: "[Action][Subject] in $ARGUMENTS"
 
-## Syntax
-`/improve [flags] [target]`
+Systematically improve code quality, performance, and architecture in $ARGUMENTS using best practices and optimization techniques.
 
 @include shared/flag-inheritance.yml#Universal_Always
 
@@ -55,4 +54,4 @@ Examples:
 
 **Documentation:** Refactoring decisions | Architecture changes | Performance optimizations | Future recommendations
 
-@include shared/universal-constants.yml#Success_Messages
+@include shared/universal-constants.yml#Standard_Messages_Templates

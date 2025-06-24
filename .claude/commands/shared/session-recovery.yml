@@ -142,3 +142,73 @@ conflict_resolution:
   - dependency overlaps
   - resource constraints
 ```
+
+## Recovery Patterns
+
+```yaml
+Recovery_Patterns:
+  Session_Detection:
+    Startup_Scan:
+      Locations: [".claudedocs/tasks/in-progress/", ".claudedocs/tasks/pending/"]
+      Parse_Metadata: "Extract task ID, title, status, branch, progress"
+      Git_Validation: "Check branch exists, clean working tree, remote sync"
+      Context_Restoration: "Load session state, key variables, decisions"
+      
+    Recovery_Decision_Matrix:
+      Active_Tasks_Found: "Auto-resume most recent or highest priority"
+      Multiple_Tasks: "Present selection menu with progress summary"
+      Stale_Tasks: "Tasks >7 days old require confirmation"
+      Corrupted_State: "Fallback to manual recovery prompts"
+      
+  Context_Recovery:
+    State_Reconstruction:
+      File_Context: "Restore working file list and modification tracking"
+      Variable_Context: "Reload important session variables and configurations"
+      Decision_Context: "Restore architectural and implementation decisions"
+      Progress_Context: "Rebuild todo list from task breakdown and current phase"
+      
+    Integrity_Validation:
+      File_Existence: "Verify all referenced files still exist"
+      Git_Consistency: "Check branch state matches task expectations"
+      Dependency_Check: "Validate required tools and services available"
+      Context_Completeness: "Ensure all critical context elements present"
+      
+  Automatic_Recovery:
+    Seamless_Resume:
+      No_User_Prompts: "Silent recovery for single active task"
+      Progress_Display: "Show task progress and current focus"
+      Context_Summary: "Brief summary of previous work and decisions"
+      Immediate_Action: "Continue with next logical step"
+      
+    Smart_Restoration:
+      Todo_Regeneration: "Rebuild TodoWrite from task state and progress"
+      Priority_Reordering: "Adjust todo priorities based on new context"
+      Blocker_Detection: "Identify and surface any previous blockers"
+      Next_Step_Identification: "Determine optimal next action"
+      
+  Error_Recovery:
+    Partial_State_Recovery:
+      Task_Only: "Task file exists but todos missing - regenerate todos"
+      Todos_Only: "Todos exist but task missing - continue with warning"
+      Corrupted_Task: "Parse what's possible, prompt for missing info"
+      Git_Mismatch: "Task branch doesn't exist - offer branch creation"
+      
+    Fallback_Strategies:
+      Manual_Recovery: "Present recovery options to user"
+      Fresh_Start: "Option to abandon recovery and start fresh"
+      Partial_Import: "Import what's recoverable, start new for rest"
+      Checkpoint_Rollback: "Restore from last known good checkpoint"
+      
+  Recovery_Communication:
+    Status_Messages:
+      Starting_Recovery: "🔄 Detecting previous session state..."
+      Task_Found: "📋 Found active task: {title} ({progress}% complete)"
+      Context_Restored: "✅ Session context restored - continuing work"
+      Recovery_Failed: "⚠ Could not fully restore context - manual recovery needed"
+      
+    Progress_Indicators:
+      Task_Progress: "{completed_todos}/{total_todos} steps completed"
+      Time_Estimates: "~{estimated_remaining} remaining"
+      Current_Focus: "Working on: {current_todo_description}"
+      Recent_Activity: "Last worked on {time_ago}"
+```

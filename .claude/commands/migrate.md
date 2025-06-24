@@ -1,7 +1,11 @@
-# /migrate - Execute database and code migrations
-
-## Legend
 @include shared/universal-constants.yml#Universal_Legend
+
+## Command Execution
+Execute: immediate. --plan→show plan first
+Legend: Generated based on symbols used in command
+Purpose: "[Action][Subject] in $ARGUMENTS"
+
+Execute database and code migrations for $ARGUMENTS.
 
 ## Purpose
 Execute comprehensive database or code migrations based on specifications in $ARGUMENTS with safety checks and rollback capabilities.

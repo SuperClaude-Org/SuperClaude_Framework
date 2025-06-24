@@ -1,36 +1,19 @@
-# /spawn - Spawn focused agent for specialized tasks
-
-## Legend
 @include shared/universal-constants.yml#Universal_Legend
 
-## Purpose
-Spawn specialized sub-agents to handle specific tasks in $ARGUMENTS with focused expertise and parallel execution capabilities.
+## Command Execution
+Execute: immediate. --plan→show plan first
+Legend: Generated based on symbols used in command
+Purpose: "[Action][Subject] in $ARGUMENTS"
 
-## Syntax
-`/spawn [flags] [task-description]`
+Spawn specialized sub-agents for focused tasks with parallel execution capabilities.
 
 @include shared/flag-inheritance.yml#Universal_Always
 
-## Core Flags
-
---agent flag:
-- researcher: Deep research & analysis
-- builder: Code generation
-- reviewer: Code review & QA
-- optimizer: Performance tuning
-- documenter: Documentation expert
-
---mode flag:
-- sequential: One agent at a time
-- parallel: Multiple agents
-- collaborative: Agents work together
-- supervisor: Oversee sub-agents
-
---scope flag:
-- focused: Single specific task
-- broad: Multiple related tasks
-- exploratory: Open-ended research
-- iterative: Refine through cycles
+Examples:
+- `/spawn --agent researcher "OAuth 2.0 best practices"` - Research then implement
+- `/spawn --mode parallel --agent builder "User auth, Profile API"` - Parallel development
+- `/spawn --mode sequential "Research → Build → Review payment"` - Full cycle workflow
+- `/spawn --mode collaborative --ultrathink "Design microservices"` - Collaborative design
 
 ## Agent Types
 
@@ -149,3 +132,5 @@ Works with:
 - Performance metrics
 - Lessons learned
 - Handoff documentation
+
+@include shared/universal-constants.yml#Standard_Messages_Templates

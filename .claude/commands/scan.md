@@ -1,12 +1,11 @@
-# /scan - Security and quality scanning
-
 @include shared/universal-constants.yml#Universal_Legend
 
-## Purpose
-Perform comprehensive security, quality, and dependency scanning on code specified in $ARGUMENTS.
+## Command Execution
+Execute: immediate. --plan→show plan first
+Legend: Generated based on symbols used in command
+Purpose: "[Action][Subject] in $ARGUMENTS"
 
-## Syntax
-`/scan [flags] [target]`
+Perform comprehensive security, quality, and dependency scanning on code specified in $ARGUMENTS.
 
 @include shared/flag-inheritance.yml#Universal_Always
 
@@ -54,4 +53,4 @@ Examples:
 
 **CI Integration:** Exit codes | JSON output | SARIF format | GitHub/GitLab integration
 
-@include shared/universal-constants.yml#Success_Messages
+@include shared/universal-constants.yml#Standard_Messages_Templates

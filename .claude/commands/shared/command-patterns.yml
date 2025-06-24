@@ -133,8 +133,8 @@ Instead_Of_Repeating:
   MCP_Explanations: "@see shared/flag-inheritance.yml#MCP_Control"
   Thinking_Modes: "@see shared/flag-inheritance.yml#Thinking_Modes"
   Persona_Behaviors: "@see shared/persona-patterns.yml"
-  Research_Standards: "@see shared/research-flow-templates.yml"
-  Validation_Rules: "@see shared/validation.yml"
+  Research_Standards: "@see shared/research-patterns.yml#Mandatory_Research_Flows"
+  Validation_Rules: "@see shared/quality-patterns.yml#Pre_Execution_Validation"
   Performance_Patterns: "@see shared/performance.yml"
   
 Template_Usage:

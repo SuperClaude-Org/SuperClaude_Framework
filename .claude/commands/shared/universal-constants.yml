@@ -1,7 +1,7 @@
 # Universal Constants & Shared Values
 # Single source of truth for all legends, symbols, paths, and common constants
 
-## Universal Legend
+## Universal_Legend
 | Symbol | Meaning | | Abbrev | Meaning |
 |--------|---------|---|--------|---------|
 | → | leads to | | cfg | configuration |
@@ -251,7 +251,7 @@ Common_Commands:
   Package_Commands: ["install", "update", "audit", "outdated"]
 ```
 
-## Standard Messages & Templates
+## Standard_Messages_Templates
 
 ```yaml
 Success_Messages:

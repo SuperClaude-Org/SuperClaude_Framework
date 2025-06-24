@@ -1,21 +1,21 @@
-# /dev-setup - Configure development environment and CI/CD
-
 @include shared/universal-constants.yml#Universal_Legend
 
-## Purpose
-Configure comprehensive development environments and CI/CD pipelines based on project requirements in $ARGUMENTS.
+## Command Execution
+Execute: immediate. --plan→show plan first
+Legend: Generated based on symbols used in command
+Purpose: "[Action][Subject] in $ARGUMENTS"
 
-## Syntax
-`/dev-setup [flags] [target]`
+Configure comprehensive development environments and CI/CD pipelines for $ARGUMENTS.
 
 @include shared/flag-inheritance.yml#Universal_Always
 
-Thinking flags (optional):
-- --think→environment configuration & dependency analysis
-- --think-hard→complex CI/CD pipelines & multi-stage builds
-- --ultrathink→complete development ecosystem design
+Examples:
+- `/dev-setup --type node --ci github --tools` - Node.js project with GitHub Actions
+- `/dev-setup --type python --tools --think` - Python project with comprehensive tooling
+- `/dev-setup --type monorepo --ci gitlab --think-hard` - Full-stack monorepo with GitLab CI
+- `/dev-setup --type react --tools --ci github` - React project with quality tools
 
-## Core Flags
+## Setup Types
 
 --type flag:
 - node: Node.js/TypeScript project setup
@@ -107,3 +107,5 @@ Maintainability:
 - Development tool configurations
 - Setup documentation & README updates
 - Scripts for common development tasks
+
+@include shared/universal-constants.yml#Standard_Messages_Templates

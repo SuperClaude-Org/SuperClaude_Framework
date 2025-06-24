@@ -1,6 +1,7 @@
 # Planning Mode Config
 
-## Flag-Based Planning Control
+## Universal Planning Control
+
 ```yaml
 Planning_Flags:
   --plan: "Force planning mode for any command"
@@ -10,6 +11,75 @@ Planning_Flags:
 Risk_Assessment:
   description: "Users control planning through explicit flags"
   recommendation: "Use --plan for risky ops that modify system state"
+  
+Universal_Planning_Behavior:
+  All_Commands: "Support --plan flag for user-controlled planning"
+  Planning_Output: "Use exit_plan_mode tool to present structured plan"
+  User_Approval: "Wait for user confirmation before executing plan"
+  Execution_Flow: "Parse → Plan (if requested) → Execute → Report"
+```
+
+## Command-Specific Planning Patterns
+
+```yaml
+Analysis_Commands:
+  Commands: ["analyze", "scan", "troubleshoot", "explain"]
+  Planning_Focus:
+    - "Analysis scope & methodology"
+    - "Tools & techniques to be used"
+    - "Expected output format & location"
+    - "Time estimate for analysis"
+  Planning_Template: |
+    ## Analysis Plan
+    **Scope:** {analysis_target}
+    **Method:** {analysis_approach}
+    **Tools:** {tools_to_use}
+    **Output:** {expected_deliverables}
+    **Duration:** {time_estimate}
+    
+Build_Commands:
+  Commands: ["build", "spawn", "design"]
+  Planning_Focus:
+    - "Components to be created/modified"
+    - "Technology choices & dependencies"
+    - "Integration points & requirements"
+    - "Testing strategy & validation"
+  Planning_Template: |
+    ## Build Plan
+    **Target:** {build_target}
+    **Stack:** {technology_choices}
+    **Components:** {components_to_create}
+    **Dependencies:** {required_dependencies}
+    **Testing:** {testing_approach}
+    
+Operations_Commands:
+  Commands: ["deploy", "migrate", "cleanup", "git"]
+  Planning_Focus:
+    - "Operations to be performed"
+    - "Risk assessment & mitigation"
+    - "Rollback procedures"
+    - "Validation & monitoring"
+  Planning_Template: |
+    ## Operations Plan
+    **Operation:** {operation_type}
+    **Target:** {operation_target}
+    **Risks:** {identified_risks}
+    **Mitigation:** {risk_mitigation}
+    **Rollback:** {rollback_procedure}
+    
+Quality_Commands:
+  Commands: ["test", "improve", "document"]
+  Planning_Focus:
+    - "Quality improvements to implement"
+    - "Metrics & targets"
+    - "Validation criteria"
+    - "Success measurement"
+  Planning_Template: |
+    ## Quality Plan
+    **Objective:** {quality_goal}
+    **Metrics:** {success_metrics}
+    **Approach:** {improvement_method}
+    **Validation:** {validation_criteria}
 ```
 
 ## Risk Assessment Patterns
@@ -31,21 +101,81 @@ Safety Overrides:
   --dry-run: Safe preview mode, skip planning
 ```
 
-## Planning Workflow
-```yaml
-Pre-Execution Check:
-  1. Parse command name and flags
-  2. Check REQUIRED_PLANNING list
-  3. Check special conditions (build --init)
-  4. If planning required → exit_plan_mode → await approval
-  5. Create checkpoint if risky
-  6. Proceed with execution
+## Planning Workflow Integration
 
-Planning Content:
-  Required: Command intent, affected resources, risks, rollback plan
-  Optional: Time estimate, dependencies, validation steps
-  Format: Structured plan using exit_plan_mode tool
+```yaml
+Pre-Execution_Check:
+  1: "Parse command name and flags"
+  2: "Check user --plan flag request"
+  3: "Assess operation complexity & risk"
+  4: "If planning requested → generate plan → exit_plan_mode"
+  5: "Await user approval before execution"
+  6: "Create checkpoint if risky operation"
+  7: "Proceed with execution"
+
+Planning_Content_Requirements:
+  Always_Include:
+    - "Command intent & objective"
+    - "Resources to be affected/modified"
+    - "Risk assessment & mitigation"
+    - "Expected outcomes & deliverables"
+  
+  Conditionally_Include:
+    - "Time estimate (for complex operations)"
+    - "Dependencies & prerequisites"
+    - "Validation steps & success criteria"
+    - "Rollback procedures (for risky operations)"
+  
+  Format_Requirements:
+    - "Use exit_plan_mode tool for plan presentation"
+    - "Structured markdown format"
+    - "Clear sections & bullet points"
+    - "Actionable & specific details"
+
+Claude_Code_Compliance:
+  Planning_Mode_Support:
+    - "All commands must support --plan flag"
+    - "Planning behavior must be consistent"
+    - "User controls when planning occurs"
+    - "No automatic forced planning"
+  
+  Plan_Quality_Standards:
+    - "Plans must be comprehensive & actionable"
+    - "Risk assessment required for risky operations"
+    - "Clear success criteria defined"
+    - "User can make informed approval decision"
+  
+  Execution_Patterns:
+    - "Immediate execution by default"
+    - "--plan flag forces planning mode"
+    - "User approval required after planning"
+    - "Graceful handling of plan rejection"
+```
+
+## Integration with Command Files
+
+```yaml
+Command_Header_Pattern:
+  Standard_Text: "Execute: immediate. --plan→show plan first"
+  Enhanced_Documentation: "@include shared/planning-mode.yml#Planning_Behavior"
+  
+Planning_Behavior:
+  Default_Execution: "Commands execute immediately without planning"
+  Plan_Flag_Behavior: "--plan flag shows detailed execution plan first"
+  User_Control: "User decides when to use planning mode"
+  Plan_Approval: "User must approve plan before execution"
+  
+Example_Usage:
+  Basic_Planning: "/command --plan"
+  Complex_Operation: "/deploy --env prod --plan"
+  Risk_Assessment: "/cleanup --all --plan"
+  
+Planning_Benefits:
+  Risk_Mitigation: "Preview operations before execution"
+  Resource_Planning: "Understand impact & requirements"
+  Decision_Making: "Make informed choices about operations"
+  Learning_Tool: "Understand what commands will do"
 ```
 
 ---
-*Planning mode configuration for systematic risk management*
+*Planning mode configuration v4.0.0 - Comprehensive planning patterns for Claude Code compliance*

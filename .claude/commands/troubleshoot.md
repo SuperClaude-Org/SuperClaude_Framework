@@ -1,12 +1,11 @@
-# /troubleshoot - Debug and resolve issues systematically
-
 @include shared/universal-constants.yml#Universal_Legend
 
-## Purpose
-Systematically debug and resolve issues in $ARGUMENTS using root cause analysis and evidence-based solutions.
+## Command Execution
+Execute: immediate. --plan→show plan first
+Legend: Generated based on symbols used in command
+Purpose: "[Action][Subject] in $ARGUMENTS"
 
-## Syntax
-`/troubleshoot [flags] [issue-description]`
+Systematically debug and resolve issues in $ARGUMENTS using root cause analysis and evidence-based solutions.
 
 @include shared/flag-inheritance.yml#Universal_Always
 
@@ -55,4 +54,4 @@ Examples:
 
 **Knowledge Base:** Problem→Solution mapping | Troubleshooting guides | Common patterns | Prevention checklist
 
-@include shared/universal-constants.yml#Success_Messages
+@include shared/universal-constants.yml#Standard_Messages_Templates

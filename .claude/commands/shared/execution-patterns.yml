@@ -166,6 +166,81 @@ Intelligent_MCP_Selection:
     Complex_Debugging: "→ Sequential thinking"
     UI_Requests: "→ Magic builder"
     E2E_Testing: "→ Puppeteer automation"
+
+## Automatic MCP Context Detection
+
+```yaml
+Context_Detection_Patterns:
+  Library_References:
+    Triggers:
+      - "import .* from ['\"][^./].*['\"]"  # Non-relative imports
+      - "require\\(['\"][^./].*['\"]\\)"     # CommonJS external
+      - "from \\w+ import"                   # Python external
+      - "@\\w+/"                           # Scoped packages
+    Action: "→ C7 resolve-library-id REQUIRED"
+    Blocking: "Implementation blocked until documentation found"
+    
+  Complex_Problem_Indicators:
+    Keywords: ["architecture", "design", "system", "complex", "debug", "investigate", "root cause", "bottleneck"]
+    Error_Patterns: ["multiple errors", "cascading failures", "performance degradation"]
+    Scope_Indicators: ["multi-file", "cross-component", "system-wide"]
+    Action: "→ Sequential thinking RECOMMENDED"
+    
+  UI_Component_Requests:
+    Keywords: ["button", "form", "modal", "dialog", "dropdown", "table", "chart", "dashboard", "component"]
+    Framework_Mentions: ["react", "vue", "svelte", "angular"]
+    File_Types: ["*.tsx", "*.jsx", "*.vue", "*.svelte"]
+    Action: "→ Magic builder RECOMMENDED"
+    
+  Browser_Automation_Needs:
+    Keywords: ["screenshot", "e2e", "integration test", "browser", "selenium", "automation"]
+    Test_Patterns: ["cypress", "playwright", "puppeteer", "webdriver"]
+    Action: "→ Puppeteer automation RECOMMENDED"
+    
+Research_Requirements:
+  External_Library_Detection:
+    Pattern: "Any import/require from non-relative path"
+    Rule: "CRITICAL → Research REQUIRED before implementation"
+    Process:
+      1: "C7 resolve-library-id with detected library name"
+      2: "If not found → WebSearch '[library] official documentation'"
+      3: "Extract: Installation, basic usage, common patterns"
+      4: "Block implementation if confidence < 90%"
+      
+  Unknown_Pattern_Detection:
+    Triggers: ["unfamiliar syntax", "new framework", "unknown API"]
+    Phrases_To_Block: ["might work", "probably", "I think", "typical pattern"]
+    Required_Instead: "Documentation confirms", "Official source states"
+    Action: "Research → Verify → Document source → Implement"
+    
+  Low_Confidence_Indicators:
+    Uncertainty_Language: ["maybe", "should", "typically", "usually"]
+    Missing_Evidence: "No source citation available"
+    Action: "BLOCK implementation until research complete"
+
+Auto_Activation_Rules:
+  Command_Based:
+    /build + UI_keywords: "Suggest --magic for component generation"
+    /analyze + complexity_indicators: "Suggest --seq for deep analysis"
+    /test + browser_keywords: "Suggest --pup for automation"
+    /explain + library_name: "Suggest --c7 for documentation"
+    
+  File_Based:
+    "*.tsx|*.jsx": "Frontend context → --magic available"
+    "*.test.*|*.spec.*": "Testing context → --pup available"
+    "*api*|*server*": "Backend context → --seq for design"
+    
+  Error_Based:
+    "ModuleNotFoundError": "→ C7 lookup REQUIRED"
+    "TypeError": "→ Sequential analysis RECOMMENDED"
+    "Build failures": "→ Sequential troubleshooting"
+    
+Override_Controls:
+  User_Flags_Priority: "Explicit flags > Auto-detection > Defaults"
+  Disable_All: "--no-mcp overrides all auto-detection"
+  Selective_Disable: "--no-c7, --no-seq, --no-magic, --no-pup"
+  Force_Enable: "--c7, --seq, --magic, --pup override context detection"
+```
     
   Synergistic_Patterns:
     --magic + --pup: "Generate UI components and test immediately"
@@ -425,6 +500,60 @@ Command_Hooks:
     Pre: ["Verify environment", "Check permissions", "Backup current", "Validate with Sequential"]
     During: ["Monitor health", "Track progress", "Handle rollback", "Log deployment events"]
     Post: ["Verify deployment", "Run health checks", "Update docs", "Generate deployment report"]
+```
+
+## Estimation Methodology
+
+```yaml
+Estimation_Methodology:
+  Time_Estimation_Framework:
+    Development_Phases:
+      Planning: "Requirements analysis & design: 10-15% of total"
+      Implementation: "Core development work: 50-60% of total"
+      Testing: "Unit, integration & system testing: 15-25% of total"
+      Integration: "System integration & deployment: 5-10% of total"
+      Buffer: "Unknown unknowns & contingency: 10-20% of total"
+      
+  Complexity_Scoring:
+    Low_Complexity: "Well-understood, established patterns: 1-3 days"
+    Medium_Complexity: "Some unknowns, moderate integration: 3-10 days"
+    High_Complexity: "Research required, complex integration: 1-4 weeks"
+    Very_High_Complexity: "New technology, architectural changes: 1-3 months"
+    
+  Team_Velocity_Factors:
+    Solo_Developer: "Multiplier: 1.0 (baseline)"
+    Small_Team_2_3: "Multiplier: 0.8 (coordination overhead)"
+    Medium_Team_4_8: "Multiplier: 0.6 (communication overhead)"
+    Large_Team_9Plus: "Multiplier: 0.4 (significant coordination)"
+    
+  Risk_Assessment_Framework:
+    Technical_Risks:
+      New_Technology: "Learning curve impact: +25-50% time"
+      Complex_Integration: "Multiple system touchpoints: +20-40% time"
+      Performance_Requirements: "Optimization needs: +15-30% time"
+      Legacy_System_Integration: "Technical debt impact: +30-60% time"
+      
+    Resource_Risks:
+      Key_Person_Dependency: "Single expert required: +20-40% time"
+      External_Dependencies: "Third-party deliverables: +10-30% time"
+      Skill_Gap: "Team learning required: +25-50% time"
+      
+  Estimation_Output_Format:
+    Three_Point_Estimation:
+      Optimistic: "Best case scenario (10% probability)"
+      Realistic: "Most likely outcome (50% probability)"
+      Pessimistic: "Worst case scenario (90% probability)"
+      
+    Confidence_Levels:
+      High_Confidence: "Well-understood requirements: ±10%"
+      Medium_Confidence: "Some unknowns present: ±25%"
+      Low_Confidence: "Significant uncertainties: ±50%"
+      
+    Resource_Planning:
+      Developer_Hours: "Total development effort"
+      QA_Hours: "Testing & quality assurance effort"
+      DevOps_Hours: "Deployment & infrastructure setup"
+      Project_Management: "Coordination & communication overhead"
 ```
 
 ---
