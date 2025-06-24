@@ -4,8 +4,8 @@
 ```yaml
 scan_on_startup:
   locations:
-    - .tasks/in-progress/*.md
-    - .tasks/pending/*.md (overdue)
+    - ./claudedocs/tasks/in-progress/*.md
+    - ./claudedocs/tasks/pending/*.md (overdue)
   
   parse_tasks:
     - extract metadata
@@ -53,7 +53,7 @@ context_format:
 ## Hybrid Recovery Process  
 ```yaml
 step_1_identify:
-  - scan .tasks/in-progress/
+  - scan ./claudedocs/tasks/in-progress/
   - parse task metadata
   - check git branch status
   - validate file existence

@@ -72,7 +72,7 @@ Efficiency: Min tokens | Cache results | Batch ops
 Files: *.tsx→frontend | *.sql→data | Docker→devops | *.test→qa
 Keywords: bug|error→debugger | optimize→performance | secure→security
 Context: TypeError→trace | Module error→deps | Permission→security
-Tasks: Auto-detect complexity→seamless task creation | .tasks/in-progress→auto-resume
+Tasks: Auto-detect complexity→seamless task creation | ./claudedocs/tasks/in-progress→auto-resume
 ```
 
 ## Task Management

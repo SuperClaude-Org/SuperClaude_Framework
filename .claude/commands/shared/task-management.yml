@@ -37,7 +37,7 @@ detection_keywords:
 ## Hybrid Todo + Task System
 ```yaml
 two_tier_approach:
-  task_level: high-level features (.tasks/ folders)
+  task_level: high-level features (./claudedocs/tasks/ folders)
   todo_level: immediate steps (TodoWrite/TodoRead)
   
 integration_flow:
@@ -62,15 +62,15 @@ status_transitions:
   any → cancelled: /task:cancel {id} + clear todos
   
 folder_mapping:
-  pending: .tasks/pending/
-  in-progress: .tasks/in-progress/ + active TodoWrite
-  completed: .tasks/completed/ + archived todos
+  pending: ./claudedocs/tasks/pending/
+  in-progress: ./claudedocs/tasks/in-progress/ + active TodoWrite
+  completed: ./claudedocs/tasks/completed/ + archived todos
 ```
 
 ## Session Recovery
 ```yaml
 startup_check:
-  - scan .tasks/in-progress/
+  - scan ./claudedocs/tasks/in-progress/
   - identify active tasks
   - restore context from task files
   - suggest next steps
@@ -108,17 +108,43 @@ content_sections:
 
 ## Git Integration
 ```yaml
-branch_naming: {type}/{task_id}
-commit_messages: "[{task_id}] {description}"
-checkpoints:
-  - before major changes
-  - after each phase completion
-  - before session breaks
+branch_strategy:
+  naming: task/{id}-{slug}
+  creation: automatic on task start
+  protection: prevent force push
   
-cleanup:
-  - merge completed branches
-  - archive old task files
-  - clean up temporary files
+commit_discipline:
+  format: "[{task_id}] {phase}: {description}"
+  atomic: one logical change per commit
+  phases:
+    - "[{id}] Analysis: Requirements documented"
+    - "[{id}] Impl: {component} implemented"
+    - "[{id}] Test: {test_type} tests added"
+    - "[{id}] Complete: Task finished"
+  
+checkpoints:
+  automatic:
+    - phase transitions
+    - before risky operations
+    - session timeout (>30min)
+  manual:
+    - /task:pause command
+    - /user:git --checkpoint
+    
+cleanup_workflow:
+  on_complete:
+    - squash merge to main
+    - delete feature branch
+    - archive task to completed/
+  retention:
+    - keep completed tasks 30 days
+    - archive older tasks
+    - prune stale branches weekly
+    
+git_hooks:
+  pre_commit: validate task state
+  post_merge: update task status
+  branch_protection: task/* branches
 ```
 
 ## Automatic Task Creation Flow
@@ -172,7 +198,7 @@ task_commands:
   cancel: /task:cancel {id}
   
 auto_detection:
-  - scan for .tasks/ on startup
+  - scan for ./claudedocs/tasks/ on startup
   - auto-create for complex requirements (no prompts)
   - auto-pause tasks on context limits
   - auto-resume on session start

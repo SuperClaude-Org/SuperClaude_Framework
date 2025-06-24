@@ -1,0 +1,88 @@
+# Task UltraCompressed Format Configuration
+
+## Format Rules
+```yaml
+activation:
+  automatic: true for all task operations
+  exceptions: none - always use compressed format
+  
+compression_rules:
+  remove_words:
+    - the, a, an, is, are, was, were
+    - in, on, at, to, for, of, with
+    - that, which, this, these
+  
+  abbreviations:
+    status: S | priority: P | implementation: impl
+    configuration: cfg | documentation: docs
+    authentication: auth | database: db
+    architecture: arch | development: dev
+    production: prod | dependencies: deps
+    
+  symbols:
+    →: leads to / results in
+    &: and / with
+    w/: with / including
+    w/o: without
+    ✓: completed
+    □: pending
+    ⚠: blocked
+    
+structure:
+  title_line: "T: {title}"
+  metadata_line: "ID: {id} | S: {status} | P: {priority}"
+  branch_line: "Branch: {branch}"
+  phases: bullet list with symbols
+  context: key:value pairs
+  progress: percentage and todo count
+```
+
+## Task File Template
+```yaml
+header: |
+  # Legend: → leads to | & and | w/ with | S: status | P: priority | ✓ done | □ pending
+  
+  T: {title}
+  ID: {id} | S: {status} | P: {priority}
+  Branch: {branch}
+
+phases: |
+  ## Phases
+  {phase_list}
+
+context: |
+  ## Context
+  Dec: {decisions}
+  Block: {blockers}
+  Files: {files}
+  Next: {next_step}
+
+progress: |
+  ## Progress
+  Todos: {active}/{total}
+  Complete: {percentage}%
+```
+
+## Conversion Examples
+```yaml
+verbose_to_compressed:
+  before: "Create user authentication system with JWT tokens"
+  after: "T: User auth system w/ JWT"
+  
+  before: "Status: in-progress, Priority: high"
+  after: "S: in-progress | P: high"
+  
+  before: "Implementation phase is currently blocked by CORS configuration"
+  after: "Impl phase blocked: CORS cfg"
+  
+  before: "Decision made: Use PostgreSQL for database"
+  after: "Dec: PostgreSQL for db"
+```
+
+## Benefits
+```yaml
+token_savings: ~70% reduction
+readability: maintained through legend
+consistency: enforced format across all tasks
+scanning: easier to find key information
+```

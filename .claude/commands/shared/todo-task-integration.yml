@@ -3,7 +3,7 @@
 ## Two-Tier Architecture
 ```yaml
 hierarchy:
-  level_1_tasks: High-level features (.tasks/ folders)
+  level_1_tasks: High-level features (./claudedocs/tasks/ folders)
     purpose: Session persistence, git branching, requirement tracking
     scope: Features spanning multiple sessions
     examples: "build auth system", "implement dashboard", "create API"
@@ -84,7 +84,7 @@ session_state_tracking:
     - next recommended action
 
 recovery_on_startup:
-  1_scan_tasks: check .tasks/in-progress/
+  1_scan_tasks: check ./claudedocs/tasks/in-progress/
   2_restore_todos: rebuild TodoWrite from task state
   3_identify_focus: determine current todo
   4_resume_message: "Resuming {task} - working on {current_todo}"

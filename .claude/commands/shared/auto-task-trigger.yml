@@ -81,7 +81,7 @@ auto_save_triggers:
   manual_break: user requests pause
   
 seamless_recovery:
-  startup_scan: check .tasks/in-progress/
+  startup_scan: check ./claudedocs/tasks/in-progress/
   auto_resume: highest priority active task
   context_restore: previous session state
   notification: "Resuming: {task_title}"
@@ -100,6 +100,20 @@ command_integration:
   /user:implement → always create task → breakdown → execute
   /user:create → analyze scope → task if multi-step → proceed
   
+plan_mode_integration:
+  exit_plan_mode:
+    - analyze plan complexity
+    - count steps, files, technologies
+    - if complexity ≥8: "Create task to track this plan? (y/n)"
+    - if yes: create task with plan content
+    - track plan execution through task
+  
+  planning_triggers:
+    - --plan flag detected
+    - risky operations (deploy, migrate)
+    - multi-phase work identified
+    - cross-cutting concerns
+  
 persona_activation:
   architect: high complexity systems
   frontend: UI/component requests  
@@ -109,4 +123,5 @@ persona_activation:
 workflow_chains:
   detect → create → breakdown → branch → implement → test → complete
   requirement → task → steps → code → validation → merge
+  plan → analyze → suggest task → create → track → complete
 ```

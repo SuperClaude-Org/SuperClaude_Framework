@@ -102,7 +102,7 @@ Context:
 
 ## File Structure
 ```
-.tasks/
+./claudedocs/tasks/
 ├── pending/feature-20250623-143052-user-auth.md
 ├── in-progress/bugfix-20250623-144022-login-error.md
 ├── completed/refactor-20250623-142033-api-cleanup.md

@@ -6,7 +6,7 @@ logs/
 .claudedocs/
 
 # Task management (project-specific)
-.tasks/
+./claudedocs/tasks/
 
 # System files
 .DS_Store
