@@ -14,6 +14,31 @@ Command_Header:
   Legend: "@cmd-specific legend gen"
   Purpose: "[Action][Subject] in $ARGUMENTS"
 
+## Optimized Command File Template
+
+```yaml
+# Standard template for all command files using @include references
+Optimized_Command_Template: |
+  @include shared/universal-constants.yml#Universal_Legend
+  
+  ## Command Execution
+  Execute: immediate. --plan→show plan first
+  Legend: Generated based on symbols used in command
+  Purpose: "[Action][Subject] in $ARGUMENTS"
+  
+  [Command-specific description here]
+  
+  @include shared/flag-inheritance.yml#Universal_Always
+  
+  Examples:
+  - `/{command} --flag` - Description
+  - `/{command} --other-flag` - Description
+  - `/{command} --complex-example` - Description
+  
+  [Command-specific content sections]
+  
+  @include shared/universal-constants.yml#Success_Messages
+
 ## UltraCompressed Command Structure
 
 ```yaml

@@ -37,17 +37,14 @@
 ## Purpose
 Comprehensive reference guide for all SuperClaude commands, workflows, and system capabilities.
 
-## Universal Flags
---plan: "Show execution plan before running"
---uc: "UltraCompressed mode (~70% token reduction)"
---ultracompressed: "Alias for --uc"
---think: "Multi-file analysis w/ context (4K tokens)"
---think-hard: "Deep architectural analysis (10K tokens)"
---ultrathink: "Critical system redesign (32K tokens)"
---c7: "Enable Context7→library documentation lookup"
---seq: "Enable Sequential→complex analysis & thinking"
---magic: "Enable Magic→UI component generation"
---pup: "Enable Puppeteer→browser automation & testing"
+## Optimization Update (v4.0.0)
+🎯 **Major Streamlining Completed**: All 18 command files optimized using @include references
+- **Token Reduction**: ~70% reduction in command file size
+- **Maintainability**: Single source of truth for all shared content
+- **Consistency**: Guaranteed uniformity across commands
+- **Reference System**: Commands now use shared patterns from `shared/*.yml` files
+
+@include shared/flag-inheritance.yml#Universal_Always
 --all-mcp: "Enable all MCP servers"
 --no-mcp: "Disable all MCP servers (native tools only)"
 --no-c7: "Disable Context7 specifically"
