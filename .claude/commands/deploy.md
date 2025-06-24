@@ -62,9 +62,9 @@ Thinking flags (optional):
 - --ultrathink→complete deployment architecture & disaster recovery
 
 Examples:
-- `/user:deploy --env staging --think` - Staging w/ coordination analysis
-- `/user:deploy --env prod --think-hard` - Prod w/ comprehensive planning
-- `/user:deploy --rollback --ultrathink` - Critical rollback w/ full impact analysis
+- `/deploy --env staging --think` - Staging w/ coordination analysis
+- `/deploy --env prod --think-hard` - Prod w/ comprehensive planning
+- `/deploy --rollback --ultrathink` - Critical rollback w/ full impact analysis
 
 Pre-deploy cleanup:
 - Clean previous artifacts | Remove dev-only files (.env.local, debug cfgs)

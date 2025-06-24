@@ -57,9 +57,9 @@ Build project/feature based on req in $ARGUMENTS.
 --no-pup: "Disable Puppeteer specifically"
 
 Examples:
-- `/user:build --react --magic` - React app w/ UI gen
-- `/user:build --api --c7` - API w/ docs
-- `/user:build --react --magic --pup` - Build & test UI
+- `/build --react --magic` - React app w/ UI gen
+- `/build --api --c7` - API w/ docs
+- `/build --react --magic --pup` - Build & test UI
 
 Pre-build: Remove artifacts (dist/, build/, .next/) | Clean temp files & cache | Validate deps | Remove debug
 

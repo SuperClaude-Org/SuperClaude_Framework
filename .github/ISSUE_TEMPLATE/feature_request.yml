@@ -44,7 +44,7 @@ body:
         I would like to see...
 
         Example usage:
-        /user:newcommand --flag
+        /newcommand --flag
     validations:
       required: true
 
@@ -75,7 +75,7 @@ body:
       label: Examples
       description: Provide concrete examples of how this feature would work
       placeholder: |
-        Command: /user:example --new-flag
+        Command: /example --new-flag
         Output: Expected behavior...
 
         Persona usage:

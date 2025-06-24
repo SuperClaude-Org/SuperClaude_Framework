@@ -57,9 +57,9 @@ Multi-dimensional analysis on code, arch, or problem in $ARGUMENTS.
 --no-pup: "Disable Puppeteer specifically"
 
 Examples:
-- `/user:analyze --code --think` - Code review w/ context
-- `/user:analyze --arch --think-hard` - Deep arch analysis  
-- `/user:analyze --security --ultrathink` - Comprehensive security audit
+- `/analyze --code --think` - Code review w/ context
+- `/analyze --arch --think-hard` - Deep arch analysis  
+- `/analyze --security --ultrathink` - Comprehensive security audit
 
 Analysis modes:
 

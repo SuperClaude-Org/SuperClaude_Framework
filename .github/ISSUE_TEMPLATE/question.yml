@@ -55,7 +55,7 @@ body:
       description: Share relevant configuration or commands you're using
       placeholder: |
         ```
-        /user:command --flags
+        /command --flags
         Persona: architect
         Claude Code version: latest
         ```

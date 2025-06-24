@@ -64,9 +64,9 @@ Thinking flags (optional):
 - --ultrathink→complete system redesign or critical architectural decisions
 
 Examples:
-- `/user:design --api --think` - REST API design w/ patterns
-- `/user:design --ddd --think-hard` - Deep domain modeling
-- `/user:design --api --ddd --ultrathink` - Complete system architecture
+- `/design --api --think` - REST API design w/ patterns
+- `/design --ddd --think-hard` - Deep domain modeling
+- `/design --api --ddd --ultrathink` - Complete system architecture
 
 Design focus w/ flags:
 
