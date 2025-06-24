@@ -93,7 +93,7 @@ if [[ "$UNINSTALL_MODE" = true ]]; then
     
     if [[ "$FORCE_INSTALL" != true ]]; then
         echo -e "${YELLOW}This will remove SuperClaude from $INSTALL_DIR${NC}"
-        echo -n "Are you sure you want to continue? (y/n): "
+        echo -n "Are you sure you want to continue? (y/N): "
         read -r confirm_uninstall
         if [ "$confirm_uninstall" != "y" ]; then
             echo "Uninstall cancelled."
@@ -133,7 +133,7 @@ if [[ "$FORCE_INSTALL" != true ]]; then
     else
         echo -e "${YELLOW}This will install SuperClaude in $INSTALL_DIR${NC}"
     fi
-    echo -n "Are you sure you want to continue? (y/n): "
+    echo -n "Are you sure you want to continue? (y/N): "
     read -r confirm_install
     if [ "$confirm_install" != "y" ]; then
         echo "Installation cancelled."
@@ -161,7 +161,7 @@ if [ -d "$INSTALL_DIR" ] && [ "$(ls -A "$INSTALL_DIR" 2>/dev/null)" ]; then
     if [[ "$UPDATE_MODE" = true ]] || [[ "$FORCE_INSTALL" = true ]]; then
         backup_choice="y"
     else
-        echo -n "Backup existing configuration? (y/n): "
+        echo -n "Backup existing configuration? (y/N): "
         read -r backup_choice
     fi
     
