@@ -9,6 +9,8 @@
 
 ## 🚀 Version 2.0 Update
 
+IMPORTANT: Start Fresh by removing old files and dir in .claude (RULES.md MCP.md PERSONAS.md CLAUDE.md and /commands dir)
+
 SuperClaude v2 introduces architectural improvements focused on maintainability and extensibility:
 
 - **⚡ Streamlined Architecture**: @include reference system for configuration management
