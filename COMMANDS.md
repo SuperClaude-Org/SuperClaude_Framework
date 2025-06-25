@@ -35,7 +35,7 @@
 ### 📦 Token Optimization
 | Flag | Alias | Description |
 |------|-------|-------------|
-| `--uc` | `--ultracompressed` | Activate UltraCompressed mode (70% token reduction) |
+| `--uc` | `--ultracompressed` | Activate UltraCompressed mode (huge token reduction) |
 
 ### 🔧 MCP Server Control
 | Flag | Description |
