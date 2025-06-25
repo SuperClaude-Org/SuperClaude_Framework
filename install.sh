@@ -6,6 +6,27 @@
 # License: MIT
 # Repository: https://github.com/nshkrdotcom/SuperClaude
 
+# Early bash version check
+BASH_MAJOR_VERSION="${BASH_VERSION%%.*}"
+if [[ -z "$BASH_MAJOR_VERSION" ]]; then
+    echo "Error: Cannot determine bash version"
+    exit 1
+fi
+
+if [[ "$BASH_MAJOR_VERSION" -lt 4 ]]; then
+    echo "Warning: You are using bash $BASH_VERSION"
+    echo "This script has limited functionality with bash versions < 4.0"
+    echo "For full functionality, please install bash 4.0 or higher:"
+    echo "  macOS: brew install bash"
+    echo "  Linux: Use your package manager to update bash"
+    echo ""
+    echo "Continuing with bash 3.x compatibility mode..."
+    echo ""
+    BASH3_COMPAT=true
+else
+    BASH3_COMPAT=false
+fi
+
 set -e  # Exit on error
 set -o pipefail  # Exit on pipe failure
 
@@ -51,6 +72,16 @@ VERIFICATION_FAILURES=0
 ROLLBACK_ON_FAILURE=true
 BACKUP_DIR=""
 INSTALLATION_PHASE=false
+
+# Command availability cache
+# For bash 3.x compatibility, we use a simple variable approach
+if [[ "$BASH3_COMPAT" = true ]]; then
+    # Simple string-based cache for bash 3.x
+    COMMAND_CACHE=""
+else
+    # Associative array for bash 4.x
+    declare -A COMMAND_CACHE
+fi
 
 # Original working directory
 ORIGINAL_DIR=$(pwd)
@@ -124,7 +155,33 @@ check_command() {
         return 1
     fi
     
-    command -v "$cmd" &> /dev/null
+    if [[ "$BASH3_COMPAT" = true ]]; then
+        # Bash 3.x compatibility: Use string search
+        if [[ "$COMMAND_CACHE" == *"$cmd:yes"* ]]; then
+            return 0
+        elif [[ "$COMMAND_CACHE" == *"$cmd:no"* ]]; then
+            return 1
+        else
+            # Not in cache, check and add
+            if command -v "$cmd" &> /dev/null; then
+                COMMAND_CACHE="${COMMAND_CACHE}${cmd}:yes,"
+                return 0
+            else
+                COMMAND_CACHE="${COMMAND_CACHE}${cmd}:no,"
+                return 1
+            fi
+        fi
+    else
+        # Bash 4.x: Use associative array
+        if [[ -z "${COMMAND_CACHE[$cmd]:-}" ]]; then
+            if command -v "$cmd" &> /dev/null; then
+                COMMAND_CACHE[$cmd]="yes"
+            else
+                COMMAND_CACHE[$cmd]="no"
+            fi
+        fi
+        [[ "${COMMAND_CACHE[$cmd]}" == "yes" ]]
+    fi
 }
 
 # Function: compare_versions
@@ -856,11 +913,12 @@ run_preflight_checks() {
         exit 1
     fi
     
-    # Check bash version
-    local bash_major_version="${BASH_VERSION%%.*}"
-    if [[ -z "$bash_major_version" ]] || [[ "$bash_major_version" -lt "$MIN_BASH_VERSION" ]]; then
-        log_error "Bash version $MIN_BASH_VERSION.0 or higher required (current: ${BASH_VERSION:-unknown})" "preflight-check"
-        exit 1
+    # Bash version check already done at script start
+    # Just log the current mode
+    if [[ "$BASH3_COMPAT" = true ]]; then
+        log_verbose "Running in bash 3.x compatibility mode"
+    else
+        log_verbose "Running with full bash 4.x+ features"
     fi
     
     # Check disk space
