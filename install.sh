@@ -150,10 +150,13 @@ check_command() {
     fi
     
     # Check for dangerous command patterns (enhanced security)
-    if [[ "$cmd" =~ [;&|`$(){}\"\'\\] ]] || [[ "$cmd" =~ \.\.|^/ ]] || [[ "$cmd" =~ [[:space:]] ]]; then
-        log_error "check_command: Invalid command name contains dangerous characters: $cmd"
-        return 1
-    fi
+    # Bash 3.2 compatible version - check each pattern separately
+    case "$cmd" in
+        *";"*|*"&"*|*"|"*|*"\`"*|*"$"*|*"("*|*")"*|*"{"*|*"}"*|*"\""*|*"'"*|*"\\"*|*"<"*|*">"*|*".."*|"/"*|*" "*|*"	"*)
+            log_error "check_command: Invalid command name contains dangerous characters: $cmd"
+            return 1
+            ;;
+    esac
     
     if [[ "$BASH3_COMPAT" = true ]]; then
         # Bash 3.x compatibility: Use string search
@@ -199,15 +202,24 @@ compare_versions() {
     fi
     
     # Validate version format (basic semantic version pattern)
-    if [[ ! "$version1" =~ ^[0-9]+(\.[0-9]+)*([.-][a-zA-Z0-9]+)*$ ]]; then
-        log_error "compare_versions: Invalid version format: $version1"
-        return 1
-    fi
+    # Bash 3.2 compatible version check
+    case "$version1" in
+        [0-9]*.[0-9]*.[0-9]*|[0-9]*.[0-9]*|[0-9]*)
+            ;;
+        *)
+            log_error "compare_versions: Invalid version format: $version1"
+            return 1
+            ;;
+    esac
     
-    if [[ ! "$version2" =~ ^[0-9]+(\.[0-9]+)*([.-][a-zA-Z0-9]+)*$ ]]; then
-        log_error "compare_versions: Invalid version format: $version2"
-        return 1
-    fi
+    case "$version2" in
+        [0-9]*.[0-9]*.[0-9]*|[0-9]*.[0-9]*|[0-9]*)
+            ;;
+        *)
+            log_error "compare_versions: Invalid version format: $version2"
+            return 1
+            ;;
+    esac
     
     # Handle identical versions
     if [[ "$version1" == "$version2" ]]; then
@@ -235,8 +247,12 @@ compare_versions() {
         v2_part="${v2_part%%[!0-9]*}"
         
         # Validate that we have numeric values
-        if [[ ! "$v1_part" =~ ^[0-9]+$ ]]; then v1_part=0; fi
-        if [[ ! "$v2_part" =~ ^[0-9]+$ ]]; then v2_part=0; fi
+        case "$v1_part" in
+            ''|*[!0-9]*) v1_part=0 ;;
+        esac
+        case "$v2_part" in
+            ''|*[!0-9]*) v2_part=0 ;;
+        esac
         
         if ((v1_part < v2_part)); then
             return 0
@@ -330,13 +346,16 @@ validate_directory_path() {
     done
     
     # Check for path traversal attempts
-    if [[ "$dir_path" =~ \.\./|/\.\. ]]; then
-        log_error "Path traversal not allowed in directory path: $dir_path"
-        return 1
-    fi
+    case "$dir_path" in
+        *".."*|*"/../"*|*"/..") 
+            log_error "Path traversal not allowed in directory path: $dir_path"
+            return 1
+            ;;
+    esac
     
     # Check for null bytes or other dangerous characters
-    if [[ "$dir_path" =~ $'\0'|[[:cntrl:]] ]]; then
+    # Using printf to check for control characters
+    if printf '%s' "$dir_path" | grep -q '[[:cntrl:]]'; then
         log_error "Invalid characters in directory path: $dir_path"
         return 1
     fi
@@ -646,10 +665,25 @@ verify_file_integrity() {
     fi
     
     # Validate checksum format (64 hex characters)
-    if [[ ! "$src_checksum" =~ ^[a-f0-9]{64}$ ]] || [[ ! "$dest_checksum" =~ ^[a-f0-9]{64}$ ]]; then
-        log_error "verify_file_integrity: Invalid checksum format"
+    # Bash 3.2 compatible checksum validation
+    if [ ${#src_checksum} -ne 64 ] || [ ${#dest_checksum} -ne 64 ]; then
+        log_error "verify_file_integrity: Invalid checksum length"
         return 1
     fi
+    
+    # Check if checksums contain only hex characters
+    case "$src_checksum" in
+        *[!a-f0-9]*) 
+            log_error "verify_file_integrity: Invalid checksum format"
+            return 1
+            ;;
+    esac
+    case "$dest_checksum" in
+        *[!a-f0-9]*) 
+            log_error "verify_file_integrity: Invalid checksum format"
+            return 1
+            ;;
+    esac
     
     if [[ "$src_checksum" != "$dest_checksum" ]]; then
         log_error "verify_file_integrity: Checksum mismatch"
@@ -931,11 +965,11 @@ run_preflight_checks() {
                 # Try POSIX-compliant df first
                 available_space=$(df -P -k "$install_parent" 2>/dev/null | awk 'NR==2 && NF>=4 {print $4}')
                 # If that fails, try without -P flag
-                if [[ -z "$available_space" ]] || [[ ! "$available_space" =~ ^[0-9]+$ ]]; then
+                if [[ -z "$available_space" ]] || echo "$available_space" | grep -qv '^[0-9][0-9]*$'; then
                     available_space=$(df -k "$install_parent" 2>/dev/null | awk 'NR==2 && NF>=4 {print $4}')
                 fi
                 # Final fallback - try to parse any numeric value from df output
-                if [[ -z "$available_space" ]] || [[ ! "$available_space" =~ ^[0-9]+$ ]]; then
+                if [[ -z "$available_space" ]] || echo "$available_space" | grep -qv '^[0-9][0-9]*$'; then
                     available_space=$(df "$install_parent" 2>/dev/null | awk '/[0-9]/ {for(i=1;i<=NF;i++) if($i ~ /^[0-9]+$/ && $i > 1000) print $i; exit}')
                 fi
             else
@@ -1052,16 +1086,18 @@ while [[ $# -gt 0 ]]; do
             fi
             
             # Validate log file path
-            if [[ "$2" =~ $'\0'|[[:cntrl:]] ]]; then
+            if printf '%s' "$2" | grep -q '[[:cntrl:]]'; then
                 log_error "Invalid characters in log file path: $2"
                 exit 1
             fi
             
             # Check for path traversal in log file
-            if [[ "$2" =~ \.\./|/\.\. ]]; then
-                log_error "Path traversal not allowed in log file path: $2"
-                exit 1
-            fi
+            case "$2" in
+                *".."*|*"/../"*|*"/..")
+                    log_error "Path traversal not allowed in log file path: $2"
+                    exit 1
+                    ;;
+            esac
             
             LOG_FILE="$2"
             # Create log directory if needed
@@ -1157,18 +1193,20 @@ if [[ "$UNINSTALL_MODE" = true ]]; then
             else
                 # Check if this file exists in source (is a SuperClaude file)
                 # Validate current_dir path to prevent path traversal
-                if [[ "$current_dir" =~ \.\. ]]; then
-                    log_error "Invalid current directory path detected: $current_dir"
-                    continue
-                fi
+                case "$current_dir" in
+                    *".."*)
+                        log_error "Invalid current directory path detected: $current_dir"
+                        continue
+                        ;;
+                esac
                 
                 # Only remove files that we know we installed
                 if [[ -f ".claude/$installed_file" ]] || \
                    [[ "$installed_file" == "CLAUDE.md" && -f "CLAUDE.md" ]] || \
                    [[ "$installed_file" == "VERSION" ]] || \
                    [[ "$installed_file" == ".checksums" ]] || \
-                   [[ "$installed_file" =~ ^commands/ ]] || \
-                   [[ "$installed_file" =~ ^shared/ ]]; then
+                   [[ "$installed_file" == commands/* ]] || \
+                   [[ "$installed_file" == shared/* ]]; then
                     if [[ "$DRY_RUN" = true ]]; then
                         echo "  Would remove: $installed_file"
                     else
@@ -1421,7 +1459,7 @@ if [ -d "$INSTALL_DIR" ] && [ "$(ls -A "$INSTALL_DIR" 2>/dev/null)" ]; then
         backup_timestamp=$(date +%Y%m%d_%H%M%S)
         # Generate cryptographically secure random suffix - try multiple methods
         backup_random=""
-        local random_bytes=""
+        random_bytes=""
         
         # Try multiple secure random sources
         if [[ -r /dev/urandom ]]; then
@@ -1438,7 +1476,7 @@ if [ -d "$INSTALL_DIR" ] && [ "$(ls -A "$INSTALL_DIR" 2>/dev/null)" ]; then
             backup_random="$random_bytes"
         else
             # High-entropy fallback using multiple sources (improved)
-            local entropy_sources="$(date +%s%N 2>/dev/null)$$${RANDOM}${BASHPID:-$$}$(ps -eo pid,ppid,time 2>/dev/null | md5sum 2>/dev/null | cut -c1-8)"
+            entropy_sources="$(date +%s%N 2>/dev/null)$$${RANDOM}${BASHPID:-$$}$(ps -eo pid,ppid,time 2>/dev/null | md5sum 2>/dev/null | cut -c1-8)"
             backup_random=$(printf "%s" "$entropy_sources" | sha256sum 2>/dev/null | cut -c1-16)
         fi
         
@@ -1471,10 +1509,11 @@ if [ -d "$INSTALL_DIR" ] && [ "$(ls -A "$INSTALL_DIR" 2>/dev/null)" ]; then
             # Copy preserving permissions and symlinks, with security checks
             if [[ -e "$item" ]]; then
                 # Validate that item is within the installation directory (prevent symlink attacks)
-                local real_item
+                real_item=""
+                real_install_dir=""
                 if command -v realpath &>/dev/null; then
                     real_item=$(realpath "$item" 2>/dev/null)
-                    local real_install_dir=$(realpath "$INSTALL_DIR" 2>/dev/null)
+                    real_install_dir=$(realpath "$INSTALL_DIR" 2>/dev/null)
                     if [[ -n "$real_item" ]] && [[ -n "$real_install_dir" ]] && [[ "$real_item" != "$real_install_dir"/* ]]; then
                         log_warning "Skipping backup of suspicious item outside install dir: $item"
                         continue
