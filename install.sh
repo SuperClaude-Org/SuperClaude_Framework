@@ -3,7 +3,7 @@
 # SuperClaude Installer Script
 # Installs SuperClaude configuration framework to enhance Claude Code
 
-set -e  # Exit on error
+set -e # Exit on error
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -16,6 +16,30 @@ INSTALL_DIR="$HOME/.claude"
 FORCE_INSTALL=false
 UPDATE_MODE=false
 UNINSTALL_MODE=false
+
+# Function to validate specific files and show missing ones
+validate_files() {
+    local source_pattern="$1"
+    local target_dir="$2"
+    local file_type="$3"
+
+    missing_files=()
+    for file in $source_pattern; do
+        if [[ -f "$file" ]]; then
+            basename_file=$(basename "$file")
+            if [[ ! -f "$target_dir/$basename_file" ]]; then
+                missing_files+=("$basename_file")
+            fi
+        fi
+    done
+
+    if [[ ${#missing_files[@]} -gt 0 ]]; then
+        echo -e "${RED}Missing $file_type files:${NC}"
+        printf '  - %s\n' "${missing_files[@]}"
+        return 1
+    fi
+    return 0
+}
 
 # Function to show usage
 show_usage() {
@@ -40,31 +64,31 @@ show_usage() {
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
-        --dir)
-            INSTALL_DIR="$2"
-            shift 2
-            ;;
-        --force)
-            FORCE_INSTALL=true
-            shift
-            ;;
-        --update)
-            UPDATE_MODE=true
-            shift
-            ;;
-        --uninstall)
-            UNINSTALL_MODE=true
-            shift
-            ;;
-        -h|--help)
-            show_usage
-            exit 0
-            ;;
-        *)
-            echo -e "${RED}Error: Unknown option $1${NC}"
-            show_usage
-            exit 1
-            ;;
+    --dir)
+        INSTALL_DIR="$2"
+        shift 2
+        ;;
+    --force)
+        FORCE_INSTALL=true
+        shift
+        ;;
+    --update)
+        UPDATE_MODE=true
+        shift
+        ;;
+    --uninstall)
+        UNINSTALL_MODE=true
+        shift
+        ;;
+    -h | --help)
+        show_usage
+        exit 0
+        ;;
+    *)
+        echo -e "${RED}Error: Unknown option $1${NC}"
+        show_usage
+        exit 1
+        ;;
     esac
 done
 
@@ -85,22 +109,22 @@ if [[ "$UNINSTALL_MODE" = true ]]; then
     echo "========================"
     echo -e "Target directory: ${YELLOW}$INSTALL_DIR${NC}"
     echo ""
-    
+
     if [[ ! -d "$INSTALL_DIR" ]]; then
         echo -e "${RED}Error: SuperClaude not found at $INSTALL_DIR${NC}"
         exit 1
     fi
-    
+
     if [[ "$FORCE_INSTALL" != true ]]; then
         echo -e "${YELLOW}This will remove SuperClaude from $INSTALL_DIR${NC}"
-        echo -n "Are you sure you want to continue? (y/n): "
+        echo -n "Are you sure you want to continue? (y/N): "
         read -r confirm_uninstall
         if [ "$confirm_uninstall" != "y" ]; then
             echo "Uninstall cancelled."
             exit 0
         fi
     fi
-    
+
     echo "Removing SuperClaude..."
     rm -rf "$INSTALL_DIR"
     echo -e "${GREEN}✓ SuperClaude uninstalled successfully!${NC}"
@@ -133,7 +157,7 @@ if [[ "$FORCE_INSTALL" != true ]]; then
     else
         echo -e "${YELLOW}This will install SuperClaude in $INSTALL_DIR${NC}"
     fi
-    echo -n "Are you sure you want to continue? (y/n): "
+    echo -n "Are you sure you want to continue? (y/N): "
     read -r confirm_install
     if [ "$confirm_install" != "y" ]; then
         echo "Installation cancelled."
@@ -156,23 +180,23 @@ fi
 # Check if existing directory exists and has files
 if [ -d "$INSTALL_DIR" ] && [ "$(ls -A "$INSTALL_DIR" 2>/dev/null)" ]; then
     echo -e "${YELLOW}Existing configuration found at $INSTALL_DIR${NC}"
-    
+
     # In update mode, always backup
     if [[ "$UPDATE_MODE" = true ]] || [[ "$FORCE_INSTALL" = true ]]; then
         backup_choice="y"
     else
-        echo -n "Backup existing configuration? (y/n): "
+        echo -n "Backup existing configuration? (y/N): "
         read -r backup_choice
     fi
-    
+
     if [ "$backup_choice" = "y" ]; then
         # Create backup directory in parent directory to avoid conflicts
         backup_dir="$(dirname "$INSTALL_DIR")/superclaude-backup.$(date +%Y%m%d_%H%M%S)"
         mkdir -p "$backup_dir"
-        
+
         # Backup ALL existing files
         echo "Backing up all existing files..."
-        
+
         # Copy everything except backup directories
         for item in "$INSTALL_DIR"/*; do
             basename_item=$(basename "$item")
@@ -183,7 +207,7 @@ if [ -d "$INSTALL_DIR" ] && [ "$(ls -A "$INSTALL_DIR" 2>/dev/null)" ]; then
                 fi
             fi
         done
-        
+
         echo -e "${GREEN}Backed up existing files to: $backup_dir${NC}"
     fi
 elif [ -d "$INSTALL_DIR" ]; then
@@ -199,7 +223,7 @@ fi
 
 # Create directory structure
 echo "Creating directories..."
-mkdir -p "$INSTALL_DIR/commands/shared"
+mkdir -p "$INSTALL_DIR/commands/shared/templates"
 
 # Copy main configuration files
 echo "Copying configuration files..."
@@ -230,21 +254,34 @@ cp .claude/commands/*.md "$INSTALL_DIR/commands/" 2>/dev/null || true
 echo "Copying shared resources..."
 cp .claude/commands/shared/*.yml "$INSTALL_DIR/commands/shared/"
 
+# Copy template files
+echo "Copying template files..."
+cp .claude/commands/shared/templates/* "$INSTALL_DIR/commands/shared/templates/" 2>/dev/null || true
+
 # Verify installation
 echo ""
 echo "Verifying installation..."
+
+# Calculate expected file counts from source
+echo "Calculating expected file counts from source..."
+expected_main=$(ls -1 CLAUDE.md RULES.md PERSONAS.md MCP.md 2>/dev/null | wc -l)
+expected_commands=$(ls -1 .claude/commands/*.md 2>/dev/null | wc -l)
+expected_shared=$(ls -1 .claude/commands/shared/*.yml 2>/dev/null | wc -l)
+expected_templates=$(find .claude/commands/shared/templates/ -type f 2>/dev/null | wc -l)
 
 # Count installed files
 main_files=$(ls -1 "$INSTALL_DIR/"*.md 2>/dev/null | wc -l)
 command_files=$(ls -1 "$INSTALL_DIR/commands/"*.md 2>/dev/null | wc -l)
 shared_files=$(ls -1 "$INSTALL_DIR/commands/shared/"*.yml 2>/dev/null | wc -l)
+template_files=$(find "$INSTALL_DIR/commands/shared/templates/" -type f 2>/dev/null | wc -l)
 
-echo -e "Main config files: ${GREEN}$main_files${NC} (expected: 4)"
-echo -e "Command files: ${GREEN}$command_files${NC} (expected: 19)"
-echo -e "Shared resources: ${GREEN}$shared_files${NC} (expected: 31)"
+echo -e "Main config files: ${GREEN}$main_files${NC} (expected: $expected_main)"
+echo -e "Command files: ${GREEN}$command_files${NC} (expected: $expected_commands)"
+echo -e "Shared resources: ${GREEN}$shared_files${NC} (expected: $expected_shared)"
+echo -e "Template files: ${GREEN}$template_files${NC} (expected: $expected_templates)"
 
 # Check if installation was successful
-if [ "$main_files" -ge 4 ] && [ "$command_files" -ge 19 ] && [ "$shared_files" -ge 31 ]; then
+if [ "$main_files" -ge "$expected_main" ] && [ "$command_files" -ge "$expected_commands" ] && [ "$shared_files" -ge "$expected_shared" ] && [ "$template_files" -ge "$expected_templates" ]; then
     echo ""
     if [[ "$UPDATE_MODE" = true ]]; then
         echo -e "${GREEN}✓ SuperClaude updated successfully!${NC}"
@@ -281,9 +318,10 @@ else
     echo -e "${RED}✗ Installation may be incomplete${NC}"
     echo ""
     echo "Expected vs Actual file counts:"
-    echo "  Main config files: $main_files/4$([ "$main_files" -lt 4 ] && echo " ❌" || echo " ✓")"
-    echo "  Command files: $command_files/19$([ "$command_files" -lt 19 ] && echo " ❌" || echo " ✓")"
-    echo "  Shared resources: $shared_files/31$([ "$shared_files" -lt 31 ] && echo " ❌" || echo " ✓")"
+    echo "  Main config files: $main_files/$expected_main$([ "$main_files" -lt "$expected_main" ] && echo " ❌" || echo " ✓")"
+    echo "  Command files: $command_files/$expected_commands$([ "$command_files" -lt "$expected_commands" ] && echo " ❌" || echo " ✓")"
+    echo "  Shared resources: $shared_files/$expected_shared$([ "$shared_files" -lt "$expected_shared" ] && echo " ❌" || echo " ✓")"
+    echo "  Template files: $template_files/$expected_templates$([ "$template_files" -lt "$expected_templates" ] && echo " ❌" || echo " ✓")"
     echo ""
     echo "Troubleshooting steps:"
     echo "1. Check for error messages above"
@@ -291,6 +329,15 @@ else
     echo "3. Verify all source files exist in the current directory"
     echo "4. Try running with sudo if permission errors occur"
     echo ""
+
+    # Show specific missing files
+    echo "Detailed validation:"
+    validate_files "CLAUDE.md RULES.md PERSONAS.md MCP.md" "$INSTALL_DIR" "main config" || true
+    validate_files ".claude/commands/*.md" "$INSTALL_DIR/commands" "command" || true
+    validate_files ".claude/commands/shared/*.yml" "$INSTALL_DIR/commands/shared" "shared resource" || true
+    validate_files ".claude/commands/shared/templates/*" "$INSTALL_DIR/commands/shared/templates" "template" || true
+    echo ""
+
     echo "For manual installation, see README.md"
     exit 1
 fi
