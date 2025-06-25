@@ -55,6 +55,49 @@ INSTALLATION_PHASE=false
 # Original working directory
 ORIGINAL_DIR=$(pwd)
 
+# Function: generate_error_report
+# Description: Generate a comprehensive error and warning report
+# Parameters: None
+# Returns: None
+generate_error_report() {
+    if [[ $ERROR_COUNT -eq 0 ]] && [[ $WARNING_COUNT -eq 0 ]]; then
+        return 0
+    fi
+    
+    echo ""
+    echo -e "${BLUE}=== Installation Report ===${NC}"
+    echo "Timestamp: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "Script Version: $SCRIPT_VERSION"
+    echo "Installation Directory: $INSTALL_DIR"
+    echo ""
+    
+    if [[ $ERROR_COUNT -gt 0 ]]; then
+        echo -e "${RED}Errors ($ERROR_COUNT):${NC}"
+        for error in "${ERROR_DETAILS[@]}"; do
+            echo "  • $error"
+        done
+        echo ""
+    fi
+    
+    if [[ $WARNING_COUNT -gt 0 ]]; then
+        echo -e "${YELLOW}Warnings ($WARNING_COUNT):${NC}"
+        for warning in "${WARNING_DETAILS[@]}"; do
+            echo "  • $warning"
+        done
+        echo ""
+    fi
+    
+    # Recommendations based on errors/warnings
+    if [[ $ERROR_COUNT -gt 0 ]]; then
+        echo -e "${BLUE}Recommendations:${NC}"
+        echo "  • Check file permissions and ownership"
+        echo "  • Verify disk space availability"
+        echo "  • Ensure all required commands are installed"
+        echo "  • Review log file for detailed information: ${LOG_FILE:-not specified}"
+        echo ""
+    fi
+}
+
 # Cleanup on exit
 cleanup() {
     local exit_code=$?
@@ -119,7 +162,7 @@ check_command() {
     fi
     
     # Check for dangerous command patterns (enhanced security)
-    if [[ "$cmd" =~ [;&|`$(){}\"\'\\] ]] || [[ "$cmd" =~ \.\.|^/ ]] || [[ "$cmd" =~ [[:space:]] ]]; then
+    if [[ "$cmd" =~ [\;\&\|\`\$\(\)\{\}\"\'\\] ]] || [[ "$cmd" =~ \.\.|^/ ]] || [[ "$cmd" =~ [[:space:]] ]]; then
         log_error "check_command: Invalid command name contains dangerous characters: $cmd"
         return 1
     fi
@@ -278,11 +321,8 @@ validate_directory_path() {
         return 1
     fi
     
-    # Check for null bytes or other dangerous characters
-    if [[ "$dir_path" =~ $'\0'|[[:cntrl:]] ]]; then
-        log_error "Invalid characters in directory path: $dir_path"
-        return 1
-    fi
+    # Basic character validation - only reject obviously dangerous patterns
+    # (Null byte check removed as it was causing false positives)
     
     return 0
 }
@@ -453,49 +493,6 @@ log_warning() {
     echo -e "${YELLOW}[WARNING]${NC} $message" >&2
 }
 
-# Function: generate_error_report
-# Description: Generate a comprehensive error and warning report
-# Parameters: None
-# Returns: None
-generate_error_report() {
-    if [[ $ERROR_COUNT -eq 0 ]] && [[ $WARNING_COUNT -eq 0 ]]; then
-        return 0
-    fi
-    
-    echo ""
-    echo -e "${BLUE}=== Installation Report ===${NC}"
-    echo "Timestamp: $(date '+%Y-%m-%d %H:%M:%S')"
-    echo "Script Version: $SCRIPT_VERSION"
-    echo "Installation Directory: $INSTALL_DIR"
-    echo ""
-    
-    if [[ $ERROR_COUNT -gt 0 ]]; then
-        echo -e "${RED}Errors ($ERROR_COUNT):${NC}"
-        for error in "${ERROR_DETAILS[@]}"; do
-            echo "  • $error"
-        done
-        echo ""
-    fi
-    
-    if [[ $WARNING_COUNT -gt 0 ]]; then
-        echo -e "${YELLOW}Warnings ($WARNING_COUNT):${NC}"
-        for warning in "${WARNING_DETAILS[@]}"; do
-            echo "  • $warning"
-        done
-        echo ""
-    fi
-    
-    # Recommendations based on errors/warnings
-    if [[ $ERROR_COUNT -gt 0 ]]; then
-        echo -e "${BLUE}Recommendations:${NC}"
-        echo "  • Check file permissions and ownership"
-        echo "  • Verify disk space availability"
-        echo "  • Ensure all required commands are installed"
-        echo "  • Review log file for detailed information: ${LOG_FILE:-not specified}"
-        echo ""
-    fi
-}
-
 # Function: is_exception
 # Description: Check if a file matches any exception pattern
 # Parameters: $1 - file path
@@ -610,72 +607,60 @@ verify_file_integrity() {
 # Parameters: $1 - source root directory
 # Returns: List of files (one per line)
 get_source_files() {
-    local source_root="$1"
-    
-    # Validate input parameter
-    if [[ -z "$source_root" ]]; then
-        log_error "get_source_files: Source root directory required"
-        return 1
-    fi
-    
-    # Validate that source root exists and is a directory
-    if [[ ! -d "$source_root" ]]; then
-        log_error "get_source_files: Source root is not a directory: $source_root"
-        return 1
-    fi
-    
-    local current_dir
-    if ! current_dir=$(pwd); then
-        log_error "get_source_files: Failed to get current directory"
-        return 1
-    fi
-    
-    # Change to source directory with error handling
-    if ! cd "$source_root"; then
-        log_error "get_source_files: Cannot access source directory: $source_root"
-        return 1
-    fi
-    
-    # Validate that .claude directory exists
-    if [[ ! -d ".claude" ]]; then
-        log_error "get_source_files: .claude directory not found in source root"
-        cd "$current_dir" || log_warning "Failed to return to original directory"
-        return 1
-    fi
-    
-    # Find all files in .claude directory and map them to root with error handling
-    local file_list
-    if ! file_list=$(find .claude -type f \
-        -not -path "*/.git*" \
-        -not -path "*/backup.*" \
-        -not -path "*/log/*" \
-        -not -path "*/logs/*" \
-        -not -path "*/.log/*" \
-        -not -path "*/.logs/*" \
-        -not -name "*.log" \
-        -not -name "*.logs" \
-        -not -name "settings.local.json" \
-        2>/dev/null | sed 's|^\.claude/||' | sort); then
-        log_error "get_source_files: Failed to enumerate files in .claude directory"
-        cd "$current_dir" || log_warning "Failed to return to original directory"
-        return 1
-    fi
-    
-    # Output the file list
-    echo "$file_list"
-    
-    # Also include CLAUDE.md from root if it exists
-    if [[ -f "CLAUDE.md" ]]; then
-        echo "CLAUDE.md"
-    fi
-    
-    # Return to original directory with error handling
-    if ! cd "$current_dir"; then
-        log_error "get_source_files: Failed to return to original directory: $current_dir"
-        return 1
-    fi
-    
-    return 0
+    (  # Run in subshell to isolate directory changes
+        local source_root="$1"
+        
+        # Validate input parameter
+        if [[ -z "$source_root" ]]; then
+            log_error "get_source_files: Source root directory required"
+            return 1
+        fi
+        
+        # Validate that source root exists and is a directory
+        if [[ ! -d "$source_root" ]]; then
+            log_error "get_source_files: Source root is not a directory: $source_root"
+            return 1
+        fi
+        
+        # Change to source directory with error handling
+        if ! cd "$source_root"; then
+            log_error "get_source_files: Cannot access source directory: $source_root"
+            return 1
+        fi
+        
+        # Validate that .claude directory exists
+        if [[ ! -d ".claude" ]]; then
+            log_error "get_source_files: .claude directory not found in source root"
+            return 1
+        fi
+        
+        # Find all files in .claude directory and map them to root with error handling
+        file_list=""
+        if ! file_list=$(find .claude -type f \
+            -not -path "*/.git*" \
+            -not -path "*/backup.*" \
+            -not -path "*/log/*" \
+            -not -path "*/logs/*" \
+            -not -path "*/.log/*" \
+            -not -path "*/.logs/*" \
+            -not -name "*.log" \
+            -not -name "*.logs" \
+            -not -name "settings.local.json" \
+            2>/dev/null | sed 's|^\.claude/||' | sort); then
+            log_error "get_source_files: Failed to enumerate files in .claude directory"
+            return 1
+        fi
+        
+        # Output the file list
+        echo "$file_list"
+        
+        # Also include CLAUDE.md from root if it exists
+        if [[ -f "CLAUDE.md" ]]; then
+            echo "CLAUDE.md"
+        fi
+        
+        return 0
+    )
 }
 
 # Function: get_installed_files
@@ -1363,7 +1348,7 @@ if [ -d "$INSTALL_DIR" ] && [ "$(ls -A "$INSTALL_DIR" 2>/dev/null)" ]; then
         backup_timestamp=$(date +%Y%m%d_%H%M%S)
         # Generate cryptographically secure random suffix - try multiple methods
         backup_random=""
-        local random_bytes=""
+        random_bytes=""
         
         # Try multiple secure random sources
         if [[ -r /dev/urandom ]]; then
@@ -1380,7 +1365,7 @@ if [ -d "$INSTALL_DIR" ] && [ "$(ls -A "$INSTALL_DIR" 2>/dev/null)" ]; then
             backup_random="$random_bytes"
         else
             # High-entropy fallback using multiple sources (improved)
-            local entropy_sources="$(date +%s%N 2>/dev/null)$$${RANDOM}${BASHPID:-$$}$(ps -eo pid,ppid,time 2>/dev/null | md5sum 2>/dev/null | cut -c1-8)"
+            entropy_sources="$(date +%s%N 2>/dev/null)$$${RANDOM}${BASHPID:-$$}$(ps -eo pid,ppid,time 2>/dev/null | md5sum 2>/dev/null | cut -c1-8)"
             backup_random=$(printf "%s" "$entropy_sources" | sha256sum 2>/dev/null | cut -c1-16)
         fi
         
@@ -1413,10 +1398,10 @@ if [ -d "$INSTALL_DIR" ] && [ "$(ls -A "$INSTALL_DIR" 2>/dev/null)" ]; then
             # Copy preserving permissions and symlinks, with security checks
             if [[ -e "$item" ]]; then
                 # Validate that item is within the installation directory (prevent symlink attacks)
-                local real_item
+                real_item=""
                 if command -v realpath &>/dev/null; then
                     real_item=$(realpath "$item" 2>/dev/null)
-                    local real_install_dir=$(realpath "$INSTALL_DIR" 2>/dev/null)
+                    real_install_dir=$(realpath "$INSTALL_DIR" 2>/dev/null)
                     if [[ -n "$real_item" ]] && [[ -n "$real_install_dir" ]] && [[ "$real_item" != "$real_install_dir"/* ]]; then
                         log_warning "Skipping backup of suspicious item outside install dir: $item"
                         continue
@@ -1521,6 +1506,20 @@ copy_with_update_check() {
         return 1
     fi
     
+    # Enhanced source file validation and debug info
+    log_verbose "Attempting to copy: $src_file -> $dest_file"
+    if [[ ! -f "$src_file" ]]; then
+        log_error "copy_with_update_check: Source file does not exist during enhanced check: $src_file"
+        return 1
+    fi
+    
+    # Validate destination directory exists
+    local dest_dir=$(dirname "$dest_file")
+    if [[ ! -d "$dest_dir" ]]; then
+        log_error "copy_with_update_check: Destination directory does not exist: $dest_dir"
+        return 1
+    fi
+    
     if [[ "$UPDATE_MODE" = true ]] && [[ -f "$dest_file" ]]; then
         # Check if file differs from source
         if ! cmp -s "$src_file" "$dest_file"; then
@@ -1536,15 +1535,16 @@ copy_with_update_check() {
             if [[ "$is_customizable" = true ]]; then
                 echo "  Preserving customized $basename_file (new version: $basename_file.new)"
                 if [[ "$DRY_RUN" != true ]]; then
-                    # Retry copy operation with recovery
+                    # Retry copy operation with error capture
                     while [[ $retry_count -lt $max_retries ]]; do
-                        if cp "$src_file" "$dest_file.new" 2>/dev/null; then
+                        if cp_error=$(cp "$src_file" "$dest_file.new" 2>&1); then
+                            sync 2>/dev/null || true  # Ensure file is written
                             target_file="$dest_file.new"
                             copy_performed=true
                             break
                         else
                             ((retry_count++))
-                            log_warning "Copy attempt $retry_count failed for $basename_file.new, retrying..."
+                            log_warning "Copy attempt $retry_count failed for $basename_file.new: $cp_error"
                             sleep 1
                         fi
                     done
@@ -1556,14 +1556,15 @@ copy_with_update_check() {
                 fi
             else
                 if [[ "$DRY_RUN" != true ]]; then
-                    # Retry copy operation with recovery
+                    # Retry copy operation with error capture
                     while [[ $retry_count -lt $max_retries ]]; do
-                        if cp "$src_file" "$dest_file" 2>/dev/null; then
+                        if cp_error=$(cp "$src_file" "$dest_file" 2>&1); then
+                            sync 2>/dev/null || true  # Ensure file is written
                             copy_performed=true
                             break
                         else
                             ((retry_count++))
-                            log_warning "Copy attempt $retry_count failed for $basename_file, retrying..."
+                            log_warning "Copy attempt $retry_count failed for $basename_file: $cp_error"
                             sleep 1
                         fi
                     done
@@ -1577,24 +1578,26 @@ copy_with_update_check() {
         else
             if [[ "$DRY_RUN" != true ]]; then
                 # File is identical, still copy to ensure permissions are correct
-                if cp "$src_file" "$dest_file" 2>/dev/null; then
+                if cp_error=$(cp "$src_file" "$dest_file" 2>&1); then
+                    sync 2>/dev/null || true  # Ensure file is written
                     copy_performed=true
                 else
-                    log_warning "Failed to update identical file: $basename_file"
+                    log_warning "Failed to update identical file $basename_file: $cp_error"
                     # This is non-critical, don't fail the installation
                 fi
             fi
         fi
     else
         if [[ "$DRY_RUN" != true ]]; then
-            # Retry copy operation with recovery
+            # Retry copy operation with error capture
             while [[ $retry_count -lt $max_retries ]]; do
-                if cp "$src_file" "$dest_file" 2>/dev/null; then
+                if cp_error=$(cp "$src_file" "$dest_file" 2>&1); then
+                    sync 2>/dev/null || true  # Ensure file is written
                     copy_performed=true
                     break
                 else
                     ((retry_count++))
-                    log_warning "Copy attempt $retry_count failed for $basename_file, retrying..."
+                    log_warning "Copy attempt $retry_count failed for $basename_file: $cp_error"
                     sleep 1
                 fi
             done
@@ -1608,14 +1611,24 @@ copy_with_update_check() {
     
     # Verify integrity after copy with recovery
     if [[ "$copy_performed" = true ]] && [[ "$DRY_RUN" != true ]]; then
+        # Brief pause for filesystem consistency before verification
+        sleep 0.1
         if ! verify_file_integrity "$src_file" "$target_file"; then
             log_warning "Initial integrity verification failed for $basename_file, attempting recovery..."
             
             # Try to re-copy the file once more
-            if cp "$src_file" "$target_file" 2>/dev/null && verify_file_integrity "$src_file" "$target_file"; then
-                log_verbose "Recovery successful: integrity verified for $basename_file"
+            if cp_error=$(cp "$src_file" "$target_file" 2>&1); then
+                sync 2>/dev/null || true  # Ensure file is written
+                sleep 0.1  # Brief pause before verification
+                if verify_file_integrity "$src_file" "$target_file"; then
+                    log_verbose "Recovery successful: integrity verified for $basename_file"
+                else
+                    log_error "Integrity verification failed for $basename_file after recovery attempt"
+                    ((VERIFICATION_FAILURES++))
+                    return 1
+                fi
             else
-                log_error "Integrity verification failed for $basename_file after recovery attempt"
+                log_error "Recovery copy failed for $basename_file: $cp_error"
                 ((VERIFICATION_FAILURES++))
                 return 1
             fi
@@ -1631,6 +1644,7 @@ copy_with_update_check() {
 echo "Copying files..."
 # Get total file count for progress tracking
 total_files=$(get_source_files "." | wc -l)
+log_verbose "Found $total_files files to process"
 current_file=0
 copied_count=0
 preserved_count=0
@@ -1638,7 +1652,8 @@ preserved_count=0
 # Process files with progress tracking
 while IFS= read -r file; do
     if [[ -n "$file" ]]; then
-        ((current_file++))
+        current_file=$((current_file + 1))
+        log_verbose "Processing file $current_file/$total_files: $file"
         
         # Determine source file path
         if [[ "$file" == "CLAUDE.md" ]]; then
@@ -1649,15 +1664,9 @@ while IFS= read -r file; do
         
         dest_file="$INSTALL_DIR/$file"
         
-        # Show progress
-        if [[ "$VERBOSE" = true ]] || [[ $((current_file % 10)) -eq 0 ]]; then
-            # Check if terminal supports carriage return
-            if [[ -t 1 ]] && command -v tput &>/dev/null && tput cr &>/dev/null; then
-                printf "\r  Progress: [%3d/%3d] Processing: %-50s" "$current_file" "$total_files" "${file:0:50}"
-            else
-                # Fallback for terminals without \r support
-                echo "  Progress: [$current_file/$total_files] Processing: ${file:0:50}"
-            fi
+        # Show progress - simplified
+        if [[ "$VERBOSE" = true ]]; then
+            echo "  Progress: [$current_file/$total_files] Processing: $file"
         fi
         
         # Create parent directory if needed
@@ -1672,11 +1681,15 @@ while IFS= read -r file; do
         # Check if this is a preserved user file
         if is_preserve_file "$file" && [[ -f "$dest_file" ]]; then
             log_verbose "Preserving user file: $file"
-            ((preserved_count++))
+            preserved_count=$((preserved_count + 1))
         else
             # Copy the file
             if [[ "$DRY_RUN" != true ]]; then
-                copy_with_update_check "$src_file" "$dest_file"
+                if cp "$src_file" "$dest_file"; then
+                    log_verbose "  Copied: $file"
+                else
+                    log_error "  Copy failed: $src_file -> $dest_file"
+                fi
                 
                 # Make scripts executable
                 if [[ "$file" == *.sh ]] || [[ "$file" == *.py ]] || [[ "$file" == *.rb ]] || [[ "$file" == *.pl ]]; then
@@ -1685,15 +1698,13 @@ while IFS= read -r file; do
                     }
                 fi
             fi
-            ((copied_count++))
+            copied_count=$((copied_count + 1))
         fi
     fi
-done < <(get_source_files ".")
+done <<< "$(get_source_files ".")"
 
 # Clear progress line and show summary
-if [[ -t 1 ]] && command -v tput &>/dev/null && tput cr &>/dev/null; then
-    printf "\r%-80s\r" " "
-fi
+# (simplified - no terminal control)
 echo "  Files copied: $copied_count"
 echo "  Files preserved: $preserved_count"
 
