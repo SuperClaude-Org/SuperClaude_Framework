@@ -1,3 +1,5 @@
+# Development Environment Setup
+
 @include shared/constants.yml#Process_Symbols
 
 @include shared/command-templates.yml#Universal_Flags
@@ -6,7 +8,7 @@ Setup comprehensive dev env or CI/CD pipeline based on $ARGUMENTS.
 
 Thinking flags (optional):
 - --think→multi-tool env coordination
-- --think-hard→complex CI/CD pipeline architecture  
+- --think-hard→complex CI/CD pipeline architecture
 - --ultrathink→enterprise dev infrastructure design
 
 Examples:

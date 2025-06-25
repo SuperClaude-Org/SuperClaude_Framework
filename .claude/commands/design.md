@@ -1,3 +1,5 @@
+# Software Architecture & Planning
+
 @include shared/constants.yml#Process_Symbols
 
 @include shared/command-templates.yml#Universal_Flags
@@ -57,7 +59,7 @@ Strategic patterns:
 Structure:
 ```
 domain/          # Core business logic
-application/     # Use cases & orchestration  
+application/     # Use cases & orchestration
 infrastructure/  # External concerns
 presentation/    # UI/API layer
 ```
@@ -68,7 +70,7 @@ Structure:
 1. **Executive Overview**: Problem statement & solution | Expected impact & ROI | Key stakeholders
 2. **Goals & Success Metrics**: Primary objectives (must-have) | Secondary goals (nice-to-have) | KPIs & measurement
 3. **User Stories & Requirements**: User personas & journeys | Functional requirements | Non-functional requirements | Acceptance criteria
-4. **Technical Specs**: Architecture overview | Tech choices | Integration points | Security requirements | Perf targets  
+4. **Technical Specs**: Architecture overview | Tech choices | Integration points | Security requirements | Perf targets
 5. **Timeline & Risks**: Dev phases | Dependencies & blockers | Risk mitigation strategies
 
 ## Integration

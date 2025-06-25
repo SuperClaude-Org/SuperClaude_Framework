@@ -1,4 +1,4 @@
-# /task: - Task Management & Session Recovery
+# Task Management & Session Recovery
 
 @see shared/task-system.yml
 

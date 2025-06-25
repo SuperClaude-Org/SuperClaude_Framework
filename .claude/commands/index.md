@@ -1,4 +1,4 @@
-# SuperClaude Commands Index
+# Command Directory & Navigation
 
 @include shared/constants.yml#Process_Symbols
 
@@ -73,17 +73,17 @@ All commands use `/user:` prefix. Examples:
 Project Setup:
   New Project: load → dev-setup --install → build --init → test --coverage
   Existing: load --depth deep → analyze --architecture → design
-  
+
 Full Development Cycle:
   Feature: load → analyze → design --api → build --tdd → test --e2e → deploy
   Bug Fix: troubleshoot --investigate → troubleshoot --fix → test → git --commit
   Refactor: analyze --code → improve --quality → test --coverage → git --commit
-  
+
 Quality Workflows:
   Code Review: analyze --code --think → improve --quality → scan --validate
   Performance: analyze --profile → improve --performance --iterate → test
   Security: scan --security --owasp → improve --quality → scan --validate
-  
+
 Maintenance:
   Cleanup: cleanup --all --dry-run → cleanup --all → analyze → test
   Update: migrate --dry-run → migrate → test --coverage → deploy --env staging
@@ -97,12 +97,12 @@ Power User Patterns:
   UI Development: build --react --magic --pup --watch
   Production Deploy: scan --validate --seq → deploy --env prod --think-hard
   Emergency Debug: troubleshoot --prod --ultrathink --seq
-  
+
 Research & Learning:
   Library Study: explain --c7 --seq --depth expert "React hooks"
   Architecture: design --ddd --seq --think-hard → document --api
   Performance: analyze --profile --seq → improve --iterate --threshold 95%
-  
+
 Token Optimization:
   Compressed Docs: document --uc → explain --uc --c7
   Efficient Analysis: analyze --uc --no-mcp → improve --uc
@@ -115,12 +115,12 @@ Pre-Deployment Safety:
   Full Gate: test --coverage → scan --security → scan --validate → deploy
   Staged: deploy --env staging → test --e2e → deploy --env prod --plan
   Rollback Ready: git --checkpoint → deploy → (if issues) deploy --rollback
-  
+
 Development Safety:
   Clean First: cleanup --code → build → test → commit
   Quality Gate: analyze → improve --quality → test → commit
   Secure: scan --security → fix issues → scan --validate
-  
+
 Planning for Complex Operations:
   Architecture: design --api --ddd --plan --think-hard
   Migration: migrate --dry-run → migrate --plan → verify

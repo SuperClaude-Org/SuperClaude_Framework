@@ -1,9 +1,4 @@
-## Legend
-| Symbol | Meaning | | Abbrev | Meaning |
-|--------|---------|---|--------|---------|
-| → | leads to | | repo | repository |
-| & | and/with | | sync | synchronize |
-| w/ | with | | chkpt | checkpoint |
+# Version Control Workflow Management
 
 @include shared/command-templates.yml#Command_Header
 
@@ -14,7 +9,7 @@ Manage git workflows for repo in $ARGUMENTS.
 Examples:
 - `/user:git --status` - Comprehensive repo status
 - `/user:git --commit "Add feature"` - Create commit
-- `/user:git --branch feature/ui` - Create & switch→branch  
+- `/user:git --branch feature/ui` - Create & switch→branch
 - `/user:git --sync` - Fetch, pull & push
 - `/user:git --merge develop --think` - Merge w/ conflict analysis
 
