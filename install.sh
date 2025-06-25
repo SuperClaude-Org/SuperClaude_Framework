@@ -979,7 +979,7 @@ while [[ $# -gt 0 ]]; do
             fi
             
             # Validate log file path
-            if [[ "$2" =~ $'\0'|[[:cntrl:]] ]]; then
+            if [[ "$2" =~ [[:cntrl:]] ]]; then
                 log_error "Invalid characters in log file path: $2"
                 exit 1
             fi
@@ -1753,7 +1753,12 @@ fi
 
 # Get expected files from source
 expected_files=$(get_source_files "." | wc -l)
-actual_files=$(get_installed_files "$INSTALL_DIR" | wc -l)
+# Count only the source files that were installed (exclude generated files like .checksums)
+actual_files=$(get_source_files "." | while IFS= read -r file; do
+    if [[ -f "$INSTALL_DIR/$file" ]]; then
+        echo "$file"
+    fi
+done | wc -l)
 
 # Count files by category for detailed report
 main_files=$(find "$INSTALL_DIR" -maxdepth 1 -name "*.md" -type f 2>/dev/null | wc -l)
