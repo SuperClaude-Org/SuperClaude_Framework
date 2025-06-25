@@ -3,12 +3,12 @@
 @include shared/universal-constants.yml#Universal_Legend
 
 ## Ultra-Compressed Reference
-Commands: `/cmd --flags` | 18 total | Universal flags available
+Commands: `/cmd --flags` | 19 total | Universal flags available
 
 @include shared/flag-inheritance.yml#Universal_Always
 
 ## Command Categories
-**Analysis**: `/analyze` `/scan` `/explain`
+**Analysis**: `/analyze` `/scan` `/explain` `/review`
 **Build**: `/build` `/deploy` `/migrate` 
 **Manage**: `/task` `/load` `/cleanup`
 **Dev**: `/test` `/troubleshoot` `/improve`
@@ -16,7 +16,7 @@ Commands: `/cmd --flags` | 18 total | Universal flags available
 
 ## Commands w/ Primary Flags
 **Dev**: `/build` --init|feature|react | `/dev-setup` --install|ci | `/test` --coverage|e2e
-**Analysis**: `/analyze` --code|arch | `/troubleshoot` --fix|prod | `/improve` --perf|quality | `/explain` --depth
+**Analysis**: `/analyze` --code|arch | `/review` --files|commit|pr | `/troubleshoot` --fix|prod | `/improve` --perf|quality | `/explain` --depth
 **Ops**: `/deploy` --env|rollback | `/migrate` --dry-run | `/scan` --security | `/estimate` --detailed | `/cleanup` --all | `/git` --commit|sync
 **Design**: `/design` --api|ddd | `/document` --api|user | `/spawn` --task
 **Manage**: `/task` --create|status | `/load` --context
@@ -24,7 +24,7 @@ Commands: `/cmd --flags` | 18 total | Universal flags available
 **Setup**: `/load` → `/dev-setup --install` → `/build --init` → `/test`
 **Feature**: `/analyze` → `/design --api` → `/build --tdd` → `/test --e2e` → `/deploy`
 **Debug**: `/troubleshoot --fix` → `/test` → `/git --commit`
-**Quality**: `/analyze --code --think` → `/improve --quality` → `/scan --validate`
+**Quality**: `/review --quality --evidence` → `/improve --quality` → `/scan --validate`
 **Security**: `/scan --security --owasp` → `/improve` → `/scan --validate`
 
 ### Advanced Flag Combinations
