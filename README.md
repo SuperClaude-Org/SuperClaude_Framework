@@ -1,276 +1,304 @@
-# SuperClaude – The Professional Development Framework for Claude Code
+# SuperClaude – Development Framework for Claude Code
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-4.0.0-blue.svg)](https://github.com/NomenAK/SuperClaude)
+[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/NomenAK/SuperClaude)
 [![GitHub issues](https://img.shields.io/github/issues/NomenAK/SuperClaude)](https://github.com/NomenAK/SuperClaude/issues)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/NomenAK/SuperClaude/blob/master/CONTRIBUTING.md)
 
-**A sophisticated configuration framework that transforms Claude Code into a specialized, token-efficient development partner with 18 professional commands, 9 cognitive personas, and evidence-based methodology.**
+**A configuration framework that enhances Claude Code with specialized commands, cognitive personas, and development methodologies.**
 
-## 🎯 The Professional Problem
+## 🚀 Version 2.0 Update
 
-Claude Code is powerful, but lacks specialization. Development teams need:
-- **Consistent expertise** across different technical domains
-- **Token efficiency** for complex, long-running projects  
-- **Evidence-based standards** instead of generic suggestions
-- **Context preservation** during multi-session debugging
-- **Specialized thinking modes** for architecture, security, performance
+SuperClaude v2 introduces architectural improvements focused on maintainability and extensibility:
 
-## ✨ The SuperClaude Solution
+- **⚡ Streamlined Architecture**: @include reference system for configuration management
+- **🎭 Personas as Flags**: 9 cognitive personas integrated into the flag system (`--persona-architect`, `--persona-security`, etc.)
+- **📦 Enhanced Installer**: install.sh with update mode, dry-run, backup handling, and platform detection
+- **🔧 Modular Design**: Template system for adding new commands and features
+- **🎯 Unified Experience**: Consistent flag behavior across all commands
 
-SuperClaude transforms Claude Code into a professional development framework with:
-- **18 Specialized Commands** covering the complete development lifecycle
-- **9 Cognitive Personas** for domain-specific expertise
-- **Advanced Token Optimization** with 70% reduction capabilities
-- **Evidence-Based Methodology** requiring documentation and metrics
-- **Professional MCP Integration** with Context7, Sequential, Magic, Puppeteer
-- **Git-Integrated Checkpoints** for safe experimentation
+See [ROADMAP.md](ROADMAP.md) for future development ideas and contribution opportunities.
 
-## 🚀 Professional Installation
+## 🎯 Background
+
+Claude Code provides powerful capabilities but can benefit from:
+- **Specialized expertise** for different technical domains
+- **Token efficiency** for complex projects  
+- **Evidence-based approaches** to development
+- **Context preservation** during debugging sessions
+- **Domain-specific thinking** for various tasks
+
+## ✨ SuperClaude Features
+
+SuperClaude enhances Claude Code with:
+- **18 Specialized Commands** covering development lifecycle tasks
+- **9 Cognitive Personas** for domain-specific approaches
+- **Token Optimization** with compression options
+- **Evidence-Based Methodology** encouraging documentation
+- **MCP Integration** with Context7, Sequential, Magic, Puppeteer
+- **Git Checkpoint Support** for safe experimentation
+
+## 🚀 Installation
+
+### Enhanced Installer v2.0
+The installer provides various options:
 
 ```bash
 git clone https://github.com/NomenAK/SuperClaude.git
 cd SuperClaude
+
+# Basic installation
 ./install.sh                           # Default: ~/.claude/
-# OR
-./install.sh --dir /opt/claude          # Custom location
-./install.sh --dir ./project-claude    # Project-specific
+
+# Advanced options
+./install.sh --dir /opt/claude        # Custom location
+./install.sh --update                 # Update existing installation
+./install.sh --dry-run --verbose      # Preview changes with details
+./install.sh --force                  # Skip confirmations (automation)
+./install.sh --log install.log        # Log all operations
 ```
 
-Zero dependencies. Installs to `~/.claude/` by default. The installer automatically backs up existing configurations and validates the installation.
+**v2 Installer Features:**
+- 🔄 **Update Mode**: Preserves customizations while updating
+- 👁️ **Dry Run**: Preview changes before applying
+- 💾 **Smart Backups**: Automatic backup with timestamping
+- 🧹 **Clean Updates**: Removes obsolete files
+- 🖥️ **Platform Detection**: Works with Linux, macOS, WSL
+- 📊 **Progress Tracking**: Installation feedback
+
+Zero dependencies. Installs to `~/.claude/` by default.
 
 ## 💡 Core Capabilities
 
-### 🧠 **Cognitive Personas**
-Switch Claude's entire professional mindset:
+### 🧠 **Cognitive Personas (Now as Flags!)**
+Switch between different approaches with persona flags:
 
 ```bash
-/analyze --persona-architect     # Systems thinking, scalability focus
-/build --persona-frontend        # UX-obsessed, accessibility-first  
-/scan --persona-security         # Threat modeling, zero-trust
-/troubleshoot --persona-analyzer # Evidence-based root cause analysis
+/analyze --code --persona-architect     # Systems thinking approach
+/build --react --persona-frontend       # UX-focused development  
+/scan --security --persona-security     # Security-first analysis
+/troubleshoot --prod --persona-analyzer # Root cause analysis approach
 ```
 
-Each persona brings specialized knowledge, different priorities, and domain-specific best practices.
+**v2 Update**: All 9 personas are now universal flags, available on every command for consistent access to specialized approaches.
 
-### ⚡ **18 Professional Commands**
-Complete development lifecycle coverage:
+### ⚡ **18 Commands**
+Development lifecycle coverage:
 
 **Development Commands**
 ```bash
-/build --react --magic --tdd    # Full-stack development with AI components
-/dev-setup --ci --monitor       # Professional environment setup
-/test --coverage --e2e --pup    # Comprehensive testing strategies
+/build --react --magic --tdd    # Development with AI components
+/dev-setup --ci --monitor       # Environment setup
+/test --coverage --e2e --pup    # Testing strategies
 ```
 
 **Analysis & Quality**
 ```bash
-/analyze --architecture --seq   # Deep system analysis
-/troubleshoot --prod --five-whys # Production issue resolution
-/improve --performance --iterate # Evidence-based optimization
-/explain --depth expert --visual # Technical documentation
+/analyze --architecture --seq   # System analysis
+/troubleshoot --prod --five-whys # Issue resolution
+/improve --performance --iterate # Optimization
+/explain --depth expert --visual # Documentation
 ```
 
 **Operations & Security**
 ```bash
-/deploy --env prod --plan       # Safe production deployment
-/scan --security --owasp --deps # Professional security audits
-/migrate --dry-run --rollback   # Safe database migrations
-/cleanup --all --validate       # Professional maintenance
+/deploy --env prod --plan       # Deployment planning
+/scan --security --owasp --deps # Security audits
+/migrate --dry-run --rollback   # Database migrations
+/cleanup --all --validate       # Maintenance tasks
 ```
 
-### 🎛️ **Advanced MCP Integration**
-- **Context7**: Instant access to official library documentation
-- **Sequential**: Multi-step reasoning for complex problems
-- **Magic**: AI-generated UI components matching your patterns
-- **Puppeteer**: Real browser testing and validation
+### 🎛️ **MCP Integration**
+- **Context7**: Access to library documentation
+- **Sequential**: Multi-step reasoning capabilities
+- **Magic**: AI-generated UI components
+- **Puppeteer**: Browser testing and automation
 
-### 📊 **Token Efficiency Architecture**
-SuperClaude's @include template system eliminates duplication:
-- **70% token reduction** with UltraCompressed mode
-- **Template reference validation** ensures system integrity
-- **Smart caching** prevents redundant operations
-- **Dynamic compression** based on context usage
+### 📊 **Token Efficiency**
+SuperClaude's @include template system helps manage token usage:
+- **UltraCompressed mode** option for token reduction
+- **Template references** for configuration management
+- **Caching mechanisms** to avoid redundancy
+- **Context-aware compression** options
 
-## 🎮 Professional Workflows
+## 🎮 Example Workflows
 
 ### Enterprise Architecture Flow
 ```bash
---persona-architect
-/design --api --ddd --bounded-context    # Domain-driven design
-/estimate --detailed --worst-case        # Resource planning
---persona-security
-/scan --security --validate             # Security review
---persona-backend  
-/build --api --tdd --coverage           # Professional implementation
+/design --api --ddd --bounded-context --persona-architect    # Domain-driven design
+/estimate --detailed --worst-case --seq                      # Resource planning
+/scan --security --validate --persona-security               # Security review
+/build --api --tdd --coverage --persona-backend              # Implementation
 ```
 
 ### Production Issue Resolution
 ```bash
---persona-analyzer
-/troubleshoot --investigate --prod       # Systematic analysis
-/analyze --profile --perf               # Performance bottlenecks
---persona-performance
-/improve --performance --threshold 95%   # Optimization targets
-/test --integration --e2e               # Validation testing
+/troubleshoot --investigate --prod --persona-analyzer        # Analysis
+/analyze --profile --perf --seq                             # Performance review
+/improve --performance --threshold 95% --persona-performance # Optimization
+/test --integration --e2e --pup                             # Validation
 ```
 
 ### Full-Stack Feature Development
 ```bash
---persona-frontend
-/build --react --magic --watch          # UI development
---persona-qa
-/test --coverage --e2e --strict         # Quality assurance
---persona-security
-/scan --validate --deps                 # Security validation
+/build --react --magic --watch --persona-frontend           # UI development
+/test --coverage --e2e --strict --persona-qa                # Quality assurance
+/scan --validate --deps --persona-security                  # Security check
 ```
 
-## 🎭 Professional Personas
+## 🎭 Available Personas
 
-| Persona | Expertise | Primary Tools | Best For |
-|---------|-----------|---------------|----------|
-| **architect** | System design, scalability | Sequential, Context7 | Architecture decisions |
-| **frontend** | UX, accessibility, performance | Magic, Puppeteer, Context7 | User interfaces |
-| **backend** | APIs, databases, reliability | Context7, Sequential | Server architecture |
-| **security** | Threat modeling, compliance | Sequential, Context7 | Security audits |
-| **analyzer** | Root cause, evidence-based | All MCP tools | Complex debugging |
-| **qa** | Testing, edge cases, quality | Puppeteer, Context7 | Quality assurance |
-| **performance** | Optimization, profiling | Puppeteer, Sequential | Performance tuning |
-| **refactorer** | Code quality, maintainability | Sequential, Context7 | Code improvement |
-| **mentor** | Learning, documentation | Context7, Sequential | Knowledge transfer |
+| Persona | Focus Area | Tools | Use Cases |
+|---------|-----------|-------|-----------|
+| **architect** | System design | Sequential, Context7 | Architecture planning |
+| **frontend** | User experience | Magic, Puppeteer, Context7 | UI development |
+| **backend** | Server systems | Context7, Sequential | API development |
+| **security** | Security analysis | Sequential, Context7 | Security reviews |
+| **analyzer** | Problem solving | All MCP tools | Debugging |
+| **qa** | Quality assurance | Puppeteer, Context7 | Testing |
+| **performance** | Optimization | Puppeteer, Sequential | Performance tuning |
+| **refactorer** | Code quality | Sequential, Context7 | Code improvement |
+| **mentor** | Knowledge sharing | Context7, Sequential | Documentation |
 
-## 🛠️ Advanced Configuration
+## 🛠️ Configuration Options
 
 ### Thinking Depth Control
 ```bash
 # Standard analysis
-/analyze --think "multi-file context"
+/analyze --think
 
-# Architecture-level depth  
-/design --think-hard "comprehensive system analysis"
+# Deeper analysis  
+/design --think-hard
 
-# Maximum analysis power
-/troubleshoot --ultrathink "critical system debugging"
+# Maximum depth
+/troubleshoot --ultrathink
 ```
 
-### Token Optimization Modes
+### Token Management
 ```bash
-# Standard mode for complex operations
+# Standard mode
 /build --react --magic
 
-# UltraCompressed for large projects
+# With compression
 /analyze --architecture --uc
 
-# Force native tools only
+# Native tools only
 /scan --security --no-mcp
 ```
 
-### Evidence-Based Standards
-SuperClaude enforces professional standards:
-- **Performance claims** require benchmarks and metrics
-- **Library usage** requires official documentation (Context7)
-- **Security assertions** need validation scans
-- **Quality improvements** need test coverage evidence
-- **Architecture decisions** need scalability analysis
+### Evidence-Based Development
+SuperClaude encourages:
+- Documentation for design decisions
+- Testing for quality improvements
+- Metrics for performance work
+- Security validation for deployments
+- Analysis for architectural choices
 
-## 📋 Complete Command Reference
+## 📋 Command Categories
 
 ### Development (3 Commands)
-- `/build` - Universal project builder with stack templates
-- `/dev-setup` - Professional development environment  
-- `/test` - Comprehensive testing framework
+- `/build` - Project builder with stack templates
+- `/dev-setup` - Development environment setup
+- `/test` - Testing framework
 
 ### Analysis & Improvement (4 Commands)
-- `/analyze` - Multi-dimensional code and system analysis
-- `/troubleshoot` - Professional debugging and issue resolution
-- `/improve` - Evidence-based enhancement and optimization
-- `/explain` - Technical documentation and knowledge transfer
+- `/analyze` - Code and system analysis
+- `/troubleshoot` - Debugging and issue resolution
+- `/improve` - Enhancement and optimization
+- `/explain` - Documentation and explanations
 
 ### Operations (6 Commands)
-- `/deploy` - Safe application deployment with rollback
-- `/migrate` - Database and code migration management
-- `/scan` - Security audits and validation
-- `/estimate` - Project complexity and time estimation
-- `/cleanup` - Professional project maintenance
-- `/git` - Git workflow with checkpoint management
+- `/deploy` - Application deployment
+- `/migrate` - Database and code migrations
+- `/scan` - Security and validation
+- `/estimate` - Project estimation
+- `/cleanup` - Project maintenance
+- `/git` - Git workflow management
 
 ### Design & Workflow (5 Commands)
-- `/design` - System architecture and API design
-- `/spawn` - Parallel specialized agents
-- `/document` - Professional documentation creation
-- `/load` - Project context loading and analysis
+- `/design` - System architecture
+- `/spawn` - Parallel task execution
+- `/document` - Documentation creation
+- `/load` - Project context loading
+- `/task` - Task management
 
-## 🔧 Technical Architecture
+## 🔧 Technical Architecture v2
 
-SuperClaude implements professional development practices through:
+SuperClaude v2's architecture enables extensibility:
 
-**Configuration Framework**
-- **CLAUDE.md** – Core behavioral configuration
-- **RULES.md** – Engineering standards and practices  
-- **PERSONAS.md** – Cognitive behavioral profiles
-- **MCP.md** – Tool orchestration and integration
+**🏗️ Modular Configuration**
+- **CLAUDE.md** – Core configuration with @include references
+- **.claude/shared/** – Centralized YAML templates
+- **commands/shared/** – Reusable command patterns
+- **@include System** – Template engine for configuration
 
-**Command System**
-- **18 Specialized Commands** – Complete development lifecycle
-- **Flag Inheritance System** – Consistent interface patterns
-- **@include Templates** – Token-efficient configuration
-- **Validation Framework** – Reference integrity checking
+**🎯 Unified Command System**
+- **18 Commands** – Development lifecycle coverage
+- **Flag Inheritance** – Universal flags on all commands
+- **Persona Integration** – 9 cognitive modes as flags
+- **Template Validation** – Reference integrity checking
 
-**Quality Assurance**
-- **Evidence-Based Standards** – Metrics and documentation required
-- **Research-First Methodology** – Official sources for libraries
-- **Error Recovery Patterns** – Graceful failure handling
-- **Professional Documentation** – Structured output locations
+**📦 Architecture Benefits**
+- **Single Source of Truth** – Centralized updates
+- **Easy Extension** – Add new commands/flags
+- **Consistent Behavior** – Unified flag handling
+- **Reduced Duplication** – Template-based configuration
 
-## 📊 Professional Advantages
+**✅ Quality Features**
+- **Evidence-Based Approach** – Documentation encouraged
+- **Research Integration** – Library documentation access
+- **Error Recovery** – Graceful failure handling
+- **Structured Output** – Organized file locations
 
-| Capability | Standard Claude Code | SuperClaude Framework |
-|------------|---------------------|----------------------|
-| **Expertise** | Generic responses | 9 specialized cognitive personas |
-| **Commands** | Manual instruction | 18 professional workflow commands |
-| **Context** | Lost on errors | Git checkpoint preservation |
-| **Tokens** | Standard verbosity | 70% reduction with same information |
-| **Standards** | Hope for the best | Evidence-based methodology |
-| **Documentation** | "I think this works" | Official source requirements |
-| **Quality** | Ad-hoc suggestions | Professional validation patterns |
-| **Integration** | Basic tool usage | Advanced MCP orchestration |
+## 📊 Comparison
 
-## 🔮 Professional Use Cases
+| Aspect | Standard Claude Code | SuperClaude Framework |
+|--------|---------------------|----------------------|
+| **Expertise** | General responses | 9 specialized personas |
+| **Commands** | Manual instructions | 18 workflow commands |
+| **Context** | Session-based | Git checkpoint support |
+| **Tokens** | Standard usage | Compression options |
+| **Approach** | General purpose | Evidence-based |
+| **Documentation** | As needed | Systematic approach |
+| **Quality** | Variable | Validation patterns |
+| **Integration** | Basic tools | MCP orchestration |
 
-**Enterprise Development Teams**
-- Consistent expertise across different technical domains
-- Standardized development workflows and quality gates
-- Evidence-based technical decision making
-- Professional documentation and knowledge transfer
+## 🔮 Use Cases
+
+**Development Teams**
+- Consistent approaches across domains
+- Standardized workflows
+- Evidence-based decisions
+- Documentation practices
 
 **Technical Leaders**
-- Architecture review and system design validation
-- Performance optimization and security auditing
-- Code quality improvement and refactoring
-- Team mentoring and best practice enforcement
+- Architecture reviews
+- Performance optimization
+- Code quality improvement
+- Team knowledge sharing
 
-**Production Operations**
-- Safe deployment and migration procedures
-- Systematic debugging and issue resolution
-- Security compliance and vulnerability management
-- Professional maintenance and cleanup procedures
+**Operations**
+- Deployment procedures
+- Debugging workflows
+- Security management
+- Maintenance tasks
 
-## 🎯 Is SuperClaude Right for Your Team?
+## 🎯 Suitability
 
-**Ideal for teams that need:**
-- ✅ Consistent AI expertise across technical domains
-- ✅ Professional development workflows and standards
-- ✅ Evidence-based technical decisions
-- ✅ Token-efficient long-running projects
-- ✅ Specialized cognitive modes for different tasks
+**Good fit for:**
+- ✅ Teams wanting consistent AI assistance
+- ✅ Projects needing specialized approaches
+- ✅ Evidence-based development practices
+- ✅ Token-conscious workflows
+- ✅ Domain-specific expertise needs
 
-**Not suitable if you prefer:**
-- ❌ Completely manual AI interaction
-- ❌ Generic, non-specialized responses
-- ❌ Ad-hoc development practices
-- ❌ Minimal configuration frameworks
+**May not suit:**
+- ❌ Purely manual workflows
+- ❌ Minimal configuration preferences
+- ❌ Ad-hoc development styles
+- ❌ Single-domain focus
 
-## 🚦 Professional Setup
+## 🚦 Getting Started
 
 1. **Install SuperClaude**
    ```bash
@@ -279,53 +307,59 @@ SuperClaude implements professional development practices through:
 
 2. **Validate Installation**
    ```bash
-   /load                           # Load project context
-   /analyze --code --think         # Test analysis capabilities
-   --persona-architect            # Try cognitive switching
+   /load                                    # Load project context
+   /analyze --code --think                  # Test analysis
+   /analyze --architecture --persona-architect  # Try personas
    ```
 
-3. **Professional Workflows**
+3. **Example Workflow**
    ```bash
    /design --api --ddd            # Architecture design
    /build --feature --tdd         # Implementation
    /test --coverage --e2e         # Quality assurance
-   /deploy --env staging --plan   # Safe deployment
+   /deploy --env staging --plan   # Deployment
    ```
 
-## 🛟 Professional Support
+## 🛟 Support
 
-- **Installation Issues**: Run `./install.sh --help` for configuration options
-- **Command Reference**: Check `~/.claude/commands/` for detailed documentation
-- **Professional Services**: See [CONTRIBUTING.md](CONTRIBUTING.md) for consulting
-- **Issue Tracking**: [GitHub Issues](https://github.com/NomenAK/SuperClaude/issues)
+- **Installation Help**: Run `./install.sh --help`
+- **Command Details**: Check `~/.claude/commands/`
+- **Contributing**: See [CONTRIBUTING.md](CONTRIBUTING.md)
+- **Issues**: [GitHub Issues](https://github.com/NomenAK/SuperClaude/issues)
 
-## 🤝 Professional Community
+## 🤝 Community
 
-SuperClaude is maintained by professional developers for professional teams. We welcome:
-- **Enterprise Personas** for specialized industry workflows
-- **Professional Commands** for domain-specific operations  
-- **Quality Patterns** for better development practices
-- **Integration Improvements** for team productivity
+SuperClaude welcomes contributions:
+- **New Personas** for specialized workflows
+- **Commands** for domain-specific operations  
+- **Patterns** for development practices
+- **Integrations** for productivity tools
 
-Join our professional development community: [Discussions](https://github.com/NomenAK/SuperClaude/discussions)
+Join the community: [Discussions](https://github.com/NomenAK/SuperClaude/discussions)
 
-## 📈 Framework Metrics
+## 📈 Version 2.0 Changes
 
-**Token Efficiency**: 70% average reduction with same information density
-**Command Coverage**: 18 commands across complete development lifecycle
-**Cognitive Diversity**: 9 specialized personas with distinct expertise
-**Integration Depth**: 4 MCP servers with advanced orchestration
-**Quality Standards**: Evidence-based methodology with validation patterns
-**Professional Adoption**: Used by development teams for production systems
+**🎯 Architecture Improvements:**
+- **Configuration Management**: @include reference system
+- **Token Efficiency**: Compression options maintained
+- **Command System**: Unified flag inheritance
+- **Persona System**: Now available as flags
+- **Installer**: Enhanced with new modes
+- **Maintenance**: Centralized configuration
 
-## 🎉 Transform Your Development Workflow
+**📊 Framework Details:**
+- **Commands**: 18 specialized commands
+- **Personas**: 9 cognitive approaches
+- **MCP Servers**: 4 integrations
+- **Methodology**: Evidence-based approach
+- **Usage**: By development teams
 
-SuperClaude isn't just a configuration – it's a professional development methodology. Every command refined, every persona specialized, every pattern validated by professional development teams.
+## 🎉 Enhance Your Development
 
-**Ready to elevate your development practices?**
+SuperClaude provides a structured approach to using Claude Code with specialized commands, personas, and development patterns.
 
 ---
 
-*SuperClaude v4.0.0 – Professional development framework for Claude Code*
+*SuperClaude v2 – Development framework for Claude Code*
 
-[⭐ Star us on GitHub](https://github.com/NomenAK/SuperClaude) | [💬 Professional Discussions](https://github.com/NomenAK/SuperClaude/discussions) | [🐛 Report Issues](https://github.com/NomenAK/SuperClaude/issues)
+[⭐ Star on GitHub](https://github.com/NomenAK/SuperClaude) | [💬 Discussions](https://github.com/NomenAK/SuperClaude/discussions) | [🐛 Report Issues](https://github.com/NomenAK/SuperClaude/issues)

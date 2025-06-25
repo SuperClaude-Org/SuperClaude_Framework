@@ -2,12 +2,7 @@
 # Unified validation, severity response, error handling, and quality control framework
 
 ## Legend
-| Symbol | Meaning | | Abbrev | Meaning |
-|--------|---------|---|--------|---------|
-| ✅ | valid/pass | | val | validation |
-| ❌ | invalid/fail | | sev | severity |
-| ⚠ | warning | | ctrl | control |
-| 🚨 | critical | | rec | recovery |
+@include universal-constants.yml#Universal_Legend
 
 ## Severity Framework
 
@@ -157,7 +152,7 @@ Syntax_Validation:
   Markdown:
     Check: ["Valid headers", "Code blocks", "References"]
   References:
-    Include: "@include shared/([^#]+)#([^\\s]+)"
+    Include: "@include ([^#]+)#([^\\s]+)"
     See: "@see shared/([^\\s]+)"
     Validate: ["File exists", "Section exists", "No circular refs"]
 
@@ -368,4 +363,4 @@ Root_Cause_Analysis:
 ```
 
 ---
-*Quality Patterns v4.0.0 - Unified validation, severity response, error handling, and quality control framework*
+*Quality Patterns v2 - Unified validation, severity response, error handling, and quality control framework*

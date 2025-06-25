@@ -42,4 +42,4 @@ This Code of Conduct is adapted from the [Contributor Covenant](https://www.cont
 
 ---
 
-*SuperClaude v4.0.0 | Building a respectful community*
+*SuperClaude v2 | Building a respectful community*

@@ -1,7 +1,7 @@
 # Security Patterns & Definitions
 # Extracted security knowledge patterns for reuse across commands
 
-@include shared/universal-constants.yml#Universal_Legend
+@include universal-constants.yml#Universal_Legend
 
 ## OWASP Top 10 Security Patterns
 
@@ -315,4 +315,4 @@ Prevention_Strategies:
 ```
 
 ---
-*Security Patterns v4.0.0 - Comprehensive security knowledge patterns for SuperClaude commands*
+*Security Patterns v2 - Comprehensive security knowledge patterns for SuperClaude commands*

@@ -2,11 +2,7 @@
 # Consolidates common system-level configuration patterns
 
 ## Legend
-| Symbol | Meaning | | Abbrev | Meaning |
-|--------|---------|---|--------|---------|
-| ⚙ | system setting | | cfg | configuration |
-| 🔄 | session/runtime | | perf | performance |
-| 📊 | monitoring | | rec | recovery |
+@include universal-constants.yml#Universal_Legend
 
 ## Session Management
 
@@ -132,4 +128,4 @@ System_Health:
 ```
 
 ---
-*System Config v4.0.0 - Consolidated runtime, session, performance & UX settings*
+*System Config v2 - Consolidated runtime, session, performance & UX settings*

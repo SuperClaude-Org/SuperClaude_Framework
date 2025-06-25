@@ -1,13 +1,8 @@
 # Flag Inheritance System
 # Consolidated flag definitions for SuperClaude commands
 
-## Legend  
-| Symbol | Meaning | | Abbrev | Meaning |
-|--------|---------|---|--------|---------|
-| 🎛 | control/flags | | std | standard |
-| 🔧 | configuration | | exec | execution |
-| 📋 | group/category | | qual | quality |
-| ⚙ | settings/options | | val | validation |
+## Legend
+@include universal-constants.yml#Universal_Legend
 
 ## Universal Flags (All Commands)
 
@@ -196,9 +191,9 @@ Validation_Rules:
 ```yaml
 Template_Usage:
   Command_File_Header: |
-    @include shared/flag-inheritance.yml#Universal_Always
-    @include shared/flag-inheritance.yml#Execution_Control
-    @include shared/flag-inheritance.yml#Analysis_Commands
+    @include flag-inheritance.yml#Universal_Always
+    @include flag-inheritance.yml#Execution_Control
+    @include flag-inheritance.yml#Analysis_Commands
     
   Flag_Reference: |
     Universal flags: @see shared/flag-inheritance.yml#Universal_Always
@@ -224,4 +219,4 @@ Consistency_Improvements:
 ```
 
 ---
-*Flag Inheritance v4.0.0 - Consolidated flag system for consistent command interfaces*
+*Flag Inheritance v2 - Consolidated flag system for consistent command interfaces*

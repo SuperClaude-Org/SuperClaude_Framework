@@ -2,8 +2,8 @@
 # Documentation Patterns
 # Unified docs standards, directory structure, format requirements
 
-# Legend: 📁=directory 📝=format 🔔=notification 📊=reporting
-# docs=documentation std=standard req=requirement fmt=format
+## Legend
+@include universal-constants.yml#Universal_Legend
 
 Directory_Standards:
   Documentation_Structure:
@@ -93,7 +93,7 @@ Document_Standards:
       Remediation: "Actionable steps w/ priority order"
 
   Required_Headers:
-    Generated_By: "SuperClaude v4.0.0"
+    Generated_By: "SuperClaude v2"
     Command: "/<command> [flags]"
     Timestamp: "ISO 8601 format"
     Duration: "Operation time"
@@ -291,5 +291,5 @@ Notification_Standards:
 ```
 
 ---
-*Documentation Patterns v4.0.0 - Unified standards for docs, structure, 
+*Documentation Patterns v2 - Unified standards for docs, structure, 
 format requirements, and notifications*

@@ -1,3 +1,7 @@
+**Purpose**: Git workflow with checkpoint management
+
+---
+
 @include shared/universal-constants.yml#Universal_Legend
 
 ## Command Execution

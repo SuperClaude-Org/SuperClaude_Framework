@@ -2,125 +2,13 @@
 # Optimized reference system with flattened hierarchy and automated validation
 
 ## Legend
-| Symbol | Meaning | | Abbrev | Meaning |
-|--------|---------|---|--------|---------|
-| @common | universal patterns | | ref | reference |
-| @cmd | command-specific | | val | validation |
-| → | maps to | | alias | shortcut |
+@include universal-constants.yml#Universal_Legend
 
-## Flattened Universal References
-
-```yaml
-# Direct references (2-layer max) replacing @common/* system
-Universal_Patterns:
-  legend: "shared/universal-constants.yml#Universal_Legend"
-  flags: "shared/flag-inheritance.yml#Universal_Always"
-  lifecycle: "shared/execution-patterns.yml#Standard_Lifecycle"
-  success: "shared/universal-constants.yml#Success_Messages"
-  header: "shared/command-patterns.yml#Command_Header"
-  report: "shared/docs-patterns.yml#Standard_Notifications"
-  research: "shared/research-patterns.yml#Mandatory_Research_Flows"
-  exec-control: "shared/flag-inheritance.yml#Execution_Control"
-  
-Quality_Patterns:
-  validation: "shared/quality-patterns.yml#Pre_Execution_Validation"
-  severity: "shared/quality-patterns.yml#Severity_Framework"
-  recovery: "shared/quality-patterns.yml#Recovery_Strategies"
-  monitoring: "shared/quality-patterns.yml#Runtime_Monitoring"
-  
-Workflow_Patterns:
-  chains: "shared/execution-patterns.yml#Chain_Execution_Patterns"
-  git: "shared/execution-patterns.yml#Git_Integration_Patterns"
-  checkpoints: "shared/execution-patterns.yml#Checkpoint_Management"
-  mcp: "shared/execution-patterns.yml#MCP_Server_Registry"
-  
-Architecture_Patterns:
-  ddd: "shared/architecture-patterns.yml#DDD_Building_Blocks"
-  api: "shared/architecture-patterns.yml#REST_API_Patterns"
-  security: "shared/security-patterns.yml#Security_Patterns"
-  scaling: "shared/architecture-patterns.yml#Scalability_Patterns"
-  
-Documentation_Patterns:
-  structure: "shared/docs-patterns.yml#Directory_Standards"
-  formats: "shared/docs-patterns.yml#Format_Requirements"
-  notifications: "shared/docs-patterns.yml#Output_Notifications"
-  tasks: "shared/docs-patterns.yml#Task_File_Formatting"
-```
-
-## Command-Specific Pattern Groups
-
-```yaml
-# Optimized command patterns with direct references
-Analysis_Commands:
-  # analyze, scan, troubleshoot
-  flags: "shared/flag-inheritance.yml#Analysis_Commands"
-  patterns: "shared/command-patterns.yml#Analysis_Commands"
-  quality: "shared/quality-patterns.yml#Command_Specific_Recovery"
-  
-Build_Commands:  
-  # build, design, deploy
-  flags: "shared/flag-inheritance.yml#Build_Commands"
-  patterns: "shared/command-patterns.yml#Build_Commands"
-  lifecycle: "shared/execution-patterns.yml#Command_Hooks"
-  
-Quality_Commands:
-  # test, improve, cleanup
-  flags: "shared/flag-inheritance.yml#Quality_Commands"
-  control: "shared/quality-patterns.yml#Quality_Reports"
-  monitoring: "shared/quality-patterns.yml#Runtime_Monitoring"
-  
-Operations_Commands:
-  # deploy, migrate, git
-  flags: "shared/flag-inheritance.yml#Operations_Commands"
-  lifecycle: "shared/execution-patterns.yml#Git_Integration_Patterns"
-  audit: "shared/execution-patterns.yml#Checkpoint_Management"
-  
-Documentation_Commands:
-  # document, explain
-  flags: "shared/flag-inheritance.yml#Documentation_Commands"
-  templates: "shared/docs-patterns.yml#Format_Requirements"
-  structure: "shared/docs-patterns.yml#Directory_Standards"
-```
-
-## Optimized Template Usage
-
-```yaml
-# Replace verbose @include patterns with direct references
-Command_File_Templates:
-  Standard_Header: |
-    @legend
-    @header
-    @flags
-    @exec-control
-    
-  Quality_Focus: |
-    @legend  
-    @header
-    @flags
-    @validation
-    @monitoring
-    
-  Architecture_Focus: |
-    @legend
-    @header  
-    @flags
-    @ddd
-    @api
-    
-  Documentation_Focus: |
-    @legend
-    @header
-    @flags
-    @structure
-    @formats
-
-# Simple expansion rules (no nesting)
-Expansion_Rules:
-  Pattern: "@{pattern_name}"
-  Resolution: "Direct lookup in reference tables above"
-  No_Nesting: "Single level expansion only"
-  Fallback: "Use full path if pattern not found"
-```
+## Note on Reference Shortcuts
+# Reference shortcuts (@legend, @flags, etc.) were considered but not implemented.
+# All commands use full @include syntax for clarity and IDE support.
+# Direct references (e.g., @include universal-constants.yml#Universal_Legend) 
+# provide better maintainability and tool integration.
 
 ## Reference Validation System
 
@@ -149,7 +37,7 @@ Validation_Rules:
 ```yaml
 Pattern_Files:
   Universal_Constants: "universal-constants.yml"
-  Command_Patterns: "command-patterns.yml"
+  Command_Patterns: "command-architecture-patterns.yml"
   Architecture: "architecture-patterns.yml"
   Security: "security-patterns.yml"
   Quality: "quality-patterns.yml"
@@ -214,4 +102,4 @@ Framework_Integration:
 ```
 
 ---
-*Reference Patterns v4.0.0 - Optimized reference system with flattened hierarchy and automated validation*
+*Reference Patterns v2 - Optimized reference system with flattened hierarchy and automated validation*

@@ -1,12 +1,7 @@
 # Persona Patterns - Behavioral Profiles for Flag System
 
 ## Legend
-| Symbol | Meaning | | Abbrev | Meaning |
-|--------|---------|---|--------|---------|
-| → | leads to | | perf | performance |
-| > | greater than | | UX | user experience |
-| & | and/with | | arch | architecture |
-| 🎭 | persona mode | | ops | operations |
+@include universal-constants.yml#Universal_Legend
 
 ## Persona Behaviors
 
@@ -236,4 +231,4 @@ Usage_Examples:
 ```
 
 ---
-*Persona Patterns v4.0.0 - Behavioral profiles integrated with flag system*
+*Persona Patterns v2 - Behavioral profiles integrated with flag system*

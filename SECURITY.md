@@ -89,4 +89,4 @@ SuperClaude is provided "as is" without warranty. While we strive for security, 
 
 **Questions?** Contact anton.knoery@gmail.com
 
-*SuperClaude v4.0.0 | Security-conscious configuration framework*
+*SuperClaude v2 | Security-conscious configuration framework*

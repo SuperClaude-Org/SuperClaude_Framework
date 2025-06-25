@@ -2,12 +2,7 @@
 # Consolidated research patterns for professional implementations
 
 ## Legend
-| Symbol | Meaning | | Abbrev | Meaning |
-|--------|---------|---|--------|---------|
-| → | leads to | | req | required |
-| ⚠ | warning/risk | | cfg | configuration |
-| ✓ | verified/confirmed | | impl | implementation |
-| C | critical level | | conf | confidence |
+@include universal-constants.yml#Universal_Legend
 
 ## Mandatory Research Flows
 
@@ -465,4 +460,4 @@ Explanation_Methodology:
 ```
 
 ---
-*Research Flow Templates v4.0.0 - Ensuring evidence-based professional implementations with consolidated research and evidence patterns*
+*Research Flow Templates v2 - Ensuring evidence-based professional implementations with consolidated research and evidence patterns*

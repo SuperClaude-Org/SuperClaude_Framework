@@ -351,17 +351,17 @@ Common_References:
   Paths: "See Documentation Paths section above"
   Limits: "See Time Limits section above"
   Messages: "See Success Messages section above"
-  Flags: "@include shared/universal-constants.yml#Universal_Flags"
+  Flags: "@include universal-constants.yml#Universal_Flags"
   
 Usage_Examples:
   Command_Header: |
-    @include shared/universal-constants.yml#Universal_Legend
-    @include shared/universal-constants.yml#Process_Flow
+    @include universal-constants.yml#Universal_Legend
+    @include universal-constants.yml#Process_Flow
   Report_Location: |
-    Reports: @include shared/universal-constants.yml#Documentation_Paths.Reports
+    Reports: @include universal-constants.yml#Documentation_Paths.Reports
   Success_Format: |
-    @include shared/universal-constants.yml#Success_Messages.Operation_Complete
+    @include universal-constants.yml#Success_Messages.Operation_Complete
 ```
 
 ---
-*Universal Constants v4.0.0 - Single source of truth for all SuperClaude shared values*
+*Universal Constants v2 - Single source of truth for all SuperClaude shared values*

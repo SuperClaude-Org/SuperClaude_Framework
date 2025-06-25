@@ -1,3 +1,7 @@
+**Purpose**: Project cleanup and maintenance
+
+---
+
 @include shared/universal-constants.yml#Universal_Legend
 
 ## Command Execution

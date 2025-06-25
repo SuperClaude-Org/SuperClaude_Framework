@@ -1,0 +1,231 @@
+# Recovery & State Management - Consolidated Patterns
+# Comprehensive state preservation, session recovery, and error handling
+
+## Legend
+@include universal-constants.yml#Universal_Legend
+
+## Checkpoint Architecture
+
+```yaml
+Checkpoint_Structure:
+  Storage_Hierarchy:
+    Base_Directory: ".claudedocs/checkpoints/"
+    Active_Checkpoint: ".claudedocs/checkpoints/active/"
+    Archive_Directory: ".claudedocs/checkpoints/archive/"
+    Recovery_Cache: ".claudedocs/checkpoints/recovery/"
+    
+  Checkpoint_Components:
+    Metadata:
+      checkpoint_id: "UUID v4 format"
+      timestamp: "ISO 8601 with timezone"
+      operation: "Command that triggered checkpoint"
+      risk_level: "LOW|MEDIUM|HIGH|CRITICAL"
+      
+    State_Preservation:
+      modified_files: "List → snapshots w/ content hash"
+      git_state: "Branch, commit SHA, uncommitted changes"
+      session_context: "Command history, todos, decisions, blockers"
+      environment: "Working dir, env vars, tool versions"
+      mcp_cache: "Active servers, cached responses, token usage"
+
+Automatic_Triggers:
+  Risk_Based:
+    Critical: ["Database migrations", "Production deployments", "Security changes"]
+    High: ["Multi-file refactoring", "Dependency updates", "Architecture changes"]
+    Medium: ["Feature implementation", "Bug fixes affecting 3+ files"]
+    
+  Time_Based:
+    Long_Operations: "Checkpoint every 10 minutes for ops >5 min"
+    Session_Duration: "Checkpoint every 30 minutes"
+    
+  Command_Specific:
+    Always: ["/deploy", "/migrate", "/cleanup --aggressive"]
+    Conditional: ["/build → core systems", "/test → infrastructure"]
+```
+
+## Session Recovery Patterns
+
+```yaml
+Session_Detection:
+  Startup_Scan:
+    Locations: [".claudedocs/tasks/in-progress/", ".claudedocs/tasks/pending/"]
+    Parse_Metadata: "Extract task ID, title, status, branch, progress"
+    Git_Validation: "Check branch exists, clean working tree"
+    Context_Restoration: "Load session state, variables, decisions"
+    
+  Recovery_Decision_Matrix:
+    Active_Tasks_Found: "Auto-resume most recent or highest priority"
+    Multiple_Tasks: "Present selection menu w/ progress summary"
+    Stale_Tasks: "Tasks >7 days old require confirmation"
+    Corrupted_State: "Fallback → manual recovery prompts"
+
+Context_Recovery:
+  State_Reconstruction:
+    File_Context: "Restore working file list & modification tracking"
+    Variable_Context: "Reload session variables & configurations"
+    Decision_Context: "Restore architectural & implementation decisions"
+    Progress_Context: "Rebuild todo list from task breakdown & phase"
+    
+  Automatic_Recovery:
+    Seamless_Resume: "Silent recovery for single active task"
+    Smart_Restoration: "Rebuild TodoWrite from task state & progress"
+    Blocker_Detection: "Identify & surface previous blockers"
+    Next_Step_ID: "Determine optimal next action"
+
+session_state_format:
+  current_files: [path1, path2]
+  key_variables:
+    api_endpoint: "https://api.example.com"
+    database_name: "myapp_prod"
+  decisions:
+    - "Used React over Vue for team familiarity"
+  blockers:
+    - issue: "CORS error on API calls"
+      attempted: ["headers", "proxy setup"]
+      solution: "server-side CORS config needed"
+```
+
+## Error Classification & Recovery
+
+```yaml
+Error_Categories:
+  Transient_Errors:
+    Examples: ["Network timeouts", "Resource unavailable", "API rate limits"]
+    Recovery: "Exponential backoff retry (max 3 attempts)"
+    
+  Environment_Errors:
+    Examples: ["Command not found", "Module not installed", "Permission denied"]
+    Recovery: "Guide user → environment fix"
+    Auto_Fix: "Attempt if possible"
+    
+  Validation_Errors:
+    Examples: ["Invalid format", "Syntax errors", "Missing parameters"]
+    Recovery: "Request valid input w/ specific examples"
+    
+  Logic_Errors:
+    Examples: ["Circular dependencies", "Conflicting requirements"]
+    Recovery: "Explain issue & offer alternatives"
+    
+  Critical_Errors:
+    Examples: ["Data corruption", "Security violations", "System failures"]
+    Recovery: "Safe mode + checkpoint + user intervention"
+
+Standard_Recovery_Patterns:
+  Retry_Strategies:
+    Exponential_Backoff:
+      Initial_Delay: 1000ms
+      Max_Delay: 30000ms
+      Multiplier: 2
+      Jitter: "Random 0-500ms"
+      
+    Circuit_Breaker:
+      Failure_Threshold: 5
+      Reset_Timeout: 60000ms
+      Use_Case: "Protect failing services"
+
+  Fallback_Chains:
+    Tool_Failures: "grep → rg → native search → guide user"
+    MCP_Cascades:
+      Context7: "→ WebSearch → Local cache → Continue w/ warning"
+      Sequential: "→ Native analysis → Simplified → User input"
+      Magic: "→ Template generation → Manual guide → Examples"
+      
+  Graceful_Degradation:
+    Feature_Reduction: "Complete → Basic → Minimal → Manual guide"
+    Performance_Adaptation: "Reduce scope → faster alternatives → progressive output"
+```
+
+## Recovery Implementation
+
+```yaml
+Recovery_Framework:
+  Error_Handler_Lifecycle:
+    Detect: "Catch → Classify → Assess severity → Capture context"
+    Analyze: "Determine recovery options → Check retry eligibility → ID fallbacks"
+    Respond: "Log w/ context → Attempt recovery → Track attempts → Escalate"
+    Report: "User-friendly message → Technical details → Actions → Next steps"
+
+  Progressive_Escalation:
+    Level_1: "Automatic retry/recovery"
+    Level_2: "Alternative approach"
+    Level_3: "Degraded operation"
+    Level_4: "Manual intervention"
+    Level_5: "Abort w/ rollback"
+
+Recovery_Commands:
+  Checkpoint_Management:
+    Create: "/checkpoint [--full|--light] [--note 'message']"
+    List: "/checkpoint --list [--recent|--today|--filter]"
+    Inspect: "/checkpoint --inspect {id}"
+    Rollback: "/rollback [--quick|--full] [--files|--git|--env] [{id}]"
+    
+  Recovery_Actions:
+    Quick_Rollback: "File contents only (sub-second)"
+    Full_Restoration: "Complete state (files, git, environment)"
+    Selective_Recovery: "Specific components only"
+    Progressive_Recovery: "Step through checkpoint history"
+```
+
+## Integration Patterns
+
+```yaml
+Command_Integration:
+  Lifecycle_Hooks:
+    Pre_Execution: "Create checkpoint before risky operations"
+    During_Execution: "Progressive updates for long operations"
+    Post_Execution: "Finalize or clean checkpoint based on outcome"
+    On_Failure: "Preserve checkpoint → offer immediate rollback"
+
+  Error_Context_Capture:
+    Operation: "What was being attempted"
+    Environment: "Working directory, user, permissions"
+    Input: "Command/parameters that failed"
+    Output: "Error messages & logs"
+    State: "System state when error occurred"
+
+Common_Error_Scenarios:
+  Development:
+    Module_Not_Found: "Check package.json → npm install → verify import"
+    Build_Failures: "Clean cache → check syntax → verify deps → partial build"
+    Test_Failures: "Isolate failing → check environment → skip & continue"
+    
+  System:
+    Permission_Denied: "chmod/chown suggestions → alt locations → user dir fallback"
+    Disk_Space: "Clean temp files → suggest cleanup → compression → minimal mode"
+    Memory_Exhaustion: "Reduce scope → streaming → batching → manual chunking"
+    
+  Integration:
+    API_Failures: "401/403→auth | 429→rate limit | 500→retry | cached fallback"
+    Network_Issues: "Retry w/ backoff → alt endpoints → cached data → offline mode"
+
+User_Experience:
+  Status_Messages:
+    Starting_Recovery: "🔄 Detecting previous session state..."
+    Task_Found: "📋 Found active task: {title} ({progress}% complete)"
+    Context_Restored: "✅ Session context restored - continuing work"
+    Recovery_Failed: "⚠ Manual recovery needed"
+    
+  Error_Communication:
+    What: "Build failed: Module not found"
+    Why: "Package 'react' is not installed"
+    How: "Run: npm install react"
+    Then: "Retry the build command"
+```
+
+## Performance Optimization
+
+```yaml
+Efficiency_Strategies:
+  Incremental_Checkpoints: "Base checkpoint + delta updates"
+  Parallel_Processing: "Concurrent file backups & state collection"
+  Smart_Selection: "Only backup affected files → shallow copy unchanged"
+  Resource_Management: "Stream large files → limit CPU → low priority I/O"
+
+Retention_Policy:
+  Automatic_Cleanup: "7 days age | 20 count limit | 1GB size limit"
+  Protected_Checkpoints: "User-marked → never auto-delete"
+  Archive_Strategy: "Tar.gz old checkpoints → metadata retention"
+```
+
+---
+*Recovery & State Management v3 - Consolidated patterns for state preservation, session recovery, and error handling*

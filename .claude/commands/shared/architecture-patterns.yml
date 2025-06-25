@@ -1,7 +1,7 @@
 # Architecture Patterns & Design Knowledge
 # Extracted architectural patterns for system design and development
 
-@include shared/universal-constants.yml#Universal_Legend
+@include universal-constants.yml#Universal_Legend
 
 ## Domain-Driven Design (DDD) Patterns
 
@@ -501,4 +501,4 @@ DDD_Patterns:
 ```
 
 ---
-*Architecture Patterns v4.0.0 - Comprehensive architectural knowledge patterns for SuperClaude design commands*
+*Architecture Patterns v2 - Comprehensive architectural knowledge patterns for SuperClaude design commands*

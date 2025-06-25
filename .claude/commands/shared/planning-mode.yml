@@ -157,7 +157,7 @@ Claude_Code_Compliance:
 ```yaml
 Command_Header_Pattern:
   Standard_Text: "Execute: immediate. --plan→show plan first"
-  Enhanced_Documentation: "@include shared/planning-mode.yml#Planning_Behavior"
+  Enhanced_Documentation: "@include planning-mode.yml#Planning_Behavior"
   
 Planning_Behavior:
   Default_Execution: "Commands execute immediately without planning"
@@ -178,4 +178,4 @@ Planning_Benefits:
 ```
 
 ---
-*Planning mode configuration v4.0.0 - Comprehensive planning patterns for Claude Code compliance*
+*Planning mode configuration v2 - Comprehensive planning patterns for Claude Code compliance*

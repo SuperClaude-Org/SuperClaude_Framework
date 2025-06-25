@@ -1,0 +1,260 @@
+# Compression & Performance Patterns - Consolidated Optimization
+# UltraCompressed mode, token optimization, and performance monitoring
+
+## Legend
+@include universal-constants.yml#Universal_Legend
+
+## UltraCompressed Mode Configuration
+
+```yaml
+Activation_Triggers:
+  Explicit_Flags: ["--ultracompressed", "--uc"]
+  Natural_Language: ["compress", "concise", "brief", "minimal", "telegram style"]
+  Automatic_Triggers:
+    High_Context_Usage: "Context usage >75% → Auto-activate"
+    Token_Budget_Pressure: "Approaching token limits → Auto-activate"
+    Large_Codebases: "Project >10k files → Recommend --uc"
+    Long_Sessions: "Session >2 hours → Suggest --uc"
+    Task_Operations: "Always for task files"
+
+Core_Compression_Rules:
+  Remove_Words:
+    Articles: ["the", "a", "an"]
+    Conjunctions: ["and", "or", "but", "however", "therefore"]
+    Prepositions: ["of", "in", "on", "at", "to", "for", "with", "from"]
+    Fillers: ["that", "which", "who", "very", "really", "quite"]
+    Verbose_Phrases:
+      "in order to": "to"
+      "make sure": "ensure"
+      "as well as": "&"
+      "due to the fact that": "∵"
+
+Symbol_Substitutions:
+  Logical: "→(leads to) &(and) |(or) ∵(because) ∴(therefore) ≡(equivalent)"
+  Mathematical: "∀(all) ∃(exists) ∈(member) ⊂(subset) ∪(union) ∩(intersection)"
+  Process: "▶(start) ⏸(pause) ⏹(stop) ⚡(fast) 🔄(cycle) ✅(success) ❌(failure)"
+  Technical: "cfg(config) impl(implementation) perf(performance) val(validation)"
+```
+
+## Token Optimization Patterns
+
+```yaml
+Structure_Optimization:
+  Priority_Order:
+    1_YAML: "Most compact structured data"
+    2_Tables: "Comparison & reference data"
+    3_Lists: "Enumeration & sequences"
+    4_Prose: "Only when absolutely necessary"
+
+  Compression_Techniques:
+    Headers: "60-80% reduction via symbol substitution"
+    Paragraphs: "70-75% reduction via word removal"
+    Lists: "50-60% reduction via abbreviations"
+    Overall_Target: "~70% average token reduction"
+
+Content_Compression:
+  Technical_Abbreviations:
+    analyze→anlz | build→bld | deploy→dply | test→tst
+    database→db | interface→api | environment→env | dependency→dep
+    configuration→cfg | implementation→impl | performance→perf
+    
+  Communication_Patterns:
+    Telegram_Style: "Direct, no fluff, action-oriented"
+    Bullet_Lists: "• Key point | • Action item | • Result"
+    Symbol_Heavy: "Use established symbols consistently"
+    Context_Aware: "Abbreviate only when meaning clear"
+
+UltraCompressed_Templates:
+  Command_Output:
+    Status: "✅ Done | ❌ Failed | ⚠ Warning | ℹ Info"
+    Progress: "3/5 complete (60%)"
+    Files: "Modified: 3 | Added: 1 | Deleted: 0"
+    
+  Task_Format:
+    Header: "T: {TITLE} | S: {STATUS} | P: {PRIORITY}"
+    Progress: "{COMPLETED}/{TOTAL} ({%})"
+    Focus: "→ {CURRENT_ACTION}"
+```
+
+## Performance Monitoring System
+
+```yaml
+Command_Performance_Metrics:
+  Timing_Analysis:
+    Start_Time: "Record command initiation timestamp"
+    End_Time: "Record command completion timestamp"
+    Duration: "end_time - start_time"
+    Phase_Breakdown: "Analysis, execution, reporting phases"
+    
+  Token_Economics:
+    Input_Tokens: "User command + context"
+    Output_Tokens: "Response + tool calls"
+    MCP_Tokens: "MCP server consumption"
+    Efficiency_Ratio: "output_value / total_tokens"
+    Context_Growth: "Track context size throughout operation"
+    
+  Operation_Analytics:
+    Tools_Used: "Read, Edit, Bash, MCP calls"
+    Files_Accessed: "Number read/written/analyzed"
+    MCP_Usage: "Server calls + frequency"
+    Error_Count: "Errors encountered + recovery success"
+    
+  Success_Indicators:
+    Task_Completion: "Goals achieved vs. attempted"
+    Quality_Metrics: "Code quality, test coverage, security"
+    User_Satisfaction: "Explicit feedback + usage patterns"
+
+Performance_Baselines:
+  Command_Benchmarks:
+    Simple_Commands: "<5 seconds (read, analyze single file)"
+    Medium_Commands: "5-30 seconds (build, test, multi-file)"
+    Complex_Commands: "30-300 seconds (deploy, migrate, analysis)"
+    
+  Token_Budgets:
+    Light_Operations: "<1K tokens"
+    Standard_Operations: "1K-5K tokens"
+    Heavy_Operations: "5K-20K tokens"
+    Critical_Operations: "20K+ tokens (with justification)"
+    
+  Resource_Thresholds:
+    Memory_Usage: "Monitor for memory leaks"
+    CPU_Utilization: "Track intensive operations"
+    Network_Usage: "MCP server communication overhead"
+    Disk_I_O: "File operations efficiency"
+```
+
+## MCP Performance Integration
+
+```yaml
+MCP_Server_Performance:
+  Response_Time_Targets:
+    Context7: "Fast response (network dependent)"
+    Sequential: "Moderate duration (complexity dependent)"
+    Magic: "Fast to moderate (component complexity)"
+    Puppeteer: "Fast to moderate (page load dependent)"
+    
+  Resource_Usage_Profiles:
+    Context7: "Low CPU, Medium Network"
+    Sequential: "High CPU, Low Network"
+    Magic: "Medium CPU, High Network"
+    Puppeteer: "Medium CPU, Low Network"
+    
+  Reliability_Scoring:
+    Context7: "Very high (library availability dependent)"
+    Sequential: "Very high (internal processing)"
+    Magic: "High (external service dependency)"
+    Puppeteer: "Very high (browser dependency)"
+
+MCP_Optimization_Strategies:
+  Caching_Patterns:
+    Context7_Cache: "Library docs + examples (session-persistent)"
+    Sequential_Cache: "Analysis patterns + solutions (cross-session)"
+    Magic_Cache: "Component templates + variations (persistent)"
+    
+  Fallback_Performance:
+    MCP_Timeout: "5-10 second timeout → fallback to native"
+    Network_Issues: "Auto-fallback → cached data → manual guidance"
+    Service_Degradation: "Progressive degradation → reduced functionality"
+```
+
+## Compression Algorithm Implementation
+
+```yaml
+Text_Compression_Pipeline:
+  Phase_1_Structure:
+    Convert_To_YAML: "Transform prose → structured data"
+    Table_Optimization: "Multi-column data → compact tables"
+    List_Compression: "Paragraph lists → bullet points"
+    
+  Phase_2_Language:
+    Remove_Articles: "Systematic article removal where clear"
+    Compress_Conjunctions: "and→& | with→w/ | to→→"
+    Symbol_Substitution: "Replace common phrases w/ symbols"
+    
+  Phase_3_Technical:
+    Abbreviate_Terms: "Use established technical abbreviations"
+    Compress_Patterns: "Repeated patterns → @include references"
+    Context_Awareness: "Maintain meaning despite compression"
+
+Quality_Preservation:
+  Information_Density: "Higher info per token ratio"
+  Clarity_Maintenance: "Compressed but still clear"
+  Context_Preservation: "Critical information retained"
+  Reversibility: "Can expand for detailed explanation"
+  
+Compression_Validation:
+  Meaning_Preservation: "Core information intact"
+  Actionability: "Instructions still executable"
+  Clarity_Check: "Understandable by target audience"
+  Token_Reduction: "Measurable reduction achieved"
+```
+
+## Performance Optimization Strategies
+
+```yaml
+Command_Optimization:
+  Parallel_Processing:
+    Tool_Calls: "Concurrent file operations where possible"
+    MCP_Requests: "Parallel MCP server calls"
+    Background_Tasks: "Non-blocking operations"
+    
+  Caching_Strategies:
+    Result_Caching: "Cache command outputs for reuse"
+    Context_Caching: "Preserve analysis results"
+    Pattern_Caching: "Store successful workflow patterns"
+    
+  Resource_Management:
+    Memory_Efficiency: "Stream large files, cleanup temp data"
+    CPU_Optimization: "Efficient algorithms, avoid redundant work"
+    Network_Optimization: "Batch requests, compress transfers"
+
+System_Performance:
+  Startup_Optimization:
+    Lazy_Loading: "Load components on demand"
+    Cache_Warmup: "Pre-load frequently used data"
+    Configuration_Caching: "Cache parsed config files"
+    
+  Runtime_Optimization:
+    Context_Compression: "Compress long-running context"
+    Garbage_Collection: "Clean unused references"
+    Resource_Pooling: "Reuse expensive resources"
+    
+  Shutdown_Optimization:
+    Graceful_Cleanup: "Properly close resources"
+    State_Persistence: "Save valuable session data"
+    Cache_Cleanup: "Remove temporary caches"
+```
+
+## Monitoring & Analytics
+
+```yaml
+Performance_Dashboard:
+  Real_Time_Metrics:
+    Current_Command: "Active operation status"
+    Token_Usage: "Current session consumption"
+    Resource_Utilization: "CPU, memory, network usage"
+    
+  Historical_Analysis:
+    Command_Trends: "Performance over time"
+    Token_Efficiency: "Cost-benefit analysis"
+    Error_Patterns: "Failure trend analysis"
+    
+  Optimization_Recommendations:
+    Performance_Bottlenecks: "Identify slow operations"
+    Token_Waste: "Highlight inefficient patterns"
+    Caching_Opportunities: "Suggest result caching"
+
+Alerting_System:
+  Performance_Alerts:
+    Slow_Commands: "Operations exceeding baseline"
+    High_Token_Usage: "Approaching budget limits"
+    Resource_Exhaustion: "Memory/CPU threshold warnings"
+    
+  Quality_Alerts:
+    Error_Rate_Increase: "Rising failure patterns"
+    User_Satisfaction_Drop: "Decreased effectiveness"
+    System_Degradation: "Overall performance decline"
+```
+
+---
+*Compression & Performance Patterns v3 - Consolidated UltraCompressed mode, token optimization, and performance monitoring*

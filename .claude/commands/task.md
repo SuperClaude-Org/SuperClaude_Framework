@@ -1,3 +1,7 @@
+**Purpose**: Complex feature management across sessions
+
+---
+
 @include shared/universal-constants.yml#Universal_Legend
 
 ## Command Execution
@@ -49,7 +53,7 @@ Examples:
 
 ## Task Structure
 
-@include shared/task-patterns.yml#Task_Structure
+@include shared/task-management-patterns.yml#Task_Management_Hierarchy
 
 Task Components:
 - Title & description

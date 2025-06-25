@@ -1,3 +1,7 @@
+**Purpose**: Project context loading and analysis
+
+---
+
 @include shared/universal-constants.yml#Universal_Legend
 
 ## Command Execution

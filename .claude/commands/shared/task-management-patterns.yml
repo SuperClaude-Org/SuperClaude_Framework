@@ -1,0 +1,287 @@
+# Task Management Patterns - Consolidated Task System
+# Comprehensive task tracking, todo integration, and workflow management
+
+## Legend
+@include universal-constants.yml#Universal_Legend
+
+## Two-Tier Architecture
+
+```yaml
+Task_Management_Hierarchy:
+  Level_1_Tasks: "High-level features (./claudedocs/tasks/ folders)"
+    Purpose: "Session persistence, git branching, requirement tracking"
+    Scope: "Features spanning multiple sessions"
+    Examples: ["build auth system", "implement dashboard", "create API"]
+    Format: "Comprehensive markdown files w/ full context"
+    
+  Level_2_Todos: "Immediate actionable steps (TodoWrite/TodoRead)"
+    Purpose: "Real-time execution tracking within session"
+    Scope: "Current session specific actions"
+    Examples: ["Update user.js", "Add validation", "Write test"]
+    Format: "JSON objects w/ status tracking"
+
+Integration_Flow:
+  Task_Creation: "User request → Task breakdown → Todo generation"
+  Session_Start: "Scan tasks → Load context → Generate todos"
+  Progress_Sync: "Todo completion → Task progress update"
+  Session_End: "Save context → Update task status"
+```
+
+## Auto-Trigger Detection Patterns
+
+```yaml
+Complexity_Triggers:
+  File_Count_Thresholds:
+    Single_File: "No auto-trigger needed"
+    Multiple_Files_3_5: "Consider TodoList if operations are interdependent"
+    Many_Files_6_Plus: "AUTO-TRIGGER TodoList for coordination"
+    
+  Operation_Complexity:
+    Simple_Commands: "Read, analyze single file → No todos"
+    Multi_Step_Workflows: "Build, test, deploy sequence → Auto-trigger"
+    Cross_Component_Changes: "Multiple modules affected → Auto-trigger"
+    Architecture_Changes: "System-wide impact → Auto-trigger"
+    
+  Time_Estimation_Triggers:
+    Quick_Tasks_Under_5_Min: "Direct execution, no todos"
+    Medium_Tasks_5_30_Min: "Consider todos for tracking"
+    Long_Tasks_Over_30_Min: "AUTO-TRIGGER todos for management"
+    
+  Risk_Level_Triggers:
+    Low_Risk: "Documentation, simple fixes → Optional todos"
+    Medium_Risk: "Feature additions, refactoring → Recommend todos"
+    High_Risk: "Database changes, deployments → REQUIRE todos"
+    Critical_Risk: "Security, production → MANDATORY todos + checkpoints"
+
+Auto_Trigger_Rules:
+  Command_Patterns:
+    build + multiple_targets: "AUTO-TRIGGER: Coordination needed"
+    migrate + database: "AUTO-TRIGGER: Risk management required"
+    deploy + production: "AUTO-TRIGGER: Safety protocols"
+    refactor + architecture: "AUTO-TRIGGER: Complexity management"
+    
+  Context_Patterns:
+    Multiple_Repos: "AUTO-TRIGGER: Cross-repo coordination"
+    Team_Collaboration: "AUTO-TRIGGER: Progress visibility"
+    Learning_New_Tech: "AUTO-TRIGGER: Learning progress tracking"
+    Debug_Complex_Issue: "AUTO-TRIGGER: Investigation steps"
+```
+
+## UltraCompressed Task Template
+
+```yaml
+UltraCompressed_Task_Format:
+  Header: "T: {TASK_TITLE} | ID: {TASK_ID} | S: {STATUS} | P: {PRIORITY} | Branch: {BRANCH}"
+  
+  Essential_Phases:
+    Analysis: "□ Requirements & design"
+    Implementation: "□ Core functionality"
+    Testing: "□ Unit & integration"
+    Deployment: "□ Staging & prod"
+    
+  Critical_Context:
+    Decisions: "{KEY_DECISIONS}"
+    Blockers: "{BLOCKERS}"
+    Progress: "{COMPLETED}/{TOTAL} ({PERCENTAGE}%)"
+    
+  Workflow_State:
+    Current_Focus: "{ACTIVE_TODO}"
+    Next_Action: "{NEXT_LOGICAL_STEP}"
+    Risk_Level: "{LOW|MEDIUM|HIGH|CRITICAL}"
+
+Compression_Patterns:
+  Status_Codes: "P(Pending) | IP(InProgress) | B(Blocked) | C(Completed) | A(Archived)"
+  Priority_Codes: "C(Critical) | H(High) | M(Medium) | L(Low)"
+  Phase_Symbols: "□(pending) | ⏳(in-progress) | ⚠(blocked) | ✅(completed)"
+  
+Token_Optimization:
+  Standard_Format: "~200-300 tokens per task"
+  UltraCompressed: "~50-80 tokens per task"
+  Reduction_Rate: "70-75% token savings"
+  Information_Density: "Higher concentration of actionable data"
+```
+
+## Task Lifecycle Management
+
+```yaml
+Task_Creation_Workflow:
+  User_Request_Analysis:
+    Parse_Intent: "Extract core requirements & constraints"
+    Scope_Assessment: "Determine complexity & dependencies"
+    Breakdown_Strategy: "Divide into manageable phases"
+    
+  Task_Structure_Generation:
+    Title: "Clear, actionable task description"
+    ID: "Unique identifier for tracking"
+    Phases: "Logical progression of work"
+    Context: "Key decisions & constraints"
+    
+  Git_Integration:
+    Branch_Creation: "feature/{task-id}-{description}"
+    Checkpoint_Setup: "Initial state preservation"
+    Progress_Tracking: "Commit → phase completion mapping"
+
+Task_Progress_Tracking:
+  Phase_Completion:
+    Analysis_Done: "Requirements clear → Implementation phase"
+    Implementation_Done: "Core features complete → Testing phase"
+    Testing_Done: "Quality verified → Deployment phase"
+    Deployment_Done: "Live & verified → Task completion"
+    
+  Todo_Synchronization:
+    Phase_Start: "Generate todos for current phase"
+    Todo_Completion: "Update task progress percentage"
+    Phase_End: "Mark phase complete, advance to next"
+    
+  Context_Preservation:
+    Decision_Tracking: "Architectural & implementation choices"
+    Blocker_Management: "Issues & attempted solutions"
+    Learning_Capture: "New knowledge & insights gained"
+
+Task_Recovery_Integration:
+  Session_Detection: "Scan ./claudedocs/tasks/in-progress/"
+  Context_Restoration: "Load task state, decisions, blockers"
+  Todo_Regeneration: "Create current phase todos from task state"
+  Seamless_Resume: "Continue where previous session left off"
+```
+
+## Todo Integration Patterns
+
+```yaml
+Todo_Generation_Rules:
+  From_Task_Phases:
+    Analysis_Phase: "Research, requirements, design todos"
+    Implementation_Phase: "File creation, feature todos"
+    Testing_Phase: "Unit, integration, E2E todos"
+    Deployment_Phase: "Build, deploy, verify todos"
+    
+  Smart_Todo_Creation:
+    Dependency_Aware: "Order todos by dependencies"
+    Context_Specific: "Include relevant details in todo description"
+    Progress_Aligned: "Todos match current task phase"
+    Recovery_Ready: "Todos can regenerate from task state"
+
+Todo_Status_Mapping:
+  pending: "Not started"
+  in_progress: "Currently working (limit 1 active)"
+  completed: "Finished successfully"
+  blocked: "Cannot proceed (capture blocker info)"
+  
+Todo_Lifecycle_Hooks:
+  On_Todo_Start: "Mark in_progress, update task context"
+  On_Todo_Complete: "Mark completed, advance task progress"
+  On_Todo_Block: "Capture blocker, update task status"
+  On_Phase_Complete: "Generate next phase todos"
+
+Real_Time_Synchronization:
+  Todo_Changes: "Immediately update task progress"
+  Task_Updates: "Regenerate relevant todos"
+  Context_Changes: "Update both task & todo context"
+  Session_Breaks: "Preserve state in both systems"
+```
+
+## Advanced Task Management
+
+```yaml
+Multi_Task_Coordination:
+  Concurrent_Tasks:
+    Max_Active: "3 tasks simultaneously"
+    Priority_Rules: "High priority blocks others"
+    Resource_Conflicts: "Detect file modification conflicts"
+    
+  Task_Switching:
+    Auto_Save: "Current context preservation"
+    Checkpoint: "Create recovery point"
+    Branch_Switch: "Git branch management"
+    Context_Restore: "Load new task context"
+
+Task_Dependencies:
+  Prerequisite_Management: "Task A blocks Task B until complete"
+  Shared_Resources: "Coordinate access to common files"
+  Integration_Points: "Manage cross-task dependencies"
+  
+Task_Quality_Control:
+  Definition_Validation: "Clear requirements & acceptance criteria"
+  Progress_Verification: "Real progress vs. perceived progress"
+  Completion_Criteria: "Objective task completion rules"
+  Quality_Gates: "Required validations before phase advancement"
+```
+
+## Intelligent Workflow Patterns
+
+```yaml
+Workflow_Recognition:
+  Pattern_Detection:
+    Feature_Development: "analyze → design → build → test → deploy"
+    Bug_Investigation: "troubleshoot → analyze → fix → test → verify"
+    Quality_Improvement: "scan → analyze → improve → test → document"
+    Research_Task: "research → experiment → document → implement"
+    
+  Auto_Phase_Generation:
+    Feature_Tasks: "Requirements → Design → Implementation → Testing → Deployment"
+    Bug_Tasks: "Investigation → Root Cause → Fix → Verification → Documentation"
+    Refactor_Tasks: "Analysis → Planning → Implementation → Testing → Integration"
+    
+Success_Pattern_Learning:
+  Effective_Sequences: "Track successful task completion patterns"
+  Time_Estimation: "Learn from actual vs estimated durations"
+  Blocker_Prevention: "Identify common failure points"
+  User_Preferences: "Adapt to individual working styles"
+
+Task_Optimization:
+  Parallel_Opportunities: "Identify tasks that can run concurrently"
+  Dependency_Optimization: "Minimize blocking dependencies"
+  Resource_Efficiency: "Optimize tool & resource usage"
+  Context_Reuse: "Leverage previous task learnings"
+```
+
+## Integration with Command System
+
+```yaml
+Command_Task_Integration:
+  Task_Aware_Commands:
+    /analyze + active_task: "Focus analysis on current task scope"
+    /build + active_task: "Build components relevant to task"
+    /test + active_task: "Test features developed in current task"
+    
+  Automatic_Task_Context:
+    Command_Execution: "Consider active task context in command decisions"
+    Result_Integration: "Feed command results back to task progress"
+    Context_Enrichment: "Update task context with command learnings"
+    
+Task_Command_Coordination:
+  Command_Triggers_Todos: "Complex commands auto-generate todos"
+  Todo_Triggers_Commands: "Todo completion may trigger next command"
+  Task_Guides_Commands: "Task context influences command selection"
+  
+Progress_Visibility:
+  Command_Progress: "Show task progress in command outputs"
+  Task_Dashboard: "Integrated view of tasks & todos"
+  Session_Summary: "End-of-session progress report"
+```
+
+## Error Recovery & Resilience
+
+```yaml
+Task_Recovery_Scenarios:
+  Partial_State_Recovery:
+    Task_Only: "Task file exists, todos missing → regenerate todos"
+    Todos_Only: "Todos exist, task missing → continue with warning"
+    Corrupted_Task: "Parse recoverable portions, prompt for missing"
+    Git_Mismatch: "Task branch missing → offer branch creation"
+    
+  Fallback_Strategies:
+    Manual_Recovery: "Present recovery options to user"
+    Fresh_Start: "Option to abandon recovery, start new"
+    Partial_Import: "Import recoverable data, start fresh for rest"
+    Checkpoint_Rollback: "Restore from last known good state"
+
+Task_Validation:
+  Integrity_Checks: "Verify task structure & required fields"
+  Context_Completeness: "Ensure critical context elements present"
+  Progress_Consistency: "Validate todo progress vs task progress"
+  Git_Alignment: "Verify git state matches task expectations"
+```
+
+---
+*Task Management Patterns v3 - Consolidated task tracking, todo integration, and workflow management*

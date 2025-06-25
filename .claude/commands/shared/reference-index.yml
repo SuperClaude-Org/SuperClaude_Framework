@@ -1,10 +1,7 @@
 # Reference Index - Quick Lookup Guide
 
 ## Legend
-| Symbol | Meaning | | Abbrev | Meaning |
-|--------|---------|---|--------|---------|
-| → | maps to | | ref | reference |
-| @ | reference type | | tmpl | template |
+@include universal-constants.yml#Universal_Legend
 
 ## Command Files (19)
 ```yaml
@@ -32,21 +29,21 @@ troubleshoot.md: Debug/diagnose/fix issues
 ```yaml
 Root Level:
   architecture-patterns.yml: DDD/microservices/event patterns
-  command-patterns.yml: Reusable command patterns
+  command-architecture-patterns.yml: Command design patterns
   feature-template.md: Standard feature template
   security-patterns.yml: Security patterns & controls
-  task-ultracompressed.md: Ultra-compressed task template
+  task-management-patterns.yml: Task & todo management
   universal-constants.yml: Universal constants & values
 
 Consolidated Patterns:
-  compression-patterns.yml: Token reduction patterns
+  compression-performance-patterns.yml: Token optimization & performance
   execution-patterns.yml: Unified workflow, MCP orchestration & lifecycle
   docs-patterns.yml: Documentation system patterns
   flag-inheritance.yml: Flag inheritance rules
   quality-patterns.yml: Quality control & validation patterns
   research-patterns.yml: Research flow patterns
   reference-patterns.yml: Optimized reference system
-  task-patterns.yml: Task management patterns
+  recovery-state-patterns.yml: Recovery & state management
 ```
 
 ## Quick Reference Mappings
@@ -55,7 +52,7 @@ Constants: → universal-constants.yml
 Error Handling: → quality-patterns.yml
 Validation: → quality-patterns.yml
 Git Workflows: → execution-patterns.yml
-Compression: → compression-patterns.yml
+Compression: → compression-performance-patterns.yml
 Documentation: → docs-patterns.yml
 Research: → research-patterns.yml
 Workflows: → execution-patterns.yml
@@ -73,4 +70,4 @@ Claude Working Docs: .claudedocs/
 ```
 
 ---
-*SuperClaude v4.0.0 | Reference index for quick lookups*
+*SuperClaude v2 | Reference index for quick lookups*

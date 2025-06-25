@@ -1,3 +1,7 @@
+**Purpose**: Comprehensive testing framework
+
+---
+
 @include shared/universal-constants.yml#Universal_Legend
 
 ## Command Execution

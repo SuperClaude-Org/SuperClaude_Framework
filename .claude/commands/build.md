@@ -1,3 +1,7 @@
+**Purpose**: Universal project builder with stack templates
+
+---
+
 @include shared/universal-constants.yml#Universal_Legend
 
 ## Command Execution

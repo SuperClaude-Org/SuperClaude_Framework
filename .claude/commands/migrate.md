@@ -1,3 +1,7 @@
+**Purpose**: Database and code migration management
+
+---
+
 @include shared/universal-constants.yml#Universal_Legend
 
 ## Command Execution

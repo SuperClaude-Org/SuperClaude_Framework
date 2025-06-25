@@ -1,3 +1,7 @@
+**Purpose**: System architecture and API design
+
+---
+
 @include shared/universal-constants.yml#Universal_Legend
 
 ## Command Execution

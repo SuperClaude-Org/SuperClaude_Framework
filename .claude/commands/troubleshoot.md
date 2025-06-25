@@ -1,3 +1,7 @@
+**Purpose**: Professional debugging and issue resolution
+
+---
+
 @include shared/universal-constants.yml#Universal_Legend
 
 ## Command Execution

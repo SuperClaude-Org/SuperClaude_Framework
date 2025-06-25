@@ -1,0 +1,53 @@
+# Feature Development Task Template
+# Used by task management system for structured feature tracking
+
+Task_Template:
+  Metadata:
+    id: "{TASK_ID}"
+    title: "{TASK_TITLE}"
+    status: "pending"
+    priority: "medium"
+    created: "{TIMESTAMP}"
+    updated: "{TIMESTAMP}"
+    assignee: "Claude"
+    branch: "feature/{TASK_ID}"
+    
+  Requirement:
+    description: "{REQUIREMENT_DESCRIPTION}"
+    
+  Breakdown:
+    Analysis_Phase:
+      - "Understand requirements"
+      - "Identify affected files"
+      - "Plan architecture changes"
+      - "Create git branch"
+      
+    Implementation_Phase:
+      - "{STEP_1}"
+      - "{STEP_2}"
+      - "{STEP_3}"
+      
+    Testing_Phase:
+      - "Write tests"
+      - "Run test suite"
+      - "Manual testing"
+      
+    Completion_Phase:
+      - "Code review"
+      - "Documentation update"
+      - "Merge to main"
+      
+  Files_Affected:
+    new: []
+    modified: []
+    deleted: []
+    
+  Context_Preservation:
+    key_decisions: []
+    blockers: []
+    notes: []
+    session_state: {}
+    
+  Checkpoints:
+    commits: []
+    branches: []

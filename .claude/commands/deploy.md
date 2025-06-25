@@ -1,3 +1,7 @@
+**Purpose**: Safe application deployment with rollback
+
+---
+
 @include shared/universal-constants.yml#Universal_Legend
 
 ## Command Execution

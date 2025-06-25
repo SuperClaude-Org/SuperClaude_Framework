@@ -1,144 +1,31 @@
-# /index - SuperClaude Commands Reference
+**Purpose**: SuperClaude Commands Reference
 
-## Legend
-| Symbol | Meaning | | Abbrev | Meaning |
-|--------|---------|---|--------|---------|
-| → | leads to | | cfg | configuration |
-| & | and/with | | impl | implementation |
-| w/ | with | | perf | performance |
-| @ | at/located | | ops | operations |
-| > | greater than | | val | validation |
-| ∀ | for all/every | | req | requirements |
-| ∃ | exists/there is | | deps | dependencies |
-| ∴ | therefore | | env | environment |
-| ∵ | because | | db | database |
-| ≡ | equivalent | | api | interface |
-| ≈ | approximately | | docs | documentation |
-| 📁 | directory/path | | std | standard |
-| 🔢 | number/count | | def | default |
-| 📝 | text/string | | ctx | context |
-| ⚙ | setting/config | | err | error |
-| 🎛 | control/flags | | exec | execution |
-| 🔧 | configuration | | qual | quality |
-| 📋 | group/category | | rec | recovery |
-| 🚨 | critical/urgent | | sev | severity |
-| ⚠ | warning/caution | | resp | response |
-| 🔄 | retry/recovery | | esc | escalation |
-| ✅ | success/fixed | | tok | token |
-| ❌ | failure/error | | opt | optimization |
-| ℹ | information | | UX | user experience |
-| ⚡ | fast/quick | | UI | user interface |
-| 🐌 | slow/delayed | | C | critical |
-| ✨ | complete/done | | H | high |
-| 📖 | read operation | | M | medium |
-| ✏ | edit operation | | L | low |
-| 🗑 | delete operation | | |
+@include shared/universal-constants.yml#Universal_Legend
 
-## Purpose
-Comprehensive reference guide for all SuperClaude commands, workflows, and system capabilities.
-
-## Optimization Update (v4.0.0)
-🎯 **Major Streamlining Completed**: All 18 command files optimized using @include references
-- **Token Reduction**: ~70% reduction in command file size
-- **Maintainability**: Single source of truth for all shared content
-- **Consistency**: Guaranteed uniformity across commands
-- **Reference System**: Commands now use shared patterns from `shared/*.yml` files
+## Ultra-Compressed Reference
+Commands: `/cmd --flags` | 18 total | Universal flags available
 
 @include shared/flag-inheritance.yml#Universal_Always
---all-mcp: "Enable all MCP servers"
---no-mcp: "Disable all MCP servers (native tools only)"
---no-c7: "Disable Context7 specifically"
---no-seq: "Disable Sequential thinking specifically"
---no-magic: "Disable Magic UI builder specifically"
---no-pup: "Disable Puppeteer specifically"
 
-## Command Usage
-All commands use `/` prefix. Examples:
-- `/build --init` | `/analyze --code` | `/deploy --env prod`
+## Command Categories
+**Analysis**: `/analyze` `/scan` `/explain`
+**Build**: `/build` `/deploy` `/migrate` 
+**Manage**: `/task` `/load` `/cleanup`
+**Dev**: `/test` `/troubleshoot` `/improve`
+**Utils**: `/design` `/document` `/estimate` `/dev-setup` `/git` `/spawn`
 
-## Universal Flags (All Commands)
-
-**Planning & Thinking:**
-- `--plan` - Show execution plan before running
-- `--think` - Standard analysis mode (multi-file context, ~4K tokens)
-- `--think-hard` - Deep analysis mode (architecture level, ~10K tokens)
-- `--ultrathink` - Critical analysis mode (system-wide, ~32K tokens)
-
-**Documentation Control:**
-- `--ultracompressed` / `--uc` - ~70% token reduction mode w/ telegram-style formatting
-
-**MCP Server Control:**
-- `--c7` / `--no-c7` - Enable/disable Context7 docs lookup
-- `--seq` / `--no-seq` - Enable/disable Sequential thinking analysis
-- `--magic` / `--no-magic` - Enable/disable Magic UI component builder
-- `--pup` / `--no-pup` - Enable/disable Puppeteer browser automation
-- `--all-mcp` - Enable all MCP servers→maximum capability
-- `--no-mcp` - Disable all MCP servers (native tools only)
-
-## Development Commands (3)
-| Command | Purpose | Key Flags |
-|---------|---------|-----------|
-| /build | Universal project builder | --init --feature --react --api --tdd |
-| /dev-setup | Dev environment & CI/CD | --install --ci --monitor |
-| /test | Testing framework | --coverage --watch --e2e |
-
-## Analysis & Improvement Commands (4)
-| Command | Purpose | Key Flags |
-|---------|---------|-----------|
-| /analyze | Multi-dimensional analysis | --code --architecture --profile --security |
-| /troubleshoot | Debug and fix issues | --investigate --fix --five-whys --prod |
-| /improve | Enhance code/performance | --quality --performance --iterate --threshold |
-| /explain | Deep explanations | --depth --visual --examples |
-
-## Operations Commands (6)
-| Command | Purpose | Key Flags |
-|---------|---------|-----------|
-| /deploy | Application deployment | --env --rollback |
-| /migrate | Database/code migration | --dry-run --rollback |
-| /scan | Security & validation | --validate --security --owasp --deps |
-| /estimate | Time/complexity predictions | --detailed --worst-case |
-| /cleanup | Project cleanup & maintenance | --code --files --deps --git --all --dry-run |
-| /git | Git workflow management | --status --commit --branch --sync --merge --stash --history --checkpoint --rollback |
-
-## Design & Architecture Commands (1)
-| Command | Purpose | Key Flags |
-|---------|---------|-----------|
-| /design | System design | --api --ddd --prd --openapi --graphql --bounded-context |
-
-## Workflow Commands (2)
-| Command | Purpose | Key Flags |
-|---------|---------|-----------|
-| /spawn | Spawn focused agent | --task |
-| /document | Documentation creation | --api --user |
-
-## System Commands (1)
-| Command | Purpose | Key Flags |
-|---------|---------|-----------|
-| /load | Load project context | --depth |
-
-## Quick Reference & Workflow Examples
-
-### Common Development Flows
-```yaml
-Project Setup:
-  New Project: /load → /dev-setup --install → /build --init → /test --coverage
-  Existing: /load --depth deep → /analyze --architecture → /design
-  
-Full Development Cycle:
-  Feature: /load → /analyze → /design --api → /build --tdd → /test --e2e → /deploy
-  Bug Fix: /troubleshoot --investigate → /troubleshoot --fix → /test → /git --commit
-  Refactor: /analyze --code → /improve --quality → /test --coverage → /git --commit
-  
-Quality Workflows:
-  Code Review: /analyze --code --think → /improve --quality → /scan --validate
-  Performance: /analyze --profile → /improve --performance --iterate → /test
-  Security: /scan --security --owasp → /improve --quality → /scan --validate
-  
-Maintenance:
-  Cleanup: /cleanup --all --dry-run → /cleanup --all → /analyze → /test
-  Update: /migrate --dry-run → /migrate → /test --coverage → /deploy --env staging
-  Monitor: /analyze --performance --watch → /improve --threshold 90%
-```
+## Commands w/ Primary Flags
+**Dev**: `/build` --init|feature|react | `/dev-setup` --install|ci | `/test` --coverage|e2e
+**Analysis**: `/analyze` --code|arch | `/troubleshoot` --fix|prod | `/improve` --perf|quality | `/explain` --depth
+**Ops**: `/deploy` --env|rollback | `/migrate` --dry-run | `/scan` --security | `/estimate` --detailed | `/cleanup` --all | `/git` --commit|sync
+**Design**: `/design` --api|ddd | `/document` --api|user | `/spawn` --task
+**Manage**: `/task` --create|status | `/load` --context
+## Workflow Patterns
+**Setup**: `/load` → `/dev-setup --install` → `/build --init` → `/test`
+**Feature**: `/analyze` → `/design --api` → `/build --tdd` → `/test --e2e` → `/deploy`
+**Debug**: `/troubleshoot --fix` → `/test` → `/git --commit`
+**Quality**: `/analyze --code --think` → `/improve --quality` → `/scan --validate`
+**Security**: `/scan --security --owasp` → `/improve` → `/scan --validate`
 
 ### Advanced Flag Combinations
 ```yaml
@@ -181,24 +68,23 @@ Planning for Complex Operations:
 
 **Pattern Files:**
 - `architecture-patterns.yml`: DDD/microservices/event patterns
-- `command-patterns.yml`: Reusable command patterns & templates
-- `compression-patterns.yml`: Token reduction & UltraCompressed mode
+- `command-architecture-patterns.yml`: Command design & architecture patterns
+- `compression-performance-patterns.yml`: Token optimization & performance monitoring
 - `docs-patterns.yml`: Documentation system & formatting
 - `execution-patterns.yml`: Unified workflow, MCP orchestration & lifecycle
+- `feature-template.yml`: Task template for feature development
 - `quality-patterns.yml`: Validation, error handling & quality control
 - `research-patterns.yml`: Research flow & evidence validation
 - `security-patterns.yml`: Security patterns & threat controls
-- `task-patterns.yml`: Task management & workflow patterns
+- `task-management-patterns.yml`: Task & todo management patterns
+- `recovery-state-patterns.yml`: Recovery & state management patterns
 
 **Core System:**
 - `flag-inheritance.yml`: Consolidated flag system with inheritance
 - `reference-patterns.yml`: Optimized reference system with  shortcuts
 - `universal-constants.yml`: Universal constants, symbols & shared values
 
-**Templates & Tools:**
-- `feature-template.md`: Standard feature development template
-- `task-ultracompressed.md`: Ultra-compressed task template
+**Tools:**
 - `validate-references.sh`: Reference validation & integrity checking
 
 ---
-*SuperClaude v4.0.0 - 18 commands with comprehensive configuration framework*

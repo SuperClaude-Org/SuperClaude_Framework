@@ -225,4 +225,4 @@ Contributors are recognized through:
 
 **Ready to contribute?** Create an issue or submit a PR!
 
-*SuperClaude v4.0.0 | Community-driven configuration framework*
+*SuperClaude v2 | Community-driven configuration framework*

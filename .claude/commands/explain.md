@@ -1,3 +1,7 @@
+**Purpose**: Technical documentation and knowledge transfer
+
+---
+
 @include shared/universal-constants.yml#Universal_Legend
 
 ## Command Execution

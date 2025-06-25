@@ -2,15 +2,7 @@
 # Unified workflow system, MCP orchestration, git operations, and execution lifecycle
 
 ## Legend
-| Symbol | Meaning | | Abbrev | Meaning |
-|--------|---------|---|--------|---------|
-| 🔄 | lifecycle phase | | dev | development |
-| 🔀 | git operation | | exec | execution |
-| 🔧 | MCP server/tool | | wf | workflow |
-| → | sequential flow | | perf | performance |
-| & | parallel flow | | ops | operations |
-| ✓ | validation passed | | chk | checkpoint |
-| ⚡ | optimization | | cost | token cost |
+@include universal-constants.yml#Universal_Legend
 
 ## Universal Execution Lifecycle
 
@@ -30,9 +22,11 @@ Standard_Lifecycle:
       Verify: ["Git state", "Network access", "Disk space", "Memory"]
       MCP_Health: "Test server connectivity & response"
     State_Preparation:
-      Create: "Checkpoint before risky ops"
+      TodoList_Triggers: "@include task-management-patterns.yml#Auto_Trigger_Rules"
+      Checkpoint: "@include recovery-state-patterns.yml#Automatic_Triggers"
       Cache: "Previous results for efficiency"
       Lock: "Prevent concurrent modifications"
+      MCP_Cache_Init: "@include mcp-cache-patterns.yml#Cache_Storage"
       
   During_Execution:
     Progress_Monitoring:
@@ -42,9 +36,7 @@ Standard_Lifecycle:
       Adapt: ["Adjust parallelism", "Switch strategies", "Cache results", "Fallback to native"]
       Fallback: ["Use alternatives if primary fails", "Degrade gracefully"]
     Error_Handling:
-      Detect: "Catch errors immediately"
-      Classify: "Transient vs permanent"
-      Respond: "Retry, fallback, or halt"
+      "@include recovery-state-patterns.yml#Recovery_Framework"
       
   Post_Execution:
     Verification:
@@ -106,6 +98,15 @@ Servers:
       - evaluate: "Execute JavaScript"
     Success_Rate: "Very high for standard web interactions"
     Fallback: "Manual testing guidance"
+
+MCP_Parallel_Execution:
+  "@include mcp-cache-patterns.yml#Parallel_MCP_Execution"
+
+MCP_Cache_Integration:
+  Context7_Caching: "@include mcp-cache-patterns.yml#Context7_Cache"
+  Sequential_Caching: "@include mcp-cache-patterns.yml#Sequential_Cache"
+  Magic_Caching: "@include mcp-cache-patterns.yml#Magic_Cache"
+  Performance: "@include mcp-cache-patterns.yml#Cache_Performance_Optimization"
 
 MCP_Control_Flags:
   Individual:
@@ -337,47 +338,11 @@ Git_Workflows:
 ## Checkpoint & Recovery System
 
 ```yaml
-Checkpoint_Management:
-  Creation_Triggers:
-    Automatic:
-      - "Before destructive operations"
-      - "Major version changes"
-      - "Production deployments"
-      - "Data migrations"
-    Risk_Based:
-      High_Score: "Create checkpoint"
-      Critical_Score: "Checkpoint + backup"
-    Time_Based:
-      Interval: "Regular intervals during long ops"
-      
-  Checkpoint_Contents:
-    State_Snapshot:
-      Files: ["Modified files list", "File contents hash"]
-      Git: ["Branch", "Commit SHA", "Uncommitted changes"]
-      Environment: ["Tool versions", "Config values", "Dependencies"]
-      MCP_State: ["Active servers", "Token usage", "Cache state"]
-    Metadata:
-      Timestamp: "ISO 8601 format"
-      Operation: "Command being executed"
-      Risk_Score: "Calculated risk level"
-      User: "Who initiated operation"
-      
-  Recovery_Options:
-    Quick_Rollback:
-      Command: "/rollback --to-checkpoint {id}"
-      Scope: "Files only, preserve git state"
-    Full_Restore:
-      Command: "/rollback --full {id}"
-      Scope: "Complete state including git"
-    Selective:
-      Command: "/rollback --files {pattern}"
-      Scope: "Specific files only"
-      
-  Storage:
-    Location: ".claudedocs/checkpoints/"
-    Format: "checkpoint-{timestamp}-{operation}.tar.gz"
-    Retention: "7 days or 10 checkpoints"
-    Cleanup: "Auto-remove old checkpoints"
+Checkpoint_Integration:
+  "@include recovery-state-patterns.yml#Checkpoint_Structure"
+  "@include recovery-state-patterns.yml#Automatic_Triggers"
+  "@include recovery-state-patterns.yml#Recovery_Commands"
+  "@include recovery-state-patterns.yml#Recovery_Framework"
 ```
 
 ## Token Budget Management
@@ -400,30 +365,11 @@ Abort_Conditions:
   Timeout_Errors: "MCP timeout/error → fallback"
   Diminishing_Returns: "Poor results → stop MCP usage"
 
-Failover_Chains:
-  Context7_Failure:
-    Primary: "C7 documentation lookup"
-    Fallback_1: "WebSearch official docs"
-    Fallback_2: "Local cache if available"
-    Fallback_3: "Continue w/ warning + note limitation"
-    
-  Sequential_Failure:
-    Primary: "Sequential thinking server"
-    Fallback_1: "Native step-by-step analysis"
-    Fallback_2: "Simplified linear approach"
-    Fallback_3: "Manual breakdown w/ user input"
-    
-  Magic_Failure:
-    Primary: "Magic UI component generation"
-    Fallback_1: "Search existing components in project"
-    Fallback_2: "Generate basic template manually"
-    Fallback_3: "Provide implementation guidance"
-    
-  Puppeteer_Failure:
-    Primary: "Puppeteer browser automation"
-    Fallback_1: "Native testing commands"
-    Fallback_2: "Manual testing instructions"
-    Fallback_3: "Static analysis where possible"
+Failover_Integration:
+  "@include recovery-state-patterns.yml#Standard_Recovery_Patterns"
+  
+Error_Recovery_Standards:
+  "@include recovery-state-patterns.yml#Standard_Recovery_Patterns"
 ```
 
 ## Performance & Monitoring
@@ -557,4 +503,4 @@ Estimation_Methodology:
 ```
 
 ---
-*Execution Patterns v4.0.0 - Unified workflow system, MCP orchestration, git operations, and execution lifecycle*
+*Execution Patterns v2 - Unified workflow system, MCP orchestration, git operations, and execution lifecycle*

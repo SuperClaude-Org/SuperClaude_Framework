@@ -1,0 +1,268 @@
+# Command Architecture Patterns - Consolidated Command Design
+# Comprehensive command structure, memory management, and template patterns
+
+## Legend
+@include universal-constants.yml#Universal_Legend
+
+## Command Structure Standards
+
+```yaml
+Required_Sections:
+  1_Purpose: "**Purpose**: Single sentence describing command function"
+  2_Legend: "@include universal-constants.yml#Universal_Legend"
+  3_Execution: "Execute: immediate. --plan→show plan first"
+  4_Description: "[Command-specific description]"
+  5_Flags: "@include flag-inheritance.yml#Universal_Always"
+  6_Examples: "Minimum 3 examples → expected outcomes"
+  7_Integration: "Prerequisites & next steps"
+
+Command_Categories:
+  Analysis: ["analyze", "load", "explain", "troubleshoot"]
+  Build: ["build", "spawn"] 
+  Quality: ["test", "scan", "improve"]
+  Operations: ["deploy", "migrate", "cleanup"]
+  Documentation: ["document", "estimate"]
+
+Standard_Structure:
+  Header_Format: "**Purpose**: {brief description}"
+  Execution_Pattern: "Execute: immediate. --plan→show plan first"
+  Flag_Reference: "@include flag-inheritance.yml#Universal_Always"
+  Example_Pattern: "- `/{command} --flag` - Description"
+```
+
+## Enhanced Result Storage & Context Management
+
+```yaml
+Cache_Architecture:
+  Storage_Format:
+    analyze: "{issues[], metrics{}, hotspots[], patterns[]}"
+    build: "{artifacts[], errors[], warnings[], perf{}}"
+    test: "{passed[], failed[], coverage%, flaky[]}"
+    scan: "{vulns[], risks{}, fixes[], compliance{}}"
+    design: "{arch{}, patterns[], decisions[]}"
+    troubleshoot: "{findings[], root_causes[], solutions[]}"
+
+  Reuse_Rules:
+    Same_Target_Flags: "Use cache | Modified files → Invalidate"
+    Chained_Commands: "Auto-pass results | Time limit: 30min"
+    Persistent_Patterns: "Store successful workflows across sessions"
+    Context_Sharing: "Pass relevant subset → next command"
+
+Intelligent_Workflows:
+  analyze→improve: "Use found issues as targets + priority ranking"
+  build→test: "Focus on changed modules + integration points"
+  scan→fix: "Prioritize critical vulnerabilities + context"
+  design→build: "Apply architectural patterns + decisions"
+  troubleshoot→improve: "Use root cause analysis for targeted fixes"
+  any→deploy: "Verify all checks passed + readiness assessment"
+
+Context_Enrichment:
+  File_Change_Detection: "Track modifications since last analysis"
+  Dependency_Mapping: "Understand component relationships"
+  Performance_Baseline: "Compare against historical metrics"
+  Quality_Trends: "Track improvement over time"
+  User_Patterns: "Learn from successful workflows"
+```
+
+## Command Templates & Optimization
+
+```yaml
+Optimized_Command_Template:
+  Header: "**Purpose**: {description}"
+  Legend: "@include universal-constants.yml#Universal_Legend"
+  Execution: "Execute: immediate. --plan→show plan first"
+  Description: "[Command-specific functionality]"
+  Flags: "@include flag-inheritance.yml#Universal_Always"
+  Examples: "/{command} --flag → outcome"
+  Integration: "Prerequisites → next steps"
+
+UltraCompressed_Structure:
+  Command_Header:
+    Execute: "immediate. --plan→preview"
+    Purpose: "[Action][Subject] in $ARGUMENTS"
+    
+  Universal_Flags:
+    Planning: "@see flag-inheritance.yml"
+    Thinking: "@see flag-inheritance.yml" 
+    MCP_Control: "@see flag-inheritance.yml"
+    
+  Shared_References:
+    MCP_Explanations: "@see flag-inheritance.yml#MCP_Control"
+    Thinking_Modes: "@see flag-inheritance.yml#Thinking_Modes"
+    Research_Standards: "@see research-patterns.yml#Mandatory_Research_Flows"
+    Validation_Rules: "@see quality-patterns.yml#Pre_Execution_Validation"
+
+Token_Optimization_Patterns:
+  Compression_Rules:
+    Articles: "Remove 'the|a|an' where clear"
+    Conjunctions: "'and'→'&' | 'with'→'w/'"
+    Prepositions: "'at'→'@' | 'to'→'→'"
+    Verbose_Phrases: "'in order to'→'to' | 'make sure'→'ensure'"
+    
+  Symbol_Expansion:
+    Process: "▶(start) ⏸(pause) ⏹(stop) ⚡(fast) 🔄(cycle)"
+    Quality: "✅(success) ❌(failure) ⚠(warning) 📊(metrics)"
+    
+  Structure_Priority:
+    1_YAML: "Most compact structured data"
+    2_Tables: "Comparison & reference data"
+    3_Lists: "Enumeration & sequences"
+    4_Prose: "Only when necessary"
+```
+
+## Flag Inheritance & Control
+
+```yaml
+Universal_Flags_Always_Available:
+  Planning:
+    --plan: "Show execution plan before running"
+    
+  Thinking_Modes:
+    --think: "Multi-file analysis w/ context (4K tokens)"
+    --think-hard: "Deep system analysis (10K tokens)"
+    --ultrathink: "Comprehensive analysis (32K tokens)"
+    
+  Compression:
+    --uc: "UltraCompressed mode (~70% token reduction)"
+    
+  MCP_Control:
+    --c7: "Context7→docs & examples"
+    --seq: "Sequential→complex thinking"
+    --magic: "Magic→UI component generation"
+    --pup: "Puppeteer→browser automation"
+    --all-mcp: "Enable all MCP servers"
+    --no-mcp: "Disable all MCP servers"
+
+Command_Specific_Flag_Patterns:
+  Analysis_Commands: "--code --arch --security --performance"
+  Build_Commands: "--init --feature --tdd --watch"
+  Quality_Commands: "--coverage --validate --strict --security"
+  Operations_Commands: "--env --dry-run --rollback --monitor"
+  Documentation_Commands: "--api --user --format"
+
+Flag_Override_Priority:
+  1_Explicit_User_Flags: "Direct command line flags"
+  2_Command_Defaults: "Built-in command preferences"
+  3_Context_Triggers: "Auto-detection based on content"
+  Override_Rule: "--no-mcp overrides all individual MCP flags"
+```
+
+## Command Relationship Matrix
+
+```yaml
+Command_Chains:
+  Feature_Development:
+    Primary: "analyze → design → build → test"
+    Secondary: "scan → document → deploy"
+    
+  Bug_Investigation:
+    Primary: "troubleshoot → analyze → improve"
+    Secondary: "test → document"
+    
+  Quality_Improvement:
+    Primary: "scan → analyze → improve → test"
+    Secondary: "document → deploy"
+
+Prerequisites:
+  build: "analyze (understand codebase)"
+  test: "build (have something to test)"
+  deploy: "test (verify functionality)"
+  improve: "analyze (understand issues)"
+  scan: "load (have codebase loaded)"
+
+Common_Workflows:
+  Full_Stack: "load→analyze→design→build→test→scan→deploy"
+  Feature_Dev: "analyze→build→test→improve→commit"
+  Bug_Fix: "troubleshoot→fix→test→verify→commit"
+  Quality: "analyze→improve→scan→test"
+```
+
+## Memory Management & Performance
+
+```yaml
+Smart_Context_Optimization:
+  Memory_Management:
+    Essential_Context: "Keep critical information accessible"
+    Token_Optimization: "Compress verbose results for efficiency"
+    Selective_Loading: "Load only needed context per command"
+    Background_Processing: "Precompute likely needed context"
+
+  Pattern_Learning:
+    Workflow_Recognition: "Identify common command sequences"
+    Success_Patterns: "Learn from effective approaches"
+    Error_Prevention: "Remember failure patterns to avoid"
+    User_Preferences: "Adapt to individual working styles"
+
+UltraCompressed_Mode_Integration:
+  Activation_Patterns:
+    Manual: "--uc flag | 'ultracompressed' keyword"
+    Auto: "Context >70% | Token budget specified"
+    Smart: "Large docs → Suggest compression"
+    
+  Token_Savings:
+    Headers: "60-80% reduction"
+    Paragraphs: "70-75% reduction"
+    Lists: "50-60% reduction"
+    Overall: "~70% average reduction"
+```
+
+## Deliverable Templates
+
+```yaml
+Code_Deliverables:
+  Commits: "type: description | feat|fix|refactor|perf|test|docs | Why>What"
+  Documentation: "API(endpoints|params|examples) | Code(JSDoc|README) | User(guides|FAQs)"
+  Tests: "Unit(functions|logic) | Integration(APIs|services) | E2E(flows|paths)"
+
+Report_Deliverables:
+  Performance: "Baseline→Current→Improvement% | Time|memory|CPU|network"
+  Security: "Vulnerabilities→Risk→Fixes | OWASP|deps|auth|data"
+  Quality: "Coverage|complexity|duplication → Issues→Severity→Resolution"
+
+Artifact_Deliverables:
+  Configs: ".env|settings|deployment | Scripts: build|test|deploy|migrate"
+  Schemas: "Database|API|validation | Assets: Images|styles|components"
+```
+
+## Validation & Quality Control
+
+```yaml
+Validation_Checklist:
+  Required_Elements:
+    Structure: "All required sections present"
+    Legend: "Only used symbols included"
+    Examples: "At least 3 working examples"
+    Flags: "All documented with descriptions"
+    Integration: "Lifecycle hooks included"
+    
+  Quality_Checks:
+    Links: "All @include references valid"
+    Consistency: "Follows naming conventions"
+    Completeness: "No placeholder text"
+    Accuracy: "Examples actually work"
+
+Consistency_Patterns:
+  Naming_Conventions:
+    Commands: "Verb form: analyze, build, deploy"
+    Flags: "Kebab-case: --think-hard, --no-magic"
+    Outputs: "{command}-{timestamp}.{ext}"
+    
+  Language_Patterns:
+    Present_Tense: "Analyze the codebase"
+    Active_Voice: "Creates components"
+    Imperative: "Use this flag to..."
+```
+
+## Integration References
+
+```yaml
+Cross_Reference_System:
+  Error_Handling: "@see recovery-state-patterns.yml#Error_Classification"
+  Research_Flow: "@see research-patterns.yml#Research_Validation"
+  MCP_Patterns: "@see execution-patterns.yml#MCP_Server_Registry"
+  Performance: "@see compression-performance-patterns.yml#Performance_Monitoring_System"
+  Quality_Control: "@see quality-patterns.yml#Validation_Sequence"
+```
+
+---
+*Command Architecture Patterns v3 - Consolidated command structure, memory management, and template patterns*

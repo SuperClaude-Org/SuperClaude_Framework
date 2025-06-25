@@ -1,0 +1,263 @@
+# MCP Cache Patterns - Session-Level Caching for MCP Server Results
+# Performance optimization through intelligent caching and parallel execution
+
+## Legend
+@include universal-constants.yml#Universal_Legend
+
+## MCP Session Cache Architecture
+
+```yaml
+Cache_Storage:
+  Base_Directory: ".claude/.cache/"
+  Structure:
+    Context7: ".claude/.cache/context7/"
+    Sequential: ".claude/.cache/sequential/"
+    Magic: ".claude/.cache/magic/"
+    Puppeteer: ".claude/.cache/puppeteer/"
+  
+  Session_Management:
+    Session_ID: "Generated at session start"
+    Session_File: ".claude/.cache/session-{id}.json"
+    Cleanup: "Remove expired caches on session end"
+    
+  Memory_Cache:
+    In_Memory: "Fast access during active session"
+    Disk_Backup: "Persist for session recovery"
+    Size_Limit: "100MB per session"
+```
+
+## Context7 Cache Implementation
+
+```yaml
+Context7_Cache:
+  TTL: 3600  # 1 hour
+  Key_Format: "{library_name}_{version}_{topic}"
+  
+  Cache_Structure:
+    key: "react_18.2.0_hooks"
+    value:
+      documentation: "Full documentation content"
+      examples: "Code examples"
+      timestamp: "Cache creation time"
+      hit_count: "Number of cache hits"
+      
+  Cache_Operations:
+    Before_Lookup:
+      - Check_Memory_Cache: "Fastest access"
+      - Check_Disk_Cache: "If not in memory"
+      - Validate_TTL: "Ensure not expired"
+      
+    After_Lookup:
+      - Store_Memory: "Keep in session memory"
+      - Store_Disk: "Persist to .cache/context7/"
+      - Update_Metadata: "Hit count, last access"
+      
+  Invalidation:
+    TTL_Expired: "Remove from cache"
+    Version_Change: "Clear old version cache"
+    Manual_Clear: "--no-cache flag"
+```
+
+## Sequential Cache Implementation
+
+```yaml
+Sequential_Cache:
+  TTL: "Session duration"  # Persist entire session
+  Key_Format: "{problem_hash}_{thinking_depth}_{context_hash}"
+  
+  Problem_Hashing:
+    Include: ["Core problem statement", "Key constraints", "Context type"]
+    Exclude: ["Exact wording", "User formatting", "Timestamps"]
+    Algorithm: "SHA256 of normalized problem"
+    
+  Cache_Structure:
+    key: "a7f3b2c1_ultrathink_ctx9d8e7"
+    value:
+      analysis: "Full sequential analysis"
+      steps: "Thinking steps taken"
+      conclusions: "Key findings"
+      recommendations: "Action items"
+      timestamp: "Analysis time"
+      reusable: "Can be adapted to similar problems"
+      
+  Reuse_Patterns:
+    Exact_Match: "100% problem similarity"
+    Partial_Match: "Core problem same, details differ"
+    Pattern_Match: "Similar problem type"
+    
+  Storage:
+    Location: ".claude/.cache/sequential/"
+    Compression: "Gzip for large analyses"
+    Index: "Problem type categorization"
+```
+
+## Magic Cache Implementation
+
+```yaml
+Magic_Cache:
+  TTL: 7200  # 2 hours
+  Key_Format: "{component_type}_{props_hash}_{framework}"
+  
+  Component_Hashing:
+    Include: ["Component type", "Core props", "Framework"]
+    Exclude: ["Styling details", "Minor props", "Names"]
+    
+  Cache_Structure:
+    key: "button_a3f2b1c_react"
+    value:
+      component_code: "Full component implementation"
+      dependencies: "Required imports"
+      usage_example: "How to use component"
+      variations: "Different prop combinations"
+      timestamp: "Generation time"
+      quality_score: "Component quality metric"
+      
+  Variation_Handling:
+    Base_Component: "Core implementation cached"
+    Prop_Variations: "Cache common variations"
+    Style_Variations: "Apply on top of base"
+    
+  Storage:
+    Location: ".claude/.cache/magic/"
+    Organization: "By component type"
+    Cleanup: "Remove least-used components"
+```
+
+## Parallel Execution Patterns
+
+```yaml
+Parallel_MCP_Execution:
+  Detection:
+    Multiple_Servers_Needed: "When command uses multiple MCP flags"
+    Independent_Operations: "When MCP calls don't depend on each other"
+    
+  Execution_Patterns:
+    Independent_Parallel:
+      Example: "/analyze --c7 --seq"
+      Pattern: |
+        Promise.all([
+          Context7.lookup(library),
+          Sequential.analyze(problem)
+        ])
+      Benefits: "Faster execution, reduced wait time"
+      
+    Dependent_Sequential:
+      Example: "C7 lookup → Sequential analysis of results"
+      Pattern: |
+        const docs = await Context7.lookup(library);
+        const analysis = await Sequential.analyze(docs);
+      Requirements: "Order matters, can't parallelize"
+      
+    Batch_Operations:
+      Example: "Multiple library lookups"
+      Pattern: |
+        Promise.all(
+          libraries.map(lib => Context7.lookup(lib))
+        )
+      Optimization: "Single round-trip, batch processing"
+      
+  Error_Handling:
+    Partial_Success: "Use successful results, note failures"
+    Fallback_Sequential: "If parallel fails, try sequential"
+    Timeout_Management: "Individual timeouts per operation"
+```
+
+## Cache Performance Optimization
+
+```yaml
+Performance_Strategies:
+  Memory_Management:
+    LRU_Eviction: "Least recently used removal"
+    Size_Limits: "Per-cache type limits"
+    Compression: "Gzip large entries"
+    
+  Access_Optimization:
+    Memory_First: "Check memory before disk"
+    Batch_Reads: "Load related entries together"
+    Prefetch: "Anticipate next likely request"
+    
+  Hit_Rate_Improvement:
+    Key_Normalization: "Consistent key generation"
+    Fuzzy_Matching: "Find similar cached results"
+    Pattern_Recognition: "Identify cacheable patterns"
+    
+  Monitoring:
+    Hit_Rate: "Track cache effectiveness"
+    Miss_Patterns: "Identify uncached patterns"
+    Performance_Gains: "Measure time saved"
+```
+
+## Integration with Commands
+
+```yaml
+Command_Integration:
+  Cache_Aware_Commands:
+    analyze: "Check Sequential cache for similar analyses"
+    build: "Check Magic cache for components"
+    explain: "Check Context7 cache for documentation"
+    test: "Cache test results and configurations"
+    
+  Cache_Control_Flags:
+    --cache: "Force cache usage (default)"
+    --no-cache: "Bypass cache completely"
+    --refresh-cache: "Update cache with fresh data"
+    --cache-only: "Only use cached data, no MCP calls"
+    
+  Cache_Reporting:
+    Show_Hit_Rate: "Display cache effectiveness"
+    List_Cached: "Show available cached data"
+    Cache_Stats: "Performance improvements"
+```
+
+## Session Recovery & Persistence
+
+```yaml
+Session_Recovery:
+  Checkpoint_Creation:
+    Trigger: "Before major operations"
+    Content: "Current cache state + session data"
+    Location: ".claude/.cache/checkpoints/"
+    
+  Recovery_Process:
+    Detect_Session: "Find most recent session"
+    Load_Cache: "Restore memory cache from disk"
+    Validate: "Check TTL and integrity"
+    Resume: "Continue with cached context"
+    
+  Cross_Session_Learning:
+    Pattern_Storage: "Save successful patterns"
+    Problem_Templates: "Reusable analysis templates"
+    Component_Library: "Built components catalog"
+```
+
+## Implementation Checklist
+
+```yaml
+Phase_2_Implementation:
+  Core_Infrastructure:
+    - [ ] Create cache directory structure
+    - [ ] Implement cache key generation
+    - [ ] Add TTL management
+    - [ ] Create memory/disk cache layer
+    
+  MCP_Integration:
+    - [ ] Modify Context7 calls to check cache
+    - [ ] Add Sequential result caching
+    - [ ] Implement Magic component cache
+    - [ ] Add Puppeteer result caching
+    
+  Parallel_Execution:
+    - [ ] Detect parallel opportunities
+    - [ ] Implement Promise.all patterns
+    - [ ] Add timeout management
+    - [ ] Handle partial failures
+    
+  Performance_Monitoring:
+    - [ ] Track cache hit rates
+    - [ ] Measure performance gains
+    - [ ] Report optimization opportunities
+    - [ ] Generate performance reports
+```
+
+---
+*MCP Cache Patterns v2 - Session-level caching and parallel execution for optimal performance*

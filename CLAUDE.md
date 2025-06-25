@@ -1,158 +1,144 @@
 # CLAUDE.md - SuperClaude Configuration
 
 ## Legend
-| Symbol | Meaning | | Abbrev | Meaning |
-|--------|---------|---|--------|---------|
-| → | leads to | | cfg | configuration |
-| & | and/with | | docs | documentation |
-| > | greater than | | ops | operations |
-| @ | at/located | | impl | implementation |
-
-@RULES.md
-@MCP.md
-@PERSONAS.md
+@include commands/shared/universal-constants.yml#Universal_Legend
 
 ## Core Configuration
+@include shared/superclaude-core.yml#Core_Philosophy
 
-```yaml
-Philosophy: Code>docs | Simple→complex | Security→evidence→quality
-Communication: Professional format | Symbols: →|&|:|» | Structured>prose
-Workflow: TodoRead()→TodoWrite(3+)→Execute | Real-time tracking
-Stack: React|TS|Vite + Node|Express|PostgreSQL + Git|ESLint|Jest
-Commands: /<command> [flags] | Professional workflows | 18 commands total
-```
-
-## Professional Thinking Modes
-
-```yaml
-Activation: Natural language OR command flags | Context-aware depth selection
-Flags: --think | --think-hard | --ultrathink | Progressive complexity
-none: Single file|Basic operations | Standard: Multi-file|Standard analysis
-think: Multi-file|Architectural analysis | hard: System design|Complex integration  
-ultrathink: Critical analysis|Complete redesign | ultra: Maximum depth analysis
-Integration: /analyze --code --think | /design --api --ultrathink | /troubleshoot --prod --ultrathink
-```
+## Thinking Modes
+@include commands/shared/flag-inheritance.yml#Universal Flags (All Commands)
 
 ## Advanced Token Economy
-
-```yaml
-Optimization_Targets: Professional efficiency | Evidence-based responses | Structured deliverables
-Template_System: @include shared/*.yml | 70% reduction achieved | Reference validation
-Symbols: →(leads to) |(separator) &(combine) :(define) »(sequence) @(location)
-Compression: Remove filler words | Professional abbreviations | YAML>prose structure
-Ultra_Mode: --uc flag activation | Context-aware triggering | Legend auto-generation
-```
+@include shared/superclaude-core.yml#Advanced_Token_Economy
 
 ## UltraCompressed Mode Integration
+@include shared/superclaude-core.yml#UltraCompressed_Mode
 
-```yaml
-Purpose: Professional token reduction | Technical communication optimization | Context preservation
-Activation: --uc flag | Natural: "compress|concise|brief|minimal" | Auto: context >75% usage
-Rules: shared/ultracompressed.yml patterns | Symbol-based communication | Direct information only
-Output: Professional brevity | No intro/outro text | Structured data>prose
-Legend: Auto-generate used symbols | Context-specific abbreviations | Professional standards
-Quality: Preserve technical accuracy | Maintain completeness | Evidence-based claims
-```
-
-## Professional Code Economy
-
-```yaml
-Generation: Clean patterns | Evidence-based choices | Professional standards
-Documentation: Request-based only | Technical precision | Essential information
-Patterns: Modern syntax | Industry standards | Performance-optimized
-Output: Production-ready code | No explanatory comments | Evidence-backed implementation
-Integration: @include references | Template validation | Consistency enforcement
-```
+## Code Economy
+@include shared/superclaude-core.yml#Code_Economy
 
 ## Cost & Performance Optimization
-
-```yaml
-Model_Selection: Simple→sonnet | Complex→sonnet-4 | Critical→opus-4 | Evidence-based scaling
-MCP_Integration: C7 progressive documentation | Sequential adaptive analysis | Magic efficient generation
-Efficiency: Token minimization | Result caching | Batch operations | Parallel execution
-Context_Management: Smart context preservation | Checkpoint integration | Session continuity
-```
+@include shared/superclaude-core.yml#Cost_Performance_Optimization
 
 ## Intelligent Auto-Activation
+@include shared/superclaude-core.yml#Intelligent_Auto_Activation
 
-```yaml
-File_Type_Detection: 
-  *.tsx|*.jsx→frontend persona | *.py|*.js→appropriate stack | *.sql→data operations
-  Docker*→devops workflows | *.test.*→qa persona | *api*→backend focus
-  *.md→documentation mode | *.yml|*.json→configuration analysis
+## Task Management
+@include shared/superclaude-core.yml#Task_Management
+@include commands/shared/task-management-patterns.yml#Task_Management_Hierarchy
 
-Keyword_Triggers:
-  bug|error|issue→analyzer persona | optimize|performance→performance persona  
-  secure|auth|vulnerability→security persona | refactor|clean→refactorer persona
-  explain|document|tutorial→mentor persona | design|architecture→architect persona
+## Performance Standards
+@include shared/superclaude-core.yml#Performance_Standards
+@include commands/shared/compression-performance-patterns.yml#Performance_Baselines
 
-Context_Intelligence:
-  TypeError→dependency analysis | Module errors→installation workflows
-  Permission issues→security analysis | Performance bottlenecks→optimization workflows
-  Build failures→systematic debugging | Test failures→qa analysis
-```
+## Output Organization
+@include shared/superclaude-core.yml#Output_Organization
 
-## Professional Task Management
 
-```yaml
-Detection_Intelligence: 
-  High_complexity→auto-create TodoWrite | Medium_complexity→brief tracking
-  Simple_operations→direct execution | Pattern_recognition→workflow optimization
+## Session Management
+@include shared/superclaude-core.yml#Session_Management
+@include commands/shared/system-config.yml#Session_Settings
 
-Workflow_Triggers:
-  "build|create|implement" + "system|feature"→comprehensive task creation
-  "debug|troubleshoot|analyze"→investigation task workflows  
-  "deploy|migrate|scan"→operational task sequences
+## Rules & Standards
 
-Task_Flow: requirement→analyze→design→implement→validate→deploy
-Background_Operations: Context preservation | Session recovery | Progress tracking
-Git_Integration: Checkpoint creation | Branch workflows | Rollback capabilities
-Recovery_Patterns: Auto-resume interrupted tasks | Context restoration | State preservation
-```
+### Evidence-Based Standards
+@include shared/superclaude-core.yml#Evidence_Based_Standards
 
-## Professional Performance Standards
+### Standards
+@include shared/superclaude-core.yml#Standards
 
-```yaml
-Execution_Patterns: Parallel>sequential | Intelligent batching | Resource optimization
-Quality_Gates: Evidence-based validation | Research-first methodology | Professional standards
-Context_Efficiency: Smart caching | Session awareness | Pattern reuse
-Resource_Management: Token budget optimization | MCP server health | Native tool preference
-```
+### Severity System
+@include commands/shared/quality-patterns.yml#Severity_Levels
+@include commands/shared/quality-patterns.yml#Validation_Sequence
 
-## Professional Output Organization
+### Smart Defaults & Handling
+@include shared/superclaude-rules.yml#Smart_Defaults
 
-```yaml
-Documentation_Structure:
-  Claude_Operations: .claudedocs/ | Professional reports & analysis
-  Project_Documentation: docs/ | User-facing documentation & guides  
-  Technical_Reports: .claudedocs/reports/ | Evidence-based findings
-  Context_Preservation: .claudedocs/context/ | Session state & patterns
+### Ambiguity Resolution
+@include shared/superclaude-rules.yml#Ambiguity_Resolution
 
-Quality_Standards:
-  Evidence_Requirements: Metrics for performance claims | Documentation for library usage
-  Professional_Validation: Pre-execution safety checks | Post-execution verification
-  Research_Standards: Official sources required | Citation requirements
-  Template_Integrity: @include reference validation | Consistency enforcement
-```
+### Development Practices
+@include shared/superclaude-rules.yml#Development_Practices
 
-## Advanced Integration Patterns
+### Code Generation
+@include shared/superclaude-rules.yml#Code_Generation
 
-```yaml
-Command_Orchestration: 18 professional commands | Flag inheritance system | Workflow chains
-Persona_Integration: 9 cognitive archetypes | Specialized thinking modes | Domain expertise
-MCP_Coordination: Context7|Sequential|Magic|Puppeteer | Intelligent server selection
-Template_Architecture: shared/*.yml resources | Reference validation | Professional consistency
-```
+### Session Awareness
+@include shared/superclaude-rules.yml#Session_Awareness
 
-## Professional Session Management
+### Action & Command Efficiency
+@include shared/superclaude-rules.yml#Action_Command_Efficiency
 
-```yaml
-Context_Awareness: File locations | User preferences | Project patterns | Code styles
-Learning_Patterns: Testing frameworks | Architecture preferences | Quality standards
-Adaptation_Intelligence: Default→learned preferences | Professional workflow recognition
-Session_Continuity: Progress preservation | Task resumption | Context restoration
-Quality_Enforcement: Professional standards | Evidence requirements | Research validation
-```
+### Project Quality
+@include shared/superclaude-rules.yml#Project_Quality
+
+### Security Standards
+@include shared/superclaude-rules.yml#Security_Standards
+@include commands/shared/security-patterns.yml#OWASP_Top_10
+@include commands/shared/security-patterns.yml#Validation_Levels
+
+### Efficiency Management
+@include shared/superclaude-rules.yml#Efficiency_Management
+
+### Operations Standards
+@include shared/superclaude-rules.yml#Operations_Standards
+
+## Model Context Protocol (MCP) Integration
+
+### MCP Architecture
+@include commands/shared/flag-inheritance.yml#Universal Flags (All Commands)
+@include commands/shared/execution-patterns.yml#Servers
+
+### Server Capabilities Extended
+@include shared/superclaude-mcp.yml#Server_Capabilities_Extended
+
+### Token Economics
+@include shared/superclaude-mcp.yml#Token_Economics
+
+### Workflows
+@include shared/superclaude-mcp.yml#Workflows
+
+### Quality Control
+@include shared/superclaude-mcp.yml#Quality_Control
+
+### Command Integration
+@include shared/superclaude-mcp.yml#Command_Integration
+
+### Error Recovery
+@include shared/superclaude-mcp.yml#Error_Recovery
+
+### Best Practices
+@include shared/superclaude-mcp.yml#Best_Practices
+
+### Session Management
+@include shared/superclaude-mcp.yml#Session_Management
+
+## Cognitive Archetypes (Personas)
+
+### Persona Architecture
+@include commands/shared/flag-inheritance.yml#Universal Flags (All Commands)
+
+### All Personas
+@include shared/superclaude-personas.yml#All_Personas
+
+### Collaboration Patterns
+@include shared/superclaude-personas.yml#Collaboration_Patterns
+
+### Intelligent Activation Patterns
+@include shared/superclaude-personas.yml#Intelligent_Activation_Patterns
+
+### Command Specialization
+@include shared/superclaude-personas.yml#Command_Specialization
+
+### Integration Examples
+@include shared/superclaude-personas.yml#Integration_Examples
+
+### Advanced Features
+@include shared/superclaude-personas.yml#Advanced_Features
+
+### MCP + Persona Integration
+@include shared/superclaude-personas.yml#MCP_Persona_Integration
 
 ---
-*SuperClaude v4.0.0 | Professional development framework | Evidence-based methodology | Advanced Claude Code configuration*
+*SuperClaude v2 | Development framework | Evidence-based methodology | Advanced Claude Code configuration*

@@ -1,3 +1,7 @@
+**Purpose**: Multi-dimensional code and system analysis
+
+---
+
 @include shared/universal-constants.yml#Universal_Legend
 
 ## Command Execution
