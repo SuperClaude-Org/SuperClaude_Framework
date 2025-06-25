@@ -119,7 +119,12 @@ check_command() {
     fi
     
     # Check for dangerous command patterns (enhanced security)
-    if [[ "$cmd" =~ [;&|`$(){}\"\'\\] ]] || [[ "$cmd" =~ \.\.|^/ ]] || [[ "$cmd" =~ [[:space:]] ]]; then
+    # Check for various dangerous characters and patterns
+    if [[ "$cmd" == *";"* ]] || [[ "$cmd" == *"&"* ]] || [[ "$cmd" == *"|"* ]] || \
+       [[ "$cmd" == *'`'* ]] || [[ "$cmd" == *'$'* ]] || [[ "$cmd" == *"("* ]] || \
+       [[ "$cmd" == *")"* ]] || [[ "$cmd" == *"{"* ]] || [[ "$cmd" == *"}"* ]] || \
+       [[ "$cmd" == *'"'* ]] || [[ "$cmd" == *"'"* ]] || [[ "$cmd" == *"\\"* ]] || \
+       [[ "$cmd" == *".."* ]] || [[ "$cmd" == "/"* ]] || [[ "$cmd" == *[[:space:]]* ]]; then
         log_error "check_command: Invalid command name contains dangerous characters: $cmd"
         return 1
     fi
@@ -1363,7 +1368,7 @@ if [ -d "$INSTALL_DIR" ] && [ "$(ls -A "$INSTALL_DIR" 2>/dev/null)" ]; then
         backup_timestamp=$(date +%Y%m%d_%H%M%S)
         # Generate cryptographically secure random suffix - try multiple methods
         backup_random=""
-        local random_bytes=""
+        random_bytes=""
         
         # Try multiple secure random sources
         if [[ -r /dev/urandom ]]; then
@@ -1380,7 +1385,7 @@ if [ -d "$INSTALL_DIR" ] && [ "$(ls -A "$INSTALL_DIR" 2>/dev/null)" ]; then
             backup_random="$random_bytes"
         else
             # High-entropy fallback using multiple sources (improved)
-            local entropy_sources="$(date +%s%N 2>/dev/null)$$${RANDOM}${BASHPID:-$$}$(ps -eo pid,ppid,time 2>/dev/null | md5sum 2>/dev/null | cut -c1-8)"
+            entropy_sources="$(date +%s%N 2>/dev/null)$$${RANDOM}${BASHPID:-$$}$(ps -eo pid,ppid,time 2>/dev/null | md5sum 2>/dev/null | cut -c1-8)"
             backup_random=$(printf "%s" "$entropy_sources" | sha256sum 2>/dev/null | cut -c1-16)
         fi
         
@@ -1413,10 +1418,10 @@ if [ -d "$INSTALL_DIR" ] && [ "$(ls -A "$INSTALL_DIR" 2>/dev/null)" ]; then
             # Copy preserving permissions and symlinks, with security checks
             if [[ -e "$item" ]]; then
                 # Validate that item is within the installation directory (prevent symlink attacks)
-                local real_item
+                real_item=""
                 if command -v realpath &>/dev/null; then
                     real_item=$(realpath "$item" 2>/dev/null)
-                    local real_install_dir=$(realpath "$INSTALL_DIR" 2>/dev/null)
+                    real_install_dir=$(realpath "$INSTALL_DIR" 2>/dev/null)
                     if [[ -n "$real_item" ]] && [[ -n "$real_install_dir" ]] && [[ "$real_item" != "$real_install_dir"/* ]]; then
                         log_warning "Skipping backup of suspicious item outside install dir: $item"
                         continue
