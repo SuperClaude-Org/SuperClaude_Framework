@@ -28,19 +28,15 @@ Examples:
 --fix: "Suggest specific fixes for identified issues"
 --summary: "Generate executive summary of review findings"
 
-## Review Dimensions
+@include shared/quality-patterns.yml#Code_Quality_Metrics
 
-**Code Quality:** Naming conventions | Structure & organization | DRY violations | SOLID principles | Complexity metrics | Technical debt | Maintainability patterns
+@include shared/security-patterns.yml#OWASP_Top_10
 
-**Security Analysis:** Input validation | Authentication & authorization | Data exposure | Injection vulnerabilities | Cryptographic practices | Secret management | OWASP compliance
+@include shared/compression-performance-patterns.yml#Performance_Baselines
 
-**Performance Review:** Algorithm complexity | N+1 queries | Memory usage | Caching opportunities | Database optimization | Resource utilization | Bottleneck identification
+@include shared/architecture-patterns.yml#DDD_Building_Blocks
 
-**Architecture Assessment:** Design patterns | Layer separation | Coupling & cohesion | Scalability considerations | Dependency management | Interface design
-
-**Testing Coverage:** Unit test presence | Edge case handling | Mock usage | Test quality | Integration coverage | E2E scenarios
-
-## Review Process
+## Review Process & Methodology
 
 **1. Context Analysis:** Understanding codebase patterns | Identifying architectural style | Recognizing team conventions | Establishing review scope
 
@@ -52,9 +48,13 @@ Examples:
 
 **5. Actionable Recommendations:** Specific fix suggestions | Alternative approaches | Refactoring opportunities | Prevention strategies
 
+**Evidence-Based Analysis:** All suggestions must cite authoritative sources | Reference official docs via Context7 | Cross-reference industry standards | Performance claims require measurable evidence
+
+**Persona Specialization:** Security→Vulnerabilities+compliance | Performance→Bottlenecks+optimization | Architecture→Patterns+maintainability | QA→Coverage+validation
+
 @include shared/research-patterns.yml#Mandatory_Research_Flows
 
-@include shared/review-patterns.yml#Review_Methodology
+@include shared/quality-patterns.yml#Validation_Sequence
 
 ## Persona Integration
 
@@ -68,25 +68,7 @@ Examples:
 
 **--persona-refactorer:** Code improvement opportunities | Refactoring suggestions | Cleanup recommendations | Pattern application
 
-## MCP Integration
-
-**Context7:** Research best practices | Find authoritative documentation | Compare alternative approaches | Validate suggestions
-
-**Sequential:** Complex architectural analysis | Root cause investigation | Multi-step problem solving | System design evaluation
-
-**Magic:** UI component improvements | Frontend pattern suggestions | Component library recommendations
-
-**Puppeteer:** Test review suggestions | Validate UI changes | Performance testing | E2E validation
-
-## Deliverables
-
-**Review Report:** `.claudedocs/reviews/review-{timestamp}.md` | Executive summary | Detailed findings | Priority classification | Fix recommendations
-
-**Action Items:** Specific tasks for developers | Prioritized improvement list | Technical debt tracking | Follow-up recommendations
-
-**Evidence Documentation:** Source citations | Best practice references | Performance metrics | Security guidelines
-
-**Knowledge Base:** Pattern library updates | Team convention documentation | Common issue prevention | Review templates
+@include shared/execution-patterns.yml#Servers
 
 @include shared/docs-patterns.yml#Standard_Notifications
 

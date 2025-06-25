@@ -121,6 +121,12 @@ Performance_Baselines:
     CPU_Utilization: "Track intensive operations"
     Network_Usage: "MCP server communication overhead"
     Disk_I_O: "File operations efficiency"
+    
+  Review_Scope_Limits:
+    Single_File: "Files >1000 lines flagged for review scope"
+    Directory: "Directories >50 files require batch processing"  
+    Repository: "Repos >10K files get incremental analysis"
+    Large_File_Warning: "Files >5MB may require streaming analysis"
 ```
 
 ## MCP Performance Integration
