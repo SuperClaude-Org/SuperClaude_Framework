@@ -21,7 +21,7 @@ Thanks for contributing to SuperClaude! This guide helps you get started.
    git checkout -b feature/your-feature-name
    ```
 
-3. **Make Changes** → Test → Commit → Push → PR
+3. **Make Changes** → Test → Commit → PR
 
 ## Types of Contributions
 
