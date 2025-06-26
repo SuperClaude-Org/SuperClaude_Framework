@@ -87,7 +87,7 @@ Switch between different approaches with persona flags:
 
 **v2.0.1 Update**: All 9 personas are now universal flags, available on every command for consistent access to specialized approaches.
 
-### ⚡ **18 Commands**
+### ⚡ **19 Commands**
 Development lifecycle coverage:
 
 **Development Commands**
@@ -99,6 +99,7 @@ Development lifecycle coverage:
 
 **Analysis & Quality**
 ```bash
+/review --quality --evidence --persona-qa     # AI-powered code review
 /analyze --architecture --seq   # System analysis
 /troubleshoot --prod --five-whys # Issue resolution
 /improve --performance --iterate # Optimization
@@ -227,7 +228,8 @@ SuperClaude encourages:
 - `/dev-setup` - Development environment setup
 - `/test` - Testing framework
 
-### Analysis & Improvement (4 Commands)
+### Analysis & Improvement (5 Commands)
+- `/review` - AI-powered code review with evidence-based recommendations
 - `/analyze` - Code and system analysis
 - `/troubleshoot` - Debugging and issue resolution
 - `/improve` - Enhancement and optimization
@@ -259,7 +261,7 @@ SuperClaude v2's architecture enables extensibility:
 - **@include System** – Template engine for configuration
 
 **🎯 Unified Command System**
-- **18 Commands** – Development lifecycle coverage
+- **19 Commands** – Development lifecycle coverage
 - **Flag Inheritance** – Universal flags on all commands
 - **Persona Integration** – 9 cognitive modes as flags
 - **Template Validation** – Reference integrity checking
@@ -374,7 +376,7 @@ Join the community: [Discussions](https://github.com/NomenAK/SuperClaude/discuss
 - **Maintenance**: Centralized configuration
 
 **📊 Framework Details:**
-- **Commands**: 18 specialized commands
+- **Commands**: 19 specialized commands
 - **Personas**: 9 cognitive approaches
 - **MCP Servers**: 4 integrations
 - **Methodology**: Evidence-based approach

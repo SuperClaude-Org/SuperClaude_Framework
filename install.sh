@@ -4,7 +4,7 @@
 # Installs SuperClaude configuration framework to enhance Claude Code
 # Version: 2.0.0
 # License: MIT
-# Repository: https://github.com/nshkrdotcom/SuperClaude
+# Repository: https://github.com/NomenAK/SuperClaude
 
 set -e  # Exit on error
 set -o pipefail  # Exit on pipe failure
@@ -201,15 +201,9 @@ compare_versions() {
     fi
     
     # Split versions into arrays
-    local v1_parts v2_parts
-    IFS='.' read -ra v1_parts <<< "$version1" || {
-        log_error "compare_versions: Failed to parse version1: $version1"
-        return 1
-    }
-    IFS='.' read -ra v2_parts <<< "$version2" || {
-        log_error "compare_versions: Failed to parse version2: $version2"
-        return 1
-    }
+    local v1_parts=() v2_parts=()
+    IFS='.' read -ra v1_parts <<< "$version1"
+    IFS='.' read -ra v2_parts <<< "$version2"
     
     # Compare each part
     for i in {0..2}; do
@@ -646,6 +640,7 @@ get_source_files() {
             -not -name "*.log" \
             -not -name "*.logs" \
             -not -name "settings.local.json" \
+            -not -name "CLAUDE.md" \
             2>/dev/null | sed 's|^\.claude/||' | sort); then
             log_error "get_source_files: Failed to enumerate files in .claude directory"
             return 1
@@ -1090,12 +1085,10 @@ if [[ "$UNINSTALL_MODE" = true ]]; then
                 fi
                 
                 # Only remove files that we know we installed
-                if [[ -f ".claude/$installed_file" ]] || \
-                   [[ "$installed_file" == "CLAUDE.md" && -f "CLAUDE.md" ]] || \
-                   [[ "$installed_file" == "VERSION" ]] || \
-                   [[ "$installed_file" == ".checksums" ]] || \
-                   [[ "$installed_file" =~ ^commands/ ]] || \
-                   [[ "$installed_file" =~ ^shared/ ]]; then
+                if [[ -f "$current_dir/.claude/$installed_file" ]] || 
+                   [[ "$installed_file" == "CLAUDE.md" && -f "$current_dir/CLAUDE.md" ]] || 
+                   [[ "$installed_file" == "VERSION" && -f "$current_dir/VERSION" ]] || 
+                   [[ "$installed_file" == ".checksums" && -f "$current_dir/.checksums" ]]; then
                     if [[ "$DRY_RUN" = true ]]; then
                         echo "  Would remove: $installed_file"
                     else
@@ -1105,7 +1098,7 @@ if [[ "$UNINSTALL_MODE" = true ]]; then
                     ((removed_count++))
                 fi
             fi
-        done < <(find . -type f)
+        done < <(get_installed_files "$INSTALL_DIR")
         
         # Remove empty directories, but not the main directory if it contains preserved files
         if [[ "$DRY_RUN" != true ]]; then
@@ -1538,7 +1531,6 @@ copy_with_update_check() {
                     # Retry copy operation with error capture
                     while [[ $retry_count -lt $max_retries ]]; do
                         if cp_error=$(cp "$src_file" "$dest_file.new" 2>&1); then
-                            sync 2>/dev/null || true  # Ensure file is written
                             target_file="$dest_file.new"
                             copy_performed=true
                             break
@@ -1559,7 +1551,6 @@ copy_with_update_check() {
                     # Retry copy operation with error capture
                     while [[ $retry_count -lt $max_retries ]]; do
                         if cp_error=$(cp "$src_file" "$dest_file" 2>&1); then
-                            sync 2>/dev/null || true  # Ensure file is written
                             copy_performed=true
                             break
                         else
@@ -1579,7 +1570,6 @@ copy_with_update_check() {
             if [[ "$DRY_RUN" != true ]]; then
                 # File is identical, still copy to ensure permissions are correct
                 if cp_error=$(cp "$src_file" "$dest_file" 2>&1); then
-                    sync 2>/dev/null || true  # Ensure file is written
                     copy_performed=true
                 else
                     log_warning "Failed to update identical file $basename_file: $cp_error"
@@ -1618,7 +1608,6 @@ copy_with_update_check() {
             
             # Try to re-copy the file once more
             if cp_error=$(cp "$src_file" "$target_file" 2>&1); then
-                sync 2>/dev/null || true  # Ensure file is written
                 sleep 0.1  # Brief pause before verification
                 if verify_file_integrity "$src_file" "$target_file"; then
                     log_verbose "Recovery successful: integrity verified for $basename_file"
