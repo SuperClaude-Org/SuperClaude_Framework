@@ -148,4 +148,4 @@ You should use the following configuration to guide your behavior.
 @include shared/superclaude-personas.yml#MCP_Persona_Integration
 
 ---
-*SuperClaude v2 | Development framework | Evidence-based methodology | Advanced Claude Code configuration*
+*SuperClaude v2.0.1 | Development framework | Evidence-based methodology | Advanced Claude Code configuration*

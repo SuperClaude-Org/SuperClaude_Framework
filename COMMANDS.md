@@ -1,4 +1,4 @@
-# SuperClaude Commands Reference v2
+# SuperClaude Commands Reference v2.0.1
 
 ## Table of Contents
 - [Quick Start](#quick-start)
@@ -50,6 +50,11 @@
 | `--no-seq` | Disable Sequential thinking specifically |
 | `--no-magic` | Disable Magic UI builder specifically |
 | `--no-pup` | Disable Puppeteer specifically |
+
+### 🔍 Analysis & Introspection
+| Flag | Description |
+|------|-------------|
+| `--introspect` | Enable self-aware analysis with cognitive transparency |
 
 ### 📋 Planning & Execution
 | Flag | Description |
@@ -475,4 +480,4 @@ Load and analyze project context.
 
 ---
 
-**SuperClaude v2** - 18 professional commands | 9 cognitive personas | Advanced MCP integration | Evidence-based methodology
+**SuperClaude v2.0.1** - 18 professional commands | 9 cognitive personas | Advanced MCP integration | Evidence-based methodology
