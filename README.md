@@ -71,6 +71,8 @@ cd SuperClaude
 
 Zero dependencies. Installs to `~/.claude/` by default.
 
+**Note:** After installation, all configuration files are located in `~/.claude/` (your home directory), not in the project directory.
+
 ## 💡 Core Capabilities
 
 ### 🧠 **Cognitive Personas (Now as Flags!)**
@@ -116,6 +118,8 @@ Development lifecycle coverage:
 - **Sequential**: Multi-step reasoning capabilities
 - **Magic**: AI-generated UI components
 - **Puppeteer**: Browser testing and automation
+
+**⚠️ Important:** SuperClaude does not include MCP servers. You need to install them separately in Claude Code's MCP settings to use MCP-related flags (--c7, --seq, --magic, --pup).
 
 ### 📊 **Token Efficiency**
 SuperClaude's @include template system helps manage token usage:

@@ -4,8 +4,8 @@
 
 | Version | Supported |
 |---------|-----------|
-| 4.0.x   | ✅ Yes    |
-| < 4.0   | ❌ No     |
+| 2.0.x   | ✅ Yes    |
+| < 2.0   | ❌ No     |
 
 ## Reporting Security Vulnerabilities
 

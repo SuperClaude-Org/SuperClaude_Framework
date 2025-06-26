@@ -49,6 +49,8 @@ Thanks for contributing to SuperClaude! This guide helps you get started.
 ## Development Guidelines
 
 ### File Structure
+
+**Repository Structure:**
 ```
 SuperClaude/
 ├── CLAUDE.md, RULES.md, PERSONAS.md, MCP.md  # Core configs
@@ -56,6 +58,14 @@ SuperClaude/
 ├── .claude/commands/shared/                   # YAML resources
 ├── install.sh                                # Installation script
 └── README.md                                 # Documentation
+```
+
+**After Installation (in ~/.claude/):**
+```
+~/.claude/
+├── CLAUDE.md, RULES.md, PERSONAS.md, MCP.md  # Installed configs
+├── commands/                                  # Installed commands
+└── commands/shared/                          # Installed resources
 ```
 
 ### Code Standards
@@ -69,7 +79,6 @@ SuperClaude/
 - Verify slash commands work in Claude Code
 - Check YAML syntax validity
 - Test personas & MCP integration
-- Run `validate-references.sh` to check @pattern system
 
 ## Submission Process
 
@@ -141,7 +150,7 @@ Description & purpose
 2. **Purpose**: Reusable configurations & @pattern templates
 3. **Naming**: descriptive-name.yml
 4. **Structure**: Clear, documented sections
-5. **Validation**: Use `validate-references.sh` to check @pattern links
+5. **Validation**: Check @pattern links manually for correctness
 
 ## Persona Development
 
