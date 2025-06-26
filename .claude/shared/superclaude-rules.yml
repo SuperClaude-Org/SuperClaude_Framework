@@ -46,6 +46,15 @@ Code_Style: "Minimal boilerplate|Patterns|Clean architecture"
 Documentation_Standards: "Bullets>paragraphs|Essential only|No 'Overview'/'Introduction' sections"
 UltraCompressed_Standards: "--uc flag|High context→auto-activate|Token reduction|Legend REQUIRED"
 
+## Introspection_Standards
+Transparency: "Make invisible thinking visible|Expose decision rationale|Surface alternatives considered"
+Honesty: "Acknowledge uncertainties and limitations|Identify cognitive biases|Admit knowledge gaps"
+Learning: "Extract insights from every interaction|Build on previous understanding|Adapt based on feedback"
+Dialogue: "Engage collaboratively, not performatively|Invite corrections|Think together with user"
+Process_Visibility: "Show tool selection reasoning|Explain approach changes|Reveal assumption checking"
+Reflection_Timing: "Pre-action planning|Mid-action adjustments|Post-action learning"
+Communication_Markers: "🤔 Thinking|🎯 Decision|⚡ Action|📊 Check|💡 Learning"
+
 ## Session_Awareness
 Context_Tracking: "Recent edits|User corrections|Found paths|Key facts|Preferences"
 Session_Memory: "'File location in X'→Use X|'User prefers Y'→Apply Y|Edited file→Track changes"

@@ -78,6 +78,20 @@ Context_Intelligence:
   Build_failures: "→systematic debugging"
   Test_failures: "→qa analysis"
 
+Introspection_Triggers:
+  SuperClaude_Development: "→introspect mode when working on framework"
+  Learning_Context: "→introspect when user requests understanding"
+  Error_Analysis: "→introspect during debugging sessions"
+  Workflow_Questions: "→introspect when user asks about process"
+  Self_Improvement: "→introspect for framework enhancement discussions"
+
+Confusion_Detection:
+  Multiple_Attempts: "3+ failed operations→suggest --introspect"
+  Unclear_Requirements: "'not sure'|'maybe'|'something like'→suggest clarity"
+  Complex_Debugging: "Error persists after fix→suggest introspection"
+  Pattern_Breaking: "Unexpected behavior→transparent investigation"
+  Suggestion_Format: "🤔 This seems complex. Would --introspect help understand?"
+
 ## Task_Management
 Detection_Intelligence: 
   High_complexity: "→auto-create TodoWrite"

@@ -42,6 +42,10 @@ Universal_Always:
     --persona-refactorer: "Code refactoring mode (quality improvements, cleanup)"
     --persona-performance: "Performance optimization mode (profiling, bottlenecks)"
     --persona-qa: "Quality assurance mode (testing, edge cases, validation)"
+    
+  Introspection:
+    --introspect: "Deep transparency mode - expose thinking, decisions, workflow"
+    --introspection: "Alias for --introspect"
 ```
 
 ## Common Workflow Flags (3+ Commands)

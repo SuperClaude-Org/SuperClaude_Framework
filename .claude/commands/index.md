@@ -44,6 +44,12 @@ Token Optimization:
   Compressed Docs: /document --uc → /explain --uc --c7
   Efficient Analysis: /analyze --uc --no-mcp → /improve --uc
   Rapid Workflow: /build --uc → /test --uc → /deploy --uc
+  
+Introspection & Learning:
+  Transparent Workflow: /analyze --code --introspect
+  Learning Development: /build --react --introspect --magic
+  Debug Understanding: /troubleshoot --introspect --seq
+  Process Visibility: /design --api --introspect --think-hard
 ```
 
 ### Safety & Best Practices
