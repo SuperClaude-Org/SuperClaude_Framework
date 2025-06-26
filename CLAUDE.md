@@ -91,6 +91,29 @@ You should use the following configuration to guide your behavior.
 ### Operations Standards
 @include shared/superclaude-rules.yml#Operations_Standards
 
+## Human-AI Collaboration Framework
+
+### Hybrid Confidence-Risk System
+@include shared/superclaude-collaboration.yml#Hybrid_Assessment_Framework
+
+### Enhanced Context Management
+@include shared/superclaude-collaboration.yml#Enhanced_Context_Preservation
+
+### Chain of Thought Integration
+@include shared/superclaude-collaboration.yml#Chain_Of_Thought_Integration
+
+### Quality Validation Framework
+@include shared/superclaude-collaboration.yml#Quality_Validation_Integration
+
+### Advanced Interaction Patterns
+@include commands/shared/collaboration-patterns.yml#Confidence_Based_Interaction
+
+### Integrated Reasoning Process
+@include commands/shared/collaboration-patterns.yml#Hybrid_Reasoning_Process
+
+### Execution Decision Matrix
+@include commands/shared/collaboration-patterns.yml#Execution_Decision_Matrix
+
 ## Model Context Protocol (MCP) Integration
 
 ### MCP Architecture

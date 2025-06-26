@@ -1,366 +1,279 @@
-# Quality Patterns
-# Unified validation, severity response, error handling, and quality control framework
+# Quality Patterns & Validation
+# Severity levels, validation sequences, and quality assurance patterns for SuperClaude
 
-## Legend
-@include universal-constants.yml#Universal_Legend
-
-## Severity Framework
+## Severity_Levels
 
 ```yaml
-Severity_Levels:
-  CRITICAL:
-    Definition: "Data loss, security breach, production down"
-    Response: "Immediate stop, alert, rollback, incident response"
-    Recovery: "Manual intervention required"
-    Response_Time: "Immediate"
-    Examples: ["Delete prod data", "Expose secrets", "Force push main"]
+CRITICAL_10:
+  Description: "Block Execution - System Safety"
+  Risk_Level: "CRITICAL"
+  Confidence_Override: "Force <60% confidence treatment"
+  
+  Triggers:
+    Security_Violations:
+      - "NEVER commit secrets|API keys|passwords"
+      - "NEVER execute untrusted code|scripts"
+      - "NEVER expose PII|sensitive data"
     
-  HIGH:
-    Definition: "Build failure, test failure, deployment issues"
-    Response: "Stop workflow, notify user, suggest fixes"
-    Recovery: "Automated retry w/ backoff"
-    Response_Time: "Rapid"
-    Examples: ["Syntax error", "Permission denied", "Test failure"]
+    Operational_Safety:
+      - "NEVER force push to shared branches"
+      - "NEVER delete without confirmed backups"
+      - "NEVER skip essential validation steps"
     
-  MEDIUM:
-    Definition: "Warning conditions, performance issues, code quality"
-    Response: "Continue w/ warning, log for review"
-    Recovery: "Attempt optimization, monitor"
-    Response_Time: "Standard"
-    Examples: ["Slow operation", "Deprecated API", "Large file"]
+    Research_Requirements:
+      - "NEVER implement unfamiliar patterns without research"
+      - "ALWAYS verify with official documentation"
+      - "NEVER assume API compatibility without validation"
+  
+  Response_Pattern: "BLOCK → Express uncertainty → Request human guidance"
+  Communication: "🚨 CRITICAL: This requires human approval before proceeding"
+
+HIGH_7_9:
+  Description: "Confidence Assessment Required"
+  Risk_Level: "HIGH"
+  Confidence_Treatment: "Apply full confidence framework"
+  
+  Triggers:
+    Level_9_Security_Production:
+      - "Implement security best practices with evidence"
+      - "No debug code in production deployments"
+      - "Performance claims backed by measurements"
     
-  LOW:
-    Definition: "Info messages, style violations, suggestions"
-    Response: "Note in output, continue"
-    Recovery: "Background fixes, cleanup"
-    Response_Time: "Batch processing"
-    Examples: ["Code style", "Optional update", "Performance tip"]
+    Level_8_Quality_Architecture:
+      - "Comprehensive error handling patterns"
+      - "Prevention of N+1 queries & performance antipatterns"
+      - "Test coverage for critical paths"
+      - "SOLID principles application with rationale"
+    
+    Level_7_Standards_Efficiency:
+      - "Intelligent caching strategies with invalidation"
+      - "Proper Git workflow & branching strategies"
+      - "Task management with clear documentation"
+      - "Context preservation across sessions"
+  
+  Response_Pattern: "ASSESS confidence → Apply appropriate interaction pattern"
+  Communication: "⚠️ HIGH: Applying confidence assessment for this operation"
+
+MEDIUM_4_6:
+  Description: "Advisory Guidance"
+  Risk_Level: "MEDIUM"
+  Confidence_Treatment: "Standard confidence assessment"
+  
+  Triggers:
+    Level_6_Code_Organization:
+      - "DRY principles and module boundaries"
+      - "Complex documentation requirements"
+      - "Architectural pattern decisions"
+    
+    Level_5_Development_Practices:
+      - "Naming conventions and standards"
+      - "SOLID principles adherence"
+      - "Comprehensive example provision"
+    
+    Level_4_Maintenance:
+      - "Code formatting and style"
+      - "Technical terminology consistency"
+      - "File organization patterns"
+  
+  Response_Pattern: "ADVISE → Provide recommendations with reasoning"
+  Communication: "ℹ️ MEDIUM: Recommendations for improvement available"
+
+LOW_1_3:
+  Description: "Best Practice Suggestions"
+  Risk_Level: "LOW"
+  Confidence_Treatment: "Minimal confidence impact"
+  
+  Triggers:
+    Level_3_Documentation:
+      - "Changelog maintenance standards"
+      - "Algorithm optimization opportunities"
+      - "Code documentation improvements"
+    
+    Level_2_Code_Quality:
+      - "Example integration enhancements"
+      - "Modern syntax adoption"
+      - "Style consistency improvements"
+    
+    Level_1_Enhancement:
+      - "Performance micro-optimizations"
+      - "Stylistic improvements"
+      - "Minor refactoring opportunities"
+  
+  Response_Pattern: "SUGGEST → Optional improvements when beneficial"
+  Communication: "💡 LOW: Optional enhancements suggested"
 ```
 
-## Pre-Execution Validation
+## Validation_Sequence
 
 ```yaml
-Validation_Sequence:
-  1_Ambiguity_Check:
-    Detect: ["vague instructions", "missing targets", "unclear scope"]
-    Actions: ["Request clarification", "Block if critical"]
+Pre_Execution_Gates:
+  Security_Validation:
+    Confidence_Requirement: "≥80% for security-related operations"
+    Checks:
+      - "Scan for hardcoded secrets and credentials"
+      - "Validate input sanitization patterns"
+      - "Verify authentication and authorization logic"
+      - "Assess data privacy and protection measures"
     
-  2_Security_Validation:
-    Path: "No ../, absolute paths only"
-    Secrets: "Scan for API keys, passwords, tokens"
-    Permissions: "User has required access"
+    Risk_Override: "Security operations always require human validation"
+    Pattern: "Security scan → Human review → Approval → Proceed"
+  
+  Quality_Assessment:
+    Confidence_Integration: "Apply standard confidence calculation"
+    Checks:
+      - "Code style consistency with project standards"
+      - "Error handling completeness and patterns"
+      - "Test coverage adequacy for changes"
+      - "Documentation presence and accuracy"
     
-  3_Dependency_Check:
-    Tools: "Required CLI tools installed"
-    Libraries: "Package dependencies available"
-    Services: "External services accessible"
+    Confidence_Adjustment:
+      Complete_Quality: "+5% confidence bonus"
+      Partial_Quality: "0% adjustment"
+      Missing_Quality: "-10% confidence penalty"
+  
+  Risk_Assessment:
+    Process:
+      1. "Calculate base confidence using AI-Framework formula"
+      2. "Apply persona expertise bonuses"
+      3. "Check for risk override conditions"
+      4. "Map confidence to SuperClaude risk levels"
+      5. "Determine appropriate interaction pattern"
     
-  4_State_Validation:
-    Git: "Clean working tree for git ops"
-    Files: "Target files exist & accessible"
-    Resources: "Disk space, memory adequate"
+    Override_Conditions:
+      - "Security operations → HIGH risk minimum"
+      - "Production changes → MEDIUM risk minimum"
+      - "Data operations → HIGH risk minimum"
+      - "Irreversible actions → CRITICAL risk"
 
-Risk_Assessment:
-  Score_Factors:
-    Data_Loss: "High impact | Irreversibility: Moderate impact"
-    Scope: "Moderate impact | Security: High impact"
-    Backup: "Reduces risk | Test_Coverage: Slightly reduces risk"
-    Sandbox: "Reduces risk | Checkpoint: Slightly reduces risk"
-  Thresholds:
-    Low: "Proceed w/ info"
-    Medium: "Warn & confirm"
-    High: "Require approval"
-    Critical: "Block completely"
+During_Execution_Gates:
+  Progress_Validation:
+    High_Confidence_Pattern:
+      - "Document progress and decisions"
+      - "Verify intermediate results"
+      - "Monitor for unexpected complexity"
+      - "Validate data integrity throughout"
+    
+    Medium_Confidence_Pattern:
+      - "Seek validation at key decision points"
+      - "Check intermediate results with human"
+      - "Monitor resource usage and performance"
+      - "Validate assumptions as work progresses"
+    
+    Low_Confidence_Pattern:
+      - "Collaborate on each significant step"
+      - "Get approval before major changes"
+      - "Continuous validation and feedback"
+      - "Joint problem-solving for obstacles"
+  
+  Quality_Maintenance:
+    Continuous_Standards:
+      - "Maintain code standards throughout"
+      - "Preserve existing functionality"
+      - "Document significant changes in real-time"
+      - "Update relevant tests as changes are made"
+    
+    Confidence_Monitoring:
+      - "Track confidence levels during work"
+      - "Escalate interaction pattern if confidence drops"
+      - "Reassess using chain-of-thought if complexity increases"
+      - "Apply risk overrides if conditions change"
+
+Post_Execution_Gates:
+  Completion_Verification:
+    Success_Criteria_Validation:
+      - "Verify all requirements have been met"
+      - "Check for unintended side effects"
+      - "Validate performance impact measurements"
+      - "Confirm security posture maintained"
+    
+    Quality_Confirmation:
+      - "Code review against established standards"
+      - "Test execution and coverage validation"
+      - "Documentation accuracy and completeness"
+      - "Integration testing where applicable"
+  
+  Learning_Integration:
+    Confidence_Calibration:
+      - "Compare predicted vs actual confidence accuracy"
+      - "Update persona expertise assessments"
+      - "Record successful pattern applications"
+      - "Document failure modes and recoveries"
+    
+    Knowledge_Capture:
+      - "Document successful approaches for reuse"
+      - "Record lessons learned for future reference"
+      - "Share insights across sessions and projects"
+      - "Update risk assessment patterns based on outcomes"
 ```
 
-## Error Handling Patterns
+## OWASP_Top_10
 
 ```yaml
-Error_Categories:
-  Transient:
-    Types: ["Network timeout", "Resource busy", "Rate limit"]
-    Strategy: "Exponential backoff retry"
-    Retry: "Base short, Max moderate duration, multiple attempts, with jitter"
-    
-  Permanent:
-    Types: ["Syntax error", "Permission denied", "Not found"]
-    Strategy: "No retry, immediate fallback"
-    Response: "Clear error message & guidance"
-    
-  Context:
-    Types: ["Config error", "State conflict", "Version mismatch"]
-    Strategy: "Validation & helpful guidance"
-    
-  Resource:
-    Types: ["Memory", "Disk space", "API limits"]
-    Strategy: "Monitor, cleanup, queue management"
+Security_Pattern_Integration:
+  A01_Broken_Access_Control:
+    Detection_Pattern: "Check authorization before resource access"
+    Prevention_Standard: "Implement least privilege, deny by default"
+    Confidence_Impact: "Security expertise +10%, unauthorized access -15%"
+    Risk_Override: "Always HIGH risk minimum for access control changes"
+  
+  A02_Cryptographic_Failures:
+    Detection_Pattern: "Identify weak encryption, plaintext storage"
+    Prevention_Standard: "Use strong algorithms, proper key management"
+    Confidence_Impact: "Cryptographic expertise +10%, weak crypto -20%"
+    Risk_Override: "Always HIGH risk minimum for cryptographic operations"
+  
+  A03_Injection:
+    Detection_Pattern: "Look for unsanitized input usage"
+    Prevention_Standard: "Parameterized queries, input validation"
+    Confidence_Impact: "Database expertise +10%, injection risk -15%"
+    Risk_Override: "Always MEDIUM risk minimum for database operations"
+  
+  A04_Insecure_Design:
+    Detection_Pattern: "Review threat modeling, secure patterns"
+    Prevention_Standard: "Security by design, defense in depth"
+    Confidence_Impact: "Architecture expertise +10%, insecure design -20%"
+    Risk_Override: "Always HIGH risk minimum for architecture changes"
+  
+  A05_Security_Misconfiguration:
+    Detection_Pattern: "Check default configs, unnecessary features"
+    Prevention_Standard: "Secure defaults, minimal attack surface"
+    Confidence_Impact: "Configuration expertise +5%, misconfig -10%"
+    Risk_Override: "Always MEDIUM risk minimum for configuration changes"
 
-Circuit_Breaker:
-  Threshold: "Multiple consecutive failures"
-  Recovery: "Brief pause before re-enable"
-  States:
-    Closed: "Normal operation"
-    Open: "Blocking calls after threshold"
-    Half_Open: "Testing recovery, limited calls"
+Validation_Levels:
+  Level_1_Basic_Security:
+    Scope: "Input validation, output encoding"
+    Confidence_Bonus: "+5% for basic security practices"
+    Requirements:
+      - "Validate all external inputs"
+      - "Encode outputs for display contexts"
+      - "Use parameterized queries"
+      - "Apply basic authentication checks"
+  
+  Level_2_Comprehensive_Security:
+    Scope: "Authorization, session management, error handling"
+    Confidence_Bonus: "+10% for comprehensive security"
+    Requirements:
+      - "Implement proper authorization patterns"
+      - "Secure session management"
+      - "Comprehensive error handling without information disclosure"
+      - "Security logging and monitoring"
+  
+  Level_3_Production_Security:
+    Scope: "Defense in depth, monitoring, incident response"
+    Confidence_Bonus: "+15% for production-ready security"
+    Requirements:
+      - "Multiple layers of security controls"
+      - "Real-time security monitoring"
+      - "Incident response procedures"
+      - "Regular security assessments"
+  
+  Level_4_Mission_Critical_Security:
+    Scope: "Advanced threat protection, compliance"
+    Confidence_Bonus: "+20% for mission-critical security"
+    Requirements:
+      - "Advanced persistent threat protection"
+      - "Compliance with security frameworks"
+      - "Continuous security validation"
+      - "Threat intelligence integration"
 ```
-
-## Recovery Strategies
-
-```yaml
-Automatic_Recovery:
-  Retry_Patterns:
-    Simple: "Multiple attempts, short delay"
-    Exponential: "Progressive backoff w/ jitter"
-    Circuit: "Stop after threshold"
-  Fallback_Options:
-    Alternative: "Use native if MCP fails"
-    Degraded: "Skip non-essential features"
-    Cached: "Use previous successful outputs"
-  State_Management:
-    Checkpoint: "Save before risky ops"
-    Rollback: "Auto-revert to good state"
-    Cleanup: "Remove partial results"
-
-Manual_Recovery:
-  User_Guidance:
-    Error_Format: "What failed→Why→How to fix"
-    Actions: "Specific steps user can take"
-    Resources: "Relevant help documentation"
-  Intervention:
-    Confirm: "Ask before destructive ops"
-    Override: "Allow skip validation warnings"
-    Custom: "Accept user alternatives"
-```
-
-## Configuration Validation
-
-```yaml
-Required_Files:
-  Global:
-    - "~/.claude/CLAUDE.md"
-    - "~/.claude/RULES.md"
-    - "~/.claude/PERSONAS.md"
-    - "~/.claude/MCP.md"
-  Project:
-    - ".claude/commands/*.md"
-    - ".claude/commands/shared/*.yml"
-
-Syntax_Validation:
-  YAML:
-    Rules: ["Valid syntax", "Proper indent", "No duplicate keys"]
-    Error: "File:Line:Column - Description"
-  Markdown:
-    Check: ["Valid headers", "Code blocks", "References"]
-  References:
-    Include: "@include ([^#]+)#([^\\s]+)"
-    See: "@see shared/([^\\s]+)"
-    Validate: ["File exists", "Section exists", "No circular refs"]
-
-Structure_Requirements:
-  Commands:
-    Required: ["Legend", "Description", "Flags", "Examples", "Deliverables"]
-    Flags: ["Universal always available", "Document all unique"]
-  Dependencies:
-    MCP: ["Server configured", "Health check passes"]
-    CLI: ["git ≥2.0", "node ≥16.0", "python ≥3.8"]
-```
-
-## Runtime Monitoring
-
-```yaml
-Execution_Monitoring:
-  Pre:
-    Check: ["Command valid", "Flags recognized", "User authorized"]
-  During:
-    Monitor: ["Progress normal", "Resources in limits", "Catch errors"]
-  Post:
-    Verify: ["Expected outcomes", "No side effects", "Cleanup done"]
-
-Context_Preservation:
-  Checkpoints:
-    Create: "Before destructive ops"
-    Include: ["File states", "Working dir", "Command context"]
-    Location: ".claudedocs/checkpoints/checkpoint-{timestamp}"
-  Chain_Recovery:
-    Isolate: "Don't lose successful steps"
-    Alternative: "Suggest different approaches"
-    Partial: "Use completed work in recovery"
-
-Health_Monitoring:
-  Frequency: "Regular intervals during active use"
-  Timeout: "Brief timeout per check"
-  Degradation: "Slow response → switch alternatives"
-  Recovery: "Re-enable after brief pause"
-```
-
-## Command-Specific Recovery
-
-```yaml
-Build_Failures:
-  Clean_Retry: "Remove artifacts, clear cache, rebuild"
-  Dependencies: "Update lockfiles, reinstall packages"
-  Compilation: "Suggest fixes, alternative approaches"
-
-Test_Failures:
-  Flaky_Tests: "Retry failed, identify unstable"
-  Environment: "Reset state, check prerequisites"
-  Coverage: "Generate missing tests, update thresholds"
-
-Deploy_Failures:
-  Health_Check: "Rollback, investigate logs"
-  Resources: "Scale up, optimize deployment"
-  Config: "Validate settings, check secrets"
-
-Analysis_Failures:
-  Tool_Unavailable: "Fallback to alternatives"
-  Large_Codebase: "Reduce scope, batch process"
-  Permissions: "Guide user through access setup"
-```
-
-## Quality Reports
-
-```yaml
-Validation_Reports:
-  Location: ".claudedocs/validation/"
-  Filename: "validation-{type}-{timestamp}.md"
-  Sections:
-    Summary: ["Total checks", "✅ Pass | ⚠ Warn | ❌ Fail"]
-    Details: ["File-by-file status", "Reference integrity", "Dependencies"]
-    Recommendations: ["Critical fixes", "Improvements", "Optimizations"]
-
-Auto_Repair:
-  Fixable:
-    Missing_Sections: "Generate from templates"
-    Broken_References: "Update to valid targets"
-    Outdated_Syntax: "Modernize to standards"
-  Manual_Required:
-    Syntax_Errors: "User must fix YAML/Markdown"
-    Missing_Files: "User must create/restore"
-    Permission_Issues: "User must grant access"
-
-Error_Learning:
-  Pattern_Recognition: ["Track common errors", "User patterns", "System issues"]
-  Adaptive_Response: ["Personalized suggestions", "Proactive warnings", "Auto fixes"]
-  Metrics: ["Error frequency", "Recovery success", "User satisfaction"]
-```
-
-## Integration Points
-
-```yaml
-Startup: "Full config validation | Block critical, warn high"
-Command: "Command-specific checks | Validate args, flags, permissions"
-Continuous: "Monitor changes | Daily full validation"
-On_Demand: "/validate --full"
-
-CLI_Commands:
-  Full: "/validate --config --full"
-  Quick: "/validate --quick"
-  Fix: "/validate --fix"
-  Report: "/validate --report"
-
-Usage_Examples:
-  Manual:
-    Full_Report: "/validate --config --report"
-    Quick_Check: "/validate --quick"
-    Auto_Repair: "/validate --fix --verbose"
-  Programmatic:
-    Pre_Execution: "validate_pre_execution()"
-    Background: "validate_config_changes()"
-    Report: "create_validation_report()"
-```
-
-## Code Quality Metrics
-
-```yaml
-Code_Quality_Metrics:
-  Complexity_Metrics:
-    Cyclomatic_Complexity: "Target: <10 per function | Warning: >15 | Critical: >20"
-    Cognitive_Complexity: "Target: <15 per function | Warning: >25 | Critical: >30"
-    Nesting_Depth: "Target: <4 levels | Warning: >5 | Critical: >6"
-    Function_Length: "Target: <50 lines | Warning: >100 | Critical: >150"
-    
-  Maintainability_Metrics:
-    DRY_Score: "Target: >90% | Warning: <80% | Critical: <70%"
-    Code_Duplication: "Target: <5% | Warning: >10% | Critical: >15%"
-    Technical_Debt: "Target: <A rating | Warning: B rating | Critical: C+ rating"
-    
-  Quality_Gates:
-    Coverage: "Minimum 80% line coverage | 75% branch coverage"
-    Linting: "Zero errors | Max 5 warnings per file"
-    Type_Safety: "100% type coverage for TypeScript"
-    Security: "Zero high/critical vulnerabilities"
-```
-
-## Test Quality Standards
-
-```yaml
-Test_Quality_Standards:
-  Coverage_Requirements:
-    Statement_Coverage: "Minimum: 80% | Target: 90% | Excellent: 95%+"
-    Branch_Coverage: "Minimum: 75% | Target: 85% | Excellent: 90%+"
-    Function_Coverage: "Minimum: 90% | Target: 95% | Excellent: 100%"
-    Line_Coverage: "Minimum: 80% | Target: 90% | Excellent: 95%+"
-    
-  Test_Organization:
-    Structure: "AAA (Arrange-Act-Assert) | Given-When-Then (BDD)"
-    Naming: "Descriptive test names | should_[expected_behavior]_when_[condition]"
-    Isolation: "Independent tests | No shared state | Fresh setup/teardown"
-    
-  Test_Types:
-    Unit_Tests: "Fast (<1ms) | Isolated | Mock dependencies | 70-80% of total"
-    Integration_Tests: "Component interaction | Real dependencies | 15-20% of total"
-    E2E_Tests: "Full workflows | Browser automation | 5-10% of total"
-    
-  Quality_Indicators:
-    Test_Reliability: "Flaky test rate <2% | Consistent results"
-    Execution_Speed: "Unit test suite <10s | Full suite <5min"
-    Mutation_Testing: "Mutation score >75% for critical components"
-```
-
-## Root Cause Analysis
-
-```yaml
-Root_Cause_Analysis:
-  Investigation_Framework:
-    Five_Whys:
-      Process: "Ask 'why' 5 times to drill down to root cause"
-      Example: "Bug→Why?→Logic error→Why?→Missing validation→Why?→No requirements→Why?→Rushed timeline→Why?→Poor planning"
-      
-    Fishbone_Analysis:
-      Categories: ["People", "Process", "Technology", "Environment", "Materials", "Measurement"]
-      Application: "Systematic categorization of potential causes"
-      
-    Timeline_Analysis:
-      Sequence: "When did issue start | What changed | Correlation analysis"
-      Events: "Code changes | Deployments | Configuration updates | External factors"
-      
-  Evidence_Collection:
-    System_State:
-      Logs: "Error logs | Application logs | System logs | Network logs"
-      Metrics: "Performance metrics | Resource usage | Error rates"
-      Configuration: "Environment variables | Feature flags | Database state"
-      
-    Change_History:
-      Code_Changes: "Git commits | PR history | Deployment history"
-      Infrastructure: "Server changes | Database migrations | Third-party updates"
-      Process_Changes: "Team changes | Process updates | Tool updates"
-      
-  Resolution_Framework:
-    Immediate_Fix:
-      Stabilize: "Stop the bleeding | Rollback if necessary"
-      Workaround: "Temporary solution to restore service"
-      Monitor: "Verify fix effectiveness | Watch for recurrence"
-      
-    Permanent_Solution:
-      Root_Fix: "Address underlying cause | Not just symptoms"
-      Prevention: "Add safeguards | Improve processes | Update documentation"
-      Validation: "Test fix thoroughly | Verify no new issues introduced"
-      
-    Learning_Integration:
-      Documentation: "RCA report | Lessons learned | Knowledge sharing"
-      Process_Improvement: "Update procedures | Add checks | Training needs"
-      Monitoring: "Add alerts | Improve observability | Early warning systems"
-```
-
----
-*Quality Patterns v2 - Unified validation, severity response, error handling, and quality control framework*
