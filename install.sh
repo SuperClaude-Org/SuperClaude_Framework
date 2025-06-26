@@ -4,7 +4,7 @@
 # Installs SuperClaude configuration framework to enhance Claude Code
 # Version: 2.0.0
 # License: MIT
-# Repository: https://github.com/nshkrdotcom/SuperClaude
+# Repository: https://github.com/NomenAK/SuperClaude
 
 set -e  # Exit on error
 set -o pipefail  # Exit on pipe failure
