@@ -120,12 +120,24 @@ check_superclaude_installation() {
 # Function: check_orchestrator_files
 check_orchestrator_files() {
     local missing_files=()
+    local orchestrator_source=".claude/orchestrator"
     
-    for file in "${ORCHESTRATOR_FILES[@]}"; do
-        if [[ ! -f "$file" ]]; then
-            missing_files+=("$file")
-        fi
-    done
+    # Check if we're in the SuperClaude repo with orchestrator files
+    if [[ -d "$orchestrator_source" ]]; then
+        # Check in .claude/orchestrator/ directory
+        for file in "${ORCHESTRATOR_FILES[@]}"; do
+            if [[ ! -f "$orchestrator_source/$file" ]]; then
+                missing_files+=("$file")
+            fi
+        done
+    else
+        # Fallback: check in current directory (for standalone orchestrator)
+        for file in "${ORCHESTRATOR_FILES[@]}"; do
+            if [[ ! -f "$file" ]]; then
+                missing_files+=("$file")
+            fi
+        done
+    fi
     
     if [[ ${#missing_files[@]} -gt 0 ]]; then
         log_error "Missing orchestrator files:"
@@ -133,8 +145,8 @@ check_orchestrator_files() {
             echo "  - $file"
         done
         echo ""
-        echo "Please ensure you run this script from the orchestrator directory"
-        echo "containing all orchestrator markdown files."
+        echo "Please ensure orchestrator files are in .claude/orchestrator/"
+        echo "or run this script from the orchestrator directory."
         return 1
     fi
     
@@ -145,8 +157,19 @@ check_orchestrator_files() {
 install_orchestrator() {
     local claude_dir="$1"
     local orchestrator_dir="$claude_dir/orchestrator"
+    local orchestrator_source=".claude/orchestrator"
     
     echo "Installing SuperClaude Orchestrator..."
+    
+    # Determine source directory
+    local source_dir=""
+    if [[ -d "$orchestrator_source" ]]; then
+        # We're in SuperClaude repo with orchestrator files
+        source_dir="$orchestrator_source"
+    else
+        # Standalone orchestrator directory
+        source_dir="."
+    fi
     
     # Create orchestrator directory
     if [[ "$DRY_RUN" = true ]]; then
@@ -159,10 +182,11 @@ install_orchestrator() {
     # Copy orchestrator files
     local copied=0
     for file in "${ORCHESTRATOR_FILES[@]}"; do
+        local src_file="$source_dir/$file"
         if [[ "$DRY_RUN" = true ]]; then
-            echo "Would copy: $file -> $orchestrator_dir/$file"
+            echo "Would copy: $src_file -> $orchestrator_dir/$file"
         else
-            if cp "$file" "$orchestrator_dir/$file"; then
+            if cp "$src_file" "$orchestrator_dir/$file"; then
                 log_verbose "Copied: $file"
                 ((copied++))
             else
