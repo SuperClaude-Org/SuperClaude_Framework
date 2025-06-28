@@ -1,86 +1,122 @@
 # SuperClaude Orchestrator
 
-## What is this? (ELI5 - Explain Like I'm 5)
+## Overview
 
-Imagine you have a super smart robot helper (Claude) that can help you code, but you have to remember 19 different magic words to ask it to do different things. That's hard to remember!
+The SuperClaude Orchestrator is a natural language processing layer that translates human-readable requests into optimized SuperClaude commands. It eliminates the need to memorize 19 specialized commands and their associated flags by providing an intuitive interface for developers.
 
-This SuperClaude Orchestrator is like having a translator that lets you talk to your robot helper in normal words, and it figures out which magic words to use automatically.
+## Key Features
 
-**Instead of remembering:**
+- **Natural Language Processing**: Convert plain English requests into complex SuperClaude commands
+- **Intelligent Flag Optimization**: Automatically selects optimal flag combinations based on context
+- **Persona Integration**: Leverages all 9 SuperClaude cognitive personas for domain-specific expertise
+- **Workflow Templates**: Pre-built command sequences for common development scenarios
+- **Zero Learning Curve**: Use natural language instead of memorizing command syntax
+
+## Architecture
+
+The orchestrator consists of 8 integrated components:
+
+| File | Purpose |
+|------|---------|
+| `ORCHESTRATOR.md` | Core translation engine and routing logic |
+| `COMMAND_MAPPING.md` | Complete command reference and natural language mappings |
+| `FLAG_COMBINATIONS.md` | Smart flag optimization rules and conflict resolution |
+| `PERSONA_GUIDE.md` | Detailed documentation for 9 cognitive personas |
+| `WORKFLOW_TEMPLATES.md` | Ready-to-use workflows for common scenarios |
+| `INTEGRATION_GUIDE.md` | Setup and usage instructions |
+| `FILE_OVERVIEW.md` | System architecture and component relationships |
+| `README.md` | This documentation |
+
+## Usage
+
+### Activation
+
+In Claude Code, activate the orchestrator by saying:
 ```
-/review --files src/ --quality --evidence --persona-security --think --seq
-```
-
-**You can just say:**
-```
-"Check my code for security problems"
-```
-
-And it will automatically create the right magic command for you!
-
-## What Files Do What?
-
-This folder contains 8 special instruction files that work together:
-
-1. **`README.md`** - This file! Explains what everything does
-2. **`ORCHESTRATOR.md`** - The main translator that turns your words into commands
-3. **`COMMAND_MAPPING.md`** - The dictionary that knows what each command does
-4. **`FLAG_COMBINATIONS.md`** - The smart rules for making commands better
-5. **`PERSONA_GUIDE.md`** - Info about 9 different expert helpers
-6. **`WORKFLOW_TEMPLATES.md`** - Ready-made recipes for common tasks
-7. **`INTEGRATION_GUIDE.md`** - Instructions on how to use everything
-8. **`FILE_OVERVIEW.md`** - Shows how all the files work together
-
-## How to Use This
-
-### Step 1: Put Files in Your Project
-Copy all the `.md` files into your SuperClaude project folder.
-
-### Step 2: Tell Claude to Use the Orchestrator
-In your Claude Code conversation, say:
-```
-Use the ORCHESTRATOR.md file to help translate my requests into SuperClaude commands.
+Use the orchestrator in .claude/orchestrator/ to translate my requests
 ```
 
-### Step 3: Talk Normally
-Instead of complex commands, just describe what you want:
+### Natural Language Examples
 
-- "Review my code for security issues" 
-- "Build a React app with testing"
-- "Optimize my database queries"
-- "Create API documentation"
+| Natural Language Request | Generated SuperClaude Command |
+|-------------------------|------------------------------|
+| "Review code for security vulnerabilities" | `/review --security --evidence --persona-security --think --seq` |
+| "Build a React application with tests" | `/build --react --feature --tdd --magic --frontend` |
+| "Optimize database performance" | `/improve --performance --database --profile --persona-performance` |
+| "Deploy to production with monitoring" | `/deploy --prod --critical --evidence --plan --monitor` |
+| "Debug memory leak in production" | `/troubleshoot --prod --performance --memory --five-whys --seq` |
 
-### Step 4: Get the Right Command
-The orchestrator will give you the perfect SuperClaude command with all the right flags and settings.
+### Complex Workflows
 
-## Quick Examples
+The orchestrator handles multi-step workflows:
 
-| What You Say | What You Get |
-|--------------|--------------|
-| "Security review of my code" | `/review --security --evidence --persona-security --think` |
-| "Build a new React feature" | `/build --react --feature --tdd --frontend` |
-| "Fix performance problems" | `/improve --performance --profile --persona-performance` |
-| "Deploy to production safely" | `/deploy --prod --critical --evidence --plan` |
+```
+Request: "Set up a secure API with documentation and testing"
 
-## Why This Helps
+Generated workflow:
+1. /design --api --security --persona-architect --seq
+2. /build --api --secure --tdd --backend --evidence
+3. /test --api --integration --coverage --persona-qa
+4. /document --api --comprehensive --examples
+```
 
-✅ **No more memorizing** 19 commands and their flags  
-✅ **Talk like a human** instead of learning robot language  
-✅ **Get better results** with automatic smart flag combinations  
-✅ **Save time** with pre-built workflows  
-✅ **Make fewer mistakes** with built-in best practices  
+## Benefits
 
-## Installation
+### For Developers
+- **Increased Productivity**: Focus on intent rather than syntax
+- **Reduced Errors**: Automatic flag validation and optimization
+- **Better Results**: Leverages best practices and optimal configurations
+- **Faster Onboarding**: New team members productive immediately
 
-1. Fork the SuperClaude repository
-2. Copy these markdown files to your project
-3. Start using natural language with Claude Code
-4. Let the orchestrator handle the complex commands
+### For Teams
+- **Consistency**: Standardized approach across all developers
+- **Knowledge Sharing**: Embedded best practices in workflows
+- **Documentation**: Natural language serves as self-documentation
+- **Accessibility**: Lowers barrier to entry for SuperClaude adoption
 
-## Need Help?
+## Integration
 
-- Read `INTEGRATION_GUIDE.md` for detailed setup instructions
-- Check `WORKFLOW_TEMPLATES.md` for common development scenarios
-- Look at `PERSONA_GUIDE.md` to understand the 9 expert helpers
+The orchestrator integrates seamlessly with SuperClaude:
+- Non-invasive installation in `.claude/orchestrator/`
+- No modifications to core SuperClaude functionality
+- Optional activation - use only when needed
+- Full access to all SuperClaude capabilities
 
-Remember: This doesn't replace SuperClaude, it makes it easier to use!
+## Advanced Features
+
+### Context-Aware Processing
+- Detects environment (development, staging, production)
+- Identifies technology stack from request
+- Applies security best practices automatically
+- Optimizes for performance when relevant
+
+### Intelligent Persona Selection
+Automatically selects appropriate personas based on domain:
+- Security operations → `--persona-security`
+- UI development → `--persona-frontend`
+- System design → `--persona-architect`
+- Performance issues → `--persona-performance`
+
+### Token Optimization
+- Automatically applies `--uc` flag for large operations
+- Balances analysis depth with token usage
+- Suggests efficient command alternatives
+
+## Getting Started
+
+1. **Installation**: Run `./install-orchestrator.sh` from the SuperClaude root directory
+2. **Activation**: Tell Claude Code to use the orchestrator
+3. **Usage**: Make requests in natural language
+4. **Results**: Receive optimized SuperClaude commands
+
+For detailed setup instructions, see `INTEGRATION_GUIDE.md`.
+For common workflows, see `WORKFLOW_TEMPLATES.md`.
+For persona details, see `PERSONA_GUIDE.md`.
+
+## Contributing
+
+The orchestrator is designed to be extensible. To add new mappings or workflows, refer to the documentation in `FILE_OVERVIEW.md` for the system architecture.
+
+---
+
+*SuperClaude Orchestrator - Making powerful development tools accessible through natural language.*
