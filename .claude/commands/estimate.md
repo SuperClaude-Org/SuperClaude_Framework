@@ -33,7 +33,7 @@ Estimation modes:
 
 ## Estimation Framework
 
-@include shared/execution-patterns.yml#Estimation_Methodology
+@include shared/patterns/planning/estimation.yml#Estimation_Methodology
 
 @include shared/docs-patterns.yml#Standard_Notifications
 

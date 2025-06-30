@@ -1,0 +1,54 @@
+# Execution Core Patterns
+# Universal execution lifecycle and foundational patterns
+
+## Legend
+@include ../../universal-constants.yml#Universal_Legend
+
+## Universal Execution Lifecycle
+
+```yaml
+Standard_Lifecycle:
+  Pre_Execution:
+    Risk_Assessment:
+      Calculate: "Assess operation risk level"
+      Factors: ["Data loss potential", "Irreversibility", "Scope", "Security"]
+      Actions:
+        Low: "Proceed w/ monitoring"
+        Medium: "Warn & log"
+        High: "Require confirmation"
+        Critical: "Block & alert"
+    Environment_Validation:
+      Check: ["Required tools", "Permissions", "Resources", "Dependencies"]
+      Verify: ["Git state", "Network access", "Disk space", "Memory"]
+      MCP_Health: "Test server connectivity & response"
+    State_Preparation:
+      TodoList_Triggers: "@include ../../task-management-patterns.yml#Auto_Trigger_Rules"
+      Checkpoint: "@include ../../recovery-state-patterns.yml#Automatic_Triggers"
+      Cache: "Previous results for efficiency"
+      Lock: "Prevent concurrent modifications"
+      MCP_Cache_Init: "@include ../../mcp-cache-patterns.yml#Cache_Storage"
+      
+  During_Execution:
+    Progress_Monitoring:
+      Track: ["Operation progress", "Resource usage", "Error rates", "Token consumption"]
+      Alert: ["Performance degradation", "Approaching limits", "Anomalies", "MCP failures"]
+    Dynamic_Optimization:
+      Adapt: ["Adjust parallelism", "Switch strategies", "Cache results", "Fallback to native"]
+      Fallback: ["Use alternatives if primary fails", "Degrade gracefully"]
+    Error_Handling:
+      "@include ../../recovery-state-patterns.yml#Recovery_Framework"
+      
+  Post_Execution:
+    Verification:
+      Confirm: ["Expected outcomes achieved", "No side effects", "State consistent"]
+      Validate: ["Output quality", "Performance metrics", "Security compliance"]
+    Cleanup:
+      Remove: ["Temp files", "Locks", "Cached data"]
+      Update: ["Audit logs", "Metrics", "Documentation"]
+    Reporting:
+      Generate: ["Success/failure report", "Performance metrics", "Recommendations"]
+      Store: ".claudedocs/lifecycle/execution-{timestamp}.md"
+```
+
+---
+*Execution Core Patterns v1 - Foundational execution lifecycle management*

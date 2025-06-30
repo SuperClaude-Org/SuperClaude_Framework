@@ -1,0 +1,11 @@
+# Planning Patterns Index
+# Aggregates all planning-related patterns
+
+## Legend
+@include ../../universal-constants.yml#Universal_Legend
+
+## Estimation Methodology
+@include estimation.yml#Estimation_Methodology
+
+---
+*Planning Patterns Index v1 - Aggregated planning patterns*

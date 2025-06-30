@@ -1,0 +1,35 @@
+# Token Budget Management Patterns
+# Resource usage and cost control
+
+## Legend
+@include ../../universal-constants.yml#Universal_Legend
+
+## Token Budget Management
+
+```yaml
+Cost_Categories:
+  Native_Tools: "No token cost"
+  Light_MCP: "Minimal usage"
+  Medium_MCP: "Moderate usage"
+  Heavy_MCP: "Extensive usage"
+  
+Budget_Escalation:
+  1: "Native first for simple tasks"
+  2: "C7 for library questions"
+  3: "Sequential for complex analysis"
+  4: "Combine MCPs for synergy"
+  
+Abort_Conditions:
+  Context_Usage: "High context usage → native tools"
+  Timeout_Errors: "MCP timeout/error → fallback"
+  Diminishing_Returns: "Poor results → stop MCP usage"
+
+Failover_Integration:
+  "@include ../../recovery-state-patterns.yml#Standard_Recovery_Patterns"
+  
+Error_Recovery_Standards:
+  "@include ../../recovery-state-patterns.yml#Standard_Recovery_Patterns"
+```
+
+---
+*Token Budget Management Patterns v1 - Resource usage and cost control*

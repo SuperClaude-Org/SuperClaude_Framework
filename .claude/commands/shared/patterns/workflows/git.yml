@@ -1,0 +1,58 @@
+# Git Integration Patterns
+# Version control workflows and safety checks
+
+## Legend
+@include ../../universal-constants.yml#Universal_Legend
+
+## Git Workflows
+
+```yaml
+Git_Workflows:
+  Auto_Safety_Checks:
+    Before_Commit:
+      - "git status → Verify intended files"
+      - "git diff --staged → Review changes"
+      - "Run tests if available"
+      - "Check for secrets/credentials"
+    Before_Push:
+      - "Verify target branch & remote"
+      - "Check for force push implications"
+      - "Ensure CI/CD readiness"
+    Before_Merge:
+      - "Test for conflicts"
+      - "Verify branch policies"
+      - "Check approval requirements"
+      
+  Commit_Standards:
+    Format: "{type}: {description}\n\n{body}\n\n🤖 Generated with [Claude Code]\n\nCo-Authored-By: Claude"
+    Types: ["feat", "fix", "docs", "style", "refactor", "test", "chore"]
+    Validation:
+      - "Type matches change nature"
+      - "Description < 50 chars"
+      - "Body explains why, not what"
+      
+  Branch_Management:
+    Strategy:
+      Feature: "feature/{description}"
+      Bugfix: "bugfix/{description}"
+      Release: "release/{version}"
+      Hotfix: "hotfix/{description}"
+    Protection:
+      Main: "No direct push, PR required"
+      Release: "Admin approval required"
+      Feature: "Auto-delete after merge"
+      
+  Conflict_Resolution:
+    Detection: "Auto-detect during pull/merge"
+    Strategies:
+      Simple: "Auto-resolve if non-overlapping"
+      Complex: "Interactive 3-way merge"
+      Binary: "Choose version explicitly"
+    Recovery:
+      Abort: "git merge --abort → restore state"
+      Stash: "git stash → try different approach"
+      Branch: "Create conflict-resolution branch"
+```
+
+---
+*Git Integration Patterns v1 - Version control workflows and safety*

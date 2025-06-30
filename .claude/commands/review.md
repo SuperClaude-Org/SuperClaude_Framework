@@ -68,7 +68,7 @@ Examples:
 
 **--persona-refactorer:** Code improvement opportunities | Refactoring suggestions | Cleanup recommendations | Pattern application
 
-@include shared/execution-patterns.yml#Servers
+@include shared/patterns/mcp/registry.yml#Servers
 
 @include shared/docs-patterns.yml#Standard_Notifications
 

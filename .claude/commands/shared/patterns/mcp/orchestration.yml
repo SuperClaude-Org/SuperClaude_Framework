@@ -1,0 +1,132 @@
+# MCP Orchestration Patterns
+# Control flows, activation rules, and intelligent selection
+
+## Legend
+@include ../../universal-constants.yml#Universal_Legend
+
+## MCP Control & Orchestration
+
+```yaml
+MCP_Parallel_Execution:
+  "@include ../../mcp-cache-patterns.yml#Parallel_MCP_Execution"
+
+MCP_Cache_Integration:
+  Context7_Caching: "@include ../../mcp-cache-patterns.yml#Context7_Cache"
+  Sequential_Caching: "@include ../../mcp-cache-patterns.yml#Sequential_Cache"
+  Magic_Caching: "@include ../../mcp-cache-patterns.yml#Magic_Cache"
+  Performance: "@include ../../mcp-cache-patterns.yml#Cache_Performance_Optimization"
+
+MCP_Control_Flags:
+  Individual:
+    --c7: "Enable Context7 only"
+    --no-c7: "Disable Context7"
+    --seq: "Enable Sequential only"
+    --no-seq: "Disable Sequential"
+    --magic: "Enable Magic only"
+    --no-magic: "Disable Magic"
+    --pup: "Enable Puppeteer only"
+    --no-pup: "Disable Puppeteer"
+    
+  Combined:
+    --all-mcp: "Enable all MCP servers"
+    --no-mcp: "Disable all MCP servers (native tools only)"
+    
+  Priority: "Explicit flags > Command defaults > Context triggers"
+  Override: "--no-mcp overrides all individual flags"
+
+Intelligent_MCP_Selection:
+  Command_Defaults:
+    analyze + --architecture: "Suggest --seq for system analysis"
+    build + --react: "Suggest --magic for UI components"
+    test + --e2e: "Suggest --pup for browser testing"
+    explain + library_name: "Suggest --c7 for documentation"
+    design + --api: "Suggest --seq --c7 for comprehensive design"
+    troubleshoot + --investigate: "Suggest --seq for root cause analysis"
+    improve + --performance: "Suggest --seq --pup for optimization analysis"
+    
+  Context_Triggers:
+    Import_Errors: "→ C7 lookup REQUIRED"
+    Complex_Debugging: "→ Sequential thinking"
+    UI_Requests: "→ Magic builder"
+    E2E_Testing: "→ Puppeteer automation"
+
+Automatic_MCP_Context_Detection:
+  Library_References:
+    Triggers:
+      - "import .* from ['\"][^./].*['\"]"  # Non-relative imports
+      - "require\\(['\"][^./].*['\"]\\)"     # CommonJS external
+      - "from \\w+ import"                   # Python external
+      - "@\\w+/"                           # Scoped packages
+    Action: "→ C7 resolve-library-id REQUIRED"
+    Blocking: "Implementation blocked until documentation found"
+    
+  Complex_Problem_Indicators:
+    Keywords: ["architecture", "design", "system", "complex", "debug", "investigate", "root cause", "bottleneck"]
+    Error_Patterns: ["multiple errors", "cascading failures", "performance degradation"]
+    Scope_Indicators: ["multi-file", "cross-component", "system-wide"]
+    Action: "→ Sequential thinking RECOMMENDED"
+    
+  UI_Component_Requests:
+    Keywords: ["button", "form", "modal", "dialog", "dropdown", "table", "chart", "dashboard", "component"]
+    Framework_Mentions: ["react", "vue", "svelte", "angular"]
+    File_Types: ["*.tsx", "*.jsx", "*.vue", "*.svelte"]
+    Action: "→ Magic builder RECOMMENDED"
+    
+  Browser_Automation_Needs:
+    Keywords: ["screenshot", "e2e", "integration test", "browser", "selenium", "automation"]
+    Test_Patterns: ["cypress", "playwright", "puppeteer", "webdriver"]
+    Action: "→ Puppeteer automation RECOMMENDED"
+    
+Research_Requirements:
+  External_Library_Detection:
+    Pattern: "Any import/require from non-relative path"
+    Rule: "CRITICAL → Research REQUIRED before implementation"
+    Process:
+      1: "C7 resolve-library-id with detected library name"
+      2: "If not found → WebSearch '[library] official documentation'"
+      3: "Extract: Installation, basic usage, common patterns"
+      4: "Block implementation if confidence < 90%"
+      
+  Unknown_Pattern_Detection:
+    Triggers: ["unfamiliar syntax", "new framework", "unknown API"]
+    Phrases_To_Block: ["might work", "probably", "I think", "typical pattern"]
+    Required_Instead: "Documentation confirms", "Official source states"
+    Action: "Research → Verify → Document source → Implement"
+    
+  Low_Confidence_Indicators:
+    Uncertainty_Language: ["maybe", "should", "typically", "usually"]
+    Missing_Evidence: "No source citation available"
+    Action: "BLOCK implementation until research complete"
+
+Auto_Activation_Rules:
+  Command_Based:
+    /build + UI_keywords: "Suggest --magic for component generation"
+    /analyze + complexity_indicators: "Suggest --seq for deep analysis"
+    /test + browser_keywords: "Suggest --pup for automation"
+    /explain + library_name: "Suggest --c7 for documentation"
+    
+  File_Based:
+    "*.tsx|*.jsx": "Frontend context → --magic available"
+    "*.test.*|*.spec.*": "Testing context → --pup available"
+    "*api*|*server*": "Backend context → --seq for design"
+    
+  Error_Based:
+    "ModuleNotFoundError": "→ C7 lookup REQUIRED"
+    "TypeError": "→ Sequential analysis RECOMMENDED"
+    "Build failures": "→ Sequential troubleshooting"
+    
+Override_Controls:
+  User_Flags_Priority: "Explicit flags > Auto-detection > Defaults"
+  Disable_All: "--no-mcp overrides all auto-detection"
+  Selective_Disable: "--no-c7, --no-seq, --no-magic, --no-pup"
+  Force_Enable: "--c7, --seq, --magic, --pup override context detection"
+    
+Synergistic_Patterns:
+  --magic + --pup: "Generate UI components and test immediately"
+  --seq + --c7: "Complex analysis with authoritative documentation"
+  --seq + --think-hard: "Deep architectural analysis with documentation"
+  --c7 + --uc: "Research with compressed output for token efficiency"
+```
+
+---
+*MCP Orchestration Patterns v1 - Intelligent server control and activation*

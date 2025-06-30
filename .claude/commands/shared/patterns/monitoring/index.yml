@@ -1,0 +1,21 @@
+# Monitoring Patterns Index
+# Aggregates all monitoring-related patterns
+
+## Legend
+@include ../../universal-constants.yml#Universal_Legend
+
+## Performance Monitoring
+@include performance.yml#Performance_Tracking
+
+## Token Budget Management
+@include budget.yml#Cost_Categories
+@include budget.yml#Budget_Escalation
+@include budget.yml#Abort_Conditions
+@include budget.yml#Failover_Integration
+@include budget.yml#Error_Recovery_Standards
+
+## Recovery Integration
+@include recovery.yml#Checkpoint_Integration
+
+---
+*Monitoring Patterns Index v1 - Aggregated monitoring patterns*

@@ -95,7 +95,7 @@ You should use the following configuration to guide your behavior.
 
 ### MCP Architecture
 @include commands/shared/flag-inheritance.yml#Universal Flags (All Commands)
-@include commands/shared/execution-patterns.yml#Servers
+@include commands/shared/patterns/mcp/registry.yml#Servers
 
 ### Server Capabilities Extended
 @include shared/superclaude-mcp.yml#Server_Capabilities_Extended

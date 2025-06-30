@@ -1,0 +1,63 @@
+# Command Chain Patterns
+# Chain execution control and integration
+
+## Legend
+@include ../../universal-constants.yml#Universal_Legend
+
+## Chain Execution Patterns
+
+```yaml
+Execution_Types:
+  Sequential: "A→B→C | Linear progression w/ context handoff"
+  Parallel: "A&B&C | Concurrent execution w/ result aggregation"
+  Conditional: "A&&B||C | Success/failure branching paths"
+  Iterative: "A→B→check→A | Loop until condition met"
+
+Chain_Control:
+  Success_Rules:
+    Continue: "Pass enriched context to next command"
+    Cache: "Store intermediate results for reuse"
+    Skip: "Skip redundant operations if cached"
+  Failure_Rules:
+    Critical: "STOP: Halt chain, preserve context"
+    Recoverable: "RETRY: 3 attempts w/ exponential backoff"
+    Non_Critical: "CONTINUE: Log warning, proceed degraded"
+    Validation: "BRANCH: Alternative path or manual fix"
+  Context_Flow:
+    Persist: "Maintain context throughout chain"
+    Selective: "Pass only relevant results between commands"
+    Cleanup: "Clear context after chain completion"
+    Checkpoint: "Auto-save state before critical ops"
+
+Chain_Commands:
+  Execute:
+    Predefined: "/chain 'feature-dev' --magic --think"
+    Custom: "/analyze → /build → /test"
+    Conditional: "/test && /deploy || /troubleshoot"
+  Control:
+    Status: "/chain-status | Show current progress"
+    Results: "/chain-results | Show accumulated context"
+    Pause: "/chain-pause | Pause at current step"
+    Resume: "/chain-resume | Continue from pause"
+    Abort: "/chain-abort | Stop and cleanup"
+    Retry: "/chain-retry | Retry failed step"
+
+Command_Hooks:
+  Build_Hooks:
+    Pre: ["Clean artifacts", "Verify dependencies", "Set environment", "Check MCP health"]
+    During: ["Monitor progress", "Cache layers", "Handle errors", "Track token usage"]
+    Post: ["Verify output", "Run smoke tests", "Update manifests", "Log MCP performance"]
+    
+  Test_Hooks:
+    Pre: ["Reset test data", "Start services", "Clear caches", "Connect Puppeteer if needed"]
+    During: ["Track coverage", "Monitor performance", "Capture logs", "Handle browser events"]
+    Post: ["Generate reports", "Clean test data", "Archive results", "Disconnect browser"]
+    
+  Deploy_Hooks:
+    Pre: ["Verify environment", "Check permissions", "Backup current", "Validate with Sequential"]
+    During: ["Monitor health", "Track progress", "Handle rollback", "Log deployment events"]
+    Post: ["Verify deployment", "Run health checks", "Update docs", "Generate deployment report"]
+```
+
+---
+*Command Chain Patterns v1 - Chain execution control and integration*

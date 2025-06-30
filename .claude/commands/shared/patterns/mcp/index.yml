@@ -1,0 +1,25 @@
+# MCP Patterns Index
+# Aggregates all MCP-related patterns
+
+## Legend
+@include ../../universal-constants.yml#Universal_Legend
+
+## MCP Server Configuration
+@include registry.yml#Servers
+@include registry.yml#Server_Performance
+
+## MCP Orchestration
+@include orchestration.yml#MCP_Control_Flags
+@include orchestration.yml#Intelligent_MCP_Selection
+@include orchestration.yml#Automatic_MCP_Context_Detection
+@include orchestration.yml#Research_Requirements
+@include orchestration.yml#Auto_Activation_Rules
+@include orchestration.yml#Override_Controls
+@include orchestration.yml#Synergistic_Patterns
+
+## MCP Cache Integration
+@include orchestration.yml#MCP_Parallel_Execution
+@include orchestration.yml#MCP_Cache_Integration
+
+---
+*MCP Patterns Index v1 - Aggregated MCP patterns*

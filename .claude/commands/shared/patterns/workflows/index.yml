@@ -1,0 +1,23 @@
+# Workflows Patterns Index
+# Aggregates all workflow-related patterns
+
+## Legend
+@include ../../universal-constants.yml#Universal_Legend
+
+## Development Workflows
+@include development.yml#Full_Stack_Development
+@include development.yml#Feature_Implementation
+@include development.yml#Bug_Investigation_Fix
+@include development.yml#Tech_Debt_Reduction
+
+## Git Integration
+@include git.yml#Git_Workflows
+
+## Command Chains
+@include chains.yml#Execution_Types
+@include chains.yml#Chain_Control
+@include chains.yml#Chain_Commands
+@include chains.yml#Command_Hooks
+
+---
+*Workflows Patterns Index v1 - Aggregated workflow patterns*

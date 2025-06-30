@@ -1,0 +1,43 @@
+# Development Workflow Patterns
+# Standard development chains and workflows
+
+## Legend
+@include ../../universal-constants.yml#Universal_Legend
+
+## Development Workflows
+
+```yaml
+Full_Stack_Development:
+  Chain: "load→analyze→design→build→test→scan→deploy"
+  Flags: ["--think", "--magic", "--validate"]
+  MCP_Usage: ["--c7 for docs", "--magic for UI", "--seq for design"]
+  Time: "Typical development session"
+  Context_Handoff:
+    load→analyze: "Project understanding"
+    analyze→design: "Issues & architecture"
+    design→build: "Patterns & structure"
+    build→test: "Implementation"
+    test→scan: "Coverage & results"
+    scan→deploy: "Security validation"
+
+Feature_Implementation:
+  Chain: "analyze --code→design --feature→build --feature→test→git --commit"
+  Flags: ["--think", "--magic"]
+  MCP_Usage: ["--magic for components", "--c7 for patterns"]
+  Time: "Moderate duration"
+
+Bug_Investigation_Fix:
+  Chain: "troubleshoot --investigate→analyze --code→improve --quality→test→git --commit"
+  Flags: ["--think-hard", "--seq"]
+  MCP_Usage: ["--seq for investigation", "--c7 for solutions"]
+  Time: "Variable duration"
+
+Tech_Debt_Reduction:
+  Chain: "analyze --architecture→design --refactor→improve --quality→test→document"
+  Flags: ["--think-hard", "--refactor", "--quality"]
+  MCP_Usage: ["--seq for analysis", "--c7 for patterns"]
+  Time: "Extended session"
+```
+
+---
+*Development Workflow Patterns v1 - Standard development chains*

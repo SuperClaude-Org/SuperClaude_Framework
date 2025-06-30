@@ -1,0 +1,11 @@
+# Execution Patterns Index
+# Aggregates all execution-related patterns
+
+## Legend
+@include ../../universal-constants.yml#Universal_Legend
+
+## Core Execution Patterns
+@include core.yml#Standard_Lifecycle
+
+---
+*Execution Patterns Index v1 - Aggregated execution patterns*

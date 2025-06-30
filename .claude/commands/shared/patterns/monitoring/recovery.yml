@@ -1,0 +1,18 @@
+# Recovery Integration Patterns
+# Checkpoint and recovery system integration
+
+## Legend
+@include ../../universal-constants.yml#Universal_Legend
+
+## Checkpoint & Recovery System
+
+```yaml
+Checkpoint_Integration:
+  "@include ../../recovery-state-patterns.yml#Checkpoint_Structure"
+  "@include ../../recovery-state-patterns.yml#Automatic_Triggers"
+  "@include ../../recovery-state-patterns.yml#Recovery_Commands"
+  "@include ../../recovery-state-patterns.yml#Recovery_Framework"
+```
+
+---
+*Recovery Integration Patterns v1 - Checkpoint and recovery integration*

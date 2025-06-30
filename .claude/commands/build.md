@@ -37,6 +37,6 @@ Templates:
 
 @include shared/research-patterns.yml#Mandatory_Research_Flows
 
-@include shared/execution-patterns.yml#Git_Integration_Patterns
+@include shared/patterns/workflows/git.yml#Git_Workflows
 
 @include shared/universal-constants.yml#Standard_Messages_Templates

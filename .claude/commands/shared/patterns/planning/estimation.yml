@@ -1,0 +1,62 @@
+# Estimation Methodology Patterns
+# Project estimation frameworks and methodologies
+
+## Legend
+@include ../../universal-constants.yml#Universal_Legend
+
+## Estimation Methodology
+
+```yaml
+Estimation_Methodology:
+  Time_Estimation_Framework:
+    Development_Phases:
+      Planning: "Requirements analysis & design: 10-15% of total"
+      Implementation: "Core development work: 50-60% of total"
+      Testing: "Unit, integration & system testing: 15-25% of total"
+      Integration: "System integration & deployment: 5-10% of total"
+      Buffer: "Unknown unknowns & contingency: 10-20% of total"
+      
+  Complexity_Scoring:
+    Low_Complexity: "Well-understood, established patterns: 1-3 days"
+    Medium_Complexity: "Some unknowns, moderate integration: 3-10 days"
+    High_Complexity: "Research required, complex integration: 1-4 weeks"
+    Very_High_Complexity: "New technology, architectural changes: 1-3 months"
+    
+  Team_Velocity_Factors:
+    Solo_Developer: "Multiplier: 1.0 (baseline)"
+    Small_Team_2_3: "Multiplier: 0.8 (coordination overhead)"
+    Medium_Team_4_8: "Multiplier: 0.6 (communication overhead)"
+    Large_Team_9Plus: "Multiplier: 0.4 (significant coordination)"
+    
+  Risk_Assessment_Framework:
+    Technical_Risks:
+      New_Technology: "Learning curve impact: +25-50% time"
+      Complex_Integration: "Multiple system touchpoints: +20-40% time"
+      Performance_Requirements: "Optimization needs: +15-30% time"
+      Legacy_System_Integration: "Technical debt impact: +30-60% time"
+      
+    Resource_Risks:
+      Key_Person_Dependency: "Single expert required: +20-40% time"
+      External_Dependencies: "Third-party deliverables: +10-30% time"
+      Skill_Gap: "Team learning required: +25-50% time"
+      
+  Estimation_Output_Format:
+    Three_Point_Estimation:
+      Optimistic: "Best case scenario (10% probability)"
+      Realistic: "Most likely outcome (50% probability)"
+      Pessimistic: "Worst case scenario (90% probability)"
+      
+    Confidence_Levels:
+      High_Confidence: "Well-understood requirements: ±10%"
+      Medium_Confidence: "Some unknowns present: ±25%"
+      Low_Confidence: "Significant uncertainties: ±50%"
+      
+    Resource_Planning:
+      Developer_Hours: "Total development effort"
+      QA_Hours: "Testing & quality assurance effort"
+      DevOps_Hours: "Deployment & infrastructure setup"
+      Project_Management: "Coordination & communication overhead"
+```
+
+---
+*Estimation Methodology Patterns v1 - Project estimation frameworks*

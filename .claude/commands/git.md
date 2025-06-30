@@ -28,7 +28,7 @@ Git operations:
 - feature: Feature branch workflow | hotfix: Emergency fix workflow
 - release: Release branch workflow | gitflow: Full GitFlow model
 
-@include shared/execution-patterns.yml#Git_Integration_Patterns
+@include shared/patterns/workflows/git.yml#Git_Workflows
 
 @include shared/docs-patterns.yml#Standard_Notifications
 

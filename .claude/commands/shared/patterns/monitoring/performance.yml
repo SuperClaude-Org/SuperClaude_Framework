@@ -1,0 +1,32 @@
+# Performance Monitoring Patterns
+# Performance tracking and metrics collection
+
+## Legend
+@include ../../universal-constants.yml#Universal_Legend
+
+## Performance & Monitoring
+
+```yaml
+Performance_Tracking:
+  Metrics:
+    Build_Times: "Track duration trends"
+    Test_Execution: "Monitor suite performance"
+    Bundle_Sizes: "Track asset size changes"
+    Memory_Usage: "Monitor CLI consumption"
+    MCP_Response_Times: "Track server performance"
+    Token_Consumption: "Monitor MCP usage efficiency"
+  Baselines:
+    Initial: "Capture on first run"
+    Update: "Update weekly"
+    Analysis: "Identify regressions"
+  Alert_Thresholds:
+    Build_Time: "Significant increase from baseline"
+    Bundle_Size: "Notable increase from baseline"
+    Test_Time: "Substantial increase from baseline"
+    Memory: "Major increase from baseline"
+    MCP_Timeout: "Extended duration"
+  Storage: ".claudedocs/metrics/performance-{YYYY-MM-DD}.jsonl"
+```
+
+---
+*Performance Monitoring Patterns v1 - Performance tracking and metrics*
