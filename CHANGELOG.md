@@ -5,6 +5,13 @@ All notable changes to SuperClaude will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- Added missing `/task` command documentation to COMMANDS.md
+- Updated command count references from 18 to 19 across documentation files
+- Corrected `/task` command flag syntax in index.md to use colon operations
+
 ## [2.0.1] - 2025-06-26
 
 ### Added

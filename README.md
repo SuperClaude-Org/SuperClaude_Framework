@@ -283,7 +283,7 @@ SuperClaude v2's architecture enables extensibility:
 | Aspect | Standard Claude Code | SuperClaude Framework |
 |--------|---------------------|----------------------|
 | **Expertise** | General responses | 9 specialized personas |
-| **Commands** | Manual instructions | 18 workflow commands |
+| **Commands** | Manual instructions | 19 workflow commands |
 | **Context** | Session-based | Git checkpoint support |
 | **Tokens** | Standard usage | Compression options |
 | **Approach** | General purpose | Evidence-based |
