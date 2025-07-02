@@ -61,10 +61,14 @@ export class GitHubLoader {
             
             // Parse arguments from content (look for $ARGUMENTS or specific argument patterns)
             const argumentMatches = content.match(/\$([A-Z_]+)/g);
-            const commandArguments = argumentMatches 
-              ? argumentMatches.map(arg => ({
-                  name: arg.replace('$', ''),
-                  description: `Argument: ${arg}`,
+            const uniqueArgNames = argumentMatches 
+              ? [...new Set(argumentMatches.map(arg => arg.replace('$', '')))]
+              : [];
+            
+            const commandArguments = uniqueArgNames.length > 0
+              ? uniqueArgNames.map(argName => ({
+                  name: argName,
+                  description: `Argument: $${argName}`,
                   required: true
                 }))
               : undefined;

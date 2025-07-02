@@ -1,4 +1,9 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import {
+  ListPromptsRequestSchema,
+  GetPromptRequestSchema
+} from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import logger from "./logger.js";
 import { GitHubLoader } from "./github-loader.js";
@@ -97,6 +102,12 @@ class SuperClaudeMCPServer {
       name: "superclaude-mcp",
       version: "1.0.0",
       description: "MCP server exposing SuperClaude commands as prompts",
+    }, {
+      capabilities: {
+        prompts: {},
+        tools: {},
+        resources: {}
+      }
     });
 
     server.tool(
@@ -149,86 +160,79 @@ class SuperClaudeMCPServer {
     // to dynamically handle personas
 
     // Register rules resource
-    server.resource(
-      "rules",
-      "superclaude://rules",
-      {
-        name: "rules",
-        description: "SuperClaude rules configuration",
-        mimeType: "application/json"
-      },
-      async (uri) => {
-        return {
-          contents: [{
-            uri: uri.toString(),
-            mimeType: "application/json",
-            text: JSON.stringify(this.rules, null, 2)
-          }]
-        };
+    // server.resource(
+    //   "rules",
+    //   "superclaude://rules",
+    //   {
+    //     name: "rules",
+    //     description: "SuperClaude rules configuration",
+    //     mimeType: "application/json"
+    //   },
+    //   async (uri) => {
+    //     return {
+    //       contents: [{
+    //         uri: uri.toString(),
+    //         mimeType: "application/json",
+    //         text: JSON.stringify(this.rules, null, 2)
+    //       }]
+    //     };
+    //   }
+    // );
+
+    const lowLevelServer = server.server;
+
+    // List available prompts
+    lowLevelServer.setRequestHandler(ListPromptsRequestSchema, async () => {
+      return {
+        prompts: this.commands.map(cmd => ({
+          name: cmd.name,
+          description: cmd.description,
+          arguments: cmd.arguments
+        }))
+      };
+    });
+
+    // Get specific prompt by name
+    lowLevelServer.setRequestHandler(GetPromptRequestSchema, async (request) => {
+      const commandName = request.params.name;
+      const args = request.params.arguments as Record<string, string> | undefined;
+      const command = this.commands.find(cmd => cmd.name === commandName);
+      
+      if (!command) {
+        throw new Error(`Prompt not found: ${commandName}`);
       }
-    );
 
-
-    server.prompt(
-      "commands",
-      "list",
-      async () => {
-        return {
-          prompts: this.commands.map(cmd => ({
-            name: cmd.name,
-            description: `SuperClaude command: ${cmd.name}`,
-            arguments: cmd.arguments?.map(arg => ({
-              name: arg,
-              description: `Argument for ${cmd.name} command`,
-              required: true
-            }))
-          }))
-        };
-      }
-    );
-
-    server.prompt(
-      "commands/*",
-      "get",
-      async (params: any) => {
-        const name = params?.name as string;
-        const args = params?.arguments as Record<string, string> | undefined;
-        const command = this.commands.find(cmd => cmd.name === name);
-        
-        if (!command) {
-          throw new Error(`Command '${name}' not found`);
+      let content = command.prompt;
+      
+      // Process @include directives
+      const includeMatches = content.match(/@include\s+[\w\-\/\.]+/g);
+      if (includeMatches) {
+        const includeContents = await this.githubLoader.loadSharedIncludes(includeMatches);
+        for (const match of includeMatches) {
+          content = content.replace(match, includeContents);
         }
-
-        let content = command.prompt;
-        
-        const includeMatches = content.match(/@include\s+[\w\-\/\.]+/g);
-        if (includeMatches) {
-          const includeContents = await this.githubLoader.loadSharedIncludes(includeMatches);
-          for (const match of includeMatches) {
-            content = content.replace(match, includeContents);
+      }
+      
+      // Replace argument placeholders
+      if (command.arguments && args) {
+        for (const arg of command.arguments) {
+          const argValue = args[arg.name];
+          if (argValue) {
+            content = content.replace(new RegExp(`\\$${arg.name}`, 'g'), argValue);
           }
         }
-        
-        if (command.arguments && args) {
-          for (const arg of command.arguments) {
-            const argValue = args[arg.name];
-            if (argValue) {
-              content = content.replace(new RegExp(`\\$${arg.name}`, 'g'), argValue);
-            }
-          }
-        }
-
-        return {
-          messages: [{
-            role: "user",
-            content: {
-              type: "text",
-              text: content
-            }
-          }]
-        };
       }
-    );
+
+      return {
+        messages: [{
+          role: "user",
+          content: {
+            type: "text",
+            text: content
+          }
+        }]
+      };
+    });
 
     return server;
   }
