@@ -19,6 +19,7 @@
 /analyze --code --persona-architect          # Code analysis with architect mindset
 /build --react --magic --tdd                # Build React app with AI components
 /troubleshoot --prod --five-whys --seq      # Production debugging with reasoning
+/task:create "Add user authentication"       # Create and manage complex features
 /deploy --env prod --plan --validate        # Safe production deployment
 ```
 
@@ -379,7 +380,7 @@ Professional system design with specifications.
 /design --microservices --event-driven   # Microservices design
 ```
 
-### 🔄 Workflow Commands (3)
+### 🔄 Workflow Commands (4)
 
 #### `/spawn` - Specialized Agents
 Spawn focused agents for parallel tasks.
@@ -431,6 +432,31 @@ Load and analyze project context.
 ```bash
 /load --depth deep --patterns --seq       # Deep analysis
 /load --structure --health --standards   # Project assessment
+```
+
+#### `/task` - Task Management
+Complex feature management across sessions with automatic breakdown and recovery.
+
+**Command-Specific Operations:**
+- `/task:create [description]` - Create new task with automatic breakdown
+- `/task:status [task-id]` - Check task status and progress
+- `/task:resume [task-id]` - Resume work after break
+- `/task:update [task-id] [updates]` - Update task progress and requirements
+- `/task:complete [task-id]` - Mark task as done with summary
+
+**Key Features:**
+- **Smart Breakdown**: Automatic complexity analysis and subtask creation
+- **Context Preservation**: Save working state across sessions
+- **Progress Tracking**: Automatic updates and blocker detection
+- **Session Recovery**: Resume from checkpoints with full context
+
+**Examples:**
+```bash
+/task:create "Implement OAuth 2.0 authentication system"  # Create complex feature
+/task:status oauth-task-id                               # Check progress
+/task:resume oauth-task-id                               # Resume after break
+/task:update oauth-task-id "Found library conflict"      # Update with discoveries
+/task:complete oauth-task-id                             # Complete with summary
 ```
 
 ---
@@ -509,4 +535,4 @@ Load and analyze project context.
 
 ---
 
-**SuperClaude v2.0.1** - 18 professional commands | 9 cognitive personas | Advanced MCP integration | Evidence-based methodology
+**SuperClaude v2.0.1** - 19 professional commands | 9 cognitive personas | Advanced MCP integration | Evidence-based methodology

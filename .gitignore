@@ -4,6 +4,7 @@ logs/
 
 # Claude operations documentation
 .claudedocs/
+.claude_logs/
 
 # Task management (project-specific)
 ./claudedocs/tasks/
