@@ -11,10 +11,16 @@
   "scripts": {
     "dev": "tsx watch --env-file .env src/index.ts | pino-pretty",
     "build": "tsup",
-    "test": "vitest",
+    "test": "vitest --run",
+    "test:github": "vitest --run tests/github-loader",
+    "test:db": "vitest --run tests/services/database-service.test.ts",
+    "test:sync": "vitest --run tests/services/sync-service.test.ts",
+    "test:watch": "vitest --watch",
+    "test:ui": "vitest --ui --run",
     "lint": "tsc --noEmit",
     "check:types": "tsc --noEmit",
     "sync-report": "tsx src/scripts/sync-report.ts",
+    "clean:test-fixtures": "rm -rf tests/fixtures/*.json",
     "docker:build": "docker buildx bake -f docker-bake.hcl local",
     "docker:build:dev": "docker buildx bake -f docker-bake.hcl development",
     "docker:push": "DOCKER_REGISTRY=$(node .docker-env.js) docker buildx bake -f docker-bake.hcl registry"
@@ -30,7 +36,7 @@
     "dist"
   ],
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.4",
+    "@modelcontextprotocol/sdk": "^1.13.0",
     "axios": "^1.7.9",
     "commander": "^14.0.0",
     "express": "^4.21.2",

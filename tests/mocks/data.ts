@@ -1,114 +1,144 @@
-import { faker } from '@faker-js/faker';
 import { CommandModel, PersonaModel, RulesModel, DatabaseSchema, SyncMetadata } from '../../src/database.js';
+import { faker } from '@faker-js/faker';
+import crypto from 'crypto';
+
+// Helper to create consistent hashes for test data
+function createHash(content: string): string {
+  return crypto.createHash('sha256').update(content).digest('hex');
+}
 
 export function createMockCommand(overrides?: Partial<CommandModel>): CommandModel {
+  const id = overrides?.id || faker.string.uuid();
+  const name = overrides?.name || 'mock-command';
+  const description = overrides?.description || 'A mock command for testing';
+  const prompt = overrides?.prompt || 'This is a mock prompt for testing purposes';
+  const args = overrides?.arguments || [];
+  
+  const content = `${name}-${description}-${prompt}-${JSON.stringify(args)}`;
+  
   return {
-    id: faker.string.uuid(),
-    name: faker.hacker.verb() + '-' + faker.hacker.noun(),
-    description: faker.lorem.sentence(),
-    prompt: faker.lorem.paragraph(),
-    messages: Math.random() > 0.5 ? [{
-      role: 'user',
-      content: faker.lorem.sentence()
-    }] : undefined,
-    arguments: Math.random() > 0.5 ? [{
-      name: faker.hacker.noun(),
-      description: faker.lorem.sentence(),
-      required: faker.datatype.boolean()
-    }] : undefined,
-    lastUpdated: faker.date.recent(),
-    hash: faker.string.alphanumeric(64),
+    id,
+    name,
+    description,
+    prompt,
+    arguments: args,
+    lastUpdated: overrides?.lastUpdated || new Date(),
+    hash: overrides?.hash || createHash(content),
     ...overrides
   };
 }
 
 export function createMockPersona(overrides?: Partial<PersonaModel>): PersonaModel {
+  const id = overrides?.id || faker.string.uuid();
+  const name = overrides?.name || 'Mock Persona';
+  const description = overrides?.description || 'A mock persona for testing';
+  const instructions = overrides?.instructions || 'You are a mock persona used for testing purposes.';
+  
+  const content = `${name}-${description}-${instructions}`;
+  
   return {
-    id: faker.string.uuid(),
-    name: faker.person.jobTitle(),
-    description: faker.lorem.sentence(),
-    instructions: faker.lorem.paragraphs(2),
-    lastUpdated: faker.date.recent(),
-    hash: faker.string.alphanumeric(64),
+    id,
+    name,
+    description,
+    instructions,
+    lastUpdated: overrides?.lastUpdated || new Date(),
+    hash: overrides?.hash || createHash(content),
     ...overrides
   };
 }
 
 export function createMockRules(overrides?: Partial<RulesModel>): RulesModel {
+  const id = overrides?.id || faker.string.uuid();
+  const rules = overrides?.rules || {
+    rules: [
+      { name: 'safety', content: 'Always prioritize safety and security' },
+      { name: 'clarity', content: 'Be clear and concise in communication' }
+    ]
+  };
+  
+  const content = JSON.stringify(rules);
+  
   return {
-    id: 'superclaude-rules',
-    rules: {
-      rules: Array.from({ length: faker.number.int({ min: 2, max: 5 }) }, () => ({
-        name: faker.hacker.noun(),
-        content: faker.lorem.paragraph()
-      }))
-    },
-    lastUpdated: faker.date.recent(),
-    hash: faker.string.alphanumeric(64),
+    id,
+    rules,
+    lastUpdated: overrides?.lastUpdated || new Date(),
+    hash: overrides?.hash || createHash(content),
     ...overrides
   };
 }
 
 export function createMockSyncMetadata(overrides?: Partial<SyncMetadata>): SyncMetadata {
   return {
-    lastSync: faker.date.recent(),
-    syncStatus: faker.helpers.arrayElement(['success', 'failed'] as const),
-    errorMessage: Math.random() > 0.5 ? faker.lorem.sentence() : undefined,
+    lastSync: overrides?.lastSync || new Date(),
+    syncStatus: overrides?.syncStatus || 'success',
+    errorMessage: overrides?.errorMessage,
     ...overrides
   };
 }
 
 export function createMockDatabase(overrides?: Partial<DatabaseSchema>): DatabaseSchema {
   return {
-    commands: Array.from({ length: 5 }, () => createMockCommand()),
-    personas: Array.from({ length: 3 }, () => createMockPersona()),
-    rules: [createMockRules()],
+    commands: [],
+    personas: [],
+    rules: [],
     syncMetadata: createMockSyncMetadata({ syncStatus: 'success' }),
     ...overrides
   };
 }
 
-export const mockCommands = [
-  createMockCommand({
-    id: 'test-command-1',
-    name: 'test-command',
-    description: 'A test command',
-    prompt: 'This is a test prompt with $ARGUMENT',
-    arguments: [{
-      name: 'ARGUMENT',
-      description: 'Test argument',
-      required: true
-    }]
-  }),
-  createMockCommand({
-    id: 'simple-command',
-    name: 'simple',
-    description: 'A simple command',
-    prompt: 'Simple prompt without arguments'
-  })
-];
+// Factory functions that create fresh instances every time they're called
+export function getMockCommands(): CommandModel[] {
+  return [
+    createMockCommand({
+      id: faker.string.uuid(),
+      name: 'test-command',
+      description: 'A test command',
+      prompt: 'This is a test prompt with $ARGUMENT',
+      arguments: [{
+        name: 'ARGUMENT',
+        description: 'Test argument',
+        required: true
+      }]
+    }),
+    createMockCommand({
+      id: faker.string.uuid(),
+      name: 'simple',
+      description: 'A simple command',
+      prompt: 'Simple prompt without arguments'
+    })
+  ];
+}
 
-export const mockPersonas = [
-  createMockPersona({
-    id: 'developer',
-    name: 'Developer',
-    description: 'A helpful developer persona',
-    instructions: 'You are a helpful developer who writes clean code.'
-  }),
-  createMockPersona({
-    id: 'architect',
-    name: 'Software Architect',
-    description: 'System design expert',
-    instructions: 'You focus on high-level system design and architecture patterns.'
-  })
-];
+export function getMockPersonas(): PersonaModel[] {
+  return [
+    createMockPersona({
+      id: faker.string.uuid(),
+      name: 'Developer',
+      description: 'A helpful developer persona',
+      instructions: 'You are a helpful developer who writes clean code.'
+    }),
+    createMockPersona({
+      id: faker.string.uuid(),
+      name: 'Software Architect',
+      description: 'System design expert',
+      instructions: 'You focus on high-level system design and architecture patterns.'
+    })
+  ];
+}
 
-export const mockRules = createMockRules({
-  id: 'superclaude-rules',
-  rules: {
-    rules: [
-      { name: 'safety', content: 'Always prioritize safety and security' },
-      { name: 'clarity', content: 'Be clear and concise in communication' }
-    ]
-  }
-});
+export function getMockRules(): RulesModel {
+  return createMockRules({
+    id: 'superclaude-rules',
+    rules: {
+      rules: [
+        { name: 'safety', content: 'Always prioritize safety and security' },
+        { name: 'clarity', content: 'Be clear and concise in communication' }
+      ]
+    }
+  });
+}
+
+// Remove legacy exports to force use of factory functions
+// export const mockCommands = getMockCommands();
+// export const mockPersonas = getMockPersonas();
+// export const mockRules = getMockRules();

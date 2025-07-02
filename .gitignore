@@ -7,3 +7,7 @@ data/*.json
 data/*.db
 data/*.sqlite
 data/*.sqlite3
+
+# Test fixtures
+tests/fixtures/*.json
+tests/fixtures/temp/

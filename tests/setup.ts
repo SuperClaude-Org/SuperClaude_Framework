@@ -16,6 +16,7 @@ vi.mock('../src/logger.js', () => ({
 beforeAll(async () => {
   // Clean up any existing test data
   const fixturesDir = path.join(process.cwd(), 'tests', 'fixtures');
+  const tempDir = path.join(fixturesDir, 'temp');
   const dataDir = path.join(process.cwd(), 'data');
   
   try {
@@ -23,6 +24,9 @@ beforeAll(async () => {
   } catch (error) {
     // Directory might not exist
   }
+  
+  // Ensure fixtures/temp directory exists
+  await fs.mkdir(tempDir, { recursive: true });
   
   try {
     const files = await fs.readdir(dataDir);
@@ -39,12 +43,32 @@ beforeAll(async () => {
 // Clean up test fixtures before each test
 beforeEach(async () => {
   const fixturesDir = path.join(process.cwd(), 'tests', 'fixtures');
+  const tempDir = path.join(fixturesDir, 'temp');
+  
+  // Only clean JSON files, not the directory structure
   try {
-    await fs.rm(fixturesDir, { recursive: true, force: true });
+    const files = await fs.readdir(fixturesDir);
+    for (const file of files) {
+      if (file.endsWith('.json')) {
+        await fs.unlink(path.join(fixturesDir, file));
+      }
+    }
   } catch (error) {
     // Directory might not exist, that's fine
   }
-  await fs.mkdir(fixturesDir, { recursive: true });
+  
+  // Clean temp directory contents but keep the directory
+  try {
+    const tempFiles = await fs.readdir(tempDir);
+    for (const file of tempFiles) {
+      await fs.unlink(path.join(tempDir, file));
+    }
+  } catch (error) {
+    // Directory might not exist, that's fine
+  }
+  
+  // Ensure directories exist
+  await fs.mkdir(tempDir, { recursive: true });
   
   // Also clean up any data files that might interfere with tests
   const dataDir = path.join(process.cwd(), 'data');
@@ -69,8 +93,25 @@ afterEach(async () => {
 // Clean up after all tests
 afterAll(async () => {
   const fixturesDir = path.join(process.cwd(), 'tests', 'fixtures');
+  const tempDir = path.join(fixturesDir, 'temp');
+  
+  // Clean up test files but keep directory structure
   try {
-    await fs.rm(fixturesDir, { recursive: true, force: true });
+    const files = await fs.readdir(fixturesDir);
+    for (const file of files) {
+      if (file.endsWith('.json')) {
+        await fs.unlink(path.join(fixturesDir, file));
+      }
+    }
+  } catch (error) {
+    // Directory might not exist, that's fine
+  }
+  
+  try {
+    const tempFiles = await fs.readdir(tempDir);
+    for (const file of tempFiles) {
+      await fs.unlink(path.join(tempDir, file));
+    }
   } catch (error) {
     // Directory might not exist, that's fine
   }

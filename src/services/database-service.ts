@@ -1,6 +1,7 @@
 import { Low } from "lowdb";
 import { JSONFile } from "lowdb/node";
 import path from "path";
+import fs from "fs/promises";
 import { DatabaseSchema, DEFAULT_DATABASE_SCHEMA, CommandModel, PersonaModel, RulesModel } from "../database.js";
 import logger from "../logger.js";
 
@@ -14,6 +15,21 @@ export class DatabaseService {
     if (this.initialized) return;
 
     try {
+      // Ensure the directory exists
+      const dbDir = path.dirname(this.dbPath);
+      try {
+        await fs.access(dbDir);
+      } catch (error) {
+        // If using default path, create the directory
+        if (this.dbPath === path.join(process.cwd(), 'data', 'superclaude.json')) {
+          await fs.mkdir(dbDir, { recursive: true });
+          logger.info({ dbDir }, "Created database directory");
+        } else {
+          // For custom paths, throw an error
+          throw new Error(`Database directory does not exist: ${dbDir}. Please create it first.`);
+        }
+      }
+      
       const adapter = new JSONFile<DatabaseSchema>(this.dbPath);
       this.db = new Low(adapter, DEFAULT_DATABASE_SCHEMA);
       

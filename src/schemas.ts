@@ -30,25 +30,25 @@ export const SuperClaudeRulesSchema = z.object({
 
 export const CommandModelSchema = SuperClaudeCommandSchema.extend({
   id: z.string().min(1),
-  lastUpdated: z.date(),
+  lastUpdated: z.coerce.date(),
   hash: z.string().min(1)
 });
 
 export const PersonaModelSchema = PersonaSchema.extend({
   id: z.string().min(1),
-  lastUpdated: z.date(),
+  lastUpdated: z.coerce.date(),
   hash: z.string().min(1)
 });
 
 export const RulesModelSchema = z.object({
   id: z.string().min(1),
   rules: SuperClaudeRulesSchema,
-  lastUpdated: z.date(),
+  lastUpdated: z.coerce.date(),
   hash: z.string().min(1)
 });
 
 export const SyncMetadataSchema = z.object({
-  lastSync: z.date(),
+  lastSync: z.coerce.date(),
   syncStatus: z.enum(['success', 'failed']),
   errorMessage: z.string().optional()
 });

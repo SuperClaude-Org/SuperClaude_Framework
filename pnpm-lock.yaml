@@ -9,7 +9,7 @@ importers:
   .:
     dependencies:
       '@modelcontextprotocol/sdk':
-        specifier: ^1.0.4
+        specifier: ^1.13.0
         version: 1.13.3
       axios:
         specifier: ^1.7.9

@@ -46,19 +46,28 @@ class SuperClaudeMCPServer {
         // Load from database
         await this.loadFromDatabase();
         
-        // Check if we need to sync (if last sync was more than 30 minutes ago)
-        const lastSync = await this.databaseService.getLastSync();
-        const timeSinceLastSync = Date.now() - lastSync.getTime();
-        if (timeSinceLastSync > 30 * 60 * 1000) {
-          logger.info("Last sync was more than 30 minutes ago, syncing from GitHub");
-          this.syncService.syncFromGitHub().catch(error => {
-            logger.error({ error }, "Background sync failed");
-          });
+        // Check if we need to sync (if last sync was more than 30 minutes ago and auto sync is enabled)
+        const autoSyncEnabled = process.env.SC_AUTO_SYNC_ENABLED === 'true';
+        if (autoSyncEnabled) {
+          const lastSync = await this.databaseService.getLastSync();
+          const timeSinceLastSync = Date.now() - lastSync.getTime();
+          if (timeSinceLastSync > 30 * 60 * 1000) {
+            logger.info("Last sync was more than 30 minutes ago, syncing from GitHub");
+            this.syncService.syncFromGitHub().catch(error => {
+              logger.error({ error }, "Background sync failed");
+            });
+          }
         }
       }
       
-      // Start periodic sync
-      this.syncService.startPeriodicSync();
+      // Start periodic sync if enabled
+      const autoSyncEnabled = process.env.SC_AUTO_SYNC_ENABLED === 'true';
+      if (autoSyncEnabled) {
+        logger.info("Auto sync is enabled, starting periodic sync");
+        this.syncService.startPeriodicSync();
+      } else {
+        logger.info("Auto sync is disabled (set SC_AUTO_SYNC_ENABLED=true to enable)");
+      }
       
     } catch (error) {
       logger.error({ error }, "Failed to initialize server");
