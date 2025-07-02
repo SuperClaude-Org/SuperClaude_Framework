@@ -1,0 +1,50 @@
+{
+  "name": "superclaude-mcp",
+  "version": "1.0.0",
+  "description": "MCP server exposing SuperClaude commands as prompts",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "license": "MIT",
+  "packageManager": "pnpm@9.15.2",
+  "scripts": {
+    "dev": "tsx watch --env-file .env src/index.ts | pino-pretty",
+    "build": "tsup",
+    "test": "vitest",
+    "lint": "tsc --noEmit",
+    "docker:build": "docker buildx bake -f docker-bake.hcl local",
+    "docker:build:dev": "docker buildx bake -f docker-bake.hcl development",
+    "docker:push": "DOCKER_REGISTRY=$(node .docker-env.js) docker buildx bake -f docker-bake.hcl registry"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "axios": "^1.7.9",
+    "express": "^4.21.2",
+    "js-yaml": "^4.1.0",
+    "lowdb": "^7.0.1",
+    "pino": "^9.5.0",
+    "pino-http": "^10.3.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.10.2",
+    "pino-pretty": "^11.3.0",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

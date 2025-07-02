@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  superclaude-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=production
+      - LOG_LEVEL=info
+    volumes:
+      - superclaude-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  superclaude-data:
