@@ -2,7 +2,10 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import {
   ListPromptsRequestSchema,
-  GetPromptRequestSchema
+  GetPromptRequestSchema,
+  ListResourcesRequestSchema,
+  ReadResourceRequestSchema,
+  ListResourceTemplatesRequestSchema
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import logger from "./logger.js";
@@ -110,6 +113,7 @@ class SuperClaudeMCPServer {
       }
     });
 
+    // Register tool for switching persona
     server.tool(
       "assume-persona",
       "Switch the current SuperClaude persona",
@@ -156,29 +160,7 @@ class SuperClaudeMCPServer {
       }
     );
 
-    // We'll override the server's resource handlers after initialization
-    // to dynamically handle personas
-
-    // Register rules resource
-    // server.resource(
-    //   "rules",
-    //   "superclaude://rules",
-    //   {
-    //     name: "rules",
-    //     description: "SuperClaude rules configuration",
-    //     mimeType: "application/json"
-    //   },
-    //   async (uri) => {
-    //     return {
-    //       contents: [{
-    //         uri: uri.toString(),
-    //         mimeType: "application/json",
-    //         text: JSON.stringify(this.rules, null, 2)
-    //       }]
-    //     };
-    //   }
-    // );
-
+    // Get the low-level server instance for registering handlers
     const lowLevelServer = server.server;
 
     // List available prompts
@@ -232,6 +214,115 @@ class SuperClaudeMCPServer {
           }
         }]
       };
+    });
+
+    lowLevelServer.setRequestHandler(ListResourceTemplatesRequestSchema, async () => {
+      return {
+        resourceTemplates: [
+          {
+            uriTemplate: "superclaude://personas/{personaId}",
+            name: "SuperClaude Persona",
+            description: "Access a specific SuperClaude persona by ID",
+            mimeType: "application/json"
+          },
+          {
+            uriTemplate: "superclaude://rules/{ruleId}",
+            name: "SuperClaude Rule",
+            description: "Access a specific SuperClaude rule by name",
+            mimeType: "application/json"
+          }
+        ]
+      };
+    });
+
+    // List available resources
+    lowLevelServer.setRequestHandler(ListResourcesRequestSchema, async () => {
+      const resources = [];
+      
+      // Add individual rule resources
+      if (this.rules && this.rules.rules) {
+        const rulesList = Array.isArray(this.rules.rules) ? this.rules.rules : 
+                         (this.rules.rules.rules || []);
+        
+        for (const rule of rulesList) {
+          resources.push({
+            uri: `superclaude://rules/${encodeURIComponent(rule.name)}`,
+            name: rule.name,
+            description: rule.content.substring(0, 100) + (rule.content.length > 100 ? '...' : ''),
+            mimeType: "application/json"
+          });
+        }
+      }
+      
+      // Add persona resources
+      for (const [personaId, persona] of Object.entries(this.personas)) {
+        resources.push({
+          uri: `superclaude://personas/${personaId}`,
+          name: persona.name,
+          description: persona.description,
+          mimeType: "application/json"
+        });
+      }
+      
+      return { resources };
+    });
+
+    // Read specific resource
+    lowLevelServer.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+      const uri = request.params.uri;
+      
+      // Handle individual rule resources
+      const ruleMatch = uri.match(/^superclaude:\/\/rules\/(.+)$/);
+      if (ruleMatch) {
+        const ruleId = decodeURIComponent(ruleMatch[1]);
+        
+        if (!this.rules || !this.rules.rules) {
+          throw new Error("Rules not loaded");
+        }
+        
+        const rulesList = Array.isArray(this.rules.rules) ? this.rules.rules : 
+                         (this.rules.rules.rules || []);
+        const rule = rulesList.find((r: {name: string; content: string}) => r.name === ruleId);
+        
+        if (!rule) {
+          throw new Error(`Rule resource not found: ${ruleId}`);
+        }
+        
+        return {
+          contents: [{
+            uri,
+            mimeType: "application/json",
+            text: JSON.stringify({
+              name: rule.name,
+              content: rule.content
+            }, null, 2)
+          }]
+        };
+      }
+      
+      // Handle persona resources
+      const personaMatch = uri.match(/^superclaude:\/\/personas\/(.+)$/);
+      if (personaMatch) {
+        const personaId = personaMatch[1];
+        const persona = this.personas[personaId];
+        
+        if (!persona) {
+          throw new Error(`Persona resource not found: ${personaId}`);
+        }
+        
+        return {
+          contents: [{
+            uri,
+            mimeType: "application/json",
+            text: JSON.stringify({
+              id: personaId,
+              ...persona
+            }, null, 2)
+          }]
+        };
+      }
+      
+      throw new Error(`Resource not found: ${uri}`);
     });
 
     return server;

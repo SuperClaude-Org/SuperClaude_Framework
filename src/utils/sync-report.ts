@@ -170,10 +170,19 @@ export class SyncReportGenerator {
     root.children!.push(personasNode);
 
     // Rules section
+    let totalRules = 0;
     if (rules) {
       const validation = this.validateRules(rules);
+      
+      // Count rules properly
+      if (rules.rules && Array.isArray(rules.rules.rules)) {
+        totalRules = rules.rules.rules.length;
+      } else if (rules.rules && Array.isArray(rules.rules)) {
+        totalRules = rules.rules.length;
+      }
+      
       const rulesNode: ReportNode = {
-        name: 'Rules',
+        name: `Rules (${totalRules})`,
         type: 'category',
         valid: validation.valid,
         children: []
@@ -202,7 +211,7 @@ export class SyncReportGenerator {
       root.children!.push(rulesNode);
     } else {
       root.children!.push({
-        name: 'Rules',
+        name: 'Rules (0)',
         type: 'category',
         valid: false,
         details: 'not loaded'
@@ -218,7 +227,17 @@ export class SyncReportGenerator {
     report.push(chalk.bold('Summary:'));
     report.push(`  ${chalk.cyan('Total Commands:')} ${commands.length}`);
     report.push(`  ${chalk.cyan('Total Personas:')} ${personas.length}`);
-    report.push(`  ${chalk.cyan('Rules Loaded:')} ${rules ? 'Yes' : 'No'}`);
+    
+    // Calculate total rules for summary
+    let summaryTotalRules = 0;
+    if (rules) {
+      if (rules.rules && Array.isArray(rules.rules.rules)) {
+        summaryTotalRules = rules.rules.rules.length;
+      } else if (rules.rules && Array.isArray(rules.rules)) {
+        summaryTotalRules = rules.rules.length;
+      }
+    }
+    report.push(`  ${chalk.cyan('Total Rules:')} ${summaryTotalRules}`);
     
     const totalInvalid = invalidCommandCount + invalidPersonaCount + (rules && !this.validateRules(rules).valid ? 1 : 0);
     if (totalInvalid > 0) {

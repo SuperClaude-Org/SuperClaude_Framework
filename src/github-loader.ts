@@ -96,12 +96,19 @@ export class GitHubLoader {
   async loadPersonas(): Promise<Record<string, Persona>> {
     try {
       const content = await this.fetchFromGitHub("/.claude/shared/superclaude-personas.yml");
-      const data = yaml.load(content) as any;
+      
+      // Use safe loader with duplicate key handling
+      const data = yaml.load(content, {
+        schema: yaml.JSON_SCHEMA,
+        onWarning: (warning) => {
+          logger.warn({ warning: warning.toString() }, "YAML warning while loading personas");
+        }
+      }) as any;
       
       const personas: Record<string, Persona> = {};
       
       // Look for All_Personas section
-      const personasData = data.All_Personas || data.personas || data;
+      const personasData = data?.All_Personas || data?.personas || data;
       
       if (personasData && typeof personasData === 'object') {
         for (const [key, value] of Object.entries(personasData)) {
@@ -125,14 +132,71 @@ export class GitHubLoader {
       return personas;
     } catch (error) {
       logger.error({ error }, "Failed to load personas");
-      return {};
+      
+      // If YAML parsing fails due to duplicate keys, try a simple regex approach
+      try {
+        const content = await this.fetchFromGitHub("/.claude/shared/superclaude-personas.yml");
+        return this.parsePersonasManually(content);
+      } catch (fallbackError) {
+        logger.error({ error: fallbackError }, "Fallback persona parsing also failed");
+        return {};
+      }
     }
+  }
+
+  private parsePersonasManually(content: string): Record<string, Persona> {
+    const personas: Record<string, Persona> = {};
+    
+    // Simple regex to extract persona blocks
+    const personaBlocks = content.match(/^[a-zA-Z_]+:\s*\n(?:  .+\n)+/gm);
+    
+    if (personaBlocks) {
+      for (const block of personaBlocks) {
+        const lines = block.split('\n').filter(line => line.trim());
+        const personaKey = lines[0].replace(':', '').trim();
+        
+        let identity = '';
+        let coreBelief = '';
+        let problemSolving = '';
+        let focus = '';
+        
+        for (const line of lines.slice(1)) {
+          if (line.includes('Identity:')) {
+            identity = line.split('Identity:')[1].trim().replace(/"/g, '');
+          } else if (line.includes('Core_Belief:')) {
+            coreBelief = line.split('Core_Belief:')[1].trim().replace(/"/g, '');
+          } else if (line.includes('Problem_Solving:')) {
+            problemSolving = line.split('Problem_Solving:')[1].trim().replace(/"/g, '');
+          } else if (line.includes('Focus:')) {
+            focus = line.split('Focus:')[1].trim().replace(/"/g, '');
+          }
+        }
+        
+        if (identity || coreBelief) {
+          personas[personaKey] = {
+            name: identity || personaKey,
+            description: coreBelief || `${personaKey} persona`,
+            instructions: [identity, coreBelief, problemSolving, focus].filter(Boolean).join('. ')
+          };
+        }
+      }
+    }
+    
+    logger.info({ count: Object.keys(personas).length }, "Loaded personas using manual parsing");
+    return personas;
   }
 
   async loadRules(): Promise<SuperClaudeRules> {
     try {
       const content = await this.fetchFromGitHub("/.claude/shared/superclaude-rules.yml");
-      const data = yaml.load(content) as any;
+      
+      // Use safe loader with duplicate key handling
+      const data = yaml.load(content, {
+        schema: yaml.JSON_SCHEMA,
+        onWarning: (warning) => {
+          logger.warn({ warning: warning.toString() }, "YAML warning while loading rules");
+        }
+      }) as any;
       
       // Convert the YAML structure to our expected format
       const rules: Array<{name: string; content: string}> = [];
@@ -158,8 +222,58 @@ export class GitHubLoader {
       return { rules };
     } catch (error) {
       logger.error({ error }, "Failed to load rules");
-      return { rules: [] };
+      
+      // If YAML parsing fails, try a simple approach
+      try {
+        const content = await this.fetchFromGitHub("/.claude/shared/superclaude-rules.yml");
+        return this.parseRulesManually(content);
+      } catch (fallbackError) {
+        logger.error({ error: fallbackError }, "Fallback rules parsing also failed");
+        return { rules: [] };
+      }
     }
+  }
+
+  private parseRulesManually(content: string): SuperClaudeRules {
+    const rules: Array<{name: string; content: string}> = [];
+    
+    // Split by sections (lines that start with no indentation and end with ':')
+    const lines = content.split('\n');
+    let currentSection = '';
+    let currentContent: string[] = [];
+    
+    for (const line of lines) {
+      // Skip comments and empty lines
+      if (line.trim().startsWith('#') || !line.trim()) continue;
+      
+      // Check if this is a new section (no leading spaces and ends with ':')
+      if (line.match(/^[A-Za-z_]+.*:/) && !line.startsWith(' ')) {
+        // Save previous section if exists
+        if (currentSection && currentContent.length > 0) {
+          rules.push({
+            name: currentSection,
+            content: currentContent.join(' ').trim()
+          });
+        }
+        
+        currentSection = line.replace(':', '').trim();
+        currentContent = [];
+      } else if (currentSection && line.trim()) {
+        // Add content to current section
+        currentContent.push(line.trim());
+      }
+    }
+    
+    // Don't forget the last section
+    if (currentSection && currentContent.length > 0) {
+      rules.push({
+        name: currentSection,
+        content: currentContent.join(' ').trim()
+      });
+    }
+    
+    logger.info({ count: rules.length }, "Loaded rules using manual parsing");
+    return { rules };
   }
 
   async loadSharedIncludes(includes: string[]): Promise<string> {
