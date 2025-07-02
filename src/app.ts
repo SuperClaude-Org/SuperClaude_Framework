@@ -21,6 +21,20 @@ app.get("/healthz", (_req, res) => {
   res.json({ status: "ok" });
 });
 
+app.post("/api/sync", async (_req, res) => {
+  try {
+    logger.info("Manual sync triggered via API");
+    await server.triggerSync();
+    res.json({ success: true, message: "Sync completed successfully" });
+  } catch (error) {
+    logger.error({ error }, "Manual sync failed");
+    res.status(500).json({ 
+      success: false, 
+      error: error instanceof Error ? error.message : "Unknown error" 
+    });
+  }
+});
+
 app.post("/mcp", async (req: Request, res: Response) => {
   try {
     const transport = new StreamableHTTPServerTransport({

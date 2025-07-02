@@ -87,19 +87,22 @@ export class SyncService {
     return updatedCount;
   }
 
-  private async syncRules(): Promise<boolean> {
+  private async syncRules(): Promise<{ updated: boolean; count: number }> {
     const rules = await this.githubLoader.loadRules();
     
     // If no rules loaded, nothing to sync
     if (!rules) {
       logger.debug("No rules to sync");
-      return false;
+      return { updated: false, count: 0 };
     }
     
     const id = 'superclaude-rules';
     const hash = this.generateHash(JSON.stringify(rules));
     
     const existing = await this.databaseService.getRules();
+    
+    // Count rules
+    const count = rules.rules ? rules.rules.length : 0;
     
     if (!existing || existing.hash !== hash) {
       const rulesModel: RulesModel = {
@@ -110,10 +113,10 @@ export class SyncService {
       };
       
       await this.databaseService.upsertRules(rulesModel);
-      return true;
+      return { updated: true, count };
     }
 
-    return false;
+    return { updated: false, count };
   }
 
   async syncFromGitHub(): Promise<void> {
@@ -139,7 +142,9 @@ export class SyncService {
       
       const commandsUpdated = commandsResult.status === 'fulfilled' ? commandsResult.value : 0;
       const personasUpdated = personasResult.status === 'fulfilled' ? personasResult.value : 0;
-      const rulesUpdated = rulesResult.status === 'fulfilled' ? rulesResult.value : false;
+      const rulesResult_ = rulesResult.status === 'fulfilled' ? rulesResult.value : { updated: false, count: 0 };
+      const rulesUpdated = rulesResult_.updated;
+      const rulesCount = rulesResult_.count;
 
       // Check if any failed
       const failures = results.filter(r => r.status === 'rejected');
@@ -155,6 +160,7 @@ export class SyncService {
           commandsUpdated,
           personasUpdated,
           rulesUpdated,
+          rulesCount,
           failures: failures.length,
           durationMs: Date.now() - startTime
         }, "GitHub sync completed with errors");
@@ -166,6 +172,7 @@ export class SyncService {
           commandsUpdated,
           personasUpdated,
           rulesUpdated,
+          rulesCount,
           durationMs: duration
         }, "GitHub sync completed successfully");
       }

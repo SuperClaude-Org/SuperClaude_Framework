@@ -5,6 +5,33 @@ import { SuperClaudeCommand, Persona, SuperClaudeRules } from "./types.js";
 
 const GITHUB_BASE_URL = "https://raw.githubusercontent.com/NomenAK/SuperClaude/master";
 
+/**
+ * Sanitizes error objects to remove large buffer content while preserving useful debug info
+ */
+function sanitizeError(error: any) {
+  if (!error) return error;
+  
+  // For YAML parsing errors, extract only essential information
+  if (error.name === 'YAMLException' || error.reason) {
+    return {
+      name: error.name,
+      reason: error.reason,
+      message: error.message,
+      line: error.mark?.line,
+      column: error.mark?.column,
+      snippet: error.mark?.snippet
+    };
+  }
+  
+  // For other errors, just return name and message
+  return {
+    name: error.name,
+    message: error.message,
+    code: error.code,
+    status: error.status
+  };
+}
+
 export class GitHubLoader {
   private cache: Map<string, { data: any; timestamp: number }> = new Map();
   private cacheTTL = 5 * 60 * 1000; // 5 minutes
@@ -30,7 +57,7 @@ export class GitHubLoader {
       this.cache.set(cacheKey, { data: response.data, timestamp: Date.now() });
       return response.data;
     } catch (error) {
-      logger.error({ error, path }, "Failed to fetch from GitHub");
+      logger.error({ error: sanitizeError(error), path }, "Failed to fetch from GitHub");
       throw error;
     }
   }
@@ -80,7 +107,7 @@ export class GitHubLoader {
               arguments: commandArguments
             });
           } catch (error) {
-            logger.error({ error, file: file.name }, "Failed to load command");
+            logger.error({ error: sanitizeError(error), file: file.name }, "Failed to load command");
           }
         }
       }
@@ -88,7 +115,7 @@ export class GitHubLoader {
       logger.info({ count: commands.length }, "Loaded SuperClaude commands");
       return commands;
     } catch (error) {
-      logger.error({ error }, "Failed to load commands list");
+      logger.error({ error: sanitizeError(error) }, "Failed to load commands list");
       return [];
     }
   }
@@ -131,14 +158,14 @@ export class GitHubLoader {
       logger.info({ count: Object.keys(personas).length }, "Loaded personas");
       return personas;
     } catch (error) {
-      logger.error({ error }, "Failed to load personas");
+      logger.error({ error: sanitizeError(error) }, "Failed to load personas");
       
       // If YAML parsing fails due to duplicate keys, try a simple regex approach
       try {
         const content = await this.fetchFromGitHub("/.claude/shared/superclaude-personas.yml");
         return this.parsePersonasManually(content);
       } catch (fallbackError) {
-        logger.error({ error: fallbackError }, "Fallback persona parsing also failed");
+        logger.error({ error: sanitizeError(fallbackError) }, "Fallback persona parsing also failed");
         return {};
       }
     }
@@ -221,14 +248,14 @@ export class GitHubLoader {
       logger.info({ count: rules.length }, "Loaded SuperClaude rules");
       return { rules };
     } catch (error) {
-      logger.error({ error }, "Failed to load rules");
+      logger.error({ error: sanitizeError(error) }, "Failed to load rules");
       
       // If YAML parsing fails, try a simple approach
       try {
         const content = await this.fetchFromGitHub("/.claude/shared/superclaude-rules.yml");
         return this.parseRulesManually(content);
       } catch (fallbackError) {
-        logger.error({ error: fallbackError }, "Fallback rules parsing also failed");
+        logger.error({ error: sanitizeError(fallbackError) }, "Fallback rules parsing also failed");
         return { rules: [] };
       }
     }

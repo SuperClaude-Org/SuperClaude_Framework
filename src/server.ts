@@ -74,6 +74,11 @@ class SuperClaudeMCPServer {
     }
   }
 
+  async triggerSync(): Promise<void> {
+    await this.syncService.syncFromGitHub();
+    await this.loadFromDatabase();
+  }
+
   private async loadFromDatabase() {
     try {
       const { commands, personas, rules } = await this.syncService.loadFromDatabase();
@@ -99,10 +104,19 @@ class SuperClaudeMCPServer {
       
       this.rules = rules?.rules || {};
       
+      // Count rules  
+      let rulesCount = 0;
+      if (rules?.rules?.rules) {
+        rulesCount = rules.rules.rules.length;
+      } else {
+        // If no rules in database, count is 0
+        rulesCount = 0;
+      }
+      
       logger.info({
         commandsCount: this.commands.length,
         personasCount: Object.keys(this.personas).length,
-        hasRules: !!rules
+        rulesCount
       }, "Successfully loaded data from database");
     } catch (error) {
       logger.error({ error }, "Failed to load data from database");

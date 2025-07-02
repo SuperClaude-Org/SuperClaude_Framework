@@ -11,6 +11,8 @@
   "scripts": {
     "dev": "tsx watch --env-file .env src/index.ts | pino-pretty",
     "build": "tsup",
+    "start": "node dist/index.js",
+    "api:sync": "curl -X POST http://localhost:8080/api/sync",
     "test": "vitest --run",
     "test:github": "vitest --run tests/github-loader",
     "test:db": "vitest --run tests/services/database-service.test.ts",
@@ -20,7 +22,11 @@
     "lint": "tsc --noEmit",
     "check:types": "tsc --noEmit",
     "sync-report": "tsx src/scripts/sync-report.ts",
+    "clean:data": "rm -rf data",
+    "clean:dist": "rm -rf dist",
+    "clean:modules": "rm -rf node_modules",
     "clean:test-fixtures": "rm -rf tests/fixtures/*.json",
+    "clean": "pnpm clean:data && pnpm clean:dist && pnpm clean:modules && pnpm clean:test-fixtures",
     "docker:build": "docker buildx bake -f docker-bake.hcl local",
     "docker:build:dev": "docker buildx bake -f docker-bake.hcl development",
     "docker:push": "DOCKER_REGISTRY=$(node .docker-env.js) docker buildx bake -f docker-bake.hcl registry"
