@@ -7,7 +7,6 @@ import {
   ReadResourceRequestSchema,
   ListResourceTemplatesRequestSchema
 } from "@modelcontextprotocol/sdk/types.js";
-import { z } from "zod";
 import logger from "./logger.js";
 import { GitHubLoader } from "./github-loader.js";
 import { DatabaseService } from "./services/database-service.js";
@@ -19,7 +18,6 @@ class SuperClaudeMCPServer {
   private githubLoader = new GitHubLoader();
   private databaseService = new DatabaseService();
   private syncService: SyncService;
-  private currentPersona: string | null = null;
   private personas: Record<string, Persona> = {};
   private commands: SuperClaudeCommand[] = [];
   private rules: any = {};
@@ -108,9 +106,6 @@ class SuperClaudeMCPServer {
       let rulesCount = 0;
       if (rules?.rules?.rules) {
         rulesCount = rules.rules.rules.length;
-      } else {
-        // If no rules in database, count is 0
-        rulesCount = 0;
       }
       
       logger.info({
@@ -136,50 +131,41 @@ class SuperClaudeMCPServer {
       }
     });
 
-    // Register tool for switching persona
+    // Register tool for direct sync
     server.tool(
-      "assume-persona",
-      "Switch the current SuperClaude persona",
-      {
-        persona: z.string().describe("The name of the persona to assume"),
-      },
-      async ({ persona }) => {
-        logger.info({ persona, previous: this.currentPersona }, "Switching persona");
-        
-        if (!this.personas[persona]) {
+      "sync",
+      "Trigger immediate synchronization with GitHub",
+      {},
+      async () => {
+        try {
+          logger.info("Direct sync triggered via MCP tool");
+          await this.syncService.syncFromGitHub();
+          await this.loadFromDatabase();
+          
+          return {
+            content: [{
+              type: "text",
+              text: JSON.stringify({
+                success: true,
+                message: "Sync completed successfully",
+                commandsCount: this.commands.length,
+                personasCount: Object.keys(this.personas).length,
+                rulesCount: this.rules?.rules ? this.rules.rules.length : 0
+              })
+            }]
+          };
+        } catch (error) {
+          logger.error({ error }, "Direct sync failed");
           return {
             content: [{
               type: "text",
               text: JSON.stringify({
                 success: false,
-                error: `Persona '${persona}' not found. Available personas: ${Object.keys(this.personas).join(", ")}`
+                error: error instanceof Error ? error.message : "Unknown error"
               })
             }]
           };
         }
-
-        this.currentPersona = persona;
-        
-        if ('notification' in server && typeof server.notification === 'function') {
-          server.notification({
-          method: "superclaude/personaChanged",
-          params: {
-            persona,
-            details: this.personas[persona]
-          }
-          });
-        }
-
-        return {
-          content: [{
-            type: "text",
-            text: JSON.stringify({
-              success: true,
-              persona,
-              details: this.personas[persona]
-            })
-          }]
-        };
       }
     );
 
