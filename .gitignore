@@ -1,3 +1,9 @@
 node_modules/
 dist/
+
+# Data files
 data/
+data/*.json
+data/*.db
+data/*.sqlite
+data/*.sqlite3

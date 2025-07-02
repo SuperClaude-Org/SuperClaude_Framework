@@ -1,15 +1,29 @@
+export interface CommandArgument {
+  name: string;
+  description: string;
+  required: boolean;
+}
+
 export interface SuperClaudeCommand {
   name: string;
-  content: string;
-  arguments?: string[];
+  description: string;
+  prompt: string;
+  messages?: Array<{
+    role: string;
+    content: string;
+  }>;
+  arguments?: CommandArgument[];
 }
 
 export interface Persona {
   name: string;
-  description?: string;
-  settings?: Record<string, any>;
+  description: string;
+  instructions: string;
 }
 
 export interface SuperClaudeRules {
-  [key: string]: any;
+  rules: Array<{
+    name: string;
+    content: string;
+  }>;
 }

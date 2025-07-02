@@ -52,13 +52,27 @@ export class GitHubLoader {
             const content = await this.fetchFromGitHub(`/.claude/commands/${file.name}`);
             const name = file.name.replace('.md', '');
             
-            // Parse arguments from content (look for $ARGUMENTS)
-            const argumentMatches = content.match(/\$ARGUMENTS/g);
-            const commandArguments = argumentMatches ? ['arguments'] : undefined;
+            // Extract description from Purpose line
+            const purposeMatch = content.match(/\*\*Purpose\*\*:\s*(.+)/);
+            const description = purposeMatch ? purposeMatch[1].trim() : `Command: ${name}`;
+            
+            // The entire content is the prompt
+            const prompt = content;
+            
+            // Parse arguments from content (look for $ARGUMENTS or specific argument patterns)
+            const argumentMatches = content.match(/\$([A-Z_]+)/g);
+            const commandArguments = argumentMatches 
+              ? argumentMatches.map(arg => ({
+                  name: arg.replace('$', ''),
+                  description: `Argument: ${arg}`,
+                  required: true
+                }))
+              : undefined;
             
             commands.push({
               name,
-              content,
+              description,
+              prompt,
               arguments: commandArguments
             });
           } catch (error) {
@@ -82,12 +96,24 @@ export class GitHubLoader {
       
       const personas: Record<string, Persona> = {};
       
-      if (data.personas) {
-        for (const [key, value] of Object.entries(data.personas)) {
-          personas[key] = {
-            name: key,
-            ...(value as any)
-          };
+      // Look for All_Personas section
+      const personasData = data.All_Personas || data.personas || data;
+      
+      if (personasData && typeof personasData === 'object') {
+        for (const [key, value] of Object.entries(personasData)) {
+          if (typeof value === 'object' && value !== null) {
+            const persona = value as any;
+            personas[key] = {
+              name: persona.Identity || key,
+              description: persona.Core_Belief || `${key} persona`,
+              instructions: [
+                persona.Identity || '',
+                persona.Core_Belief || '',
+                persona.Problem_Solving || '',
+                persona.Focus || ''
+              ].filter(Boolean).join('. ')
+            };
+          }
         }
       }
       
@@ -102,13 +128,33 @@ export class GitHubLoader {
   async loadRules(): Promise<SuperClaudeRules> {
     try {
       const content = await this.fetchFromGitHub("/.claude/shared/superclaude-rules.yml");
-      const rules = yaml.load(content) as SuperClaudeRules;
+      const data = yaml.load(content) as any;
       
-      logger.info("Loaded SuperClaude rules");
-      return rules;
+      // Convert the YAML structure to our expected format
+      const rules: Array<{name: string; content: string}> = [];
+      
+      // Recursively extract rules from the YAML structure
+      const extractRules = (obj: any, prefix = ''): void => {
+        if (typeof obj === 'string') {
+          rules.push({
+            name: prefix,
+            content: obj
+          });
+        } else if (typeof obj === 'object' && obj !== null) {
+          for (const [key, value] of Object.entries(obj)) {
+            const newPrefix = prefix ? `${prefix}.${key}` : key;
+            extractRules(value, newPrefix);
+          }
+        }
+      };
+      
+      extractRules(data);
+      
+      logger.info({ count: rules.length }, "Loaded SuperClaude rules");
+      return { rules };
     } catch (error) {
       logger.error({ error }, "Failed to load rules");
-      return {};
+      return { rules: [] };
     }
   }
 

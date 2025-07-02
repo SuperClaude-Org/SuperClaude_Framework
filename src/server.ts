@@ -64,7 +64,9 @@ class SuperClaudeMCPServer {
       // Convert CommandModel[] to SuperClaudeCommand[]
       this.commands = commands.map(cmd => ({
         name: cmd.name,
-        content: cmd.content,
+        description: cmd.description,
+        prompt: cmd.prompt,
+        messages: cmd.messages,
         arguments: cmd.arguments
       }));
       
@@ -74,7 +76,7 @@ class SuperClaudeMCPServer {
         this.personas[id] = {
           name: personaModel.name,
           description: personaModel.description,
-          settings: personaModel.settings
+          instructions: personaModel.instructions
         };
       }
       
@@ -197,7 +199,7 @@ class SuperClaudeMCPServer {
           throw new Error(`Command '${name}' not found`);
         }
 
-        let content = command.content;
+        let content = command.prompt;
         
         const includeMatches = content.match(/@include\s+[\w\-\/\.]+/g);
         if (includeMatches) {
@@ -208,10 +210,10 @@ class SuperClaudeMCPServer {
         }
         
         if (command.arguments && args) {
-          for (const argName of command.arguments) {
-            const argValue = args[argName];
+          for (const arg of command.arguments) {
+            const argValue = args[arg.name];
             if (argValue) {
-              content = content.replace(new RegExp(`\\$${argName.toUpperCase()}`, 'g'), argValue);
+              content = content.replace(new RegExp(`\\$${arg.name}`, 'g'), argValue);
             }
           }
         }

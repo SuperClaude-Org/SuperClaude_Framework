@@ -5,7 +5,7 @@ import { CommandModel, PersonaModel, RulesModel } from "../database.js";
 import logger from "../logger.js";
 
 export class SyncService {
-  private syncInterval: NodeJS.Timer | null = null;
+  private syncInterval: NodeJS.Timeout | null = null;
   private isSyncing = false;
 
   constructor(
@@ -23,26 +23,30 @@ export class SyncService {
     const commandModels: CommandModel[] = [];
     let updatedCount = 0;
 
+    const existingCommands = await this.databaseService.getAllCommands();
+
     for (const command of commands) {
       const id = command.name;
       const hash = this.generateHash(JSON.stringify(command));
       
-      const existing = (await this.databaseService.getAllCommands()).find(c => c.id === id);
+      const existing = existingCommands.find(c => c.id === id);
       
-      if (!existing || existing.hash !== hash) {
-        commandModels.push({
-          ...command,
-          id,
-          hash,
-          lastUpdated: new Date()
-        });
+      const isNew = !existing;
+      const hasChanged = existing && existing.hash !== hash;
+      
+      if (isNew || hasChanged) {
         updatedCount++;
       }
+      
+      commandModels.push({
+        ...command,
+        id,
+        hash,
+        lastUpdated: existing && existing.hash === hash ? existing.lastUpdated : new Date()
+      });
     }
 
-    if (commandModels.length > 0) {
-      await this.databaseService.upsertCommands(commandModels);
-    }
+    await this.databaseService.upsertCommands(commandModels);
 
     return updatedCount;
   }
@@ -52,26 +56,30 @@ export class SyncService {
     const personaModels: PersonaModel[] = [];
     let updatedCount = 0;
 
+    const existingPersonas = await this.databaseService.getAllPersonas();
+
     for (const [key, persona] of Object.entries(personas)) {
       const id = key;
       const hash = this.generateHash(JSON.stringify(persona));
       
-      const existing = (await this.databaseService.getAllPersonas()).find(p => p.id === id);
+      const existing = existingPersonas.find(p => p.id === id);
       
-      if (!existing || existing.hash !== hash) {
-        personaModels.push({
-          ...persona,
-          id,
-          hash,
-          lastUpdated: new Date()
-        });
+      const isNew = !existing;
+      const hasChanged = existing && existing.hash !== hash;
+      
+      if (isNew || hasChanged) {
         updatedCount++;
       }
+      
+      personaModels.push({
+        ...persona,
+        id,
+        hash,
+        lastUpdated: existing && existing.hash === hash ? existing.lastUpdated : new Date()
+      });
     }
 
-    if (personaModels.length > 0) {
-      await this.databaseService.upsertPersonas(personaModels);
-    }
+    await this.databaseService.upsertPersonas(personaModels);
 
     return updatedCount;
   }

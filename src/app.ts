@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import pinoHttp from "pino-http";
+import { pinoHttp } from "pino-http";
 import logger from "./logger.js";
 import server from "./server.js";
 
@@ -10,7 +10,7 @@ app.use(
   pinoHttp({
     logger,
     autoLogging: {
-      ignore: (req) => req.url === "/healthz",
+      ignore: (req: any) => req.url === "/healthz",
     },
   })
 );

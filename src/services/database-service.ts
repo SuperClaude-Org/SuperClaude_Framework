@@ -19,10 +19,9 @@ export class DatabaseService {
       
       await this.db.read();
       
-      if (!this.db.data) {
-        this.db.data = DEFAULT_DATABASE_SCHEMA;
-        await this.db.write();
-      }
+      // LowDB sets data to the default if file doesn't exist
+      // Always write to ensure file is created
+      await this.db.write();
       
       this.initialized = true;
       logger.info({ dbPath: this.dbPath }, "Database initialized");
@@ -115,20 +114,32 @@ export class DatabaseService {
   async getAllCommands(): Promise<CommandModel[]> {
     this.ensureInitialized();
     await this.db.read();
-    return this.db.data!.commands || [];
+    return (this.db.data!.commands || []).map(cmd => ({
+      ...cmd,
+      lastUpdated: new Date(cmd.lastUpdated)
+    }));
   }
 
   async getAllPersonas(): Promise<PersonaModel[]> {
     this.ensureInitialized();
     await this.db.read();
-    return this.db.data!.personas || [];
+    return (this.db.data!.personas || []).map(persona => ({
+      ...persona,
+      lastUpdated: new Date(persona.lastUpdated)
+    }));
   }
 
   async getRules(): Promise<RulesModel | null> {
     this.ensureInitialized();
     await this.db.read();
     const rules = this.db.data!.rules || [];
-    return rules.length > 0 ? rules[0] : null;
+    if (rules.length > 0) {
+      return {
+        ...rules[0],
+        lastUpdated: new Date(rules[0].lastUpdated)
+      };
+    }
+    return null;
   }
 
   async getLastSync(): Promise<Date> {
