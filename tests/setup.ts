@@ -1,37 +1,37 @@
-import { vi, afterEach, beforeEach, afterAll, beforeAll } from 'vitest';
-import fs from 'fs/promises';
-import path from 'path';
+import { vi, afterEach, beforeEach, afterAll, beforeAll } from "vitest";
+import fs from "fs/promises";
+import path from "path";
 
 // Mock logger to reduce noise in tests
-vi.mock('../src/logger.js', () => ({
+vi.mock("../src/logger.js", () => ({
   default: {
     info: vi.fn(),
     warn: vi.fn(),
     error: vi.fn(),
-    debug: vi.fn()
-  }
+    debug: vi.fn(),
+  },
 }));
 
 // Ensure tests run in isolation
 beforeAll(async () => {
   // Clean up any existing test data
-  const fixturesDir = path.join(process.cwd(), 'tests', 'fixtures');
-  const tempDir = path.join(fixturesDir, 'temp');
-  const dataDir = path.join(process.cwd(), 'data');
-  
+  const fixturesDir = path.join(process.cwd(), "tests", "fixtures");
+  const tempDir = path.join(fixturesDir, "temp");
+  const dataDir = path.join(process.cwd(), "data");
+
   try {
     await fs.rm(fixturesDir, { recursive: true, force: true });
   } catch (error) {
     // Directory might not exist
   }
-  
+
   // Ensure fixtures/temp directory exists
   await fs.mkdir(tempDir, { recursive: true });
-  
+
   try {
     const files = await fs.readdir(dataDir);
     for (const file of files) {
-      if (file.endsWith('.json') && !file.includes('backup')) {
+      if (file.endsWith(".json") && !file.includes("backup")) {
         await fs.unlink(path.join(dataDir, file));
       }
     }
@@ -42,21 +42,21 @@ beforeAll(async () => {
 
 // Clean up test fixtures before each test
 beforeEach(async () => {
-  const fixturesDir = path.join(process.cwd(), 'tests', 'fixtures');
-  const tempDir = path.join(fixturesDir, 'temp');
-  
+  const fixturesDir = path.join(process.cwd(), "tests", "fixtures");
+  const tempDir = path.join(fixturesDir, "temp");
+
   // Only clean JSON files, not the directory structure
   try {
     const files = await fs.readdir(fixturesDir);
     for (const file of files) {
-      if (file.endsWith('.json')) {
+      if (file.endsWith(".json")) {
         await fs.unlink(path.join(fixturesDir, file));
       }
     }
   } catch (error) {
     // Directory might not exist, that's fine
   }
-  
+
   // Clean temp directory contents but keep the directory
   try {
     const tempFiles = await fs.readdir(tempDir);
@@ -66,16 +66,16 @@ beforeEach(async () => {
   } catch (error) {
     // Directory might not exist, that's fine
   }
-  
+
   // Ensure directories exist
   await fs.mkdir(tempDir, { recursive: true });
-  
+
   // Also clean up any data files that might interfere with tests
-  const dataDir = path.join(process.cwd(), 'data');
+  const dataDir = path.join(process.cwd(), "data");
   try {
     const files = await fs.readdir(dataDir);
     for (const file of files) {
-      if (file.endsWith('.json') && !file.includes('backup')) {
+      if (file.endsWith(".json") && !file.includes("backup")) {
         await fs.unlink(path.join(dataDir, file));
       }
     }
@@ -92,21 +92,21 @@ afterEach(async () => {
 
 // Clean up after all tests
 afterAll(async () => {
-  const fixturesDir = path.join(process.cwd(), 'tests', 'fixtures');
-  const tempDir = path.join(fixturesDir, 'temp');
-  
+  const fixturesDir = path.join(process.cwd(), "tests", "fixtures");
+  const tempDir = path.join(fixturesDir, "temp");
+
   // Clean up test files but keep directory structure
   try {
     const files = await fs.readdir(fixturesDir);
     for (const file of files) {
-      if (file.endsWith('.json')) {
+      if (file.endsWith(".json")) {
         await fs.unlink(path.join(fixturesDir, file));
       }
     }
   } catch (error) {
     // Directory might not exist, that's fine
   }
-  
+
   try {
     const tempFiles = await fs.readdir(tempDir);
     for (const file of tempFiles) {
@@ -115,11 +115,11 @@ afterAll(async () => {
   } catch (error) {
     // Directory might not exist, that's fine
   }
-  
+
   // Restore backup if exists
-  const dataDir = path.join(process.cwd(), 'data');
-  const backupPath = path.join(dataDir, 'superclaude.json.backup');
-  const originalPath = path.join(dataDir, 'superclaude.json');
+  const dataDir = path.join(process.cwd(), "data");
+  const backupPath = path.join(dataDir, "superclaude.json.backup");
+  const originalPath = path.join(dataDir, "superclaude.json");
   try {
     await fs.access(backupPath);
     await fs.rename(backupPath, originalPath);

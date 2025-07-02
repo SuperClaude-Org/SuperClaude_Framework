@@ -28,9 +28,9 @@ app.post("/api/sync", async (_req, res) => {
     res.json({ success: true, message: "Sync completed successfully" });
   } catch (error) {
     logger.error({ error }, "Manual sync failed");
-    res.status(500).json({ 
-      success: false, 
-      error: error instanceof Error ? error.message : "Unknown error" 
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
@@ -40,11 +40,11 @@ app.post("/mcp", async (req: Request, res: Response) => {
     const transport = new StreamableHTTPServerTransport({
       sessionIdGenerator: undefined,
     });
-    
+
     logger.debug({ method: req.body.method }, "Handling MCP request");
 
     const newServer = server.createInstance();
-    
+
     res.on("close", () => {
       logger.debug("Request closed");
       transport.close();
@@ -52,10 +52,13 @@ app.post("/mcp", async (req: Request, res: Response) => {
     });
 
     await newServer.connect(transport);
-    
+
     await transport.handleRequest(req, res, req.body);
   } catch (error) {
-    logger.error({ error, stack: (error as Error).stack, message: (error as Error).message }, "Error handling MCP request");
+    logger.error(
+      { error, stack: (error as Error).stack, message: (error as Error).message },
+      "Error handling MCP request"
+    );
     if (!res.headersSent) {
       res.status(500).json({ error: "Internal server error" });
     }

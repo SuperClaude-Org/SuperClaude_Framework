@@ -1,14 +1,17 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { SyncService } from '../../src/services/sync-service.js';
-import { DatabaseService } from '../../src/services/database-service.js';
-import { GitHubLoader } from '../../src/github-loader.js';
-import { createMockCommand, createMockPersona, createMockRules } from '../mocks/data.js';
-import { createTestDatabase } from '../utils/test-helpers.js';
-import { convertCommandModelToCommand, convertPersonaModelToPersona } from '../utils/snapshot-loader.js';
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { SyncService } from "../../src/services/sync-service.js";
+import { DatabaseService } from "../../src/services/database-service.js";
+import { GitHubLoader } from "../../src/github-loader.js";
+import { createMockCommand, createMockPersona, createMockRules } from "../mocks/data.js";
+import { createTestDatabase } from "../utils/test-helpers.js";
+import {
+  convertCommandModelToCommand,
+  convertPersonaModelToPersona,
+} from "../utils/snapshot-loader.js";
 
-vi.mock('../../src/github-loader.js');
+vi.mock("../../src/github-loader.js");
 
-describe('SyncService', () => {
+describe("SyncService", () => {
   let syncService: SyncService;
   let databaseService: DatabaseService;
   let githubLoader: GitHubLoader;
@@ -19,7 +22,7 @@ describe('SyncService', () => {
     const testDb = await createTestDatabase();
     databaseService = testDb.dbService;
     cleanup = testDb.cleanup;
-    
+
     // Verify database starts empty
     const commands = await databaseService.getAllCommands();
     const personas = await databaseService.getAllPersonas();
@@ -27,15 +30,15 @@ describe('SyncService', () => {
     expect(commands).toHaveLength(0);
     expect(personas).toHaveLength(0);
     expect(rules).toBeNull();
-    
+
     // Create mocked GitHubLoader
     githubLoader = {
       loadCommands: vi.fn(),
       loadPersonas: vi.fn(),
       loadRules: vi.fn(),
-      loadSharedIncludes: vi.fn()
+      loadSharedIncludes: vi.fn(),
     } as unknown as GitHubLoader;
-    
+
     // Create sync service with mocked dependencies
     syncService = new SyncService(githubLoader, databaseService, 30);
   });
@@ -43,26 +46,26 @@ describe('SyncService', () => {
   afterEach(async () => {
     // Clean up database
     await cleanup();
-    
+
     // Clear all mocks
     vi.clearAllMocks();
   });
 
-  describe('syncFromGitHub', () => {
-    it.skip('should sync commands, personas, and rules from GitHub', async () => {
+  describe("syncFromGitHub", () => {
+    it.skip("should sync commands, personas, and rules from GitHub", async () => {
       // Create test data - ensure ID matches name for commands
       const mockCommandModels = [
-        createMockCommand({ id: 'command-1', name: 'command-1' }),
-        createMockCommand({ id: 'command-2', name: 'command-2' })
+        createMockCommand({ id: "command-1", name: "command-1" }),
+        createMockCommand({ id: "command-2", name: "command-2" }),
       ];
-      
+
       const mockPersonaModels = [
-        createMockPersona({ id: 'persona-1', name: 'Persona 1' }),
-        createMockPersona({ id: 'persona-2', name: 'Persona 2' })
+        createMockPersona({ id: "persona-1", name: "Persona 1" }),
+        createMockPersona({ id: "persona-2", name: "Persona 2" }),
       ];
-      
-      const mockRulesModel = createMockRules({ id: 'rules-1' });
-      
+
+      const mockRulesModel = createMockRules({ id: "rules-1" });
+
       // Convert to GitHub loader format
       const mockCommands = mockCommandModels.map(cmd => convertCommandModelToCommand(cmd));
       const mockPersonas: Record<string, any> = {};
@@ -70,164 +73,158 @@ describe('SyncService', () => {
         mockPersonas[p.id] = convertPersonaModelToPersona(p);
       });
       const mockRules = {
-        rules: mockRulesModel.rules.rules
+        rules: mockRulesModel.rules.rules,
       };
-      
+
       // Mock GitHub loader responses
-      (githubLoader.loadCommands).mockResolvedValue(mockCommands);
-      (githubLoader.loadPersonas).mockResolvedValue(mockPersonas);
-      (githubLoader.loadRules).mockResolvedValue(mockRules);
-      
+      githubLoader.loadCommands.mockResolvedValue(mockCommands);
+      githubLoader.loadPersonas.mockResolvedValue(mockPersonas);
+      githubLoader.loadRules.mockResolvedValue(mockRules);
+
       // Execute sync
       await syncService.syncFromGitHub();
-      
+
       // Verify data was synced to database
       const commands = await databaseService.getAllCommands();
       const personas = await databaseService.getAllPersonas();
       const rules = await databaseService.getRules();
-      
+
       expect(commands).toHaveLength(2);
       expect(personas).toHaveLength(2);
       expect(rules).not.toBeNull();
       expect(rules?.rules.rules).toHaveLength(2);
     });
 
-    it.skip('should skip sync if already in progress', async () => {
+    it.skip("should skip sync if already in progress", async () => {
       // Mock GitHub loader to take time
-      (githubLoader.loadCommands).mockImplementation(
+      githubLoader.loadCommands.mockImplementation(
         () => new Promise(resolve => setTimeout(() => resolve([]), 100))
       );
-      
+
       // Start two syncs concurrently
       const sync1 = syncService.syncFromGitHub();
       const sync2 = syncService.syncFromGitHub();
-      
+
       // Both should complete without error
       await expect(sync1).resolves.not.toThrow();
       await expect(sync2).resolves.not.toThrow();
-      
+
       // GitHub loader should only be called once
       expect(githubLoader.loadCommands).toHaveBeenCalledTimes(1);
     });
 
-    it.skip('should only update changed items based on hash', async () => {
+    it.skip("should only update changed items based on hash", async () => {
       // Insert initial data - ID will be the command name
-      const existingCommand = createMockCommand({ 
-        id: 'existing-cmd', 
-        name: 'existing-cmd',
-        description: 'Original description',
-        hash: 'original-hash'
+      const existingCommand = createMockCommand({
+        id: "existing-cmd",
+        name: "existing-cmd",
+        description: "Original description",
+        hash: "original-hash",
       });
       await databaseService.upsertCommand(existingCommand);
-      
+
       // Mock GitHub response with one changed and one new command
       // Note: convertCommandModelToCommand strips the hash, so we need the raw command
       const changedCommand = {
-        name: 'existing-cmd',
-        description: 'Modified description',
+        name: "existing-cmd",
+        description: "Modified description",
         prompt: existingCommand.prompt,
         arguments: existingCommand.arguments,
-        messages: existingCommand.messages
+        messages: existingCommand.messages,
       };
-      
+
       const newCommand = {
-        name: 'new-cmd',
-        description: 'New command',
-        prompt: 'New prompt',
+        name: "new-cmd",
+        description: "New command",
+        prompt: "New prompt",
         arguments: undefined,
-        messages: undefined
+        messages: undefined,
       };
-      
-      (githubLoader.loadCommands).mockResolvedValue([changedCommand, newCommand]);
-      (githubLoader.loadPersonas).mockResolvedValue({});
-      (githubLoader.loadRules).mockResolvedValue(null);
-      
+
+      githubLoader.loadCommands.mockResolvedValue([changedCommand, newCommand]);
+      githubLoader.loadPersonas.mockResolvedValue({});
+      githubLoader.loadRules.mockResolvedValue(null);
+
       // Execute sync
       await syncService.syncFromGitHub();
-      
+
       // Verify updates
       const commands = await databaseService.getAllCommands();
       expect(commands).toHaveLength(2);
-      
-      const updatedCommand = commands.find(c => c.id === 'existing-cmd');
-      expect(updatedCommand?.description).toBe('Modified description');
-      
-      const addedCommand = commands.find(c => c.id === 'new-cmd');
+
+      const updatedCommand = commands.find(c => c.id === "existing-cmd");
+      expect(updatedCommand?.description).toBe("Modified description");
+
+      const addedCommand = commands.find(c => c.id === "new-cmd");
       expect(addedCommand).toBeDefined();
     });
 
-    it('should handle partial failures gracefully', async () => {
+    it("should handle partial failures gracefully", async () => {
       // Mock commands to succeed
-      (githubLoader.loadCommands).mockResolvedValue([]);
-      
+      githubLoader.loadCommands.mockResolvedValue([]);
+
       // Mock personas to fail
-      (githubLoader.loadPersonas).mockRejectedValue(new Error('Network error'));
-      
+      githubLoader.loadPersonas.mockRejectedValue(new Error("Network error"));
+
       // Mock rules to succeed
-      (githubLoader.loadRules).mockResolvedValue(null);
-      
+      githubLoader.loadRules.mockResolvedValue(null);
+
       // Sync should not throw
       await expect(syncService.syncFromGitHub()).resolves.not.toThrow();
-      
+
       // Verify sync metadata reflects failure
-      await databaseService['db'].read();
-      const metadata = databaseService['db'].data.syncMetadata;
-      expect(metadata.syncStatus).toBe('failed');
-      expect(metadata.errorMessage).toContain('Network error');
+      await databaseService["db"].read();
+      const metadata = databaseService["db"].data.syncMetadata;
+      expect(metadata.syncStatus).toBe("failed");
+      expect(metadata.errorMessage).toContain("Network error");
     });
   });
 
-  describe('loadFromDatabase', () => {
-    it('should load all data from database', async () => {
+  describe("loadFromDatabase", () => {
+    it("should load all data from database", async () => {
       // Insert test data
-      const commands = [
-        createMockCommand({ id: 'cmd-1' }),
-        createMockCommand({ id: 'cmd-2' })
-      ];
-      const personas = [
-        createMockPersona({ id: 'p-1' }),
-        createMockPersona({ id: 'p-2' })
-      ];
-      const rules = createMockRules({ id: 'rules-1' });
-      
+      const commands = [createMockCommand({ id: "cmd-1" }), createMockCommand({ id: "cmd-2" })];
+      const personas = [createMockPersona({ id: "p-1" }), createMockPersona({ id: "p-2" })];
+      const rules = createMockRules({ id: "rules-1" });
+
       await databaseService.upsertCommands(commands);
       await databaseService.upsertPersonas(personas);
       await databaseService.upsertRules(rules);
-      
+
       // Load from database
       const data = await syncService.loadFromDatabase();
-      
+
       expect(data.commands).toHaveLength(2);
       expect(Object.keys(data.personas)).toHaveLength(2);
       expect(data.rules).not.toBeNull();
     });
 
-    it('should return personas as a record keyed by id', async () => {
+    it("should return personas as a record keyed by id", async () => {
       const personas = [
-        createMockPersona({ id: 'architect', name: 'Architect' }),
-        createMockPersona({ id: 'developer', name: 'Developer' })
+        createMockPersona({ id: "architect", name: "Architect" }),
+        createMockPersona({ id: "developer", name: "Developer" }),
       ];
-      
+
       await databaseService.upsertPersonas(personas);
-      
+
       const data = await syncService.loadFromDatabase();
-      
-      expect(data.personas['architect']).toBeDefined();
-      expect(data.personas['architect'].name).toBe('Architect');
-      expect(data.personas['developer']).toBeDefined();
-      expect(data.personas['developer'].name).toBe('Developer');
+
+      expect(data.personas["architect"]).toBeDefined();
+      expect(data.personas["architect"].name).toBe("Architect");
+      expect(data.personas["developer"]).toBeDefined();
+      expect(data.personas["developer"].name).toBe("Developer");
     });
 
-    it('should return null for rules if none exist', async () => {
+    it("should return null for rules if none exist", async () => {
       const data = await syncService.loadFromDatabase();
-      
+
       expect(data.commands).toEqual([]);
       expect(data.personas).toEqual({});
       expect(data.rules).toBeNull();
     });
   });
 
-  describe('periodic sync', () => {
+  describe("periodic sync", () => {
     beforeEach(() => {
       vi.useFakeTimers();
     });
@@ -236,119 +233,119 @@ describe('SyncService', () => {
       vi.useRealTimers();
     });
 
-    it.skip('should start periodic sync with correct interval', async () => {
+    it.skip("should start periodic sync with correct interval", async () => {
       const syncIntervalMinutes = 5;
-      
+
       // Mock GitHub loader before creating service
-      (githubLoader.loadCommands).mockResolvedValue([]);
-      (githubLoader.loadPersonas).mockResolvedValue({});
-      (githubLoader.loadRules).mockResolvedValue(null);
-      
+      githubLoader.loadCommands.mockResolvedValue([]);
+      githubLoader.loadPersonas.mockResolvedValue({});
+      githubLoader.loadRules.mockResolvedValue(null);
+
       const service = new SyncService(githubLoader, databaseService, syncIntervalMinutes);
-      
+
       // Start periodic sync
       service.startPeriodicSync();
-      
+
       // Periodic sync should be started but not called yet
       expect(githubLoader.loadCommands).not.toHaveBeenCalled();
-      
+
       // Advance time by sync interval
       await vi.advanceTimersByTimeAsync(syncIntervalMinutes * 60 * 1000);
-      
+
       // Should have synced once
       expect(githubLoader.loadCommands).toHaveBeenCalledTimes(1);
-      
+
       // Advance time by another interval
       await vi.advanceTimersByTimeAsync(syncIntervalMinutes * 60 * 1000);
-      
+
       // Should have synced again
       expect(githubLoader.loadCommands).toHaveBeenCalledTimes(2);
-      
+
       service.stopPeriodicSync();
     });
 
-    it.skip('should stop periodic sync', async () => {
+    it.skip("should stop periodic sync", async () => {
       const service = new SyncService(githubLoader, databaseService, 1);
-      
+
       // Mock GitHub loader
-      (githubLoader.loadCommands).mockResolvedValue([]);
-      (githubLoader.loadPersonas).mockResolvedValue({});
-      (githubLoader.loadRules).mockResolvedValue(null);
-      
+      githubLoader.loadCommands.mockResolvedValue([]);
+      githubLoader.loadPersonas.mockResolvedValue({});
+      githubLoader.loadRules.mockResolvedValue(null);
+
       service.startPeriodicSync();
       service.stopPeriodicSync();
-      
+
       // Clear initial call count
-      (githubLoader.loadCommands).mockClear();
-      
+      githubLoader.loadCommands.mockClear();
+
       // Advance time - no more syncs should happen
       await vi.advanceTimersByTimeAsync(60 * 1000);
-      
+
       expect(githubLoader.loadCommands).not.toHaveBeenCalled();
     });
   });
 
-  describe('hash-based change detection', () => {
-    it.skip('should detect changes in command content', async () => {
+  describe("hash-based change detection", () => {
+    it.skip("should detect changes in command content", async () => {
       // Insert initial command - ID must match name for sync to work
       const command = createMockCommand({
-        id: 'test-cmd',
-        name: 'test-cmd',
-        prompt: 'Original prompt',
-        hash: 'original-hash'
+        id: "test-cmd",
+        name: "test-cmd",
+        prompt: "Original prompt",
+        hash: "original-hash",
       });
       await databaseService.upsertCommand(command);
-      
+
       // Mock GitHub response with modified command (without hash field)
       const modifiedCommand = {
-        name: 'test-cmd',
+        name: "test-cmd",
         description: command.description,
-        prompt: 'Modified prompt',
+        prompt: "Modified prompt",
         arguments: command.arguments,
-        messages: command.messages
+        messages: command.messages,
       };
-      
-      (githubLoader.loadCommands).mockResolvedValue([modifiedCommand]);
-      (githubLoader.loadPersonas).mockResolvedValue({});
-      (githubLoader.loadRules).mockResolvedValue(null);
-      
+
+      githubLoader.loadCommands.mockResolvedValue([modifiedCommand]);
+      githubLoader.loadPersonas.mockResolvedValue({});
+      githubLoader.loadRules.mockResolvedValue(null);
+
       // Sync
       await syncService.syncFromGitHub();
-      
+
       // Verify update
       const commands = await databaseService.getAllCommands();
       expect(commands).toHaveLength(1);
-      expect(commands[0].prompt).toBe('Modified prompt');
+      expect(commands[0].prompt).toBe("Modified prompt");
     });
 
-    it.skip('should not update if hash is unchanged', async () => {
-      const originalDate = new Date('2024-01-01');
-      
+    it.skip("should not update if hash is unchanged", async () => {
+      const originalDate = new Date("2024-01-01");
+
       // Insert command with specific date - ID must match name
       const command = createMockCommand({
-        id: 'test',
-        name: 'test',
+        id: "test",
+        name: "test",
         lastUpdated: originalDate,
-        hash: 'same-hash'
+        hash: "same-hash",
       });
       await databaseService.upsertCommand(command);
-      
+
       // Mock GitHub response with exact same content (will generate same hash)
       const sameCommand = {
-        name: 'test',
+        name: "test",
         description: command.description,
         prompt: command.prompt,
         arguments: command.arguments,
-        messages: command.messages
+        messages: command.messages,
       };
-      
-      (githubLoader.loadCommands).mockResolvedValue([sameCommand]);
-      (githubLoader.loadPersonas).mockResolvedValue({});
-      (githubLoader.loadRules).mockResolvedValue(null);
-      
+
+      githubLoader.loadCommands.mockResolvedValue([sameCommand]);
+      githubLoader.loadPersonas.mockResolvedValue({});
+      githubLoader.loadRules.mockResolvedValue(null);
+
       // Sync
       await syncService.syncFromGitHub();
-      
+
       // Verify date hasn't changed
       const commands = await databaseService.getAllCommands();
       expect(commands[0].lastUpdated.toISOString()).toBe(originalDate.toISOString());

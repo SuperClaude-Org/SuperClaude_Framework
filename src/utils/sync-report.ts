@@ -1,7 +1,7 @@
-import chalk from 'chalk';
-import { DatabaseService } from '@services/database-service.js';
-import { CommandModel, PersonaModel, RulesModel } from '@database';
-import { CommandModelSchema, PersonaModelSchema, RulesModelSchema } from '@schemas';
+import chalk from "chalk";
+import { DatabaseService } from "@services/database-service.js";
+import { CommandModel, PersonaModel, RulesModel } from "@database";
+import { CommandModelSchema, PersonaModelSchema, RulesModelSchema } from "@schemas";
 
 interface ValidationResult {
   valid: boolean;
@@ -10,7 +10,7 @@ interface ValidationResult {
 
 interface ReportNode {
   name: string;
-  type: 'category' | 'item';
+  type: "category" | "item";
   valid: boolean;
   details?: string;
   children?: ReportNode[];
@@ -26,7 +26,7 @@ export class SyncReportGenerator {
     }
     return {
       valid: false,
-      errors: result.error.errors.map(e => `${e.path.join('.')}: ${e.message}`)
+      errors: result.error.errors.map(e => `${e.path.join(".")}: ${e.message}`),
     };
   }
 
@@ -37,7 +37,7 @@ export class SyncReportGenerator {
     }
     return {
       valid: false,
-      errors: result.error.errors.map(e => `${e.path.join('.')}: ${e.message}`)
+      errors: result.error.errors.map(e => `${e.path.join(".")}: ${e.message}`),
     };
   }
 
@@ -48,33 +48,37 @@ export class SyncReportGenerator {
     }
     return {
       valid: false,
-      errors: result.error.errors.map(e => `${e.path.join('.')}: ${e.message}`)
+      errors: result.error.errors.map(e => `${e.path.join(".")}: ${e.message}`),
     };
   }
 
   private formatDate(date: Date): string {
-    return date.toISOString().replace('T', ' ').split('.')[0];
+    return date.toISOString().replace("T", " ").split(".")[0];
   }
 
-  private renderTree(node: ReportNode, prefix = '', isLast = true): string {
+  private renderTree(node: ReportNode, prefix = "", isLast = true): string {
     const lines: string[] = [];
-    const connector = isLast ? '└── ' : '├── ';
-    const extension = isLast ? '    ' : '│   ';
+    const connector = isLast ? "└── " : "├── ";
+    const extension = isLast ? "    " : "│   ";
 
-    const nodeText = node.valid 
-      ? chalk.green(node.name)
-      : chalk.red(node.name);
+    const nodeText = node.valid ? chalk.green(node.name) : chalk.red(node.name);
 
-    lines.push(prefix + connector + nodeText + (node.details ? chalk.gray(` (${node.details})`) : ''));
+    lines.push(
+      prefix + connector + nodeText + (node.details ? chalk.gray(` (${node.details})`) : "")
+    );
 
     if (node.children) {
       node.children.forEach((child, index) => {
         const isLastChild = index === node.children!.length - 1;
-        lines.push(...this.renderTree(child, prefix + extension, isLastChild).split('\n').filter(Boolean));
+        lines.push(
+          ...this.renderTree(child, prefix + extension, isLastChild)
+            .split("\n")
+            .filter(Boolean)
+        );
       });
     }
 
-    return lines.join('\n');
+    return lines.join("\n");
   }
 
   async generateReport(): Promise<string> {
@@ -88,25 +92,25 @@ export class SyncReportGenerator {
     const report: string[] = [];
 
     // Header
-    report.push(chalk.bold.cyan('\n📊 SuperClaude MCP Sync Report'));
-    report.push(chalk.gray('─'.repeat(50)));
+    report.push(chalk.bold.cyan("\n📊 SuperClaude MCP Sync Report"));
+    report.push(chalk.gray("─".repeat(50)));
     report.push(chalk.yellow(`Last Sync: ${this.formatDate(lastSync)}`));
-    report.push('');
+    report.push("");
 
     // Build tree structure
     const root: ReportNode = {
-      name: 'SuperClaude Data',
-      type: 'category',
+      name: "SuperClaude Data",
+      type: "category",
       valid: true,
-      children: []
+      children: [],
     };
 
     // Commands section
     const commandsNode: ReportNode = {
       name: `Commands (${commands.length})`,
-      type: 'category',
+      type: "category",
       valid: true,
-      children: []
+      children: [],
     };
 
     let invalidCommandCount = 0;
@@ -119,15 +123,15 @@ export class SyncReportGenerator {
 
       const hasArgs = command.arguments && command.arguments.length > 0;
       const details = [
-        hasArgs ? `${command.arguments!.length} args` : 'no args',
-        `hash: ${command.hash.substring(0, 8)}...`
-      ].join(', ');
+        hasArgs ? `${command.arguments!.length} args` : "no args",
+        `hash: ${command.hash.substring(0, 8)}...`,
+      ].join(", ");
 
       commandsNode.children!.push({
         name: command.name,
-        type: 'item',
+        type: "item",
         valid: validation.valid,
-        details
+        details,
       });
     });
 
@@ -140,9 +144,9 @@ export class SyncReportGenerator {
     // Personas section
     const personasNode: ReportNode = {
       name: `Personas (${personas.length})`,
-      type: 'category',
+      type: "category",
       valid: true,
-      children: []
+      children: [],
     };
 
     let invalidPersonaCount = 0;
@@ -157,9 +161,9 @@ export class SyncReportGenerator {
 
       personasNode.children!.push({
         name: `${persona.name} (${persona.id})`,
-        type: 'item',
+        type: "item",
         valid: validation.valid,
-        details
+        details,
       });
     });
 
@@ -173,37 +177,37 @@ export class SyncReportGenerator {
     let totalRules = 0;
     if (rules) {
       const validation = this.validateRules(rules);
-      
+
       // Count rules properly
       if (rules.rules && Array.isArray(rules.rules.rules)) {
         totalRules = rules.rules.rules.length;
       } else if (rules.rules && Array.isArray(rules.rules)) {
         totalRules = rules.rules.length;
       }
-      
+
       const rulesNode: ReportNode = {
         name: `Rules (${totalRules})`,
-        type: 'category',
+        type: "category",
         valid: validation.valid,
-        children: []
+        children: [],
       };
 
       if (rules.rules && Array.isArray(rules.rules.rules)) {
         rules.rules.rules.forEach(rule => {
           rulesNode.children!.push({
             name: rule.name,
-            type: 'item',
+            type: "item",
             valid: true,
-            details: `${rule.content.substring(0, 50)}...`
+            details: `${rule.content.substring(0, 50)}...`,
           });
         });
       } else if (rules.rules && Array.isArray(rules.rules)) {
         rules.rules.forEach(rule => {
           rulesNode.children!.push({
             name: rule.name,
-            type: 'item',
+            type: "item",
             valid: true,
-            details: `${rule.content.substring(0, 50)}...`
+            details: `${rule.content.substring(0, 50)}...`,
           });
         });
       }
@@ -211,23 +215,23 @@ export class SyncReportGenerator {
       root.children!.push(rulesNode);
     } else {
       root.children!.push({
-        name: 'Rules (0)',
-        type: 'category',
+        name: "Rules (0)",
+        type: "category",
         valid: false,
-        details: 'not loaded'
+        details: "not loaded",
       });
     }
 
     // Render tree
-    report.push(this.renderTree(root, '', true));
+    report.push(this.renderTree(root, "", true));
 
     // Summary
-    report.push('');
-    report.push(chalk.gray('─'.repeat(50)));
-    report.push(chalk.bold('Summary:'));
-    report.push(`  ${chalk.cyan('Total Commands:')} ${commands.length}`);
-    report.push(`  ${chalk.cyan('Total Personas:')} ${personas.length}`);
-    
+    report.push("");
+    report.push(chalk.gray("─".repeat(50)));
+    report.push(chalk.bold("Summary:"));
+    report.push(`  ${chalk.cyan("Total Commands:")} ${commands.length}`);
+    report.push(`  ${chalk.cyan("Total Personas:")} ${personas.length}`);
+
     // Calculate total rules for summary
     let summaryTotalRules = 0;
     if (rules) {
@@ -237,18 +241,21 @@ export class SyncReportGenerator {
         summaryTotalRules = rules.rules.length;
       }
     }
-    report.push(`  ${chalk.cyan('Total Rules:')} ${summaryTotalRules}`);
-    
-    const totalInvalid = invalidCommandCount + invalidPersonaCount + (rules && !this.validateRules(rules).valid ? 1 : 0);
+    report.push(`  ${chalk.cyan("Total Rules:")} ${summaryTotalRules}`);
+
+    const totalInvalid =
+      invalidCommandCount +
+      invalidPersonaCount +
+      (rules && !this.validateRules(rules).valid ? 1 : 0);
     if (totalInvalid > 0) {
-      report.push(`  ${chalk.red('Invalid Items:')} ${totalInvalid}`);
+      report.push(`  ${chalk.red("Invalid Items:")} ${totalInvalid}`);
     } else {
-      report.push(`  ${chalk.green('All items valid')} ✓`);
+      report.push(`  ${chalk.green("All items valid")} ✓`);
     }
 
-    report.push('');
+    report.push("");
 
-    return report.join('\n');
+    return report.join("\n");
   }
 
   async generateDetailedReport(): Promise<string> {
@@ -260,26 +267,26 @@ export class SyncReportGenerator {
 
     const report: string[] = [];
 
-    report.push(chalk.bold.cyan('\n📊 SuperClaude MCP Detailed Sync Report'));
-    report.push(chalk.gray('═'.repeat(80)));
+    report.push(chalk.bold.cyan("\n📊 SuperClaude MCP Detailed Sync Report"));
+    report.push(chalk.gray("═".repeat(80)));
 
     // Commands with validation
-    report.push('\n' + chalk.bold.yellow('Commands:'));
-    report.push(chalk.gray('─'.repeat(80)));
+    report.push("\n" + chalk.bold.yellow("Commands:"));
+    report.push(chalk.gray("─".repeat(80)));
 
     commands.forEach(command => {
       const validation = this.validateCommand(command);
-      const status = validation.valid ? chalk.green('✓') : chalk.red('✗');
-      
+      const status = validation.valid ? chalk.green("✓") : chalk.red("✗");
+
       report.push(`${status} ${chalk.bold(command.name)} (${command.id})`);
       report.push(`  Description: ${command.description}`);
       report.push(`  Last Updated: ${this.formatDate(command.lastUpdated)}`);
       report.push(`  Hash: ${command.hash}`);
-      
+
       if (command.arguments && command.arguments.length > 0) {
         report.push(`  Arguments:`);
         command.arguments.forEach(arg => {
-          const required = arg.required ? chalk.red('*') : '';
+          const required = arg.required ? chalk.red("*") : "";
           report.push(`    - ${arg.name}${required}: ${arg.description}`);
         });
       }
@@ -291,17 +298,17 @@ export class SyncReportGenerator {
         });
       }
 
-      report.push('');
+      report.push("");
     });
 
     // Personas with validation
-    report.push(chalk.bold.yellow('Personas:'));
-    report.push(chalk.gray('─'.repeat(80)));
+    report.push(chalk.bold.yellow("Personas:"));
+    report.push(chalk.gray("─".repeat(80)));
 
     personas.forEach(persona => {
       const validation = this.validatePersona(persona);
-      const status = validation.valid ? chalk.green('✓') : chalk.red('✗');
-      
+      const status = validation.valid ? chalk.green("✓") : chalk.red("✗");
+
       report.push(`${status} ${chalk.bold(persona.name)} (${persona.id})`);
       report.push(`  Description: ${persona.description}`);
       report.push(`  Last Updated: ${this.formatDate(persona.lastUpdated)}`);
@@ -315,17 +322,17 @@ export class SyncReportGenerator {
         });
       }
 
-      report.push('');
+      report.push("");
     });
 
     // Rules with validation
-    report.push(chalk.bold.yellow('Rules:'));
-    report.push(chalk.gray('─'.repeat(80)));
+    report.push(chalk.bold.yellow("Rules:"));
+    report.push(chalk.gray("─".repeat(80)));
 
     if (rules) {
       const validation = this.validateRules(rules);
-      const status = validation.valid ? chalk.green('✓') : chalk.red('✗');
-      
+      const status = validation.valid ? chalk.green("✓") : chalk.red("✗");
+
       report.push(`${status} Rules (${rules.id})`);
       report.push(`  Last Updated: ${this.formatDate(rules.lastUpdated)}`);
       report.push(`  Hash: ${rules.hash}`);
@@ -345,11 +352,11 @@ export class SyncReportGenerator {
         });
       }
     } else {
-      report.push(chalk.red('No rules loaded'));
+      report.push(chalk.red("No rules loaded"));
     }
 
-    report.push('');
+    report.push("");
 
-    return report.join('\n');
+    return report.join("\n");
   }
 }

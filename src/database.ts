@@ -21,7 +21,7 @@ export interface RulesModel {
 
 export interface SyncMetadata {
   lastSync: Date;
-  syncStatus: 'success' | 'failed';
+  syncStatus: "success" | "failed";
   errorMessage?: string;
 }
 
@@ -38,6 +38,6 @@ export const DEFAULT_DATABASE_SCHEMA: DatabaseSchema = {
   rules: [],
   syncMetadata: {
     lastSync: new Date(0),
-    syncStatus: 'success'
-  }
+    syncStatus: "success",
+  },
 };

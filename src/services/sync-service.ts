@@ -15,13 +15,13 @@ export class SyncService {
   ) {}
 
   private generateHash(content: string): string {
-    return crypto.createHash('sha256').update(content).digest('hex');
+    return crypto.createHash("sha256").update(content).digest("hex");
   }
 
   private async syncCommands(): Promise<number> {
     const commands = await this.githubLoader.loadCommands();
     logger.debug({ commandCount: commands.length }, "Loaded commands from GitHub");
-    
+
     const commandModels: CommandModel[] = [];
     let updatedCount = 0;
 
@@ -30,21 +30,21 @@ export class SyncService {
     for (const command of commands) {
       const id = command.name;
       const hash = this.generateHash(JSON.stringify(command));
-      
+
       const existing = existingCommands.find(c => c.id === id);
-      
+
       const isNew = !existing;
       const hasChanged = existing && existing.hash !== hash;
-      
+
       if (isNew || hasChanged) {
         updatedCount++;
       }
-      
+
       commandModels.push({
         ...command,
         id,
         hash,
-        lastUpdated: existing && existing.hash === hash ? existing.lastUpdated : new Date()
+        lastUpdated: existing && existing.hash === hash ? existing.lastUpdated : new Date(),
       });
     }
 
@@ -64,21 +64,21 @@ export class SyncService {
     for (const [key, persona] of Object.entries(personas)) {
       const id = key;
       const hash = this.generateHash(JSON.stringify(persona));
-      
+
       const existing = existingPersonas.find(p => p.id === id);
-      
+
       const isNew = !existing;
       const hasChanged = existing && existing.hash !== hash;
-      
+
       if (isNew || hasChanged) {
         updatedCount++;
       }
-      
+
       personaModels.push({
         ...persona,
         id,
         hash,
-        lastUpdated: existing && existing.hash === hash ? existing.lastUpdated : new Date()
+        lastUpdated: existing && existing.hash === hash ? existing.lastUpdated : new Date(),
       });
     }
 
@@ -89,29 +89,29 @@ export class SyncService {
 
   private async syncRules(): Promise<{ updated: boolean; count: number }> {
     const rules = await this.githubLoader.loadRules();
-    
+
     // If no rules loaded, nothing to sync
     if (!rules) {
       logger.debug("No rules to sync");
       return { updated: false, count: 0 };
     }
-    
-    const id = 'superclaude-rules';
+
+    const id = "superclaude-rules";
     const hash = this.generateHash(JSON.stringify(rules));
-    
+
     const existing = await this.databaseService.getRules();
-    
+
     // Count rules
     const count = rules.rules ? rules.rules.length : 0;
-    
+
     if (!existing || existing.hash !== hash) {
       const rulesModel: RulesModel = {
         id,
         rules,
         hash,
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
       };
-      
+
       await this.databaseService.upsertRules(rulesModel);
       return { updated: true, count };
     }
@@ -135,52 +135,58 @@ export class SyncService {
       const results = await Promise.allSettled([
         this.syncCommands(),
         this.syncPersonas(),
-        this.syncRules()
+        this.syncRules(),
       ]);
 
       const [commandsResult, personasResult, rulesResult] = results;
-      
-      const commandsUpdated = commandsResult.status === 'fulfilled' ? commandsResult.value : 0;
-      const personasUpdated = personasResult.status === 'fulfilled' ? personasResult.value : 0;
-      const rulesResult_ = rulesResult.status === 'fulfilled' ? rulesResult.value : { updated: false, count: 0 };
+
+      const commandsUpdated = commandsResult.status === "fulfilled" ? commandsResult.value : 0;
+      const personasUpdated = personasResult.status === "fulfilled" ? personasResult.value : 0;
+      const rulesResult_ =
+        rulesResult.status === "fulfilled" ? rulesResult.value : { updated: false, count: 0 };
       const rulesUpdated = rulesResult_.updated;
       const rulesCount = rulesResult_.count;
 
       // Check if any failed
-      const failures = results.filter(r => r.status === 'rejected');
-      
+      const failures = results.filter(r => r.status === "rejected");
+
       if (failures.length > 0) {
-        const errorMessages = failures.map(f => 
-          f.status === 'rejected' ? f.reason?.message || 'Unknown error' : ''
-        ).join('; ');
-        
-        await this.databaseService.updateSyncMetadata('failed', errorMessages);
-        
-        logger.error({
-          commandsUpdated,
-          personasUpdated,
-          rulesUpdated,
-          rulesCount,
-          failures: failures.length,
-          durationMs: Date.now() - startTime
-        }, "GitHub sync completed with errors");
+        const errorMessages = failures
+          .map(f => (f.status === "rejected" ? f.reason?.message || "Unknown error" : ""))
+          .join("; ");
+
+        await this.databaseService.updateSyncMetadata("failed", errorMessages);
+
+        logger.error(
+          {
+            commandsUpdated,
+            personasUpdated,
+            rulesUpdated,
+            rulesCount,
+            failures: failures.length,
+            durationMs: Date.now() - startTime,
+          },
+          "GitHub sync completed with errors"
+        );
       } else {
-        await this.databaseService.updateSyncMetadata('success');
+        await this.databaseService.updateSyncMetadata("success");
 
         const duration = Date.now() - startTime;
-        logger.info({
-          commandsUpdated,
-          personasUpdated,
-          rulesUpdated,
-          rulesCount,
-          durationMs: duration
-        }, "GitHub sync completed successfully");
+        logger.info(
+          {
+            commandsUpdated,
+            personasUpdated,
+            rulesUpdated,
+            rulesCount,
+            durationMs: duration,
+          },
+          "GitHub sync completed successfully"
+        );
       }
-
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      await this.databaseService.updateSyncMetadata('failed', errorMessage);
-      
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      await this.databaseService.updateSyncMetadata("failed", errorMessage);
+
       logger.error({ error, durationMs: Date.now() - startTime }, "GitHub sync failed");
       throw error;
     } finally {
@@ -212,7 +218,7 @@ export class SyncService {
     }
 
     const intervalMs = this.syncIntervalMinutes * 60 * 1000;
-    
+
     // Set up interval to run sync periodically (not immediately)
     this.syncInterval = setInterval(async () => {
       try {

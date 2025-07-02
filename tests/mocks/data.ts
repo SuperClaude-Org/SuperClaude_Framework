@@ -1,21 +1,27 @@
-import { CommandModel, PersonaModel, RulesModel, DatabaseSchema, SyncMetadata } from '../../src/database.js';
-import { faker } from '@faker-js/faker';
-import crypto from 'crypto';
+import {
+  CommandModel,
+  PersonaModel,
+  RulesModel,
+  DatabaseSchema,
+  SyncMetadata,
+} from "../../src/database.js";
+import { faker } from "@faker-js/faker";
+import crypto from "crypto";
 
 // Helper to create consistent hashes for test data
 function createHash(content: string): string {
-  return crypto.createHash('sha256').update(content).digest('hex');
+  return crypto.createHash("sha256").update(content).digest("hex");
 }
 
 export function createMockCommand(overrides?: Partial<CommandModel>): CommandModel {
   const id = overrides?.id || faker.string.uuid();
-  const name = overrides?.name || 'mock-command';
-  const description = overrides?.description || 'A mock command for testing';
-  const prompt = overrides?.prompt || 'This is a mock prompt for testing purposes';
+  const name = overrides?.name || "mock-command";
+  const description = overrides?.description || "A mock command for testing";
+  const prompt = overrides?.prompt || "This is a mock prompt for testing purposes";
   const args = overrides?.arguments || [];
-  
+
   const content = `${name}-${description}-${prompt}-${JSON.stringify(args)}`;
-  
+
   return {
     id,
     name,
@@ -24,18 +30,19 @@ export function createMockCommand(overrides?: Partial<CommandModel>): CommandMod
     arguments: args,
     lastUpdated: overrides?.lastUpdated || new Date(),
     hash: overrides?.hash || createHash(content),
-    ...overrides
+    ...overrides,
   };
 }
 
 export function createMockPersona(overrides?: Partial<PersonaModel>): PersonaModel {
   const id = overrides?.id || faker.string.uuid();
-  const name = overrides?.name || 'Mock Persona';
-  const description = overrides?.description || 'A mock persona for testing';
-  const instructions = overrides?.instructions || 'You are a mock persona used for testing purposes.';
-  
+  const name = overrides?.name || "Mock Persona";
+  const description = overrides?.description || "A mock persona for testing";
+  const instructions =
+    overrides?.instructions || "You are a mock persona used for testing purposes.";
+
   const content = `${name}-${description}-${instructions}`;
-  
+
   return {
     id,
     name,
@@ -43,7 +50,7 @@ export function createMockPersona(overrides?: Partial<PersonaModel>): PersonaMod
     instructions,
     lastUpdated: overrides?.lastUpdated || new Date(),
     hash: overrides?.hash || createHash(content),
-    ...overrides
+    ...overrides,
   };
 }
 
@@ -51,28 +58,28 @@ export function createMockRules(overrides?: Partial<RulesModel>): RulesModel {
   const id = overrides?.id || faker.string.uuid();
   const rules = overrides?.rules || {
     rules: [
-      { name: 'safety', content: 'Always prioritize safety and security' },
-      { name: 'clarity', content: 'Be clear and concise in communication' }
-    ]
+      { name: "safety", content: "Always prioritize safety and security" },
+      { name: "clarity", content: "Be clear and concise in communication" },
+    ],
   };
-  
+
   const content = JSON.stringify(rules);
-  
+
   return {
     id,
     rules,
     lastUpdated: overrides?.lastUpdated || new Date(),
     hash: overrides?.hash || createHash(content),
-    ...overrides
+    ...overrides,
   };
 }
 
 export function createMockSyncMetadata(overrides?: Partial<SyncMetadata>): SyncMetadata {
   return {
     lastSync: overrides?.lastSync || new Date(),
-    syncStatus: overrides?.syncStatus || 'success',
+    syncStatus: overrides?.syncStatus || "success",
     errorMessage: overrides?.errorMessage,
-    ...overrides
+    ...overrides,
   };
 }
 
@@ -81,8 +88,8 @@ export function createMockDatabase(overrides?: Partial<DatabaseSchema>): Databas
     commands: [],
     personas: [],
     rules: [],
-    syncMetadata: createMockSyncMetadata({ syncStatus: 'success' }),
-    ...overrides
+    syncMetadata: createMockSyncMetadata({ syncStatus: "success" }),
+    ...overrides,
   };
 }
 
@@ -91,21 +98,23 @@ export function getMockCommands(): CommandModel[] {
   return [
     createMockCommand({
       id: faker.string.uuid(),
-      name: 'test-command',
-      description: 'A test command',
-      prompt: 'This is a test prompt with $ARGUMENT',
-      arguments: [{
-        name: 'ARGUMENT',
-        description: 'Test argument',
-        required: true
-      }]
+      name: "test-command",
+      description: "A test command",
+      prompt: "This is a test prompt with $ARGUMENT",
+      arguments: [
+        {
+          name: "ARGUMENT",
+          description: "Test argument",
+          required: true,
+        },
+      ],
     }),
     createMockCommand({
       id: faker.string.uuid(),
-      name: 'simple',
-      description: 'A simple command',
-      prompt: 'Simple prompt without arguments'
-    })
+      name: "simple",
+      description: "A simple command",
+      prompt: "Simple prompt without arguments",
+    }),
   ];
 }
 
@@ -113,28 +122,28 @@ export function getMockPersonas(): PersonaModel[] {
   return [
     createMockPersona({
       id: faker.string.uuid(),
-      name: 'Developer',
-      description: 'A helpful developer persona',
-      instructions: 'You are a helpful developer who writes clean code.'
+      name: "Developer",
+      description: "A helpful developer persona",
+      instructions: "You are a helpful developer who writes clean code.",
     }),
     createMockPersona({
       id: faker.string.uuid(),
-      name: 'Software Architect',
-      description: 'System design expert',
-      instructions: 'You focus on high-level system design and architecture patterns.'
-    })
+      name: "Software Architect",
+      description: "System design expert",
+      instructions: "You focus on high-level system design and architecture patterns.",
+    }),
   ];
 }
 
 export function getMockRules(): RulesModel {
   return createMockRules({
-    id: 'superclaude-rules',
+    id: "superclaude-rules",
     rules: {
       rules: [
-        { name: 'safety', content: 'Always prioritize safety and security' },
-        { name: 'clarity', content: 'Be clear and concise in communication' }
-      ]
-    }
+        { name: "safety", content: "Always prioritize safety and security" },
+        { name: "clarity", content: "Be clear and concise in communication" },
+      ],
+    },
   });
 }
 
