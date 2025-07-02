@@ -7,12 +7,12 @@ import {
   ReadResourceRequestSchema,
   ListResourceTemplatesRequestSchema
 } from "@modelcontextprotocol/sdk/types.js";
-import logger from "./logger.js";
-import { GitHubLoader } from "./github-loader.js";
-import { DatabaseService } from "./services/database-service.js";
-import { SyncService } from "./services/sync-service.js";
-import { SuperClaudeCommand, Persona } from "./types.js";
-import { CommandModel, PersonaModel } from "./database.js";
+import logger from "@logger";
+import { GitHubLoader } from "@/github-loader.js";
+import { DatabaseService } from "@services/database-service.js";
+import { SyncService } from "@services/sync-service.js";
+import { SuperClaudeCommand, Persona } from "@types";
+import { CommandModel, PersonaModel } from "@database";
 
 class SuperClaudeMCPServer {
   private githubLoader = new GitHubLoader();

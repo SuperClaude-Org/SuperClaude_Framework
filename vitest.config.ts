@@ -34,7 +34,14 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
+      '@': path.resolve(__dirname, './src'),
+      '@services': path.resolve(__dirname, './src/services'),
+      '@scripts': path.resolve(__dirname, './src/scripts'),
+      '@utils': path.resolve(__dirname, './src/utils'),
+      '@types': path.resolve(__dirname, './src/types.js'),
+      '@database': path.resolve(__dirname, './src/database.js'),
+      '@logger': path.resolve(__dirname, './src/logger.js'),
+      '@schemas': path.resolve(__dirname, './src/schemas.js')
     }
   }
 });

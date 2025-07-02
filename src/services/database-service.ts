@@ -2,8 +2,8 @@ import { Low } from "lowdb";
 import { JSONFile } from "lowdb/node";
 import path from "path";
 import fs from "fs/promises";
-import { DatabaseSchema, DEFAULT_DATABASE_SCHEMA, CommandModel, PersonaModel, RulesModel } from "../database.js";
-import logger from "../logger.js";
+import { DatabaseSchema, DEFAULT_DATABASE_SCHEMA, CommandModel, PersonaModel, RulesModel } from "@database";
+import logger from "@logger";
 
 export class DatabaseService {
   private db: Low<DatabaseSchema>;

@@ -6,6 +6,17 @@
     "lib": ["ES2022"],
     "outDir": "./dist",
     "rootDir": "./src",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@services/*": ["src/services/*"],
+      "@scripts/*": ["src/scripts/*"],
+      "@utils/*": ["src/utils/*"],
+      "@types": ["src/types.js"],
+      "@database": ["src/database.js"],
+      "@logger": ["src/logger.js"],
+      "@schemas": ["src/schemas.js"]
+    },
     "strict": false,
     "esModuleInterop": true,
     "skipLibCheck": true,

@@ -1,7 +1,7 @@
-import { GitHubLoader } from "../github-loader.js";
-import { DatabaseService } from "../services/database-service.js";
-import { SyncService } from "../services/sync-service.js";
-import logger from "../logger.js";
+import { GitHubLoader } from "@/github-loader.js";
+import { DatabaseService } from "@services/database-service.js";
+import { SyncService } from "@services/sync-service.js";
+import logger from "@logger";
 
 async function testPersonas() {
   const loader = new GitHubLoader();

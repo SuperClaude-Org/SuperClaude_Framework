@@ -1,5 +1,5 @@
-import serverInstance from "../server.js";
-import logger from "../logger.js";
+import serverInstance from "@/server.js";
+import logger from "@logger";
 
 async function testRulesResources() {
   console.log('Testing rules resource changes...\n');

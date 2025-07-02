@@ -1,7 +1,7 @@
 import chalk from 'chalk';
-import { DatabaseService } from '../services/database-service.js';
-import { CommandModel, PersonaModel, RulesModel } from '../database.js';
-import { CommandModelSchema, PersonaModelSchema, RulesModelSchema } from '../schemas.js';
+import { DatabaseService } from '@services/database-service.js';
+import { CommandModel, PersonaModel, RulesModel } from '@database';
+import { CommandModelSchema, PersonaModelSchema, RulesModelSchema } from '@schemas';
 
 interface ValidationResult {
   valid: boolean;

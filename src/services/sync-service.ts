@@ -1,8 +1,8 @@
 import crypto from "crypto";
-import { GitHubLoader } from "../github-loader.js";
-import { DatabaseService } from "./database-service.js";
-import { CommandModel, PersonaModel, RulesModel } from "../database.js";
-import logger from "../logger.js";
+import { GitHubLoader } from "@/github-loader.js";
+import { DatabaseService } from "@services/database-service.js";
+import { CommandModel, PersonaModel, RulesModel } from "@database";
+import logger from "@logger";
 
 export class SyncService {
   private syncInterval: NodeJS.Timeout | null = null;

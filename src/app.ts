@@ -1,8 +1,8 @@
 import express, { Request, Response } from "express";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { pinoHttp } from "pino-http";
-import logger from "./logger.js";
-import server from "./server.js";
+import logger from "@logger";
+import server from "@/server.js";
 
 const app: express.Application = express();
 

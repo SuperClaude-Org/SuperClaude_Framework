@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { DatabaseService } from '../services/database-service.js';
-import { SyncReportGenerator } from '../utils/sync-report.js';
+import { DatabaseService } from '@services/database-service.js';
+import { SyncReportGenerator } from '@utils/sync-report.js';
 import { program } from 'commander';
 import chalk from 'chalk';
 import path from 'path';
