@@ -5,7 +5,10 @@ import { Command, Persona } from "@/schemas.js";
 import { SuperClaudeRules } from "@types";
 import { ISourceLoader } from "./interfaces.js";
 
-const GITHUB_BASE_URL = "https://raw.githubusercontent.com/NomenAK/SuperClaude/master";
+// Default configuration
+const DEFAULT_GITHUB_URL = "https://github.com/NomenAK/SuperClaude";
+const DEFAULT_BRANCH = "master";
+const DEFAULT_CACHE_TTL = 5; // minutes
 
 /**
  * Sanitizes error objects to remove large buffer content while preserving useful debug info
@@ -36,7 +39,63 @@ function sanitizeError(error: any) {
 
 export class GitHubSourceLoader implements ISourceLoader {
   private cache: Map<string, { data: any; timestamp: number }> = new Map();
-  private cacheTTL = 5 * 60 * 1000; // 5 minutes
+  private cacheTTL: number;
+  private githubRawUrl: string;
+  private githubApiUrl: string;
+  private owner: string;
+  private repo: string;
+  private branch: string;
+
+  constructor(
+    repositoryUrl: string = DEFAULT_GITHUB_URL,
+    branch: string = DEFAULT_BRANCH,
+    cacheTTLMinutes: number = DEFAULT_CACHE_TTL
+  ) {
+    // Parse repository URL
+    const { owner, repo } = this.parseGitHubUrl(repositoryUrl);
+    this.owner = owner;
+    this.repo = repo;
+    this.branch = branch;
+    this.cacheTTL = cacheTTLMinutes * 60 * 1000; // Convert to milliseconds
+
+    // Construct URLs
+    this.githubRawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}`;
+    this.githubApiUrl = `https://api.github.com/repos/${owner}/${repo}`;
+
+    logger.info(
+      {
+        owner: this.owner,
+        repo: this.repo,
+        branch: this.branch,
+        cacheTTLMinutes,
+      },
+      "GitHubSourceLoader initialized"
+    );
+  }
+
+  /**
+   * Parse GitHub URL to extract owner and repository name
+   */
+  private parseGitHubUrl(url: string): { owner: string; repo: string } {
+    // Remove trailing slash
+    url = url.replace(/\/$/, "");
+
+    // Handle different GitHub URL formats
+    // https://github.com/owner/repo
+    // git@github.com:owner/repo.git
+    // https://github.com/owner/repo.git
+
+    let match = url.match(/github\.com[/:]([\w-]+)\/([\w-]+?)(\.git)?$/);
+
+    if (!match || match.length < 3) {
+      throw new Error(`Invalid GitHub URL format: ${url}`);
+    }
+
+    return {
+      owner: match[1],
+      repo: match[2],
+    };
+  }
 
   private async fetchFromGitHub(path: string): Promise<string> {
     const cacheKey = path;
@@ -48,7 +107,7 @@ export class GitHubSourceLoader implements ISourceLoader {
     }
 
     try {
-      const url = `${GITHUB_BASE_URL}${path}`;
+      const url = `${this.githubRawUrl}${path}`;
       logger.debug({ url }, "Fetching from GitHub");
       const response = await axios.get(url, {
         headers: {
@@ -66,8 +125,7 @@ export class GitHubSourceLoader implements ISourceLoader {
 
   async loadCommands(): Promise<Command[]> {
     try {
-      const commandsListUrl =
-        "https://api.github.com/repos/NomenAK/SuperClaude/contents/.claude/commands";
+      const commandsListUrl = `${this.githubApiUrl}/contents/.claude/commands?ref=${this.branch}`;
       const response = await axios.get(commandsListUrl, {
         headers: {
           Accept: "application/vnd.github.v3+json",
@@ -338,5 +396,26 @@ export class GitHubSourceLoader implements ISourceLoader {
     }
 
     return contents.join("\n\n");
+  }
+
+  /**
+   * Get information about the GitHub source
+   */
+  getSourceInfo(): {
+    type: "remote";
+    owner: string;
+    repo: string;
+    branch: string;
+    url: string;
+    cacheTTLMinutes: number;
+  } {
+    return {
+      type: "remote",
+      owner: this.owner,
+      repo: this.repo,
+      branch: this.branch,
+      url: `https://github.com/${this.owner}/${this.repo}`,
+      cacheTTLMinutes: this.cacheTTL / 60000,
+    };
   }
 }
