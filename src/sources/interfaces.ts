@@ -6,4 +6,5 @@ export interface ISourceLoader {
   loadPersonas(): Promise<Persona[]>;
   loadRules(): Promise<SuperClaudeRules>;
   clearCache(): void;
+  loadSharedIncludes?(includes: string[]): Promise<string>;
 }

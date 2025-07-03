@@ -7,7 +7,7 @@ import {
   ListResourceTemplatesRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import logger from "@logger";
-import { GitHubSourceLoader } from "@/sources/index.js";
+import { ISourceLoader } from "@/sources/index.js";
 import { SuperClaudeCommand, Persona, SuperClaudeRules } from "@types";
 
 /**
@@ -17,7 +17,7 @@ export function createMCPServer(
   commands: SuperClaudeCommand[],
   personas: Record<string, Persona>,
   rules: SuperClaudeRules | null,
-  githubLoader: GitHubSourceLoader,
+  sourceLoader: ISourceLoader,
   onSync: () => Promise<void>
 ): McpServer {
   const server = new McpServer(
@@ -36,7 +36,7 @@ export function createMCPServer(
   );
 
   // Register tool for direct sync
-  server.tool("sync", "Trigger immediate synchronization with GitHub", {}, async () => {
+  server.tool("sync", "Trigger immediate synchronization with data source", {}, async () => {
     try {
       logger.info("Direct sync triggered via MCP tool");
       await onSync();
@@ -97,10 +97,10 @@ export function createMCPServer(
 
     let content = command.prompt;
 
-    // Process @include directives
+    // Process @include directives if source loader supports it
     const includeMatches = content.match(/@include\s+[\w\-\/\.]+/g);
-    if (includeMatches) {
-      const includeContents = await githubLoader.loadSharedIncludes(includeMatches);
+    if (includeMatches && sourceLoader.loadSharedIncludes) {
+      const includeContents = await sourceLoader.loadSharedIncludes(includeMatches);
       for (const match of includeMatches) {
         content = content.replace(match, includeContents);
       }

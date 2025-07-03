@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { GitHubSourceLoader } from "@/sources/index.js";
+import { ISourceLoader } from "@/sources/index.js";
 import { DatabaseService } from "@services/database-service.js";
 import { CommandModel, PersonaModel, RuleModel } from "@database";
 import logger from "@logger";
@@ -9,7 +9,7 @@ export class SyncService {
   private isSyncing = false;
 
   constructor(
-    private readonly githubLoader: GitHubSourceLoader,
+    private readonly sourceLoader: ISourceLoader,
     private readonly databaseService: DatabaseService,
     private readonly syncIntervalMinutes: number = 30
   ) {}
@@ -19,8 +19,8 @@ export class SyncService {
   }
 
   private async syncCommands(): Promise<number> {
-    const commands = await this.githubLoader.loadCommands();
-    logger.debug({ commandCount: commands.length }, "Loaded commands from GitHub");
+    const commands = await this.sourceLoader.loadCommands();
+    logger.debug({ commandCount: commands.length }, "Loaded commands from source");
 
     const commandModels: CommandModel[] = [];
     let updatedCount = 0;
@@ -55,7 +55,7 @@ export class SyncService {
   }
 
   private async syncPersonas(): Promise<number> {
-    const personas = await this.githubLoader.loadPersonas();
+    const personas = await this.sourceLoader.loadPersonas();
     const personaModels: PersonaModel[] = [];
     let updatedCount = 0;
 
@@ -88,7 +88,7 @@ export class SyncService {
   }
 
   private async syncRules(): Promise<number> {
-    const rulesData = await this.githubLoader.loadRules();
+    const rulesData = await this.sourceLoader.loadRules();
 
     // If no rules loaded, nothing to sync
     if (!rulesData?.rules) {
@@ -127,7 +127,7 @@ export class SyncService {
     return updatedCount;
   }
 
-  async syncFromGitHub(): Promise<void> {
+  async syncFromSource(): Promise<void> {
     if (this.isSyncing) {
       logger.warn("Sync already in progress, skipping");
       return;
@@ -137,7 +137,7 @@ export class SyncService {
     const startTime = Date.now();
 
     try {
-      logger.info("Starting GitHub sync");
+      logger.info("Starting data sync from source");
 
       let commandsUpdated = 0;
       let personasUpdated = 0;
@@ -177,7 +177,7 @@ export class SyncService {
             failures: errors.length,
             durationMs: Date.now() - startTime,
           },
-          "GitHub sync completed with errors"
+          "Data sync completed with errors"
         );
       } else {
         await this.databaseService.updateSyncMetadata("success");
@@ -190,14 +190,14 @@ export class SyncService {
             rulesUpdated,
             durationMs: duration,
           },
-          "GitHub sync completed successfully"
+          "Data sync completed successfully"
         );
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
       await this.databaseService.updateSyncMetadata("failed", errorMessage);
 
-      logger.error({ error, durationMs: Date.now() - startTime }, "GitHub sync failed");
+      logger.error({ error, durationMs: Date.now() - startTime }, "Data sync failed");
       throw error;
     } finally {
       this.isSyncing = false;
@@ -221,6 +221,13 @@ export class SyncService {
     return { commands, personas, rules };
   }
 
+  /**
+   * @deprecated Use syncFromSource() instead
+   */
+  async syncFromGitHub(): Promise<void> {
+    return this.syncFromSource();
+  }
+
   startPeriodicSync(): void {
     if (this.syncInterval) {
       logger.warn("Periodic sync already started");
@@ -232,20 +239,20 @@ export class SyncService {
     // Set up interval to run sync periodically (not immediately)
     this.syncInterval = setInterval(async () => {
       try {
-        await this.syncFromGitHub();
+        await this.syncFromSource();
       } catch (error) {
         logger.error({ error }, "Periodic sync failed");
       }
     }, intervalMs);
 
-    logger.info({ intervalMinutes: this.syncIntervalMinutes }, "Started periodic GitHub sync");
+    logger.info({ intervalMinutes: this.syncIntervalMinutes }, "Started periodic data sync");
   }
 
   stopPeriodicSync(): void {
     if (this.syncInterval) {
       clearInterval(this.syncInterval);
       this.syncInterval = null;
-      logger.info("Stopped periodic GitHub sync");
+      logger.info("Stopped periodic data sync");
     }
   }
 }

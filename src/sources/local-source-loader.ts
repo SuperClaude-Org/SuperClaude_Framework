@@ -149,6 +149,32 @@ export class LocalSourceLoader implements ISourceLoader {
   }
 
   /**
+   * Load shared includes (for command templates)
+   */
+  async loadSharedIncludes(includes: string[]): Promise<string> {
+    const contents: string[] = [];
+
+    for (const include of includes) {
+      try {
+        const includePath = include.startsWith("@include")
+          ? include.replace("@include ", "").trim()
+          : include;
+
+        const fullPath = includePath.startsWith("/")
+          ? path.join(this.basePath, includePath)
+          : path.join(this.basePath, "commands", "shared", includePath);
+
+        const content = await fs.readFile(fullPath, "utf-8");
+        contents.push(content);
+      } catch (error) {
+        logger.warn({ error, include }, "Failed to load include from local source");
+      }
+    }
+
+    return contents.join("\n\n");
+  }
+
+  /**
    * Check if a directory exists
    */
   private async directoryExists(dirPath: string): Promise<boolean> {

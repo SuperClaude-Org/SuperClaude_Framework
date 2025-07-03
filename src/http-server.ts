@@ -1,29 +1,48 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import logger from "@logger";
-import { GitHubSourceLoader } from "@/sources/index.js";
+import { ISourceLoader, SourceLoaderFactory } from "@/sources/index.js";
 import { DatabaseService } from "@services/database-service.js";
 import { SyncService } from "@services/sync-service.js";
+import { ConfigService, ConfigOptions } from "@services/config-service.js";
 import { SuperClaudeCommand, Persona, SuperClaudeRules } from "@types";
 import { CommandModel, PersonaModel } from "@database";
 import { createMCPServer } from "@/mcp.js";
 
 class SuperClaudeMCPServer {
-  private githubLoader = new GitHubSourceLoader();
-  private databaseService = new DatabaseService();
+  private configService: ConfigService;
+  private sourceLoader: ISourceLoader;
+  private databaseService: DatabaseService;
   private syncService: SyncService;
   private personas: Record<string, Persona> = {};
   private commands: SuperClaudeCommand[] = [];
   private rules: SuperClaudeRules | null = null;
 
-  constructor() {
-    this.syncService = new SyncService(this.githubLoader, this.databaseService);
+  constructor(configOptions?: ConfigOptions) {
+    this.configService = new ConfigService(configOptions);
+    // Initialize will be called asynchronously
     this.initialize();
   }
 
   private async initialize() {
     try {
+      // Initialize configuration
+      await this.configService.initialize();
+      const config = this.configService.getConfig();
+
+      // Create source loader based on configuration
+      this.sourceLoader = SourceLoaderFactory.create(config.source);
+
       // Initialize database
+      const dbPath = config.database.path;
+      this.databaseService = new DatabaseService(dbPath);
       await this.databaseService.initialize();
+
+      // Create sync service with configured source loader
+      this.syncService = new SyncService(
+        this.sourceLoader,
+        this.databaseService,
+        config.sync.intervalMinutes
+      );
 
       // Try to load from database first
       const dbData = await this.syncService.loadFromDatabase();
@@ -34,21 +53,28 @@ class SuperClaudeMCPServer {
         Object.keys(dbData.personas).length === 0
       ) {
         // Database is empty, do initial sync
-        logger.info("Database empty, performing initial sync from GitHub");
-        await this.syncService.syncFromGitHub();
+        logger.info("Database empty, performing initial sync from source");
+        await this.syncService.syncFromSource();
         await this.loadFromDatabase();
       } else {
         // Load from database
         await this.loadFromDatabase();
 
-        // Check if we need to sync (if last sync was more than 30 minutes ago and auto sync is enabled)
-        const autoSyncEnabled = process.env.SC_AUTO_SYNC_ENABLED === "true";
-        if (autoSyncEnabled) {
+        // Check if we need to sync on startup
+        if (config.sync.onStartup) {
           const lastSync = await this.databaseService.getLastSync();
           const timeSinceLastSync = Date.now() - lastSync.getTime();
-          if (timeSinceLastSync > 30 * 60 * 1000) {
-            logger.info("Last sync was more than 30 minutes ago, syncing from GitHub");
-            this.syncService.syncFromGitHub().catch(error => {
+          const syncIntervalMs = config.sync.intervalMinutes * 60 * 1000;
+
+          if (timeSinceLastSync > syncIntervalMs) {
+            logger.info(
+              {
+                lastSync: lastSync.toISOString(),
+                intervalMinutes: config.sync.intervalMinutes,
+              },
+              "Last sync exceeded interval, syncing from source"
+            );
+            this.syncService.syncFromSource().catch(error => {
               logger.error({ error }, "Background sync failed");
             });
           }
@@ -56,12 +82,14 @@ class SuperClaudeMCPServer {
       }
 
       // Start periodic sync if enabled
-      const autoSyncEnabled = process.env.SC_AUTO_SYNC_ENABLED === "true";
-      if (autoSyncEnabled) {
-        logger.info("Auto sync is enabled, starting periodic sync");
+      if (config.sync.enabled) {
+        logger.info(
+          { intervalMinutes: config.sync.intervalMinutes },
+          "Auto sync is enabled, starting periodic sync"
+        );
         this.syncService.startPeriodicSync();
       } else {
-        logger.info("Auto sync is disabled (set SC_AUTO_SYNC_ENABLED=true to enable)");
+        logger.info("Auto sync is disabled (configure sync.enabled=true to enable)");
       }
     } catch (error) {
       logger.error({ error }, "Failed to initialize server");
@@ -69,7 +97,7 @@ class SuperClaudeMCPServer {
   }
 
   async triggerSync(): Promise<void> {
-    await this.syncService.syncFromGitHub();
+    await this.syncService.syncFromSource();
     await this.loadFromDatabase();
   }
 
@@ -125,7 +153,7 @@ class SuperClaudeMCPServer {
       this.commands,
       this.personas,
       this.rules,
-      this.githubLoader,
+      this.sourceLoader,
       this.triggerSync.bind(this)
     );
   }
