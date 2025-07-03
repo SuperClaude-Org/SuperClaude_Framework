@@ -75,14 +75,6 @@ export class ConfigService {
       if (this.config.persistence.enabled && this.config.persistence.autoSave) {
         await this.saveUserConfig();
       }
-
-      // Handle SC_PERSIST_CONFIG environment variable
-      if (process.env.SC_PERSIST_CONFIG === "true" && !this.config.persistence.enabled) {
-        this.config.persistence.enabled = true;
-        this.config.persistence.autoSave = true;
-        await this.saveUserConfig();
-        logger.info("Configuration persisted due to SC_PERSIST_CONFIG environment variable");
-      }
     } catch (error) {
       logger.error({ error }, "Failed to initialize configuration");
       throw error;

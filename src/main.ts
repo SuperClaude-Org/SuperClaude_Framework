@@ -295,7 +295,6 @@ async function main() {
       if (globalOpts.sourcePath) process.env.SC_SOURCE_PATH = globalOpts.sourcePath;
       if (globalOpts.sourceUrl) process.env.SC_SOURCE_URL = globalOpts.sourceUrl;
       if (globalOpts.sourceBranch) process.env.SC_SOURCE_BRANCH = globalOpts.sourceBranch;
-      if (globalOpts.persistConfig) process.env.SC_PERSIST_CONFIG = "true";
 
       await runServer(options.transport);
     });

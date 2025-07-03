@@ -53,6 +53,7 @@ const AppConfigBaseSchema = z.object({
 });
 
 // Main application configuration schema with refinements
+export { AppConfigBaseSchema };
 export const AppConfigSchema = AppConfigBaseSchema.refine(
   data => {
     // Validate that if source type is local, local config is provided

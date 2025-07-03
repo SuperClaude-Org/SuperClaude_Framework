@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { SourceLoaderFactory } from "../source-loader-factory.js";
 import { LocalSourceLoader } from "../local-source-loader.js";
 import { GitHubSourceLoader } from "../github-source-loader.js";

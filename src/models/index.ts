@@ -12,9 +12,10 @@ export {
 } from "./persona.model.js";
 export { RuleSchema, RuleModelSchema, type Rule, type RuleModel } from "./rules.model.js";
 export { SyncMetadataSchema, type SyncMetadata } from "./sync.model.js";
-export { DatabaseSchemaSchema, type DatabaseSchema } from "./database.model.js";
+export { DatabaseSchemaSchema, type DatabaseSchema, type UnparsedFile } from "./database.model.js";
 export {
   AppConfigSchema,
+  AppConfigBaseSchema,
   AppConfigModelSchema,
   LocalSourceConfigSchema,
   RemoteSourceConfigSchema,

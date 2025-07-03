@@ -81,7 +81,6 @@ superclaude-mcp --source-type local --source-path /data --persist-config server
 
 The following environment variables are supported:
 
-- `SC_PERSIST_CONFIG`: Persist configuration to home directory
 - `SC_SOURCE_TYPE`: Source type (local or remote)
 - `SC_SOURCE_PATH`: Path for local source
 - `SC_SOURCE_URL`: URL for remote source

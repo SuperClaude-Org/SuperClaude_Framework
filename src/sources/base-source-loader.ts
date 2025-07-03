@@ -4,12 +4,9 @@ import logger from "@/logger.js";
 import { Command, Persona } from "@/schemas.js";
 import { SuperClaudeRules } from "@types";
 import { ISourceLoader } from "./interfaces.js";
+import type { UnparsedFile } from "@/models/database.model.js";
 
-export interface UnparsedFile {
-  path: string;
-  error: string;
-  timestamp: Date;
-}
+export type { UnparsedFile };
 
 export interface LoadResult<T> {
   data: T[];

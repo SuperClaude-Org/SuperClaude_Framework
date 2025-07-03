@@ -11,7 +11,6 @@ describe("ConfigService", () => {
     originalEnv = { ...process.env };
 
     // Clear configuration-related environment variables
-    delete process.env.SC_PERSIST_CONFIG;
     delete process.env.SC_SOURCE_TYPE;
     delete process.env.SC_SOURCE_PATH;
     delete process.env.SC_SOURCE_URL;
@@ -117,17 +116,6 @@ describe("ConfigService", () => {
       };
 
       configService = new ConfigService(cliOptions);
-      await configService.initialize();
-
-      const config = configService.getConfig();
-      expect(config.persistence.enabled).toBe(true);
-      expect(config.persistence.autoSave).toBe(true);
-    });
-
-    it("should handle SC_PERSIST_CONFIG environment variable", async () => {
-      process.env.SC_PERSIST_CONFIG = "true";
-
-      configService = new ConfigService();
       await configService.initialize();
 
       const config = configService.getConfig();
