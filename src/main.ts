@@ -6,6 +6,10 @@ import express from "express";
 import serverInstance from "@/http-server.js";
 import app from "@/app.js";
 import logger, { configureLogger } from "@logger";
+import { DatabaseService } from "@services/database-service.js";
+import { SyncReportGenerator } from "@utils/sync-report.js";
+import chalk from "chalk";
+import path from "path";
 
 async function launchMcpStdioServer() {
   const server = serverInstance.createInstance();
@@ -26,19 +30,7 @@ async function launchHttpServer() {
   return server;
 }
 
-async function main() {
-  const program = new Command();
-
-  program
-    .name("superclaude-mcp")
-    .description("SuperClaude server with MCP and Express support")
-    .version("1.0.0")
-    .option("-t, --transport <type>", "transport type (stdio or http)", "stdio")
-    .parse();
-
-  const options = program.opts();
-  const transport = options.transport;
-
+async function runServer(transport: string) {
   // Configure logger based on transport type as early as possible
   configureLogger(transport);
 
@@ -86,6 +78,65 @@ async function main() {
     logger.error({ error }, "Failed to start server");
     process.exit(1);
   }
+}
+
+async function runReport(options: { detailed?: boolean; path?: string; color?: boolean }) {
+  // Configure logger for non-server usage
+  configureLogger("http");
+
+  if (options.color === false) {
+    chalk.level = 0;
+  }
+
+  try {
+    const dbPath = options.path || path.join(process.cwd(), "data", "superclaude.json");
+    const databaseService = new DatabaseService(dbPath);
+    const reportGenerator = new SyncReportGenerator(databaseService);
+
+    const report = options.detailed
+      ? await reportGenerator.generateDetailedReport()
+      : await reportGenerator.generateReport();
+
+    console.log(report);
+  } catch (error) {
+    console.error(chalk.red("Error generating report:"), error);
+    process.exit(1);
+  }
+}
+
+async function main() {
+  const program = new Command();
+
+  program
+    .name("superclaude-mcp")
+    .description("SuperClaude MCP server")
+    .version("1.0.0");
+
+  // Server command (default)
+  program
+    .command("server", { isDefault: true })
+    .description("Start the SuperClaude MCP server")
+    .option("-t, --transport <type>", "transport type (stdio or http)", "stdio")
+    .action(async options => {
+      await runServer(options.transport);
+    });
+
+  // Report command
+  program
+    .command("report")
+    .description("Generate a report of recently synced data")
+    .option("-d, --detailed", "Detailed report with full schema validation")
+    .option(
+      "-p, --path <path>",
+      "Custom database path",
+      path.join(process.cwd(), "data", "superclaude.json")
+    )
+    .option("--no-color", "Disable colored output")
+    .action(async options => {
+      await runReport(options);
+    });
+
+  await program.parseAsync();
 }
 
 main().catch(error => {
