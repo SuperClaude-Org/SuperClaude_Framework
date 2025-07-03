@@ -133,13 +133,13 @@ export function createMCPServer(
     return {
       resourceTemplates: [
         {
-          uriTemplate: "superclaude://personas/{personaId}",
+          uriTemplate: "file://personas/{personaId}",
           name: "SuperClaude Persona",
           description: "Access a specific SuperClaude persona by ID",
           mimeType: "application/json",
         },
         {
-          uriTemplate: "superclaude://rules/{ruleId}",
+          uriTemplate: "file://rules/{ruleId}",
           name: "SuperClaude Rule",
           description: "Access a specific SuperClaude rule by name",
           mimeType: "application/json",
@@ -156,7 +156,7 @@ export function createMCPServer(
     if (rules?.rules) {
       for (const rule of rules.rules) {
         resources.push({
-          uri: `superclaude://rules/${encodeURIComponent(rule.name)}`,
+          uri: `file://rules/${encodeURIComponent(rule.name)}`,
           name: rule.name,
           description: rule.content.substring(0, 100) + (rule.content.length > 100 ? "..." : ""),
           mimeType: "application/json",
@@ -167,7 +167,7 @@ export function createMCPServer(
     // Add persona resources
     for (const [personaId, persona] of Object.entries(personas)) {
       resources.push({
-        uri: `superclaude://personas/${personaId}`,
+        uri: `file://personas/${personaId}`,
         name: persona.name,
         description: persona.description,
         mimeType: "application/json",
@@ -180,22 +180,27 @@ export function createMCPServer(
   // Read specific resource
   lowLevelServer.setRequestHandler(ReadResourceRequestSchema, async request => {
     const uri = request.params.uri;
+    logger.info({ uri }, "Resource requested");
 
     // Handle individual rule resources
-    const ruleMatch = uri.match(/^superclaude:\/\/rules\/(.+)$/);
+    const ruleMatch = uri.match(/^file:\/\/rules\/(.+)$/);
     if (ruleMatch) {
       const ruleId = decodeURIComponent(ruleMatch[1]);
+      logger.debug({ ruleId }, "Rule resource requested");
 
       if (!rules?.rules) {
+        logger.warn({ uri }, "Rules not loaded for resource request");
         throw new Error("Rules not loaded");
       }
 
       const rule = rules.rules.find(r => r.name === ruleId);
 
       if (!rule) {
+        logger.warn({ ruleId, uri }, "Rule resource not found");
         throw new Error(`Rule resource not found: ${ruleId}`);
       }
 
+      logger.info({ ruleId, uri }, "Rule resource successfully returned");
       return {
         contents: [
           {
@@ -215,15 +220,18 @@ export function createMCPServer(
     }
 
     // Handle persona resources
-    const personaMatch = uri.match(/^superclaude:\/\/personas\/(.+)$/);
+    const personaMatch = uri.match(/^file:\/\/personas\/(.+)$/);
     if (personaMatch) {
       const personaId = personaMatch[1];
+      logger.debug({ personaId }, "Persona resource requested");
       const persona = personas[personaId];
 
       if (!persona) {
+        logger.warn({ personaId, uri }, "Persona resource not found");
         throw new Error(`Persona resource not found: ${personaId}`);
       }
 
+      logger.info({ personaId, uri }, "Persona resource successfully returned");
       return {
         contents: [
           {
@@ -242,6 +250,7 @@ export function createMCPServer(
       };
     }
 
+    logger.warn({ uri }, "Unknown resource type requested");
     throw new Error(`Resource not found: ${uri}`);
   });
 
