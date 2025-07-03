@@ -8,8 +8,11 @@ import app from "@/app.js";
 import logger, { configureLogger } from "@logger";
 import { DatabaseService } from "@services/database-service.js";
 import { SyncReportGenerator } from "@utils/sync-report.js";
+import { GitHubSourceLoader } from "@/sources/index.js";
+import { SyncService } from "@services/sync-service.js";
 import chalk from "chalk";
 import path from "path";
+import fs from "fs";
 
 async function launchMcpStdioServer() {
   const server = serverInstance.createInstance();
@@ -80,7 +83,12 @@ async function runServer(transport: string) {
   }
 }
 
-async function runReport(options: { detailed?: boolean; path?: string; color?: boolean }) {
+async function runSyncAndReport(options: {
+  detailed?: boolean;
+  path?: string;
+  color?: boolean;
+  syncEnabled: boolean;
+}) {
   // Configure logger for non-server usage
   configureLogger("http");
 
@@ -91,6 +99,31 @@ async function runReport(options: { detailed?: boolean; path?: string; color?: b
   try {
     const dbPath = options.path || path.join(process.cwd(), "data", "superclaude.json");
     const databaseService = new DatabaseService(dbPath);
+
+    // Perform sync if enabled
+    if (options.syncEnabled) {
+      console.log(chalk.blue("Starting GitHub sync..."));
+
+      const githubLoader = new GitHubSourceLoader();
+      const syncService = new SyncService(githubLoader, databaseService);
+
+      // Only initialize database if it doesn't exist
+      const dbExists = fs.existsSync(dbPath);
+      if (!dbExists) {
+        console.log(chalk.blue("Database doesn't exist, initializing..."));
+        await databaseService.initialize();
+      }
+
+      try {
+        await syncService.syncFromGitHub();
+        console.log(chalk.green("Sync completed successfully"));
+      } catch (error) {
+        console.error(chalk.yellow("Warning: Sync failed, but will still generate report:"), error);
+        // Continue to report generation even if sync fails
+      }
+    }
+
+    // Generate report
     const reportGenerator = new SyncReportGenerator(databaseService);
 
     const report = options.detailed
@@ -99,18 +132,23 @@ async function runReport(options: { detailed?: boolean; path?: string; color?: b
 
     console.log(report);
   } catch (error) {
-    console.error(chalk.red("Error generating report:"), error);
+    console.error(chalk.red("Error:"), error);
     process.exit(1);
   }
+}
+
+async function runReport(options: { detailed?: boolean; path?: string; color?: boolean }) {
+  await runSyncAndReport({ ...options, syncEnabled: false });
+}
+
+async function runSync(options: { detailed?: boolean; path?: string; color?: boolean }) {
+  await runSyncAndReport({ ...options, syncEnabled: true });
 }
 
 async function main() {
   const program = new Command();
 
-  program
-    .name("superclaude-mcp")
-    .description("SuperClaude MCP server")
-    .version("1.0.0");
+  program.name("superclaude-mcp").description("SuperClaude MCP server").version("1.0.0");
 
   // Server command (default)
   program
@@ -134,6 +172,21 @@ async function main() {
     .option("--no-color", "Disable colored output")
     .action(async options => {
       await runReport(options);
+    });
+
+  // Sync command
+  program
+    .command("sync")
+    .description("Sync data from GitHub and generate a report")
+    .option("-d, --detailed", "Detailed report with full schema validation")
+    .option(
+      "-p, --path <path>",
+      "Custom database path",
+      path.join(process.cwd(), "data", "superclaude.json")
+    )
+    .option("--no-color", "Disable colored output")
+    .action(async options => {
+      await runSync(options);
     });
 
   await program.parseAsync();

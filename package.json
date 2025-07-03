@@ -14,7 +14,7 @@
     "build": "tsup",
     "start": "node dist/main.js",
     "start:http": "node dist/main.js --transport http",
-    "sync": "curl -X POST http://localhost:8080/api/sync",
+    "sync": "tsx src/main.ts sync",
     "report": "tsx src/main.ts report",
     "test": "vitest --run",
     "test:github": "vitest --run tests/github-loader",
