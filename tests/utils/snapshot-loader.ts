@@ -2,7 +2,7 @@ import { readFileSync } from "fs";
 import { join } from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-import { CommandModel, PersonaModel, RulesModel } from "../../src/database.js";
+import { CommandModel, PersonaModel, RuleModel } from "../../src/database.js";
 import { SuperClaudeCommand, Persona } from "../../src/types.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -65,18 +65,24 @@ export function getSnapshotPersonas(): PersonaModel[] {
   return loadSnapshot().personas;
 }
 
-export function getSnapshotRules(): RulesModel | null {
+export function getSnapshotRules(): RuleModel[] {
   const snapshot = loadSnapshot();
-  const rules = snapshot.rules as any[];
-  if (rules.length === 0) return null;
+  const rulesData = snapshot.rules as any[];
+  if (rulesData.length === 0) return [];
 
-  const rule = rules[0];
-  return {
-    id: rule.id,
-    rules: rule.rules,
-    hash: rule.hash,
-    lastUpdated: new Date(), // Use current date for tests
-  };
+  // Assuming snapshot has rules in the old format, convert to new format
+  const firstRuleSet = rulesData[0];
+  if (firstRuleSet && firstRuleSet.rules && firstRuleSet.rules.rules) {
+    return firstRuleSet.rules.rules.map((rule: any, index: number) => ({
+      id: rule.name,
+      name: rule.name,
+      content: rule.content,
+      hash: `${rule.name}-hash`,
+      lastUpdated: new Date(),
+    }));
+  }
+
+  return [];
 }
 
 export function getSnapshotPersonasAsRecord(): Record<string, PersonaModel> {

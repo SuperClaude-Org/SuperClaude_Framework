@@ -1,19 +1,19 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import logger from "@logger";
-import { GitHubLoader } from "@/github-loader.js";
+import { GitHubSourceLoader } from "@/sources/index.js";
 import { DatabaseService } from "@services/database-service.js";
 import { SyncService } from "@services/sync-service.js";
-import { SuperClaudeCommand, Persona } from "@types";
+import { SuperClaudeCommand, Persona, SuperClaudeRules } from "@types";
 import { CommandModel, PersonaModel } from "@database";
 import { createMCPServer } from "@/mcp.js";
 
 class SuperClaudeMCPServer {
-  private githubLoader = new GitHubLoader();
+  private githubLoader = new GitHubSourceLoader();
   private databaseService = new DatabaseService();
   private syncService: SyncService;
   private personas: Record<string, Persona> = {};
   private commands: SuperClaudeCommand[] = [];
-  private rules: any = {};
+  private rules: SuperClaudeRules | null = null;
 
   constructor() {
     this.syncService = new SyncService(this.githubLoader, this.databaseService);
@@ -96,13 +96,16 @@ class SuperClaudeMCPServer {
         };
       }
 
-      this.rules = rules?.rules || {};
+      // Convert RuleModel[] to Rules format expected by MCP
+      this.rules =
+        rules && rules.length > 0
+          ? {
+              rules: rules.map(r => ({ name: r.name, content: r.content })),
+            }
+          : null;
 
       // Count rules
-      let rulesCount = 0;
-      if (rules?.rules?.rules) {
-        rulesCount = rules.rules.rules.length;
-      }
+      const rulesCount = rules?.length || 0;
 
       logger.info(
         {

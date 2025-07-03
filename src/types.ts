@@ -1,29 +1,13 @@
+// Re-export types from models for backward compatibility
+export type { Command as SuperClaudeCommand, CommandModel } from "./models/command.model.js";
+export type { Persona, PersonaModel } from "./models/persona.model.js";
+export type { Rules as SuperClaudeRules, RuleModel } from "./models/rules.model.js";
+export type { SyncMetadata } from "./models/sync.model.js";
+export type { DatabaseSchema } from "./models/database.model.js";
+
+// Legacy interface for backward compatibility
 export interface CommandArgument {
   name: string;
   description: string;
   required: boolean;
-}
-
-export interface SuperClaudeCommand {
-  name: string;
-  description: string;
-  prompt: string;
-  messages?: Array<{
-    role: string;
-    content: string;
-  }>;
-  arguments?: CommandArgument[];
-}
-
-export interface Persona {
-  name: string;
-  description: string;
-  instructions: string;
-}
-
-export interface SuperClaudeRules {
-  rules: Array<{
-    name: string;
-    content: string;
-  }>;
 }

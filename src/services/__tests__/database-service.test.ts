@@ -1,20 +1,20 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { DatabaseService } from "../../src/services/database-service.js";
+import { DatabaseService } from "../database-service.js";
 import {
   CommandModelSchema,
   PersonaModelSchema,
-  RulesModelSchema,
+  RuleModelSchema,
   DatabaseSchemaSchema,
-} from "../../src/schemas.js";
+} from "@/schemas.js";
 import {
   createMockCommand,
   createMockPersona,
-  createMockRules,
+  createMockRule,
   getMockCommands,
   getMockPersonas,
   getMockRules,
-} from "../mocks/data.js";
-import { createTestDatabase, verifyEmptyDatabase } from "../utils/test-helpers.js";
+} from "@tests/mocks/data.js";
+import { createTestDatabase, verifyEmptyDatabase } from "@tests/utils/test-helpers.js";
 
 describe("DatabaseService", () => {
   let dbService: DatabaseService;
@@ -28,7 +28,8 @@ describe("DatabaseService", () => {
   });
 
   afterEach(async () => {
-    // No cleanup needed for in-memory databases
+    // Close the database connection
+    await dbService.close();
   });
 
   describe("initialize", () => {
@@ -228,76 +229,121 @@ describe("DatabaseService", () => {
   });
 
   describe("rules", () => {
-    describe("upsertRules", () => {
-      it("should insert new rules", async () => {
-        const rules = createMockRules({
-          id: "test-rules",
-          rules: {
-            rules: [{ name: "rule1", content: "Content 1" }],
-          },
-        });
-
-        await dbService.upsertRules(rules);
-
-        const savedRules = await dbService.getRules();
-        expect(savedRules).not.toBeNull();
-        expect(savedRules?.id).toBe("test-rules");
-        expect(savedRules?.rules.rules).toHaveLength(1);
-      });
-
-      it("should update existing rules", async () => {
-        const rules = createMockRules({
-          id: "test-rules",
-          rules: {
-            rules: [{ name: "rule1", content: "Original content" }],
-          },
-        });
-
-        await dbService.upsertRules(rules);
-
-        // Update the rules
-        const updatedRules = {
-          ...rules,
-          rules: {
-            rules: [
-              { name: "rule1", content: "Updated content" },
-              { name: "rule2", content: "New rule" },
-            ],
-          },
+    describe("upsertRule", () => {
+      it("should insert new rule", async () => {
+        const rule = {
+          id: "rule1",
+          name: "rule1",
+          content: "Content 1",
+          lastUpdated: new Date(),
+          hash: "rule1-hash",
         };
 
-        await dbService.upsertRules(updatedRules);
+        await dbService.upsertRule(rule);
 
-        const savedRules = await dbService.getRules();
-        expect(savedRules?.rules.rules).toHaveLength(2);
-        expect(savedRules?.rules.rules[0].content).toBe("Updated content");
+        const savedRules = await dbService.getAllRules();
+        expect(savedRules).toHaveLength(1);
+        expect(savedRules[0].id).toBe("rule1");
+        expect(savedRules[0].content).toBe("Content 1");
       });
 
-      it("should validate rules with Zod schema", async () => {
-        const rules = createMockRules();
-        await dbService.upsertRules(rules);
+      it("should update existing rule", async () => {
+        const rule = {
+          id: "rule1",
+          name: "rule1",
+          content: "Original content",
+          lastUpdated: new Date(),
+          hash: "rule1-hash",
+        };
 
-        const savedRules = await dbService.getRules();
-        const result = RulesModelSchema.safeParse(savedRules);
+        await dbService.upsertRule(rule);
+
+        // Update the rule
+        const updatedRule = {
+          ...rule,
+          content: "Updated content",
+          hash: "rule1-hash-updated",
+        };
+
+        await dbService.upsertRule(updatedRule);
+
+        const savedRules = await dbService.getAllRules();
+        expect(savedRules).toHaveLength(1);
+        expect(savedRules[0].content).toBe("Updated content");
+      });
+
+      it("should validate rule with Zod schema", async () => {
+        const rule = {
+          id: "rule1",
+          name: "rule1",
+          content: "Content 1",
+          lastUpdated: new Date(),
+          hash: "rule1-hash",
+        };
+        await dbService.upsertRule(rule);
+
+        const savedRules = await dbService.getAllRules();
+        const result = RuleModelSchema.safeParse(savedRules[0]);
         expect(result.success).toBe(true);
       });
     });
 
-    describe("getRules", () => {
-      it("should return null when no rules exist", async () => {
-        const rules = await dbService.getRules();
-        expect(rules).toBeNull();
+    describe("upsertRules", () => {
+      it("should insert multiple rules", async () => {
+        const rules = [
+          {
+            id: "rule1",
+            name: "rule1",
+            content: "Content 1",
+            lastUpdated: new Date(),
+            hash: "rule1-hash",
+          },
+          {
+            id: "rule2",
+            name: "rule2",
+            content: "Content 2",
+            lastUpdated: new Date(),
+            hash: "rule2-hash",
+          },
+        ];
+
+        await dbService.upsertRules(rules);
+
+        const savedRules = await dbService.getAllRules();
+        expect(savedRules).toHaveLength(2);
+        expect(savedRules.map(r => r.id).sort()).toEqual(["rule1", "rule2"]);
+      });
+    });
+
+    describe("getAllRules", () => {
+      it("should return empty array when no rules exist", async () => {
+        const rules = await dbService.getAllRules();
+        expect(rules).toEqual([]);
       });
 
-      it("should return first rules entry", async () => {
-        // Insert multiple rules
-        await dbService.upsertRules(createMockRules({ id: "rules-1" }));
-        await dbService.upsertRules(createMockRules({ id: "rules-2" }));
+      it("should return all rules", async () => {
+        const rules = [
+          {
+            id: "rule1",
+            name: "rule1",
+            content: "Content 1",
+            lastUpdated: new Date(),
+            hash: "rule1-hash",
+          },
+          {
+            id: "rule2",
+            name: "rule2",
+            content: "Content 2",
+            lastUpdated: new Date(),
+            hash: "rule2-hash",
+          },
+        ];
 
-        const rules = await dbService.getRules();
-        expect(rules).not.toBeNull();
-        // Should return one of the rules (order not guaranteed)
-        expect(["rules-1", "rules-2"]).toContain(rules?.id);
+        await dbService.upsertRules(rules);
+
+        const savedRules = await dbService.getAllRules();
+        expect(savedRules).toHaveLength(2);
+        expect(savedRules.map(r => r.name).sort()).toEqual(["rule1", "rule2"]);
       });
     });
   });
@@ -322,7 +368,14 @@ describe("DatabaseService", () => {
       // Add some data
       await dbService.upsertCommand(createMockCommand());
       await dbService.upsertPersona(createMockPersona());
-      await dbService.upsertRules(createMockRules());
+      const rule = {
+        id: "rule1",
+        name: "rule1",
+        content: "Content 1",
+        lastUpdated: new Date(),
+        hash: "rule1-hash",
+      };
+      await dbService.upsertRule(rule);
 
       // Clear all data
       await dbService.clearAll();
@@ -330,11 +383,11 @@ describe("DatabaseService", () => {
       // Verify everything is cleared
       const commands = await dbService.getAllCommands();
       const personas = await dbService.getAllPersonas();
-      const rules = await dbService.getRules();
+      const rules = await dbService.getAllRules();
 
       expect(commands).toEqual([]);
       expect(personas).toEqual([]);
-      expect(rules).toBeNull();
+      expect(rules).toEqual([]);
     });
   });
 
@@ -343,7 +396,24 @@ describe("DatabaseService", () => {
       // Add some data
       await dbService.upsertCommands(getMockCommands());
       await dbService.upsertPersonas(getMockPersonas());
-      await dbService.upsertRules(getMockRules());
+      // Create mock rules in new format
+      const mockRules = [
+        {
+          id: "rule1",
+          name: "rule1",
+          content: "Content 1",
+          lastUpdated: new Date(),
+          hash: "rule1-hash",
+        },
+        {
+          id: "rule2",
+          name: "rule2",
+          content: "Content 2",
+          lastUpdated: new Date(),
+          hash: "rule2-hash",
+        },
+      ];
+      await dbService.upsertRules(mockRules);
 
       // Read the raw database
       await dbService["db"].read();

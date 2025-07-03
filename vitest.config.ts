@@ -28,7 +28,7 @@ export default defineConfig({
       },
     },
     setupFiles: ["./tests/setup.ts"],
-    include: ["tests/**/*.test.ts"],
+    include: ["tests/**/*.test.ts", "src/**/__tests__/**/*.test.ts"],
     testTimeout: 10000,
     hookTimeout: 10000,
   },
@@ -42,6 +42,7 @@ export default defineConfig({
       "@database": path.resolve(__dirname, "./src/database.js"),
       "@logger": path.resolve(__dirname, "./src/logger.js"),
       "@schemas": path.resolve(__dirname, "./src/schemas.js"),
+      "@tests": path.resolve(__dirname, "./tests"),
     },
   },
 });

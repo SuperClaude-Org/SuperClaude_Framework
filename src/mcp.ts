@@ -7,8 +7,8 @@ import {
   ListResourceTemplatesRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import logger from "@logger";
-import { GitHubLoader } from "@/github-loader.js";
-import { SuperClaudeCommand, Persona } from "@types";
+import { GitHubSourceLoader } from "@/sources/index.js";
+import { SuperClaudeCommand, Persona, SuperClaudeRules } from "@types";
 
 /**
  * Creates and configures an MCP server instance with all handlers
@@ -16,8 +16,8 @@ import { SuperClaudeCommand, Persona } from "@types";
 export function createMCPServer(
   commands: SuperClaudeCommand[],
   personas: Record<string, Persona>,
-  rules: any,
-  githubLoader: GitHubLoader,
+  rules: SuperClaudeRules | null,
+  githubLoader: GitHubSourceLoader,
   onSync: () => Promise<void>
 ): McpServer {
   const server = new McpServer(
@@ -50,7 +50,7 @@ export function createMCPServer(
               message: "Sync completed successfully",
               commandsCount: commands.length,
               personasCount: Object.keys(personas).length,
-              rulesCount: rules?.rules ? rules.rules.length : 0,
+              rulesCount: rules?.rules?.length || 0,
             }),
           },
         ],
@@ -153,10 +153,8 @@ export function createMCPServer(
     const resources = [];
 
     // Add individual rule resources
-    if (rules && rules.rules) {
-      const rulesList = Array.isArray(rules.rules) ? rules.rules : rules.rules.rules || [];
-
-      for (const rule of rulesList) {
+    if (rules?.rules) {
+      for (const rule of rules.rules) {
         resources.push({
           uri: `superclaude://rules/${encodeURIComponent(rule.name)}`,
           name: rule.name,
@@ -188,12 +186,11 @@ export function createMCPServer(
     if (ruleMatch) {
       const ruleId = decodeURIComponent(ruleMatch[1]);
 
-      if (!rules || !rules.rules) {
+      if (!rules?.rules) {
         throw new Error("Rules not loaded");
       }
 
-      const rulesList = Array.isArray(rules.rules) ? rules.rules : rules.rules.rules || [];
-      const rule = rulesList.find((r: { name: string; content: string }) => r.name === ruleId);
+      const rule = rules.rules.find(r => r.name === ruleId);
 
       if (!rule) {
         throw new Error(`Rule resource not found: ${ruleId}`);

@@ -1,20 +1,20 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { SyncService } from "../../src/services/sync-service.js";
-import { DatabaseService } from "../../src/services/database-service.js";
-import { GitHubLoader } from "../../src/github-loader.js";
-import { createMockCommand, createMockPersona, createMockRules } from "../mocks/data.js";
-import { createTestDatabase } from "../utils/test-helpers.js";
+import { SyncService } from "../sync-service.js";
+import { DatabaseService } from "../database-service.js";
+import { GitHubSourceLoader } from "@/sources/index.js";
+import { createMockCommand, createMockPersona, createMockRule } from "@tests/mocks/data.js";
+import { createTestDatabase } from "@tests/utils/test-helpers.js";
 import {
   convertCommandModelToCommand,
   convertPersonaModelToPersona,
-} from "../utils/snapshot-loader.js";
+} from "@tests/utils/snapshot-loader.js";
 
-vi.mock("../../src/github-loader.js");
+vi.mock("@/sources/index.js");
 
 describe("SyncService", () => {
   let syncService: SyncService;
   let databaseService: DatabaseService;
-  let githubLoader: GitHubLoader;
+  let githubLoader: GitHubSourceLoader;
 
   beforeEach(async () => {
     // Create a completely isolated database for each test
@@ -24,10 +24,10 @@ describe("SyncService", () => {
     // Verify database starts empty
     const commands = await databaseService.getAllCommands();
     const personas = await databaseService.getAllPersonas();
-    const rules = await databaseService.getRules();
+    const rules = await databaseService.getAllRules();
     expect(commands).toHaveLength(0);
     expect(personas).toHaveLength(0);
-    expect(rules).toBeNull();
+    expect(rules).toHaveLength(0);
 
     // Create mocked GitHubLoader
     githubLoader = {
@@ -59,16 +59,16 @@ describe("SyncService", () => {
         createMockPersona({ id: "persona-2", name: "Persona 2" }),
       ];
 
-      const mockRulesModel = createMockRules({ id: "rules-1" });
+      const mockRuleModels = [
+        createMockRule({ id: "rule1", name: "rule1", content: "Content 1" }),
+        createMockRule({ id: "rule2", name: "rule2", content: "Content 2" }),
+      ];
 
       // Convert to GitHub loader format
       const mockCommands = mockCommandModels.map(cmd => convertCommandModelToCommand(cmd));
-      const mockPersonas: Record<string, any> = {};
-      mockPersonaModels.forEach(p => {
-        mockPersonas[p.id] = convertPersonaModelToPersona(p);
-      });
+      const mockPersonas = mockPersonaModels.map(p => convertPersonaModelToPersona(p));
       const mockRules = {
-        rules: mockRulesModel.rules.rules,
+        rules: mockRuleModels.map(r => ({ name: r.name, content: r.content })),
       };
 
       // Mock GitHub loader responses
@@ -82,12 +82,11 @@ describe("SyncService", () => {
       // Verify data was synced to database
       const commands = await databaseService.getAllCommands();
       const personas = await databaseService.getAllPersonas();
-      const rules = await databaseService.getRules();
+      const rules = await databaseService.getAllRules();
 
       expect(commands).toHaveLength(2);
       expect(personas).toHaveLength(2);
-      expect(rules).not.toBeNull();
-      expect(rules?.rules.rules).toHaveLength(2);
+      expect(rules).toHaveLength(2);
     });
 
     it.skip("should skip sync if already in progress", async () => {
@@ -137,7 +136,7 @@ describe("SyncService", () => {
       };
 
       (githubLoader.loadCommands as any).mockResolvedValue([changedCommand, newCommand]);
-      (githubLoader.loadPersonas as any).mockResolvedValue({});
+      (githubLoader.loadPersonas as any).mockResolvedValue([]);
       (githubLoader.loadRules as any).mockResolvedValue(null);
 
       // Execute sync
@@ -180,7 +179,10 @@ describe("SyncService", () => {
       // Insert test data
       const commands = [createMockCommand({ id: "cmd-1" }), createMockCommand({ id: "cmd-2" })];
       const personas = [createMockPersona({ id: "p-1" }), createMockPersona({ id: "p-2" })];
-      const rules = createMockRules({ id: "rules-1" });
+      const rules = [
+        createMockRule({ id: "rule1", name: "rule1", content: "Content 1" }),
+        createMockRule({ id: "rule2", name: "rule2", content: "Content 2" }),
+      ];
 
       await databaseService.upsertCommands(commands);
       await databaseService.upsertPersonas(personas);
@@ -210,12 +212,12 @@ describe("SyncService", () => {
       expect(data.personas["developer"].name).toBe("Developer");
     });
 
-    it("should return null for rules if none exist", async () => {
+    it("should return empty array for rules if none exist", async () => {
       const data = await syncService.loadFromDatabase();
 
       expect(data.commands).toEqual([]);
       expect(data.personas).toEqual({});
-      expect(data.rules).toBeNull();
+      expect(data.rules).toEqual([]);
     });
   });
 

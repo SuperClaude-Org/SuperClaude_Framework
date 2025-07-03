@@ -7,7 +7,7 @@ import {
   DEFAULT_DATABASE_SCHEMA,
   CommandModel,
   PersonaModel,
-  RulesModel,
+  RuleModel,
 } from "@database";
 import logger from "@logger";
 
@@ -49,7 +49,7 @@ export class DatabaseService {
         adapterToUse = new JSONFile<DatabaseSchema>(this.dbPath);
       }
 
-      this.db = new Low(adapterToUse, DEFAULT_DATABASE_SCHEMA);
+      this.db = new Low(adapterToUse, DEFAULT_DATABASE_SCHEMA());
 
       await this.db.read();
 
@@ -90,6 +90,9 @@ export class DatabaseService {
   async upsertCommands(commands: CommandModel[]): Promise<void> {
     this.ensureInitialized();
 
+    // Read latest data before modifying
+    await this.db.read();
+
     for (const command of commands) {
       const index = this.db.data!.commands.findIndex(c => c.id === command.id);
       if (index >= 0) {
@@ -120,6 +123,9 @@ export class DatabaseService {
   async upsertPersonas(personas: PersonaModel[]): Promise<void> {
     this.ensureInitialized();
 
+    // Read latest data before modifying
+    await this.db.read();
+
     for (const persona of personas) {
       const index = this.db.data!.personas.findIndex(p => p.id === persona.id);
       if (index >= 0) {
@@ -133,18 +139,40 @@ export class DatabaseService {
     logger.debug({ count: personas.length }, "Personas upserted");
   }
 
-  async upsertRules(rules: RulesModel): Promise<void> {
+  async upsertRule(rule: RuleModel): Promise<void> {
     this.ensureInitialized();
 
-    const index = this.db.data!.rules.findIndex(r => r.id === rules.id);
+    // Read latest data before modifying
+    await this.db.read();
+
+    const index = this.db.data!.rules.findIndex(r => r.id === rule.id);
     if (index >= 0) {
-      this.db.data!.rules[index] = rules;
+      this.db.data!.rules[index] = rule;
     } else {
-      this.db.data!.rules.push(rules);
+      this.db.data!.rules.push(rule);
     }
 
     await this.db.write();
-    logger.debug({ rulesId: rules.id }, "Rules upserted");
+    logger.debug({ ruleId: rule.id }, "Rule upserted");
+  }
+
+  async upsertRules(rules: RuleModel[]): Promise<void> {
+    this.ensureInitialized();
+
+    // Read latest data before modifying
+    await this.db.read();
+
+    for (const rule of rules) {
+      const index = this.db.data!.rules.findIndex(r => r.id === rule.id);
+      if (index >= 0) {
+        this.db.data!.rules[index] = rule;
+      } else {
+        this.db.data!.rules.push(rule);
+      }
+    }
+
+    await this.db.write();
+    logger.debug({ count: rules.length }, "Rules upserted");
   }
 
   async getAllCommands(): Promise<CommandModel[]> {
@@ -165,17 +193,13 @@ export class DatabaseService {
     }));
   }
 
-  async getRules(): Promise<RulesModel | null> {
+  async getAllRules(): Promise<RuleModel[]> {
     this.ensureInitialized();
     await this.db.read();
-    const rules = this.db.data!.rules || [];
-    if (rules.length > 0) {
-      return {
-        ...rules[0],
-        lastUpdated: new Date(rules[0].lastUpdated),
-      };
-    }
-    return null;
+    return (this.db.data!.rules || []).map(rule => ({
+      ...rule,
+      lastUpdated: new Date(rule.lastUpdated),
+    }));
   }
 
   async getLastSync(): Promise<Date> {
@@ -200,7 +224,7 @@ export class DatabaseService {
   async clearAll(): Promise<void> {
     this.ensureInitialized();
 
-    this.db.data = DEFAULT_DATABASE_SCHEMA;
+    this.db.data = DEFAULT_DATABASE_SCHEMA();
     await this.db.write();
     logger.info("Database cleared");
   }

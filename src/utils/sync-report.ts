@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import { DatabaseService } from "@services/database-service.js";
-import { CommandModel, PersonaModel, RulesModel } from "@database";
-import { CommandModelSchema, PersonaModelSchema, RulesModelSchema } from "@schemas";
+import { CommandModel, PersonaModel, RuleModel } from "@database";
+import { CommandModelSchema, PersonaModelSchema, RuleModelSchema } from "@schemas";
 
 interface ValidationResult {
   valid: boolean;
@@ -41,8 +41,8 @@ export class SyncReportGenerator {
     };
   }
 
-  private validateRules(rules: RulesModel): ValidationResult {
-    const result = RulesModelSchema.safeParse(rules);
+  private validateRule(rule: RuleModel): ValidationResult {
+    const result = RuleModelSchema.safeParse(rule);
     if (result.success) {
       return { valid: true };
     }
@@ -86,7 +86,7 @@ export class SyncReportGenerator {
 
     const commands = await this.databaseService.getAllCommands();
     const personas = await this.databaseService.getAllPersonas();
-    const rules = await this.databaseService.getRules();
+    const rules = await this.databaseService.getAllRules();
     const lastSync = await this.databaseService.getLastSync();
 
     const report: string[] = [];
@@ -174,53 +174,36 @@ export class SyncReportGenerator {
     root.children!.push(personasNode);
 
     // Rules section
-    let totalRules = 0;
-    if (rules) {
-      const validation = this.validateRules(rules);
+    const rulesNode: ReportNode = {
+      name: `Rules (${rules.length})`,
+      type: "category",
+      valid: true,
+      children: [],
+    };
 
-      // Count rules properly
-      if (rules.rules && Array.isArray(rules.rules.rules)) {
-        totalRules = rules.rules.rules.length;
-      } else if (rules.rules && Array.isArray(rules.rules)) {
-        totalRules = rules.rules.length;
+    let invalidRulesCount = 0;
+    rules.forEach(rule => {
+      const validation = this.validateRule(rule);
+      if (!validation.valid) {
+        invalidRulesCount++;
+        rulesNode.valid = false;
       }
 
-      const rulesNode: ReportNode = {
-        name: `Rules (${totalRules})`,
-        type: "category",
+      const details = `hash: ${rule.hash.substring(0, 8)}...`;
+
+      rulesNode.children!.push({
+        name: rule.name,
+        type: "item",
         valid: validation.valid,
-        children: [],
-      };
-
-      if (rules.rules && Array.isArray(rules.rules.rules)) {
-        rules.rules.rules.forEach(rule => {
-          rulesNode.children!.push({
-            name: rule.name,
-            type: "item",
-            valid: true,
-            details: `${rule.content.substring(0, 50)}...`,
-          });
-        });
-      } else if (rules.rules && Array.isArray(rules.rules)) {
-        rules.rules.forEach(rule => {
-          rulesNode.children!.push({
-            name: rule.name,
-            type: "item",
-            valid: true,
-            details: `${rule.content.substring(0, 50)}...`,
-          });
-        });
-      }
-
-      root.children!.push(rulesNode);
-    } else {
-      root.children!.push({
-        name: "Rules (0)",
-        type: "category",
-        valid: false,
-        details: "not loaded",
+        details,
       });
+    });
+
+    if (invalidRulesCount > 0) {
+      rulesNode.name += chalk.red(` [${invalidRulesCount} invalid]`);
     }
+
+    root.children!.push(rulesNode);
 
     // Render tree
     report.push(this.renderTree(root, "", true));
@@ -232,21 +215,9 @@ export class SyncReportGenerator {
     report.push(`  ${chalk.cyan("Total Commands:")} ${commands.length}`);
     report.push(`  ${chalk.cyan("Total Personas:")} ${personas.length}`);
 
-    // Calculate total rules for summary
-    let summaryTotalRules = 0;
-    if (rules) {
-      if (rules.rules && Array.isArray(rules.rules.rules)) {
-        summaryTotalRules = rules.rules.rules.length;
-      } else if (rules.rules && Array.isArray(rules.rules)) {
-        summaryTotalRules = rules.rules.length;
-      }
-    }
-    report.push(`  ${chalk.cyan("Total Rules:")} ${summaryTotalRules}`);
+    report.push(`  ${chalk.cyan("Total Rules:")} ${rules.length}`);
 
-    const totalInvalid =
-      invalidCommandCount +
-      invalidPersonaCount +
-      (rules && !this.validateRules(rules).valid ? 1 : 0);
+    const totalInvalid = invalidCommandCount + invalidPersonaCount + invalidRulesCount;
     if (totalInvalid > 0) {
       report.push(`  ${chalk.red("Invalid Items:")} ${totalInvalid}`);
     } else {
@@ -263,7 +234,7 @@ export class SyncReportGenerator {
 
     const commands = await this.databaseService.getAllCommands();
     const personas = await this.databaseService.getAllPersonas();
-    const rules = await this.databaseService.getRules();
+    const rules = await this.databaseService.getAllRules();
 
     const report: string[] = [];
 
@@ -329,28 +300,25 @@ export class SyncReportGenerator {
     report.push(chalk.bold.yellow("Rules:"));
     report.push(chalk.gray("─".repeat(80)));
 
-    if (rules) {
-      const validation = this.validateRules(rules);
-      const status = validation.valid ? chalk.green("✓") : chalk.red("✗");
+    if (rules.length > 0) {
+      rules.forEach(rule => {
+        const validation = this.validateRule(rule);
+        const status = validation.valid ? chalk.green("✓") : chalk.red("✗");
 
-      report.push(`${status} Rules (${rules.id})`);
-      report.push(`  Last Updated: ${this.formatDate(rules.lastUpdated)}`);
-      report.push(`  Hash: ${rules.hash}`);
-      const rulesList = rules.rules.rules || rules.rules || [];
-      report.push(`  Rules Count: ${Array.isArray(rulesList) ? rulesList.length : 0}`);
+        report.push(`${status} ${chalk.bold(rule.name)} (${rule.id})`);
+        report.push(`  Last Updated: ${this.formatDate(rule.lastUpdated)}`);
+        report.push(`  Hash: ${rule.hash}`);
+        report.push(`  Content: ${rule.content.substring(0, 100)}...`);
 
-      if (Array.isArray(rulesList)) {
-        rulesList.forEach(rule => {
-          report.push(`    - ${chalk.cyan(rule.name)}: ${rule.content.substring(0, 60)}...`);
-        });
-      }
+        if (!validation.valid && validation.errors) {
+          report.push(chalk.red(`  Validation Errors:`));
+          validation.errors.forEach(error => {
+            report.push(chalk.red(`    - ${error}`));
+          });
+        }
 
-      if (!validation.valid && validation.errors) {
-        report.push(chalk.red(`  Validation Errors:`));
-        validation.errors.forEach(error => {
-          report.push(chalk.red(`    - ${error}`));
-        });
-      }
+        report.push("");
+      });
     } else {
       report.push(chalk.red("No rules loaded"));
     }

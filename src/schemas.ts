@@ -1,71 +1,27 @@
-import { z } from "zod";
+// Re-export from models for backward compatibility
+export {
+  CommandSchema as SuperClaudeCommandSchema,
+  CommandModelSchema,
+  type Command,
+  type CommandModel,
+} from "./models/command.model.js";
 
-export const SuperClaudeCommandSchema = z.object({
-  name: z.string().min(1),
-  description: z.string().min(1),
-  prompt: z.string().min(1),
-  messages: z
-    .array(
-      z.object({
-        role: z.string(),
-        content: z.string(),
-      })
-    )
-    .optional(),
-  arguments: z
-    .array(
-      z.object({
-        name: z.string(),
-        description: z.string(),
-        required: z.boolean(),
-      })
-    )
-    .optional(),
-});
+export {
+  PersonaSchema,
+  PersonaModelSchema,
+  type Persona,
+  type PersonaModel,
+} from "./models/persona.model.js";
 
-export const PersonaSchema = z.object({
-  name: z.string().min(1),
-  description: z.string().min(1),
-  instructions: z.string().min(1),
-});
+export {
+  RulesSchema as SuperClaudeRulesSchema,
+  RuleModelSchema,
+  RuleSchema,
+  type Rules,
+  type Rule,
+  type RuleModel,
+} from "./models/rules.model.js";
 
-export const SuperClaudeRulesSchema = z.object({
-  rules: z.array(
-    z.object({
-      name: z.string(),
-      content: z.string(),
-    })
-  ),
-});
+export { SyncMetadataSchema, type SyncMetadata } from "./models/sync.model.js";
 
-export const CommandModelSchema = SuperClaudeCommandSchema.extend({
-  id: z.string().min(1),
-  lastUpdated: z.coerce.date(),
-  hash: z.string().min(1),
-});
-
-export const PersonaModelSchema = PersonaSchema.extend({
-  id: z.string().min(1),
-  lastUpdated: z.coerce.date(),
-  hash: z.string().min(1),
-});
-
-export const RulesModelSchema = z.object({
-  id: z.string().min(1),
-  rules: SuperClaudeRulesSchema,
-  lastUpdated: z.coerce.date(),
-  hash: z.string().min(1),
-});
-
-export const SyncMetadataSchema = z.object({
-  lastSync: z.coerce.date(),
-  syncStatus: z.enum(["success", "failed"]),
-  errorMessage: z.string().optional(),
-});
-
-export const DatabaseSchemaSchema = z.object({
-  commands: z.array(CommandModelSchema),
-  personas: z.array(PersonaModelSchema),
-  rules: z.array(RulesModelSchema),
-  syncMetadata: SyncMetadataSchema,
-});
+export { DatabaseSchemaSchema, type DatabaseSchema } from "./models/database.model.js";

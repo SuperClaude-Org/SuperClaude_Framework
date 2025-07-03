@@ -1,12 +1,8 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
-import { GitHubLoader } from "../../src/github-loader.js";
-import {
-  SuperClaudeCommandSchema,
-  PersonaSchema,
-  SuperClaudeRulesSchema,
-} from "../../src/schemas.js";
+import { GitHubSourceLoader } from "../index.js";
+import { SuperClaudeCommandSchema, PersonaSchema, SuperClaudeRulesSchema } from "@/schemas.js";
 import axios from "axios";
-import { getMockCommands } from "../mocks/data.js";
+import { getMockCommands } from "@tests/mocks/data.js";
 import {
   getSnapshotCommands,
   getPersonasYamlContent,
@@ -14,7 +10,7 @@ import {
   convertCommandModelToCommand,
   convertPersonaModelToPersona,
   getSnapshotPersonasAsRecord,
-} from "../utils/snapshot-loader.js";
+} from "@tests/utils/snapshot-loader.js";
 
 vi.mock("axios", () => ({
   default: {
@@ -22,13 +18,13 @@ vi.mock("axios", () => ({
   },
 }));
 
-describe("GitHubLoader", () => {
-  let githubLoader: GitHubLoader;
+describe("GitHubSourceLoader", () => {
+  let githubLoader: GitHubSourceLoader;
 
   beforeEach(() => {
     vi.resetAllMocks();
     vi.clearAllMocks();
-    githubLoader = new GitHubLoader();
+    githubLoader = new GitHubSourceLoader();
     vi.useFakeTimers();
   });
 
@@ -171,16 +167,17 @@ describe("GitHubLoader", () => {
 
       const personas = await githubLoader.loadPersonas();
 
-      expect(Object.keys(personas)).toHaveLength(9); // 9 personas in snapshot
-      expect(personas.architect).toBeDefined();
-      expect(personas.architect.name).toBe(
+      expect(personas).toHaveLength(9); // 9 personas in snapshot
+      const architect = personas.find(p => p.name.includes("Systems architect"));
+      expect(architect).toBeDefined();
+      expect(architect!.name).toBe(
         "Systems architect | Scalability specialist | Long-term thinker"
       );
-      expect(personas.architect.description).toBe(
+      expect(architect!.description).toBe(
         "Systems evolve, design for change | Architecture enables or constrains everything"
       );
-      expect(personas.architect.instructions).toContain("Systems architect");
-      expect(personas.architect.instructions).toContain("Scalability specialist");
+      expect(architect!.instructions).toContain("Systems architect");
+      expect(architect!.instructions).toContain("Scalability specialist");
     });
 
     it("should validate personas with Zod schema", async () => {
@@ -207,7 +204,7 @@ invalid: yaml: content
       });
 
       const personas = await githubLoader.loadPersonas();
-      expect(personas).toEqual({});
+      expect(personas).toEqual([]);
     });
 
     it("should use cache for personas", async () => {
@@ -240,8 +237,8 @@ invalid: yaml: content
 
       expect(rules.rules.length).toBeGreaterThan(0);
       // The extractRules function creates a single rule when parsing fails, check for actual behavior
-      const ruleNames = rules.rules.map(r => r.name);
-      const ruleContents = rules.rules.map(r => r.content).join(" ");
+      const ruleNames = rules.rules.map((r: any) => r.name);
+      const ruleContents = rules.rules.map((r: any) => r.content).join(" ");
 
       // The YAML parsing creates a single rule with name "rules" containing all content
       expect(ruleNames).toContain("rules");
@@ -296,7 +293,7 @@ invalid: yaml: content
       const rules = await githubLoader.loadRules();
 
       expect(commands).toEqual([]);
-      expect(personas).toEqual({});
+      expect(personas).toEqual([]);
       expect(rules).toEqual({ rules: [] });
     });
 
@@ -318,7 +315,7 @@ invalid: yaml: content
       });
 
       const personas = await githubLoader.loadPersonas();
-      expect(personas).toEqual({});
+      expect(personas).toEqual([]);
     });
   });
 });

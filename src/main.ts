@@ -3,9 +3,9 @@
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { Command } from "commander";
 import express from "express";
-import serverInstance from "@/server.js";
+import serverInstance from "@/http-server.js";
 import app from "@/app.js";
-import logger from "@logger";
+import logger, { configureLogger } from "@logger";
 
 async function launchMcpStdioServer() {
   const server = serverInstance.createInstance();
@@ -38,6 +38,9 @@ async function main() {
 
   const options = program.opts();
   const transport = options.transport;
+
+  // Configure logger based on transport type as early as possible
+  configureLogger(transport);
 
   if (!["stdio", "http"].includes(transport)) {
     logger.error(`Invalid transport type: ${transport}. Must be 'stdio' or 'http'`);

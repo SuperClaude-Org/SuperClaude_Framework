@@ -1,7 +1,7 @@
 import crypto from "crypto";
-import { GitHubLoader } from "@/github-loader.js";
+import { GitHubSourceLoader } from "@/sources/index.js";
 import { DatabaseService } from "@services/database-service.js";
-import { CommandModel, PersonaModel, RulesModel } from "@database";
+import { CommandModel, PersonaModel, RuleModel } from "@database";
 import logger from "@logger";
 
 export class SyncService {
@@ -9,7 +9,7 @@ export class SyncService {
   private isSyncing = false;
 
   constructor(
-    private readonly githubLoader: GitHubLoader,
+    private readonly githubLoader: GitHubSourceLoader,
     private readonly databaseService: DatabaseService,
     private readonly syncIntervalMinutes: number = 30
   ) {}
@@ -61,8 +61,8 @@ export class SyncService {
 
     const existingPersonas = await this.databaseService.getAllPersonas();
 
-    for (const [key, persona] of Object.entries(personas)) {
-      const id = key;
+    for (const persona of personas) {
+      const id = persona.name;
       const hash = this.generateHash(JSON.stringify(persona));
 
       const existing = existingPersonas.find(p => p.id === id);
@@ -87,36 +87,44 @@ export class SyncService {
     return updatedCount;
   }
 
-  private async syncRules(): Promise<{ updated: boolean; count: number }> {
-    const rules = await this.githubLoader.loadRules();
+  private async syncRules(): Promise<number> {
+    const rulesData = await this.githubLoader.loadRules();
 
     // If no rules loaded, nothing to sync
-    if (!rules) {
+    if (!rulesData?.rules) {
       logger.debug("No rules to sync");
-      return { updated: false, count: 0 };
+      return 0;
     }
 
-    const id = "superclaude-rules";
-    const hash = this.generateHash(JSON.stringify(rules));
+    const ruleModels: RuleModel[] = [];
+    let updatedCount = 0;
 
-    const existing = await this.databaseService.getRules();
+    const existingRules = await this.databaseService.getAllRules();
 
-    // Count rules
-    const count = rules.rules ? rules.rules.length : 0;
+    for (const rule of rulesData.rules) {
+      const id = rule.name; // Use rule name as ID like personas
+      const hash = this.generateHash(JSON.stringify(rule));
 
-    if (!existing || existing.hash !== hash) {
-      const rulesModel: RulesModel = {
+      const existing = existingRules.find(r => r.id === id);
+
+      const isNew = !existing;
+      const hasChanged = existing && existing.hash !== hash;
+
+      if (isNew || hasChanged) {
+        updatedCount++;
+      }
+
+      ruleModels.push({
+        ...rule,
         id,
-        rules,
         hash,
-        lastUpdated: new Date(),
-      };
-
-      await this.databaseService.upsertRules(rulesModel);
-      return { updated: true, count };
+        lastUpdated: existing && existing.hash === hash ? existing.lastUpdated : new Date(),
+      });
     }
 
-    return { updated: false, count };
+    await this.databaseService.upsertRules(ruleModels);
+
+    return updatedCount;
   }
 
   async syncFromGitHub(): Promise<void> {
@@ -131,39 +139,42 @@ export class SyncService {
     try {
       logger.info("Starting GitHub sync");
 
-      // Use Promise.allSettled to handle partial failures
-      const results = await Promise.allSettled([
-        this.syncCommands(),
-        this.syncPersonas(),
-        this.syncRules(),
-      ]);
+      let commandsUpdated = 0;
+      let personasUpdated = 0;
+      let rulesUpdated = 0;
+      const errors: string[] = [];
 
-      const [commandsResult, personasResult, rulesResult] = results;
+      // Run sync operations sequentially to avoid database write conflicts
+      try {
+        commandsUpdated = await this.syncCommands();
+      } catch (error) {
+        logger.error({ error }, "Failed to sync commands");
+        errors.push(`Commands: ${error instanceof Error ? error.message : "Unknown error"}`);
+      }
 
-      const commandsUpdated = commandsResult.status === "fulfilled" ? commandsResult.value : 0;
-      const personasUpdated = personasResult.status === "fulfilled" ? personasResult.value : 0;
-      const rulesResult_ =
-        rulesResult.status === "fulfilled" ? rulesResult.value : { updated: false, count: 0 };
-      const rulesUpdated = rulesResult_.updated;
-      const rulesCount = rulesResult_.count;
+      try {
+        personasUpdated = await this.syncPersonas();
+      } catch (error) {
+        logger.error({ error }, "Failed to sync personas");
+        errors.push(`Personas: ${error instanceof Error ? error.message : "Unknown error"}`);
+      }
 
-      // Check if any failed
-      const failures = results.filter(r => r.status === "rejected");
+      try {
+        rulesUpdated = await this.syncRules();
+      } catch (error) {
+        logger.error({ error }, "Failed to sync rules");
+        errors.push(`Rules: ${error instanceof Error ? error.message : "Unknown error"}`);
+      }
 
-      if (failures.length > 0) {
-        const errorMessages = failures
-          .map(f => (f.status === "rejected" ? f.reason?.message || "Unknown error" : ""))
-          .join("; ");
-
-        await this.databaseService.updateSyncMetadata("failed", errorMessages);
+      if (errors.length > 0) {
+        await this.databaseService.updateSyncMetadata("failed", errors.join("; "));
 
         logger.error(
           {
             commandsUpdated,
             personasUpdated,
             rulesUpdated,
-            rulesCount,
-            failures: failures.length,
+            failures: errors.length,
             durationMs: Date.now() - startTime,
           },
           "GitHub sync completed with errors"
@@ -177,7 +188,6 @@ export class SyncService {
             commandsUpdated,
             personasUpdated,
             rulesUpdated,
-            rulesCount,
             durationMs: duration,
           },
           "GitHub sync completed successfully"
@@ -197,11 +207,11 @@ export class SyncService {
   async loadFromDatabase(): Promise<{
     commands: CommandModel[];
     personas: Record<string, PersonaModel>;
-    rules: RulesModel | null;
+    rules: RuleModel[];
   }> {
     const commands = await this.databaseService.getAllCommands();
     const personasList = await this.databaseService.getAllPersonas();
-    const rules = await this.databaseService.getRules();
+    const rules = await this.databaseService.getAllRules();
 
     const personas: Record<string, PersonaModel> = {};
     for (const persona of personasList) {

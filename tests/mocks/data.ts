@@ -1,7 +1,7 @@
 import {
   CommandModel,
   PersonaModel,
-  RulesModel,
+  RuleModel,
   DatabaseSchema,
   SyncMetadata,
 } from "../../src/database.js";
@@ -54,22 +54,17 @@ export function createMockPersona(overrides?: Partial<PersonaModel>): PersonaMod
   };
 }
 
-export function createMockRules(overrides?: Partial<RulesModel>): RulesModel {
-  const id = overrides?.id || faker.string.uuid();
-  const rules = overrides?.rules || {
-    rules: [
-      { name: "safety", content: "Always prioritize safety and security" },
-      { name: "clarity", content: "Be clear and concise in communication" },
-    ],
-  };
-
-  const content = JSON.stringify(rules);
+export function createMockRule(overrides?: Partial<RuleModel>): RuleModel {
+  const name = overrides?.name || faker.lorem.word();
+  const content = overrides?.content || faker.lorem.sentence();
+  const id = overrides?.id || name;
 
   return {
     id,
-    rules,
+    name,
+    content,
     lastUpdated: overrides?.lastUpdated || new Date(),
-    hash: overrides?.hash || createHash(content),
+    hash: overrides?.hash || createHash(JSON.stringify({ name, content })),
     ...overrides,
   };
 }
@@ -135,16 +130,19 @@ export function getMockPersonas(): PersonaModel[] {
   ];
 }
 
-export function getMockRules(): RulesModel {
-  return createMockRules({
-    id: "superclaude-rules",
-    rules: {
-      rules: [
-        { name: "safety", content: "Always prioritize safety and security" },
-        { name: "clarity", content: "Be clear and concise in communication" },
-      ],
-    },
-  });
+export function getMockRules(): RuleModel[] {
+  return [
+    createMockRule({
+      id: "safety",
+      name: "safety",
+      content: "Always prioritize safety and security",
+    }),
+    createMockRule({
+      id: "clarity",
+      name: "clarity",
+      content: "Be clear and concise in communication",
+    }),
+  ];
 }
 
 // Remove legacy exports to force use of factory functions

@@ -60,7 +60,7 @@ export async function waitFor(
 export async function verifyEmptyDatabase(dbService: DatabaseService): Promise<boolean> {
   const commands = await dbService.getAllCommands();
   const personas = await dbService.getAllPersonas();
-  const rules = await dbService.getRules();
+  const rules = await dbService.getAllRules();
 
-  return commands.length === 0 && personas.length === 0 && rules === null;
+  return commands.length === 0 && personas.length === 0 && rules.length === 0;
 }

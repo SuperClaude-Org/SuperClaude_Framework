@@ -11,6 +11,7 @@
       "@services/*": ["src/services/*"],
       "@scripts/*": ["src/scripts/*"],
       "@utils/*": ["src/utils/*"],
+      "@tests/*": ["tests/*"],
       "@types": ["src/types.js"],
       "@database": ["src/database.js"],
       "@logger": ["src/logger.js"],
@@ -27,6 +28,6 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true
   },
-  "include": ["src/**/*", "tests/**/*"],
+  "include": ["src/**/*", "tests/**/*", "vitest.config.ts"],
   "exclude": ["node_modules", "dist"]
 }

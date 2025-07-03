@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { pinoHttp } from "pino-http";
 import logger from "@logger";
-import server from "@/server.js";
+import server from "@/http-server.js";
 
 const app: express.Application = express();
 

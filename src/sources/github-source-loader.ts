@@ -1,7 +1,8 @@
 import axios from "axios";
 import yaml from "js-yaml";
-import logger from "./logger.js";
-import { SuperClaudeCommand, Persona, SuperClaudeRules } from "./types.js";
+import logger from "@/logger.js";
+import { Command, Persona, Rules } from "@/schemas.js";
+import { ISourceLoader } from "./interfaces.js";
 
 const GITHUB_BASE_URL = "https://raw.githubusercontent.com/NomenAK/SuperClaude/master";
 
@@ -32,7 +33,7 @@ function sanitizeError(error: any) {
   };
 }
 
-export class GitHubLoader {
+export class GitHubSourceLoader implements ISourceLoader {
   private cache: Map<string, { data: any; timestamp: number }> = new Map();
   private cacheTTL = 5 * 60 * 1000; // 5 minutes
 
@@ -62,7 +63,7 @@ export class GitHubLoader {
     }
   }
 
-  async loadCommands(): Promise<SuperClaudeCommand[]> {
+  async loadCommands(): Promise<Command[]> {
     try {
       const commandsListUrl =
         "https://api.github.com/repos/NomenAK/SuperClaude/contents/.claude/commands";
@@ -72,7 +73,7 @@ export class GitHubLoader {
         },
       });
 
-      const commands: SuperClaudeCommand[] = [];
+      const commands: Command[] = [];
 
       for (const file of response.data) {
         if (file.name.endsWith(".md") && file.type === "file") {
@@ -125,7 +126,7 @@ export class GitHubLoader {
     }
   }
 
-  async loadPersonas(): Promise<Record<string, Persona>> {
+  async loadPersonas(): Promise<Persona[]> {
     try {
       const content = await this.fetchFromGitHub("/.claude/shared/superclaude-personas.yml");
 
@@ -137,7 +138,7 @@ export class GitHubLoader {
         },
       }) as any;
 
-      const personas: Record<string, Persona> = {};
+      const personas: Persona[] = [];
 
       // Look for All_Personas section
       const personasData = data?.All_Personas || data?.personas || data;
@@ -146,7 +147,7 @@ export class GitHubLoader {
         for (const [key, value] of Object.entries(personasData)) {
           if (typeof value === "object" && value !== null) {
             const persona = value as any;
-            personas[key] = {
+            personas.push({
               name: persona.Identity || key,
               description: persona.Core_Belief || `${key} persona`,
               instructions: [
@@ -157,12 +158,12 @@ export class GitHubLoader {
               ]
                 .filter(Boolean)
                 .join(". "),
-            };
+            });
           }
         }
       }
 
-      logger.info({ count: Object.keys(personas).length }, "Loaded personas");
+      logger.info({ count: personas.length }, "Loaded personas");
       return personas;
     } catch (error) {
       logger.error({ error: sanitizeError(error) }, "Failed to load personas");
@@ -176,13 +177,13 @@ export class GitHubLoader {
           { error: sanitizeError(fallbackError) },
           "Fallback persona parsing also failed"
         );
-        return {};
+        return [];
       }
     }
   }
 
-  private parsePersonasManually(content: string): Record<string, Persona> {
-    const personas: Record<string, Persona> = {};
+  private parsePersonasManually(content: string): Persona[] {
+    const personas: Persona[] = [];
 
     // Simple regex to extract persona blocks
     const personaBlocks = content.match(/^[a-zA-Z_]+:\s*\n(?:  .+\n)+/gm);
@@ -210,20 +211,20 @@ export class GitHubLoader {
         }
 
         if (identity || coreBelief) {
-          personas[personaKey] = {
+          personas.push({
             name: identity || personaKey,
             description: coreBelief || `${personaKey} persona`,
             instructions: [identity, coreBelief, problemSolving, focus].filter(Boolean).join(". "),
-          };
+          });
         }
       }
     }
 
-    logger.info({ count: Object.keys(personas).length }, "Loaded personas using manual parsing");
+    logger.info({ count: personas.length }, "Loaded personas using manual parsing");
     return personas;
   }
 
-  async loadRules(): Promise<SuperClaudeRules> {
+  async loadRules(): Promise<Rules> {
     try {
       const content = await this.fetchFromGitHub("/.claude/shared/superclaude-rules.yml");
 
@@ -271,7 +272,7 @@ export class GitHubLoader {
     }
   }
 
-  private parseRulesManually(content: string): SuperClaudeRules {
+  private parseRulesManually(content: string): Rules {
     const rules: Array<{ name: string; content: string }> = [];
 
     // Split by sections (lines that start with no indentation and end with ':')
@@ -311,6 +312,11 @@ export class GitHubLoader {
 
     logger.info({ count: rules.length }, "Loaded rules using manual parsing");
     return { rules };
+  }
+
+  clearCache(): void {
+    this.cache.clear();
+    logger.debug("GitHub loader cache cleared");
   }
 
   async loadSharedIncludes(includes: string[]): Promise<string> {
