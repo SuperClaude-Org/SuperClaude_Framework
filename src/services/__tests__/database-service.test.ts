@@ -162,7 +162,7 @@ describe("DatabaseService", () => {
 
   describe("personas", () => {
     describe("upsertPersona", () => {
-      it.skip("should insert new persona", async () => {
+      it("should insert new persona", async () => {
         const persona = createMockPersona({
           id: "persona-1",
           name: "Test Persona",

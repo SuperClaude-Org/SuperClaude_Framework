@@ -47,7 +47,7 @@ describe("SyncService", () => {
   });
 
   describe("syncFromGitHub", () => {
-    it.skip("should sync commands, personas, and rules from GitHub", async () => {
+    it("should sync commands, personas, and rules from GitHub", async () => {
       // Create test data - ensure ID matches name for commands
       const mockCommandModels = [
         createMockCommand({ id: "command-1", name: "command-1" }),
@@ -107,7 +107,7 @@ describe("SyncService", () => {
       expect(githubLoader.loadCommands).toHaveBeenCalledTimes(1);
     });
 
-    it.skip("should only update changed items based on hash", async () => {
+    it("should only update changed items based on hash", async () => {
       // Insert initial data - ID will be the command name
       const existingCommand = createMockCommand({
         id: "existing-cmd",
@@ -230,7 +230,7 @@ describe("SyncService", () => {
       vi.useRealTimers();
     });
 
-    it.skip("should start periodic sync with correct interval", async () => {
+    it("should start periodic sync with correct interval", async () => {
       const syncIntervalMinutes = 5;
 
       // Mock GitHub loader before creating service
@@ -261,7 +261,7 @@ describe("SyncService", () => {
       service.stopPeriodicSync();
     });
 
-    it.skip("should stop periodic sync", async () => {
+    it("should stop periodic sync", async () => {
       const service = new SyncService(githubLoader, databaseService, 1);
 
       // Mock GitHub loader
@@ -283,7 +283,7 @@ describe("SyncService", () => {
   });
 
   describe("hash-based change detection", () => {
-    it.skip("should detect changes in command content", async () => {
+    it("should detect changes in command content", async () => {
       // Insert initial command - ID must match name for sync to work
       const command = createMockCommand({
         id: "test-cmd",
@@ -315,28 +315,36 @@ describe("SyncService", () => {
       expect(commands[0].prompt).toBe("Modified prompt");
     });
 
-    it.skip("should not update if hash is unchanged", async () => {
+    it("should not update if hash is unchanged", async () => {
       const originalDate = new Date("2024-01-01");
 
-      // Insert command with specific date - ID must match name
+      // Create the command data that will be returned from GitHub
+      const githubCommand = {
+        name: "test",
+        description: "Test description",
+        prompt: "Test prompt",
+        arguments: [],
+        messages: undefined,
+      };
+
+      // Calculate the hash that will be generated for this command
+      const crypto = await import("crypto");
+      const expectedHash = crypto.createHash("sha256").update(JSON.stringify(githubCommand)).digest("hex");
+
+      // Insert command with the calculated hash and specific date - ID must match name
       const command = createMockCommand({
         id: "test",
         name: "test",
+        description: githubCommand.description,
+        prompt: githubCommand.prompt,
+        arguments: githubCommand.arguments,
         lastUpdated: originalDate,
-        hash: "same-hash",
+        hash: expectedHash,
       });
       await databaseService.upsertCommand(command);
 
-      // Mock GitHub response with exact same content (will generate same hash)
-      const sameCommand = {
-        name: "test",
-        description: command.description,
-        prompt: command.prompt,
-        arguments: command.arguments,
-        messages: command.messages,
-      };
-
-      (githubLoader.loadCommands as any).mockResolvedValue([sameCommand]);
+      // Mock GitHub response with exact same content
+      (githubLoader.loadCommands as any).mockResolvedValue([githubCommand]);
       (githubLoader.loadPersonas as any).mockResolvedValue({});
       (githubLoader.loadRules as any).mockResolvedValue(null);
 
