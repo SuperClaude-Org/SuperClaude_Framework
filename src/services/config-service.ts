@@ -36,6 +36,10 @@ export class ConfigService {
   async initialize(): Promise<void> {
     if (this.initialized) return;
 
+    // Ensure the config directory exists with anyone can read and write
+    const configDir = path.join(os.homedir(), ".superclaude");
+    await fs.mkdir(configDir, { recursive: true, mode: 0o755 });
+
     try {
       // Load configuration in precedence order
       let config = { ...DEFAULT_CONFIG };

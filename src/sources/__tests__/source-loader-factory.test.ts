@@ -18,7 +18,7 @@ describe("SourceLoaderFactory", () => {
       const sourceConfig: SourceConfig = {
         type: "local",
         local: { path: "/test/data" },
-        remote: { 
+        remote: {
           url: "https://github.com/default/repo",
           branch: "main",
           cacheTTL: 60,
@@ -88,7 +88,7 @@ describe("SourceLoaderFactory", () => {
 
       testCases.forEach(({ url, expectedArgs }) => {
         vi.clearAllMocks();
-        
+
         const sourceConfig: SourceConfig = {
           type: "remote",
           remote: { url, branch: "main", cacheTTL: 60 },
@@ -101,7 +101,6 @@ describe("SourceLoaderFactory", () => {
       });
     });
   });
-
 
   describe("validateConfig", () => {
     it("should validate local source config", () => {
@@ -217,11 +216,7 @@ describe("SourceLoaderFactory", () => {
 
       const loader = SourceLoaderFactory.create(sourceConfig);
 
-      expect(GitHubSourceLoader).toHaveBeenCalledWith(
-        "https://github.com/test/repo",
-        "main",
-        1
-      );
+      expect(GitHubSourceLoader).toHaveBeenCalledWith("https://github.com/test/repo", "main", 1);
     });
   });
 });

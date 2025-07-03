@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import { DatabaseService } from "@services/database-service.js";
-import { CommandModel, PersonaModel, RuleModel } from "@database";
+import { CommandModel, PersonaModel, RuleModel, UnparsedFile } from "@database";
 import { CommandModelSchema, PersonaModelSchema, RuleModelSchema } from "@schemas";
 
 interface ValidationResult {
@@ -87,6 +87,7 @@ export class SyncReportGenerator {
     const commands = await this.databaseService.getAllCommands();
     const personas = await this.databaseService.getAllPersonas();
     const rules = await this.databaseService.getAllRules();
+    const unparsedFiles = await this.databaseService.getUnparsedFiles();
     const lastSync = await this.databaseService.getLastSync();
 
     const report: string[] = [];
@@ -205,6 +206,31 @@ export class SyncReportGenerator {
 
     root.children!.push(rulesNode);
 
+    // Unparsed files section
+    if (unparsedFiles.length > 0) {
+      const unparsedNode: ReportNode = {
+        name: chalk.yellow(`Unparsed Files (${unparsedFiles.length})`),
+        type: "category",
+        valid: false,
+        children: [],
+      };
+
+      unparsedFiles.forEach(file => {
+        const source = file.source ? `[${file.source}]` : "";
+        const errorPreview =
+          file.error.length > 50 ? file.error.substring(0, 50) + "..." : file.error;
+
+        unparsedNode.children!.push({
+          name: file.path,
+          type: "item",
+          valid: false,
+          details: `${source} ${errorPreview}`,
+        });
+      });
+
+      root.children!.push(unparsedNode);
+    }
+
     // Render tree
     report.push(this.renderTree(root, "", true));
 
@@ -224,6 +250,10 @@ export class SyncReportGenerator {
       report.push(`  ${chalk.green("All items valid")} ✓`);
     }
 
+    if (unparsedFiles.length > 0) {
+      report.push(`  ${chalk.yellow("Unparsed Files:")} ${unparsedFiles.length}`);
+    }
+
     report.push("");
 
     return report.join("\n");
@@ -235,6 +265,7 @@ export class SyncReportGenerator {
     const commands = await this.databaseService.getAllCommands();
     const personas = await this.databaseService.getAllPersonas();
     const rules = await this.databaseService.getAllRules();
+    const unparsedFiles = await this.databaseService.getUnparsedFiles();
 
     const report: string[] = [];
 
@@ -321,6 +352,20 @@ export class SyncReportGenerator {
       });
     } else {
       report.push(chalk.red("No rules loaded"));
+    }
+
+    // Unparsed files section
+    if (unparsedFiles.length > 0) {
+      report.push(chalk.bold.yellow("\nUnparsed Files:"));
+      report.push(chalk.gray("─".repeat(80)));
+
+      unparsedFiles.forEach(file => {
+        const source = file.source ? `[${file.source}]` : "[unknown]";
+        report.push(`${chalk.red("✗")} ${chalk.bold(file.path)} ${chalk.gray(source)}`);
+        report.push(`  Timestamp: ${this.formatDate(file.timestamp)}`);
+        report.push(`  Error: ${chalk.red(file.error)}`);
+        report.push("");
+      });
     }
 
     report.push("");

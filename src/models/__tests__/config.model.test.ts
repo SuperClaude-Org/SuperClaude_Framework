@@ -18,7 +18,7 @@ describe("Configuration Model Schemas", () => {
     it("should validate valid local source config", () => {
       const config = { path: "/test/data" };
       const result = LocalSourceConfigSchema.safeParse(config);
-      
+
       expect(result.success).toBe(true);
       expect(result.data).toEqual(config);
     });
@@ -26,7 +26,7 @@ describe("Configuration Model Schemas", () => {
     it("should reject empty path", () => {
       const config = { path: "" };
       const result = LocalSourceConfigSchema.safeParse(config);
-      
+
       expect(result.success).toBe(false);
       expect(result.error?.issues[0].message).toContain("Local path is required");
     });
@@ -34,7 +34,7 @@ describe("Configuration Model Schemas", () => {
     it("should reject missing path", () => {
       const config = {};
       const result = LocalSourceConfigSchema.safeParse(config);
-      
+
       expect(result.success).toBe(false);
     });
   });
@@ -47,7 +47,7 @@ describe("Configuration Model Schemas", () => {
         cacheTTL: 60,
       };
       const result = RemoteSourceConfigSchema.safeParse(config);
-      
+
       expect(result.success).toBe(true);
       expect(result.data).toEqual(config);
     });
@@ -59,7 +59,7 @@ describe("Configuration Model Schemas", () => {
         cacheTTL: 60,
       };
       const result = RemoteSourceConfigSchema.safeParse(config);
-      
+
       expect(result.success).toBe(false);
       expect(result.error?.issues[0].message).toContain("Must be a valid URL");
     });
@@ -71,9 +71,11 @@ describe("Configuration Model Schemas", () => {
         cacheTTL: -1,
       };
       const result = RemoteSourceConfigSchema.safeParse(config);
-      
+
       expect(result.success).toBe(false);
-      expect(result.error?.issues[0].message).toContain("Number must be greater than or equal to 1");
+      expect(result.error?.issues[0].message).toContain(
+        "Number must be greater than or equal to 1"
+      );
     });
 
     it("should reject cache TTL of 0", () => {
@@ -83,9 +85,11 @@ describe("Configuration Model Schemas", () => {
         cacheTTL: 0,
       };
       const result = RemoteSourceConfigSchema.safeParse(config);
-      
+
       expect(result.success).toBe(false);
-      expect(result.error?.issues[0].message).toContain("Number must be greater than or equal to 1");
+      expect(result.error?.issues[0].message).toContain(
+        "Number must be greater than or equal to 1"
+      );
     });
   });
 
@@ -101,7 +105,7 @@ describe("Configuration Model Schemas", () => {
         },
       };
       const result = SourceConfigSchema.safeParse(config);
-      
+
       expect(result.success).toBe(true);
       expect(result.data.type).toBe("local");
     });
@@ -117,7 +121,7 @@ describe("Configuration Model Schemas", () => {
         local: { path: "/default/path" },
       };
       const result = SourceConfigSchema.safeParse(config);
-      
+
       expect(result.success).toBe(true);
       expect(result.data.type).toBe("remote");
     });
@@ -133,7 +137,7 @@ describe("Configuration Model Schemas", () => {
         },
       };
       const result = SourceConfigSchema.safeParse(config);
-      
+
       expect(result.success).toBe(false);
       expect(result.error?.issues[0].message).toContain("Invalid enum value");
     });
@@ -143,7 +147,7 @@ describe("Configuration Model Schemas", () => {
     it("should validate valid database config", () => {
       const config = { path: "./data/superclaude.json" };
       const result = DatabaseConfigSchema.safeParse(config);
-      
+
       expect(result.success).toBe(true);
       expect(result.data).toEqual({
         ...config,
@@ -154,7 +158,7 @@ describe("Configuration Model Schemas", () => {
     it("should handle absolute paths", () => {
       const config = { path: "/absolute/path/db.json" };
       const result = DatabaseConfigSchema.safeParse(config);
-      
+
       expect(result.success).toBe(true);
     });
   });
@@ -167,7 +171,7 @@ describe("Configuration Model Schemas", () => {
         onStartup: true,
       };
       const result = SyncConfigSchema.safeParse(config);
-      
+
       expect(result.success).toBe(true);
       expect(result.data).toEqual(config);
     });
@@ -179,9 +183,11 @@ describe("Configuration Model Schemas", () => {
         onStartup: true,
       };
       const result = SyncConfigSchema.safeParse(config);
-      
+
       expect(result.success).toBe(false);
-      expect(result.error?.issues[0].message).toContain("Number must be greater than or equal to 1");
+      expect(result.error?.issues[0].message).toContain(
+        "Number must be greater than or equal to 1"
+      );
     });
 
     it("should reject zero interval", () => {
@@ -191,7 +197,7 @@ describe("Configuration Model Schemas", () => {
         onStartup: true,
       };
       const result = SyncConfigSchema.safeParse(config);
-      
+
       expect(result.success).toBe(false);
     });
 
@@ -202,7 +208,7 @@ describe("Configuration Model Schemas", () => {
         onStartup: false,
       };
       const result = SyncConfigSchema.safeParse(config);
-      
+
       expect(result.success).toBe(true);
     });
   });
@@ -215,7 +221,7 @@ describe("Configuration Model Schemas", () => {
         logLevel: "info",
       };
       const result = ServerConfigSchema.safeParse(config);
-      
+
       expect(result.success).toBe(true);
     });
 
@@ -226,7 +232,7 @@ describe("Configuration Model Schemas", () => {
         logLevel: "debug",
       };
       const result = ServerConfigSchema.safeParse(config);
-      
+
       expect(result.success).toBe(true);
     });
 
@@ -237,13 +243,13 @@ describe("Configuration Model Schemas", () => {
         logLevel: "info",
       };
       const result = ServerConfigSchema.safeParse(config);
-      
+
       expect(result.success).toBe(false);
     });
 
     it("should reject invalid port numbers", () => {
       const invalidPorts = [0, -1, 65536, 100000];
-      
+
       invalidPorts.forEach(port => {
         const config = {
           transport: "http" as const,
@@ -251,14 +257,14 @@ describe("Configuration Model Schemas", () => {
           logLevel: "info",
         };
         const result = ServerConfigSchema.safeParse(config);
-        
+
         expect(result.success).toBe(false);
       });
     });
 
     it("should accept valid port range", () => {
       const validPorts = [1, 80, 443, 3000, 8080, 65535];
-      
+
       validPorts.forEach(port => {
         const config = {
           transport: "http" as const,
@@ -266,7 +272,7 @@ describe("Configuration Model Schemas", () => {
           logLevel: "info",
         };
         const result = ServerConfigSchema.safeParse(config);
-        
+
         expect(result.success).toBe(true);
       });
     });
@@ -279,7 +285,7 @@ describe("Configuration Model Schemas", () => {
         autoSave: true,
       };
       const result = PersistenceConfigSchema.safeParse(config);
-      
+
       expect(result.success).toBe(true);
       expect(result.data).toEqual(config);
     });
@@ -290,7 +296,7 @@ describe("Configuration Model Schemas", () => {
         autoSave: false,
       };
       const result = PersistenceConfigSchema.safeParse(config);
-      
+
       expect(result.success).toBe(true);
     });
   });
@@ -323,9 +329,9 @@ describe("Configuration Model Schemas", () => {
           autoSave: false,
         },
       };
-      
+
       const result = AppConfigSchema.safeParse(config);
-      
+
       expect(result.success).toBe(true);
       expect(result.data).toEqual({
         ...config,
@@ -362,9 +368,9 @@ describe("Configuration Model Schemas", () => {
           autoSave: false,
         },
       };
-      
+
       const result = AppConfigSchema.safeParse(config);
-      
+
       expect(result.success).toBe(false);
       expect(result.error?.issues[0].message).toContain("Source configuration must match");
     });
@@ -391,9 +397,9 @@ describe("Configuration Model Schemas", () => {
           autoSave: false,
         },
       };
-      
+
       const result = AppConfigSchema.safeParse(config);
-      
+
       expect(result.success).toBe(false);
       expect(result.error?.issues[0].message).toContain("Source configuration must match");
     });
@@ -404,7 +410,7 @@ describe("Configuration Model Schemas", () => {
           enabled: false,
         },
       };
-      
+
       // Use z.partial() on the base schema
       const PartialSchema = z.object({
         source: SourceConfigSchema.optional(),
@@ -413,9 +419,9 @@ describe("Configuration Model Schemas", () => {
         server: ServerConfigSchema.optional(),
         persistence: PersistenceConfigSchema.optional(),
       });
-      
+
       const result = PartialSchema.safeParse(partialConfig);
-      
+
       expect(result.success).toBe(true);
       expect(result.data.sync?.enabled).toBe(false);
     });
@@ -424,7 +430,7 @@ describe("Configuration Model Schemas", () => {
   describe("DEFAULT_CONFIG", () => {
     it("should be a valid AppConfig", () => {
       const result = AppConfigSchema.safeParse(DEFAULT_CONFIG);
-      
+
       expect(result.success).toBe(true);
     });
 
@@ -457,7 +463,7 @@ describe("Configuration Model Schemas", () => {
         branch: "main",
         cacheTTL: 60,
       };
-      
+
       const result = RemoteSourceConfigSchema.safeParse(config);
       expect(result.success).toBe(true);
     });
@@ -465,7 +471,7 @@ describe("Configuration Model Schemas", () => {
     it("should handle paths with special characters", () => {
       const specialPath = "/test/data with spaces/and-dashes_underscores/";
       const config = { path: specialPath };
-      
+
       const result = LocalSourceConfigSchema.safeParse(config);
       expect(result.success).toBe(true);
     });
@@ -473,7 +479,7 @@ describe("Configuration Model Schemas", () => {
     it("should handle unicode in paths", () => {
       const unicodePath = "/test/données/文件夹/";
       const config = { path: unicodePath };
-      
+
       const result = LocalSourceConfigSchema.safeParse(config);
       expect(result.success).toBe(true);
     });

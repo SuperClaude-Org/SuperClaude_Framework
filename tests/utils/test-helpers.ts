@@ -1,5 +1,5 @@
 import { DatabaseService } from "../../src/services/database-service.js";
-import { Memory } from "lowdb";
+import { MemorySync } from "lowdb";
 import { DatabaseSchema, DEFAULT_DATABASE_SCHEMA } from "../../src/database.js";
 import { randomBytes } from "crypto";
 
@@ -20,7 +20,7 @@ export async function createTestDatabase(): Promise<{
   const dbPath = `in-memory-test-db-${timestamp}-${processId}-${random}-${nanoTime}`;
 
   // Create an in-memory adapter
-  const memoryAdapter = new Memory<DatabaseSchema>();
+  const memoryAdapter = new MemorySync<DatabaseSchema>();
 
   // Create the database service with in-memory adapter
   const dbService = new DatabaseService(dbPath, memoryAdapter);

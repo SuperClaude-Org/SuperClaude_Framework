@@ -1,4 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import path from "path";
+import os from "os";
 import logger from "@logger";
 import { ISourceLoader, SourceLoaderFactory } from "@/sources/index.js";
 import { DatabaseService } from "@services/database-service.js";
@@ -7,6 +9,14 @@ import { ConfigService, ConfigOptions } from "@services/config-service.js";
 import { SuperClaudeCommand, Persona, SuperClaudeRules } from "@types";
 import { CommandModel, PersonaModel } from "@database";
 import { createMCPServer } from "@/mcp.js";
+
+// Helper function to expand tilde in paths
+function expandTilde(filepath: string): string {
+  if (filepath.startsWith("~/")) {
+    return path.join(os.homedir(), filepath.slice(2));
+  }
+  return filepath;
+}
 
 class SuperClaudeMCPServer {
   private configService: ConfigService;
@@ -33,7 +43,9 @@ class SuperClaudeMCPServer {
       this.sourceLoader = SourceLoaderFactory.create(config.source);
 
       // Initialize database
-      const dbPath = config.database.path;
+      const dbPath = expandTilde(
+        config.database.path || path.join(process.cwd(), "data", "superclaude.json")
+      );
       this.databaseService = new DatabaseService(dbPath);
       await this.databaseService.initialize();
 
@@ -159,5 +171,21 @@ class SuperClaudeMCPServer {
   }
 }
 
-const serverInstance = new SuperClaudeMCPServer();
-export default serverInstance;
+// Create a lazy singleton instance
+let serverInstance: SuperClaudeMCPServer | null = null;
+
+export function getServerInstance(): SuperClaudeMCPServer {
+  if (!serverInstance) {
+    serverInstance = new SuperClaudeMCPServer();
+  }
+  return serverInstance;
+}
+
+export default {
+  get createInstance() {
+    return getServerInstance().createInstance.bind(getServerInstance());
+  },
+  get triggerSync() {
+    return getServerInstance().triggerSync.bind(getServerInstance());
+  },
+};

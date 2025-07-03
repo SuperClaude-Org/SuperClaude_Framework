@@ -92,6 +92,7 @@ export const DEFAULT_CONFIG: AppConfig = {
     },
   },
   database: {
+    path: "~/.superclaude/data/db.json",
     autoInit: true,
   },
   sync: {

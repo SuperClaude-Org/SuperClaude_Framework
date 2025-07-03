@@ -16,6 +16,8 @@
     "start:http": "node dist/main.js --transport http",
     "sync": "tsx src/main.ts sync",
     "report": "tsx src/main.ts report",
+    "report:detailed": "tsx src/main.ts report --detailed",
+    "config": "tsx src/main.ts config show",
     "test": "vitest --run",
     "test:github": "vitest --run tests/github-loader",
     "test:db": "vitest --run tests/services/database-service.test.ts",
@@ -26,7 +28,8 @@
     "lint:prettier": "prettier --check .",
     "format": "prettier --write .",
     "check:types": "tsc --noEmit",
-    "clean:data": "rm -rf data",
+    "clean:data": "rm -rf ~/.superclaude/data",
+    "clean:config": "rm -f ~/.superclaude/config.json",
     "clean:dist": "rm -rf dist",
     "clean:modules": "rm -rf node_modules",
     "clean:test-fixtures": "rm -rf tests/fixtures/*.json",
@@ -54,6 +57,7 @@
     "lowdb": "^7.0.1",
     "pino": "^9.5.0",
     "pino-http": "^10.3.0",
+    "yaml": "^2.8.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

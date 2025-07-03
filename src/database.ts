@@ -5,6 +5,7 @@ export type {
   RuleModel,
   SyncMetadata,
   DatabaseSchema,
+  UnparsedFile,
 } from "./models/index.js";
 import type { DatabaseSchema } from "./models/index.js";
 
@@ -16,4 +17,5 @@ export const DEFAULT_DATABASE_SCHEMA = (): DatabaseSchema => ({
     lastSync: new Date(0),
     syncStatus: "success",
   },
+  unparsedFiles: [],
 });

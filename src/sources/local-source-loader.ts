@@ -1,59 +1,105 @@
 import fs from "fs/promises";
 import path from "path";
-import yaml from "js-yaml";
 import logger from "@/logger.js";
 import { Command, Persona } from "@/schemas.js";
 import { SuperClaudeRules } from "@types";
-import { ISourceLoader } from "./interfaces.js";
+import { BaseSourceLoader } from "./base-source-loader.js";
 
 /**
  * LocalSourceLoader loads SuperClaude data from local file system
  * Expected directory structure:
- * - {basePath}/commands/
- * - {basePath}/personas/
- * - {basePath}/rules/rules.yaml
+ * {basePath}/
+ * ├── commands/
+ * │   ├── shared/
+ * │   │   ├── pattern1.yml
+ * │   │   ├── pattern2.yml
+ * │   │   ├── constants1.yml
+ * │   │   └── config.yml
+ * │   ├── command1.yml
+ * │   └── command2.yml
+ * ├── shared/
+ * │   ├── superclaude-core.yml
+ * │   ├── superclaude-mcp.yml
+ * │   ├── superclaude-personas.yaml
+ * │   └── superclaude-rules.yaml
  */
-export class LocalSourceLoader implements ISourceLoader {
-  constructor(private readonly basePath: string) {}
+export class LocalSourceLoader extends BaseSourceLoader {
+  private readonly basePath: string;
+
+  constructor(basePath?: string) {
+    super();
+    // Default to .claude in current directory if no path provided
+    this.basePath = basePath || path.join(process.cwd(), ".claude");
+    logger.info({ basePath: this.basePath }, "LocalSourceLoader initialized");
+  }
 
   async loadCommands(): Promise<Command[]> {
     try {
-      const commandsPath = path.join(this.basePath, "commands");
       const commands: Command[] = [];
+      this.clearUnparsedFiles();
 
-      // Check if commands directory exists
-      const commandsDirExists = await this.directoryExists(commandsPath);
-      if (!commandsDirExists) {
-        logger.debug({ path: commandsPath }, "Commands directory not found");
-        return [];
+      // Load from commands directory
+      const commandsPath = path.join(this.basePath, "commands");
+      if (await this.directoryExists(commandsPath)) {
+        const commandFiles = await this.discoverYamlFiles(commandsPath, ["shared"]);
+
+        for (const filePath of commandFiles) {
+          try {
+            const content = await fs.readFile(filePath, "utf-8");
+            const data = await this.parseYamlContent(content, filePath);
+
+            if (data) {
+              const command = this.parseCommand(data, filePath);
+              if (command) {
+                commands.push(command);
+                logger.debug({ file: filePath, commandName: command.name }, "Loaded command");
+              }
+            }
+          } catch (error) {
+            logger.error({ error, file: filePath }, "Failed to load command file");
+            this.trackUnparsedFile(
+              filePath,
+              error instanceof Error ? error.message : String(error)
+            );
+          }
+        }
       }
 
-      // Read all YAML files in the commands directory
-      const files = await fs.readdir(commandsPath);
-      const yamlFiles = files.filter(file => file.endsWith(".yaml") || file.endsWith(".yml"));
+      // Also check shared directory for command files
+      const sharedPath = path.join(this.basePath, "shared");
+      if (await this.directoryExists(sharedPath)) {
+        const sharedFiles = await this.discoverYamlFiles(sharedPath);
 
-      for (const file of yamlFiles) {
-        try {
-          const filePath = path.join(commandsPath, file);
-          const content = await fs.readFile(filePath, "utf-8");
-          const commandData = yaml.load(content) as Command;
+        for (const filePath of sharedFiles) {
+          try {
+            const content = await fs.readFile(filePath, "utf-8");
+            const data = await this.parseYamlContent(content, filePath);
 
-          // Validate basic structure
-          if (commandData && typeof commandData === "object" && commandData.name) {
-            commands.push(commandData);
-            logger.debug({ file, commandName: commandData.name }, "Loaded command from local file");
-          } else {
-            logger.warn({ file }, "Invalid command structure in file");
+            if (data && this.categorizeContent(data, filePath) === "command") {
+              const command = this.parseCommand(data, filePath);
+              if (command) {
+                commands.push(command);
+                logger.debug(
+                  { file: filePath, commandName: command.name },
+                  "Loaded command from shared"
+                );
+              }
+            }
+          } catch (error) {
+            logger.error({ error, file: filePath }, "Failed to load shared file");
           }
-        } catch (error) {
-          logger.error({ error, file }, "Failed to load command file");
         }
       }
 
       logger.info(
-        { count: commands.length, path: commandsPath },
+        {
+          count: commands.length,
+          path: this.basePath,
+          unparsedCount: this.unparsedFiles.length,
+        },
         "Loaded commands from local directory"
       );
+
       return commands;
     } catch (error) {
       logger.error({ error, basePath: this.basePath }, "Failed to load commands from local source");
@@ -65,42 +111,77 @@ export class LocalSourceLoader implements ISourceLoader {
 
   async loadPersonas(): Promise<Persona[]> {
     try {
-      const personasPath = path.join(this.basePath, "personas");
       const personas: Persona[] = [];
+      this.clearUnparsedFiles();
 
-      // Check if personas directory exists
-      const personasDirExists = await this.directoryExists(personasPath);
-      if (!personasDirExists) {
-        logger.debug({ path: personasPath }, "Personas directory not found");
-        return [];
+      // First check for the standard personas file in shared directory
+      const sharedPersonasPath = path.join(this.basePath, "shared", "superclaude-personas.yaml");
+      const sharedPersonasAltPath = path.join(this.basePath, "shared", "superclaude-personas.yml");
+
+      for (const personasFilePath of [sharedPersonasPath, sharedPersonasAltPath]) {
+        if (await this.fileExists(personasFilePath)) {
+          try {
+            const content = await fs.readFile(personasFilePath, "utf-8");
+            const data = await this.parseYamlContent(content, personasFilePath);
+
+            if (data) {
+              const parsedPersonas = this.parsePersonas(data, personasFilePath);
+              personas.push(...parsedPersonas);
+              logger.debug(
+                { file: personasFilePath, count: parsedPersonas.length },
+                "Loaded personas from shared file"
+              );
+            }
+          } catch (error) {
+            logger.error({ error, file: personasFilePath }, "Failed to load personas file");
+            this.trackUnparsedFile(
+              personasFilePath,
+              error instanceof Error ? error.message : String(error)
+            );
+          }
+          break; // Only load from one file
+        }
       }
 
-      // Read all YAML files in the personas directory
-      const files = await fs.readdir(personasPath);
-      const yamlFiles = files.filter(file => file.endsWith(".yaml") || file.endsWith(".yml"));
+      // Also check personas directory if it exists (backward compatibility)
+      const personasPath = path.join(this.basePath, "personas");
+      if (await this.directoryExists(personasPath)) {
+        const personaFiles = await this.discoverYamlFiles(personasPath);
 
-      for (const file of yamlFiles) {
-        try {
-          const filePath = path.join(personasPath, file);
-          const content = await fs.readFile(filePath, "utf-8");
-          const personaData = yaml.load(content) as Persona;
+        for (const filePath of personaFiles) {
+          try {
+            const content = await fs.readFile(filePath, "utf-8");
+            const data = await this.parseYamlContent(content, filePath);
 
-          // Validate basic structure
-          if (personaData && typeof personaData === "object" && personaData.name) {
-            personas.push(personaData);
-            logger.debug({ file, personaName: personaData.name }, "Loaded persona from local file");
-          } else {
-            logger.warn({ file }, "Invalid persona structure in file");
+            if (data) {
+              const persona = this.parsePersona(
+                data,
+                path.basename(filePath, path.extname(filePath))
+              );
+              if (persona) {
+                personas.push(persona);
+                logger.debug({ file: filePath, personaName: persona.name }, "Loaded persona");
+              }
+            }
+          } catch (error) {
+            logger.error({ error, file: filePath }, "Failed to load persona file");
+            this.trackUnparsedFile(
+              filePath,
+              error instanceof Error ? error.message : String(error)
+            );
           }
-        } catch (error) {
-          logger.error({ error, file }, "Failed to load persona file");
         }
       }
 
       logger.info(
-        { count: personas.length, path: personasPath },
+        {
+          count: personas.length,
+          path: this.basePath,
+          unparsedCount: this.unparsedFiles.length,
+        },
         "Loaded personas from local directory"
       );
+
       return personas;
     } catch (error) {
       logger.error({ error, basePath: this.basePath }, "Failed to load personas from local source");
@@ -112,29 +193,65 @@ export class LocalSourceLoader implements ISourceLoader {
 
   async loadRules(): Promise<SuperClaudeRules> {
     try {
+      this.clearUnparsedFiles();
+
+      // Check for rules file in shared directory
+      const sharedRulesPath = path.join(this.basePath, "shared", "superclaude-rules.yaml");
+      const sharedRulesAltPath = path.join(this.basePath, "shared", "superclaude-rules.yml");
+
+      for (const rulesFilePath of [sharedRulesPath, sharedRulesAltPath]) {
+        if (await this.fileExists(rulesFilePath)) {
+          try {
+            const content = await fs.readFile(rulesFilePath, "utf-8");
+            const data = await this.parseYamlContent(content, rulesFilePath);
+
+            if (data) {
+              const rules = this.parseRules(data, rulesFilePath);
+              logger.info(
+                {
+                  count: rules.rules.length,
+                  unparsedCount: this.unparsedFiles.length,
+                },
+                "Loaded rules from local directory"
+              );
+              return rules;
+            }
+          } catch (error) {
+            logger.error({ error, file: rulesFilePath }, "Failed to load rules file");
+            this.trackUnparsedFile(
+              rulesFilePath,
+              error instanceof Error ? error.message : String(error)
+            );
+          }
+        }
+      }
+
+      // Fallback to old location
       const rulesPath = path.join(this.basePath, "rules", "rules.yaml");
+      if (await this.fileExists(rulesPath)) {
+        try {
+          const content = await fs.readFile(rulesPath, "utf-8");
+          const data = await this.parseYamlContent(content, rulesPath);
 
-      // Check if rules file exists
-      const rulesFileExists = await this.fileExists(rulesPath);
-      if (!rulesFileExists) {
-        logger.debug({ path: rulesPath }, "Rules file not found");
-        return { rules: [] };
+          if (data) {
+            const rules = this.parseRules(data, rulesPath);
+            logger.info(
+              {
+                count: rules.rules.length,
+                unparsedCount: this.unparsedFiles.length,
+              },
+              "Loaded rules from local directory"
+            );
+            return rules;
+          }
+        } catch (error) {
+          logger.error({ error, file: rulesPath }, "Failed to load rules file");
+          this.trackUnparsedFile(rulesPath, error instanceof Error ? error.message : String(error));
+        }
       }
 
-      const content = await fs.readFile(rulesPath, "utf-8");
-      const rulesData = yaml.load(content) as SuperClaudeRules;
-
-      // Validate basic structure
-      if (rulesData && typeof rulesData === "object" && Array.isArray(rulesData.rules)) {
-        logger.info(
-          { count: rulesData.rules.length, path: rulesPath },
-          "Loaded rules from local file"
-        );
-        return rulesData;
-      } else {
-        logger.warn({ path: rulesPath }, "Invalid rules structure in file");
-        return { rules: [] };
-      }
+      logger.debug({ path: this.basePath }, "No rules file found");
+      return { rules: [] };
     } catch (error) {
       logger.error({ error, basePath: this.basePath }, "Failed to load rules from local source");
       throw new Error(
@@ -144,13 +261,11 @@ export class LocalSourceLoader implements ISourceLoader {
   }
 
   clearCache(): void {
-    // Local source loader doesn't use caching, so this is a no-op
-    logger.debug("Local source loader cache cleared (no-op)");
+    // Local source loader doesn't use caching
+    this.clearUnparsedFiles();
+    logger.debug("Local source loader cache cleared");
   }
 
-  /**
-   * Load shared includes (for command templates)
-   */
   async loadSharedIncludes(includes: string[]): Promise<string> {
     const contents: string[] = [];
 
@@ -160,18 +275,59 @@ export class LocalSourceLoader implements ISourceLoader {
           ? include.replace("@include ", "").trim()
           : include;
 
-        const fullPath = includePath.startsWith("/")
-          ? path.join(this.basePath, includePath)
-          : path.join(this.basePath, "commands", "shared", includePath);
+        // Check multiple possible locations
+        const possiblePaths = [
+          path.join(this.basePath, includePath),
+          path.join(this.basePath, "commands", "shared", includePath),
+          path.join(this.basePath, "shared", includePath),
+        ];
 
-        const content = await fs.readFile(fullPath, "utf-8");
-        contents.push(content);
+        let loaded = false;
+        for (const fullPath of possiblePaths) {
+          if (await this.fileExists(fullPath)) {
+            const content = await fs.readFile(fullPath, "utf-8");
+            contents.push(content);
+            loaded = true;
+            break;
+          }
+        }
+
+        if (!loaded) {
+          logger.warn({ include, paths: possiblePaths }, "Include file not found in any location");
+        }
       } catch (error) {
         logger.warn({ error, include }, "Failed to load include from local source");
       }
     }
 
     return contents.join("\n\n");
+  }
+
+  /**
+   * Discover all YAML files in a directory recursively
+   */
+  private async discoverYamlFiles(dirPath: string, excludeDirs: string[] = []): Promise<string[]> {
+    const files: string[] = [];
+
+    try {
+      const entries = await fs.readdir(dirPath, { withFileTypes: true });
+
+      for (const entry of entries) {
+        const fullPath = path.join(dirPath, entry.name);
+
+        if (entry.isDirectory() && !excludeDirs.includes(entry.name)) {
+          // Recursively discover files in subdirectories
+          const subFiles = await this.discoverYamlFiles(fullPath, excludeDirs);
+          files.push(...subFiles);
+        } else if (entry.isFile() && this.isYamlFile(entry.name)) {
+          files.push(fullPath);
+        }
+      }
+    } catch (error) {
+      logger.error({ error, path: dirPath }, "Failed to discover files in directory");
+    }
+
+    return files;
   }
 
   /**

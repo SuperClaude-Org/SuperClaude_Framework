@@ -15,6 +15,15 @@ import { DEFAULT_CONFIG } from "@/models/config.model.js";
 import chalk from "chalk";
 import path from "path";
 import fs from "fs";
+import os from "os";
+
+// Helper function to expand tilde in paths
+function expandTilde(filepath: string): string {
+  if (filepath.startsWith("~/")) {
+    return path.join(os.homedir(), filepath.slice(2));
+  }
+  return filepath;
+}
 
 async function launchMcpStdioServer() {
   const server = serverInstance.createInstance();
@@ -100,27 +109,26 @@ async function runSyncAndReport(options: {
   }
 
   try {
-    const dbPath = options.path || path.join(process.cwd(), "data", "superclaude.json");
+    // Create config service to get configuration
+    const configService = new ConfigService(options.configOptions);
+    await configService.initialize();
+    const config = configService.getConfig();
+
+    // Use database path from config, with optional override from CLI
+    const dbPath =
+      options.path ||
+      expandTilde(config.database.path || path.join(process.cwd(), "data", "superclaude.json"));
     const databaseService = new DatabaseService(dbPath);
+
+    // Always initialize database before use
+    await databaseService.initialize();
 
     // Perform sync if enabled
     if (options.syncEnabled) {
       console.log(chalk.blue("Starting GitHub sync..."));
 
-      // Create config service with options to get source loader
-      const configService = new ConfigService(options.configOptions);
-      await configService.initialize();
-      const config = configService.getConfig();
-
       const sourceLoader = SourceLoaderFactory.create(config.source);
       const syncService = new SyncService(sourceLoader, databaseService);
-
-      // Only initialize database if it doesn't exist
-      const dbExists = fs.existsSync(dbPath);
-      if (!dbExists) {
-        console.log(chalk.blue("Database doesn't exist, initializing..."));
-        await databaseService.initialize();
-      }
 
       try {
         await syncService.syncFromSource();
@@ -187,11 +195,11 @@ async function runConfigInit(): Promise<void> {
   }
 }
 
-async function runConfigShow(): Promise<void> {
+async function runConfigShow(configOptions?: ConfigOptions): Promise<void> {
   configureLogger("http");
 
   try {
-    const configService = new ConfigService();
+    const configService = new ConfigService(configOptions);
     await configService.initialize();
     const config = configService.getConfig();
     const configPath = configService.getCurrentConfigFilePath();
@@ -297,11 +305,7 @@ async function main() {
     .command("report")
     .description("Generate a report of recently synced data")
     .option("-d, --detailed", "Detailed report with full schema validation")
-    .option(
-      "-p, --path <path>",
-      "Custom database path",
-      path.join(process.cwd(), "data", "superclaude.json")
-    )
+    .option("-p, --path <path>", "Custom database path")
     .option("--no-color", "Disable colored output")
     .action(async (options, cmd) => {
       // Get global options from parent command
@@ -322,11 +326,7 @@ async function main() {
     .command("sync")
     .description("Sync data from GitHub and generate a report")
     .option("-d, --detailed", "Detailed report with full schema validation")
-    .option(
-      "-p, --path <path>",
-      "Custom database path",
-      path.join(process.cwd(), "data", "superclaude.json")
-    )
+    .option("-p, --path <path>", "Custom database path")
     .option("--no-color", "Disable colored output")
     .action(async (options, cmd) => {
       // Get global options from parent command
@@ -350,7 +350,23 @@ async function main() {
     .description("Initialize default configuration file")
     .action(runConfigInit);
 
-  configCmd.command("show").description("Show current configuration").action(runConfigShow);
+  configCmd
+    .command("show")
+    .description("Show current configuration")
+    .action(async (options, cmd) => {
+      // Get global options from parent's parent command
+      const globalOpts = cmd.parent.parent.opts();
+
+      // Build config options from global flags
+      const configOptions: ConfigOptions = {};
+      if (globalOpts.sourceType) configOptions.sourceType = globalOpts.sourceType;
+      if (globalOpts.sourcePath) configOptions.sourcePath = globalOpts.sourcePath;
+      if (globalOpts.sourceUrl) configOptions.sourceUrl = globalOpts.sourceUrl;
+      if (globalOpts.sourceBranch) configOptions.sourceBranch = globalOpts.sourceBranch;
+      if (globalOpts.persistConfig) configOptions.persistConfig = globalOpts.persistConfig;
+
+      await runConfigShow(configOptions);
+    });
 
   configCmd
     .command("set <key> <value>")

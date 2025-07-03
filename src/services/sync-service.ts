@@ -14,6 +14,15 @@ export class SyncService {
     private readonly syncIntervalMinutes: number = 30
   ) {}
 
+  private getSourceType(): "local" | "remote" {
+    // Check if the source loader has a getSourceInfo method
+    if ("getSourceInfo" in this.sourceLoader) {
+      const info = (this.sourceLoader as any).getSourceInfo();
+      return info.type;
+    }
+    return "remote"; // Default to remote for backward compatibility
+  }
+
   private generateHash(content: string): string {
     return crypto.createHash("sha256").update(content).digest("hex");
   }
@@ -143,10 +152,17 @@ export class SyncService {
       let personasUpdated = 0;
       let rulesUpdated = 0;
       const errors: string[] = [];
+      const allUnparsedFiles: any[] = [];
 
       // Run sync operations sequentially to avoid database write conflicts
       try {
         commandsUpdated = await this.syncCommands();
+
+        // Collect unparsed files from commands load
+        if (this.sourceLoader.getUnparsedFiles) {
+          const unparsed = this.sourceLoader.getUnparsedFiles();
+          allUnparsedFiles.push(...unparsed.map(f => ({ ...f, source: this.getSourceType() })));
+        }
       } catch (error) {
         logger.error({ error }, "Failed to sync commands");
         errors.push(`Commands: ${error instanceof Error ? error.message : "Unknown error"}`);
@@ -154,6 +170,12 @@ export class SyncService {
 
       try {
         personasUpdated = await this.syncPersonas();
+
+        // Collect unparsed files from personas load
+        if (this.sourceLoader.getUnparsedFiles) {
+          const unparsed = this.sourceLoader.getUnparsedFiles();
+          allUnparsedFiles.push(...unparsed.map(f => ({ ...f, source: this.getSourceType() })));
+        }
       } catch (error) {
         logger.error({ error }, "Failed to sync personas");
         errors.push(`Personas: ${error instanceof Error ? error.message : "Unknown error"}`);
@@ -161,9 +183,23 @@ export class SyncService {
 
       try {
         rulesUpdated = await this.syncRules();
+
+        // Collect unparsed files from rules load
+        if (this.sourceLoader.getUnparsedFiles) {
+          const unparsed = this.sourceLoader.getUnparsedFiles();
+          allUnparsedFiles.push(...unparsed.map(f => ({ ...f, source: this.getSourceType() })));
+        }
       } catch (error) {
         logger.error({ error }, "Failed to sync rules");
         errors.push(`Rules: ${error instanceof Error ? error.message : "Unknown error"}`);
+      }
+
+      // Save unparsed files to database
+      if (allUnparsedFiles.length > 0) {
+        await this.databaseService.upsertUnparsedFiles(allUnparsedFiles);
+        logger.warn({ count: allUnparsedFiles.length }, "Found unparsed files during sync");
+      } else {
+        await this.databaseService.clearUnparsedFiles();
       }
 
       if (errors.length > 0) {
@@ -188,6 +224,7 @@ export class SyncService {
             commandsUpdated,
             personasUpdated,
             rulesUpdated,
+            unparsedFiles: allUnparsedFiles.length,
             durationMs: duration,
           },
           "Data sync completed successfully"
