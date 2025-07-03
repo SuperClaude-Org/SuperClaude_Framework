@@ -9,9 +9,11 @@
   "license": "MIT",
   "packageManager": "pnpm@9.15.2",
   "scripts": {
-    "dev": "tsx watch --env-file .env src/index.ts | pino-pretty",
+    "dev": "tsx watch --env-file .env src/main.ts | pino-pretty",
+    "dev:http": "tsx watch --env-file .env src/main.ts --transport http | pino-pretty",
     "build": "tsup",
-    "start": "node dist/index.js",
+    "start": "node dist/main.js",
+    "start:http": "node dist/main.js --transport http",
     "api:sync": "curl -X POST http://localhost:8080/api/sync",
     "test": "vitest --run",
     "test:github": "vitest --run tests/github-loader",

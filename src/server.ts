@@ -1,18 +1,11 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import {
-  ListPromptsRequestSchema,
-  GetPromptRequestSchema,
-  ListResourcesRequestSchema,
-  ReadResourceRequestSchema,
-  ListResourceTemplatesRequestSchema,
-} from "@modelcontextprotocol/sdk/types.js";
 import logger from "@logger";
 import { GitHubLoader } from "@/github-loader.js";
 import { DatabaseService } from "@services/database-service.js";
 import { SyncService } from "@services/sync-service.js";
 import { SuperClaudeCommand, Persona } from "@types";
 import { CommandModel, PersonaModel } from "@database";
+import { createMCPServer } from "@/mcp.js";
 
 class SuperClaudeMCPServer {
   private githubLoader = new GitHubLoader();
@@ -124,241 +117,14 @@ class SuperClaudeMCPServer {
     }
   }
 
-  createInstance() {
-    const server = new McpServer(
-      {
-        name: "superclaude-mcp",
-        version: "1.0.0",
-        description: "MCP server exposing SuperClaude commands as prompts",
-      },
-      {
-        capabilities: {
-          prompts: {},
-          tools: {},
-          resources: {},
-        },
-      }
+  createInstance(): McpServer {
+    return createMCPServer(
+      this.commands,
+      this.personas,
+      this.rules,
+      this.githubLoader,
+      this.triggerSync.bind(this)
     );
-
-    // Register tool for direct sync
-    server.tool("sync", "Trigger immediate synchronization with GitHub", {}, async () => {
-      try {
-        logger.info("Direct sync triggered via MCP tool");
-        await this.syncService.syncFromGitHub();
-        await this.loadFromDatabase();
-
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify({
-                success: true,
-                message: "Sync completed successfully",
-                commandsCount: this.commands.length,
-                personasCount: Object.keys(this.personas).length,
-                rulesCount: this.rules?.rules ? this.rules.rules.length : 0,
-              }),
-            },
-          ],
-        };
-      } catch (error) {
-        logger.error({ error }, "Direct sync failed");
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify({
-                success: false,
-                error: error instanceof Error ? error.message : "Unknown error",
-              }),
-            },
-          ],
-        };
-      }
-    });
-
-    // Get the low-level server instance for registering handlers
-    const lowLevelServer = server.server;
-
-    // List available prompts
-    lowLevelServer.setRequestHandler(ListPromptsRequestSchema, async () => {
-      return {
-        prompts: this.commands.map(cmd => ({
-          name: cmd.name,
-          description: cmd.description,
-          arguments: cmd.arguments,
-        })),
-      };
-    });
-
-    // Get specific prompt by name
-    lowLevelServer.setRequestHandler(GetPromptRequestSchema, async request => {
-      const commandName = request.params.name;
-      const args = request.params.arguments as Record<string, string> | undefined;
-      const command = this.commands.find(cmd => cmd.name === commandName);
-
-      if (!command) {
-        throw new Error(`Prompt not found: ${commandName}`);
-      }
-
-      let content = command.prompt;
-
-      // Process @include directives
-      const includeMatches = content.match(/@include\s+[\w\-\/\.]+/g);
-      if (includeMatches) {
-        const includeContents = await this.githubLoader.loadSharedIncludes(includeMatches);
-        for (const match of includeMatches) {
-          content = content.replace(match, includeContents);
-        }
-      }
-
-      // Replace argument placeholders
-      if (command.arguments && args) {
-        for (const arg of command.arguments) {
-          const argValue = args[arg.name];
-          if (argValue) {
-            content = content.replace(new RegExp(`\\$${arg.name}`, "g"), argValue);
-          }
-        }
-      }
-
-      return {
-        messages: [
-          {
-            role: "user",
-            content: {
-              type: "text",
-              text: content,
-            },
-          },
-        ],
-      };
-    });
-
-    lowLevelServer.setRequestHandler(ListResourceTemplatesRequestSchema, async () => {
-      return {
-        resourceTemplates: [
-          {
-            uriTemplate: "superclaude://personas/{personaId}",
-            name: "SuperClaude Persona",
-            description: "Access a specific SuperClaude persona by ID",
-            mimeType: "application/json",
-          },
-          {
-            uriTemplate: "superclaude://rules/{ruleId}",
-            name: "SuperClaude Rule",
-            description: "Access a specific SuperClaude rule by name",
-            mimeType: "application/json",
-          },
-        ],
-      };
-    });
-
-    // List available resources
-    lowLevelServer.setRequestHandler(ListResourcesRequestSchema, async () => {
-      const resources = [];
-
-      // Add individual rule resources
-      if (this.rules && this.rules.rules) {
-        const rulesList = Array.isArray(this.rules.rules)
-          ? this.rules.rules
-          : this.rules.rules.rules || [];
-
-        for (const rule of rulesList) {
-          resources.push({
-            uri: `superclaude://rules/${encodeURIComponent(rule.name)}`,
-            name: rule.name,
-            description: rule.content.substring(0, 100) + (rule.content.length > 100 ? "..." : ""),
-            mimeType: "application/json",
-          });
-        }
-      }
-
-      // Add persona resources
-      for (const [personaId, persona] of Object.entries(this.personas)) {
-        resources.push({
-          uri: `superclaude://personas/${personaId}`,
-          name: persona.name,
-          description: persona.description,
-          mimeType: "application/json",
-        });
-      }
-
-      return { resources };
-    });
-
-    // Read specific resource
-    lowLevelServer.setRequestHandler(ReadResourceRequestSchema, async request => {
-      const uri = request.params.uri;
-
-      // Handle individual rule resources
-      const ruleMatch = uri.match(/^superclaude:\/\/rules\/(.+)$/);
-      if (ruleMatch) {
-        const ruleId = decodeURIComponent(ruleMatch[1]);
-
-        if (!this.rules || !this.rules.rules) {
-          throw new Error("Rules not loaded");
-        }
-
-        const rulesList = Array.isArray(this.rules.rules)
-          ? this.rules.rules
-          : this.rules.rules.rules || [];
-        const rule = rulesList.find((r: { name: string; content: string }) => r.name === ruleId);
-
-        if (!rule) {
-          throw new Error(`Rule resource not found: ${ruleId}`);
-        }
-
-        return {
-          contents: [
-            {
-              uri,
-              mimeType: "application/json",
-              text: JSON.stringify(
-                {
-                  name: rule.name,
-                  content: rule.content,
-                },
-                null,
-                2
-              ),
-            },
-          ],
-        };
-      }
-
-      // Handle persona resources
-      const personaMatch = uri.match(/^superclaude:\/\/personas\/(.+)$/);
-      if (personaMatch) {
-        const personaId = personaMatch[1];
-        const persona = this.personas[personaId];
-
-        if (!persona) {
-          throw new Error(`Persona resource not found: ${personaId}`);
-        }
-
-        return {
-          contents: [
-            {
-              uri,
-              mimeType: "application/json",
-              text: JSON.stringify(
-                {
-                  id: personaId,
-                  ...persona,
-                },
-                null,
-                2
-              ),
-            },
-          ],
-        };
-      }
-
-      throw new Error(`Resource not found: ${uri}`);
-    });
-
-    return server;
   }
 }
 

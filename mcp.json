@@ -2,7 +2,7 @@
   "mcpServers": {
     "superclaude-mcp": {
       "command": "node",
-      "args": ["dist/index.js"],
+      "args": ["dist/main.js"],
       "env": {
         "LOG_LEVEL": "debug"
       }
