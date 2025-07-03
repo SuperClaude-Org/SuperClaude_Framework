@@ -1,7 +1,8 @@
 import axios from "axios";
 import yaml from "js-yaml";
 import logger from "@/logger.js";
-import { Command, Persona, Rules } from "@/schemas.js";
+import { Command, Persona } from "@/schemas.js";
+import { SuperClaudeRules } from "@types";
 import { ISourceLoader } from "./interfaces.js";
 
 const GITHUB_BASE_URL = "https://raw.githubusercontent.com/NomenAK/SuperClaude/master";
@@ -224,7 +225,7 @@ export class GitHubSourceLoader implements ISourceLoader {
     return personas;
   }
 
-  async loadRules(): Promise<Rules> {
+  async loadRules(): Promise<SuperClaudeRules> {
     try {
       const content = await this.fetchFromGitHub("/.claude/shared/superclaude-rules.yml");
 
@@ -272,7 +273,7 @@ export class GitHubSourceLoader implements ISourceLoader {
     }
   }
 
-  private parseRulesManually(content: string): Rules {
+  private parseRulesManually(content: string): SuperClaudeRules {
     const rules: Array<{ name: string; content: string }> = [];
 
     // Split by sections (lines that start with no indentation and end with ':')

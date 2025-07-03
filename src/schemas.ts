@@ -13,14 +13,15 @@ export {
   type PersonaModel,
 } from "./models/persona.model.js";
 
-export {
-  RulesSchema as SuperClaudeRulesSchema,
-  RuleModelSchema,
-  RuleSchema,
-  type Rules,
-  type Rule,
-  type RuleModel,
-} from "./models/rules.model.js";
+export { RuleModelSchema, RuleSchema, type Rule, type RuleModel } from "./models/rules.model.js";
+
+// SuperClaudeRules schema for the MCP server interface
+import { z } from "zod";
+import { RuleSchema } from "./models/rules.model.js";
+
+export const SuperClaudeRulesSchema = z.object({
+  rules: z.array(RuleSchema),
+});
 
 export { SyncMetadataSchema, type SyncMetadata } from "./models/sync.model.js";
 

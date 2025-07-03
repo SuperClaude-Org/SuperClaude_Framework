@@ -13,11 +13,5 @@ export const RuleModelSchema = RuleSchema.extend({
   hash: z.string().min(1),
 });
 
-// Legacy Rules type for backward compatibility
-export const RulesSchema = z.object({
-  rules: z.array(RuleSchema),
-});
-
 export type Rule = z.infer<typeof RuleSchema>;
 export type RuleModel = z.infer<typeof RuleModelSchema>;
-export type Rules = z.infer<typeof RulesSchema>;

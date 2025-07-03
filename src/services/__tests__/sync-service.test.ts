@@ -323,13 +323,16 @@ describe("SyncService", () => {
         name: "test",
         description: "Test description",
         prompt: "Test prompt",
-        arguments: [],
-        messages: undefined,
+        arguments: [] as any[],
+        messages: undefined as any,
       };
 
       // Calculate the hash that will be generated for this command
       const crypto = await import("crypto");
-      const expectedHash = crypto.createHash("sha256").update(JSON.stringify(githubCommand)).digest("hex");
+      const expectedHash = crypto
+        .createHash("sha256")
+        .update(JSON.stringify(githubCommand))
+        .digest("hex");
 
       // Insert command with the calculated hash and specific date - ID must match name
       const command = createMockCommand({

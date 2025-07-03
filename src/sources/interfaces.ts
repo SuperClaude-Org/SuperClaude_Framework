@@ -1,8 +1,9 @@
-import { Command, Persona, Rules } from "@/schemas.js";
+import { Command, Persona } from "@/schemas.js";
+import { SuperClaudeRules } from "@types";
 
 export interface ISourceLoader {
   loadCommands(): Promise<Command[]>;
   loadPersonas(): Promise<Persona[]>;
-  loadRules(): Promise<Rules>;
+  loadRules(): Promise<SuperClaudeRules>;
   clearCache(): void;
 }
