@@ -15,13 +15,11 @@ describe("SyncService", () => {
   let syncService: SyncService;
   let databaseService: DatabaseService;
   let githubLoader: GitHubLoader;
-  let cleanup: () => Promise<void>;
 
   beforeEach(async () => {
     // Create a completely isolated database for each test
     const testDb = await createTestDatabase();
     databaseService = testDb.dbService;
-    cleanup = testDb.cleanup;
 
     // Verify database starts empty
     const commands = await databaseService.getAllCommands();
@@ -33,20 +31,17 @@ describe("SyncService", () => {
 
     // Create mocked GitHubLoader
     githubLoader = {
-      loadCommands: vi.fn(),
-      loadPersonas: vi.fn(),
-      loadRules: vi.fn(),
-      loadSharedIncludes: vi.fn(),
-    } as unknown as GitHubLoader;
+      loadCommands: vi.fn() as any,
+      loadPersonas: vi.fn() as any,
+      loadRules: vi.fn() as any,
+      loadSharedIncludes: vi.fn() as any,
+    } as any;
 
     // Create sync service with mocked dependencies
     syncService = new SyncService(githubLoader, databaseService, 30);
   });
 
   afterEach(async () => {
-    // Clean up database
-    await cleanup();
-
     // Clear all mocks
     vi.clearAllMocks();
   });
@@ -77,9 +72,9 @@ describe("SyncService", () => {
       };
 
       // Mock GitHub loader responses
-      githubLoader.loadCommands.mockResolvedValue(mockCommands);
-      githubLoader.loadPersonas.mockResolvedValue(mockPersonas);
-      githubLoader.loadRules.mockResolvedValue(mockRules);
+      (githubLoader.loadCommands as any).mockResolvedValue(mockCommands);
+      (githubLoader.loadPersonas as any).mockResolvedValue(mockPersonas);
+      (githubLoader.loadRules as any).mockResolvedValue(mockRules);
 
       // Execute sync
       await syncService.syncFromGitHub();
@@ -97,7 +92,7 @@ describe("SyncService", () => {
 
     it.skip("should skip sync if already in progress", async () => {
       // Mock GitHub loader to take time
-      githubLoader.loadCommands.mockImplementation(
+      (githubLoader.loadCommands as any).mockImplementation(
         () => new Promise(resolve => setTimeout(() => resolve([]), 100))
       );
 
@@ -137,13 +132,13 @@ describe("SyncService", () => {
         name: "new-cmd",
         description: "New command",
         prompt: "New prompt",
-        arguments: undefined,
-        messages: undefined,
+        arguments: undefined as any,
+        messages: undefined as any,
       };
 
-      githubLoader.loadCommands.mockResolvedValue([changedCommand, newCommand]);
-      githubLoader.loadPersonas.mockResolvedValue({});
-      githubLoader.loadRules.mockResolvedValue(null);
+      (githubLoader.loadCommands as any).mockResolvedValue([changedCommand, newCommand]);
+      (githubLoader.loadPersonas as any).mockResolvedValue({});
+      (githubLoader.loadRules as any).mockResolvedValue(null);
 
       // Execute sync
       await syncService.syncFromGitHub();
@@ -161,13 +156,13 @@ describe("SyncService", () => {
 
     it("should handle partial failures gracefully", async () => {
       // Mock commands to succeed
-      githubLoader.loadCommands.mockResolvedValue([]);
+      (githubLoader.loadCommands as any).mockResolvedValue([]);
 
       // Mock personas to fail
-      githubLoader.loadPersonas.mockRejectedValue(new Error("Network error"));
+      (githubLoader.loadPersonas as any).mockRejectedValue(new Error("Network error"));
 
       // Mock rules to succeed
-      githubLoader.loadRules.mockResolvedValue(null);
+      (githubLoader.loadRules as any).mockResolvedValue(null);
 
       // Sync should not throw
       await expect(syncService.syncFromGitHub()).resolves.not.toThrow();
@@ -237,9 +232,9 @@ describe("SyncService", () => {
       const syncIntervalMinutes = 5;
 
       // Mock GitHub loader before creating service
-      githubLoader.loadCommands.mockResolvedValue([]);
-      githubLoader.loadPersonas.mockResolvedValue({});
-      githubLoader.loadRules.mockResolvedValue(null);
+      (githubLoader.loadCommands as any).mockResolvedValue([]);
+      (githubLoader.loadPersonas as any).mockResolvedValue({});
+      (githubLoader.loadRules as any).mockResolvedValue(null);
 
       const service = new SyncService(githubLoader, databaseService, syncIntervalMinutes);
 
@@ -268,15 +263,15 @@ describe("SyncService", () => {
       const service = new SyncService(githubLoader, databaseService, 1);
 
       // Mock GitHub loader
-      githubLoader.loadCommands.mockResolvedValue([]);
-      githubLoader.loadPersonas.mockResolvedValue({});
-      githubLoader.loadRules.mockResolvedValue(null);
+      (githubLoader.loadCommands as any).mockResolvedValue([]);
+      (githubLoader.loadPersonas as any).mockResolvedValue({});
+      (githubLoader.loadRules as any).mockResolvedValue(null);
 
       service.startPeriodicSync();
       service.stopPeriodicSync();
 
       // Clear initial call count
-      githubLoader.loadCommands.mockClear();
+      (githubLoader.loadCommands as any).mockClear();
 
       // Advance time - no more syncs should happen
       await vi.advanceTimersByTimeAsync(60 * 1000);
@@ -305,9 +300,9 @@ describe("SyncService", () => {
         messages: command.messages,
       };
 
-      githubLoader.loadCommands.mockResolvedValue([modifiedCommand]);
-      githubLoader.loadPersonas.mockResolvedValue({});
-      githubLoader.loadRules.mockResolvedValue(null);
+      (githubLoader.loadCommands as any).mockResolvedValue([modifiedCommand]);
+      (githubLoader.loadPersonas as any).mockResolvedValue({});
+      (githubLoader.loadRules as any).mockResolvedValue(null);
 
       // Sync
       await syncService.syncFromGitHub();
@@ -339,9 +334,9 @@ describe("SyncService", () => {
         messages: command.messages,
       };
 
-      githubLoader.loadCommands.mockResolvedValue([sameCommand]);
-      githubLoader.loadPersonas.mockResolvedValue({});
-      githubLoader.loadRules.mockResolvedValue(null);
+      (githubLoader.loadCommands as any).mockResolvedValue([sameCommand]);
+      (githubLoader.loadPersonas as any).mockResolvedValue({});
+      (githubLoader.loadRules as any).mockResolvedValue(null);
 
       // Sync
       await syncService.syncFromGitHub();

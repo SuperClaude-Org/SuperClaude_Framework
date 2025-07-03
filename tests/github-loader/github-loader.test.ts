@@ -6,7 +6,7 @@ import {
   SuperClaudeRulesSchema,
 } from "../../src/schemas.js";
 import axios from "axios";
-import { mockCommands } from "../mocks/data.js";
+import { getMockCommands } from "../mocks/data.js";
 import {
   getSnapshotCommands,
   getPersonasYamlContent,

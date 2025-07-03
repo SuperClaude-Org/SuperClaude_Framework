@@ -1,65 +1,37 @@
 import { DatabaseService } from "../../src/services/database-service.js";
-import path from "path";
-import fs from "fs/promises";
+import { Memory } from "lowdb";
+import { DatabaseSchema, DEFAULT_DATABASE_SCHEMA } from "../../src/database.js";
 import { randomBytes } from "crypto";
 
 /**
  * Creates a completely isolated DatabaseService instance for testing.
- * Each instance gets its own unique database file that is guaranteed
- * to be empty and isolated from other tests.
+ * Uses in-memory storage to ensure complete isolation and avoid file system issues.
  */
 export async function createTestDatabase(): Promise<{
   dbService: DatabaseService;
   dbPath: string;
-  cleanup: () => Promise<void>;
 }> {
-  // Generate a truly unique database path using multiple sources of randomness
+  // Generate a unique identifier for debugging purposes
   const timestamp = Date.now();
   const random = randomBytes(8).toString("hex");
   const processId = process.pid;
   const nanoTime = process.hrtime.bigint().toString();
 
-  const dbPath = path.join(
-    process.cwd(),
-    "tests",
-    "fixtures",
-    "temp",
-    `test-db-${timestamp}-${processId}-${random}-${nanoTime}.json`
-  );
+  const dbPath = `in-memory-test-db-${timestamp}-${processId}-${random}-${nanoTime}`;
 
-  // Ensure the temp directory exists
-  const dbDir = path.dirname(dbPath);
-  await fs.mkdir(dbDir, { recursive: true });
+  // Create an in-memory adapter
+  const memoryAdapter = new Memory<DatabaseSchema>();
 
-  // Verify directory was created
-  try {
-    await fs.access(dbDir);
-  } catch (error) {
-    throw new Error(`Failed to create test database directory: ${dbDir}`);
-  }
+  // Create the database service with in-memory adapter
+  const dbService = new DatabaseService(dbPath, memoryAdapter);
 
-  // Create the database service
-  const dbService = new DatabaseService(dbPath);
-
-  // Initialize with empty database
+  // Initialize the database
   await dbService.initialize();
 
-  // Cleanup function to remove the database file and any temp files
-  const cleanup = async () => {
-    try {
-      await fs.unlink(dbPath);
-    } catch (error) {
-      // Ignore if file doesn't exist
-    }
+  // Debug: log the database identifier being used
+  console.log(`Test database created: ${dbPath}`);
 
-    try {
-      await fs.unlink(dbPath + ".tmp");
-    } catch (error) {
-      // Ignore if file doesn't exist
-    }
-  };
-
-  return { dbService, dbPath, cleanup };
+  return { dbService, dbPath };
 }
 
 /**

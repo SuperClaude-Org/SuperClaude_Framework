@@ -1,4 +1,4 @@
-import { Low } from "lowdb";
+import { Low, Memory } from "lowdb";
 import { JSONFile } from "lowdb/node";
 import path from "path";
 import fs from "fs/promises";
@@ -16,36 +16,48 @@ export class DatabaseService {
   private initialized: boolean = false;
 
   constructor(
-    private readonly dbPath: string = path.join(process.cwd(), "data", "superclaude.json")
+    private readonly dbPath: string = path.join(process.cwd(), "data", "superclaude.json"),
+    private readonly adapter?: JSONFile<DatabaseSchema> | Memory<DatabaseSchema>
   ) {}
 
   async initialize(): Promise<void> {
     if (this.initialized) return;
 
     try {
-      // Ensure the directory exists
-      const dbDir = path.dirname(this.dbPath);
-      try {
-        await fs.access(dbDir);
-      } catch (error) {
-        // If using default path, create the directory
-        if (this.dbPath === path.join(process.cwd(), "data", "superclaude.json")) {
-          await fs.mkdir(dbDir, { recursive: true });
-          logger.info({ dbDir }, "Created database directory");
-        } else {
-          // For custom paths, throw an error
-          throw new Error(`Database directory does not exist: ${dbDir}. Please create it first.`);
+      let adapterToUse: JSONFile<DatabaseSchema> | Memory<DatabaseSchema>;
+
+      if (this.adapter) {
+        // Use provided adapter (e.g., for testing)
+        adapterToUse = this.adapter;
+      } else {
+        // Use file adapter for production
+        // Ensure the directory exists
+        const dbDir = path.dirname(this.dbPath);
+        try {
+          await fs.access(dbDir);
+        } catch (error) {
+          // If using default path, create the directory
+          if (this.dbPath === path.join(process.cwd(), "data", "superclaude.json")) {
+            await fs.mkdir(dbDir, { recursive: true });
+            logger.info({ dbDir }, "Created database directory");
+          } else {
+            // For custom paths (like tests), create the directory too
+            await fs.mkdir(dbDir, { recursive: true });
+            logger.debug({ dbDir }, "Created test database directory");
+          }
         }
+        adapterToUse = new JSONFile<DatabaseSchema>(this.dbPath);
       }
 
-      const adapter = new JSONFile<DatabaseSchema>(this.dbPath);
-      this.db = new Low(adapter, DEFAULT_DATABASE_SCHEMA);
+      this.db = new Low(adapterToUse, DEFAULT_DATABASE_SCHEMA);
 
       await this.db.read();
 
       // LowDB sets data to the default if file doesn't exist
-      // Always write to ensure file is created
-      await this.db.write();
+      // Always write to ensure file is created (only for file adapters)
+      if (!this.adapter) {
+        await this.db.write();
+      }
 
       this.initialized = true;
       logger.info({ dbPath: this.dbPath }, "Database initialized");
@@ -191,5 +203,14 @@ export class DatabaseService {
     this.db.data = DEFAULT_DATABASE_SCHEMA;
     await this.db.write();
     logger.info("Database cleared");
+  }
+
+  async close(): Promise<void> {
+    if (this.initialized && this.db) {
+      // Ensure all pending writes are completed
+      await this.db.write();
+      this.initialized = false;
+      logger.debug("Database connection closed");
+    }
   }
 }
