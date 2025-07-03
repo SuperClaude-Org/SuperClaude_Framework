@@ -9,12 +9,10 @@ import {
 import {
   createMockCommand,
   createMockPersona,
-  createMockRule,
   getMockCommands,
   getMockPersonas,
-  getMockRules,
 } from "@tests/mocks/data.js";
-import { createTestDatabase, verifyEmptyDatabase } from "@tests/utils/test-helpers.js";
+import { createTestDatabase } from "@tests/utils/test-helpers.js";
 
 describe("DatabaseService", () => {
   let dbService: DatabaseService;

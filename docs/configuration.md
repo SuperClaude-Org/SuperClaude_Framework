@@ -2,13 +2,13 @@
 
 ## Overview
 
-The SuperClaude MCP configuration management system provides a flexible, hierarchical configuration system that supports both local and remote data sources with optional persistence to the user's home directory.
+The SuperClaude MCP configuration management system provides a flexible, hierarchical configuration system that supports both local and remote data sources with persistence to the user's home directory.
 
 ## Features
 
 - **Multiple Source Types**: Support for local file system and remote GitHub repository sources
 - **Configuration Hierarchy**: CLI arguments → Environment variables → User config → Defaults
-- **Persistence**: Optional saving of configuration to `~/.superclaude/config.json`
+- **Persistence**: Saving of configuration to `~/.superclaude/config.json`
 - **CLI Management**: Full CLI commands for configuration management (init, show, set, reset)
 - **Backwards Compatibility**: Maintains compatibility with existing GitHub repository setup
 

@@ -20,12 +20,18 @@ beforeAll(async () => {
   const dataDir = path.join(process.cwd(), "data");
 
   try {
-    await fs.rm(fixturesDir, { recursive: true, force: true });
+    // Only clean JSON files, not the directory structure to avoid race conditions
+    const files = await fs.readdir(fixturesDir);
+    for (const file of files) {
+      if (file.endsWith(".json")) {
+        await fs.unlink(path.join(fixturesDir, file));
+      }
+    }
   } catch (error) {
-    // Directory might not exist
+    // Directory might not exist, that's fine
   }
 
-  // Ensure fixtures/temp directory exists
+  // Ensure fixtures/temp directory exists (this is safe to call multiple times)
   await fs.mkdir(tempDir, { recursive: true });
 
   try {

@@ -13,12 +13,14 @@ import {
 import logger from "@logger";
 
 export class DatabaseService {
+  // ! It's critical to use LowSync because the async version fails frequently
+  // ! when trying to make updates to the database (fails to rename temp file to main file).
   private db: LowSync<DatabaseSchema>;
   private initialized: boolean = false;
 
   constructor(
     private readonly dbPath: string = path.join(process.cwd(), "data", "superclaude.json"),
-    private readonly adapter?: JSONFileSync<DatabaseSchema> | MemorySync<DatabaseSchema>
+    private readonly adapter?: JSONFileSync<DatabaseSchema> | MemorySync<DatabaseSchema> // ! Only should use MemorySync for testing
   ) {}
 
   async initialize(): Promise<void> {

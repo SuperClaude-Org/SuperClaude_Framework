@@ -11,7 +11,6 @@ import { SyncReportGenerator } from "@utils/sync-report.js";
 import { SourceLoaderFactory } from "@/sources/index.js";
 import { SyncService } from "@services/sync-service.js";
 import { ConfigService, ConfigOptions } from "@services/config-service.js";
-import { DEFAULT_CONFIG } from "@/models/config.model.js";
 import chalk from "chalk";
 import path from "path";
 import fs from "fs";

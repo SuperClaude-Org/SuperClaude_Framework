@@ -7,7 +7,6 @@ import { DatabaseService } from "@services/database-service.js";
 import { SyncService } from "@services/sync-service.js";
 import { ConfigService, ConfigOptions } from "@services/config-service.js";
 import { SuperClaudeCommand, Persona, SuperClaudeRules } from "@types";
-import { CommandModel, PersonaModel } from "@database";
 import { createMCPServer } from "@/mcp.js";
 
 // Helper function to expand tilde in paths

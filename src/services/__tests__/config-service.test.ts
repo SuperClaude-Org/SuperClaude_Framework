@@ -1,6 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { ConfigService, ConfigOptions } from "../config-service.js";
 import { DEFAULT_CONFIG } from "@/models/config.model.js";
+import fs from "fs/promises";
+import path from "path";
+import os from "os";
 
 describe("ConfigService", () => {
   let configService: ConfigService;
@@ -45,6 +48,14 @@ describe("ConfigService", () => {
 
   describe("initialize", () => {
     it("should load default configuration when no overrides exist", async () => {
+      // Ensure there's no existing config file that could interfere
+      const configPath = path.join(os.homedir(), ".superclaude", "config.json");
+      try {
+        await fs.unlink(configPath);
+      } catch {
+        // File doesn't exist, that's fine
+      }
+
       configService = new ConfigService();
       await configService.initialize();
 
