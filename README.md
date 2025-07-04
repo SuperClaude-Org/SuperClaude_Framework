@@ -88,18 +88,18 @@ pnpm config reset
 
 The following environment variables are supported:
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `SC_SOURCE_TYPE` | Source type (`local` or `remote`) | `remote` |
-| `SC_SOURCE_PATH` | Path for local source | `./.claude` |
-| `SC_SOURCE_URL` | URL for remote source | `https://github.com/NomenAK/SuperClaude` |
-| `SC_SOURCE_BRANCH` | Branch for remote source | `master` |
-| `SC_SOURCE_CACHE_TTL` | Cache TTL in minutes for remote source | `5` |
-| `SC_DATABASE_PATH` | Database file path | `~/.superclaude/data/db.json` |
-| `SC_AUTO_SYNC_ENABLED` | Enable/disable auto sync | `false` |
-| `SC_TRANSPORT` | Server transport (`stdio` or `http`) | `stdio` |
-| `PORT` | Server port for HTTP transport | `8080` |
-| `LOG_LEVEL` | Logging level | `info` |
+| Variable               | Description                            | Default                                  |
+| ---------------------- | -------------------------------------- | ---------------------------------------- |
+| `SC_SOURCE_TYPE`       | Source type (`local` or `remote`)      | `remote`                                 |
+| `SC_SOURCE_PATH`       | Path for local source                  | `./.claude`                              |
+| `SC_SOURCE_URL`        | URL for remote source                  | `https://github.com/NomenAK/SuperClaude` |
+| `SC_SOURCE_BRANCH`     | Branch for remote source               | `master`                                 |
+| `SC_SOURCE_CACHE_TTL`  | Cache TTL in minutes for remote source | `5`                                      |
+| `SC_DATABASE_PATH`     | Database file path                     | `~/.superclaude/data/db.json`            |
+| `SC_AUTO_SYNC_ENABLED` | Enable/disable auto sync               | `false`                                  |
+| `SC_TRANSPORT`         | Server transport (`stdio` or `http`)   | `stdio`                                  |
+| `PORT`                 | Server port for HTTP transport         | `8080`                                   |
+| `LOG_LEVEL`            | Logging level                          | `info`                                   |
 
 ## Usage
 
@@ -134,12 +134,14 @@ curl http://localhost:3000/mcp
 ### Available MCP Features
 
 #### Prompts
+
 - All SuperClaude commands are exposed as MCP prompts
 - Use prompt names like `superclaude:command-name`
 - Example: `superclaude:document`, `superclaude:analyze`
 - Shows up in Claude Code as `/superclaude:` slash commands
 
 #### Resources
+
 - **`rules`**: Access to SuperClaude rules and guidelines
 - **`personas/{persona-id}`**: Individual SuperClaude personas with their configurations
 - Resources show up in Claude Code as `@superclaude:` references
@@ -149,14 +151,14 @@ curl http://localhost:3000/mcp
 
 ### Scripts
 
-| Script | Description |
-|--------|-------------|
-| `pnpm dev` | Start development server |
-| `pnpm build` | Build for production |
-| `pnpm test` | Run test suite |
-| `pnpm lint` | Run linting and type checking |
-| `pnpm sync` | Sync data from configured source |
-| `pnpm report` | Generate data report |
+| Script        | Description                      |
+| ------------- | -------------------------------- |
+| `pnpm dev`    | Start development server         |
+| `pnpm build`  | Build for production             |
+| `pnpm test`   | Run test suite                   |
+| `pnpm lint`   | Run linting and type checking    |
+| `pnpm sync`   | Sync data from configured source |
+| `pnpm report` | Generate data report             |
 
 ### Project Structure
 
@@ -265,6 +267,7 @@ This project is licensed under the MIT License.
 ## Support
 
 For issues and questions:
+
 - Check the [documentation](docs/configuration.md)
 - Review existing [GitHub issues](../../issues)
 - Create a new issue with detailed information

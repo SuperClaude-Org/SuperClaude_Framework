@@ -27,27 +27,27 @@ const DEFAULT_CONFIG: AppConfig = {
     remote: {
       url: "https://github.com/NomenAK/SuperClaude",
       branch: "master",
-      cacheTTL: 5
-    }
+      cacheTTL: 5,
+    },
   },
   database: {
     path: "~/.superclaude/data/db.json",
-    autoInit: true
+    autoInit: true,
   },
   sync: {
     enabled: false,
     intervalMinutes: 30,
-    onStartup: false
+    onStartup: false,
   },
   server: {
     transport: "stdio",
     port: 8080,
-    logLevel: "info"
+    logLevel: "info",
   },
   persistence: {
     enabled: false,
-    autoSave: false
-  }
+    autoSave: false,
+  },
 };
 ```
 
@@ -57,10 +57,10 @@ const DEFAULT_CONFIG: AppConfig = {
 interface AppConfig {
   source: {
     type: "local" | "remote";
-    local?: { 
+    local?: {
       path: string; // default: "./.claude"
     };
-    remote?: { 
+    remote?: {
       url: string; // default: "https://github.com/NomenAK/SuperClaude"
       branch: string; // default: "master"
       cacheTTL: number; // default: 5 minutes
@@ -155,19 +155,18 @@ superclaude-mcp config --help
 
 The following environment variables are supported:
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `SC_SOURCE_TYPE` | Source type (`local` or `remote`) | `remote` |
-| `SC_SOURCE_PATH` | Path for local source | `./.claude` |
-| `SC_SOURCE_URL` | URL for remote source | `https://github.com/NomenAK/SuperClaude` |
-| `SC_SOURCE_BRANCH` | Branch for remote source | `master` |
-| `SC_SOURCE_CACHE_TTL` | Cache TTL in minutes for remote source | `5` |
-| `SC_DATABASE_PATH` | Database file path | `~/.superclaude/data/db.json` |
-| `SC_AUTO_SYNC_ENABLED` | Enable/disable auto sync | `false` |
-| `SC_TRANSPORT` | Server transport (`stdio` or `http`) | `stdio` |
-| `PORT` | Server port for HTTP transport | `8080` |
-| `LOG_LEVEL` | Logging level | `info` |
-
+| Variable               | Description                            | Default                                  |
+| ---------------------- | -------------------------------------- | ---------------------------------------- |
+| `SC_SOURCE_TYPE`       | Source type (`local` or `remote`)      | `remote`                                 |
+| `SC_SOURCE_PATH`       | Path for local source                  | `./.claude`                              |
+| `SC_SOURCE_URL`        | URL for remote source                  | `https://github.com/NomenAK/SuperClaude` |
+| `SC_SOURCE_BRANCH`     | Branch for remote source               | `master`                                 |
+| `SC_SOURCE_CACHE_TTL`  | Cache TTL in minutes for remote source | `5`                                      |
+| `SC_DATABASE_PATH`     | Database file path                     | `~/.superclaude/data/db.json`            |
+| `SC_AUTO_SYNC_ENABLED` | Enable/disable auto sync               | `false`                                  |
+| `SC_TRANSPORT`         | Server transport (`stdio` or `http`)   | `stdio`                                  |
+| `PORT`                 | Server port for HTTP transport         | `8080`                                   |
+| `LOG_LEVEL`            | Logging level                          | `info`                                   |
 
 ## Source Loaders
 

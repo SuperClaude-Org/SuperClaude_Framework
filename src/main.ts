@@ -15,6 +15,7 @@ import chalk from "chalk";
 import path from "path";
 import fs from "fs";
 import os from "os";
+import packageJson from "../package.json" with { type: "json" };
 
 // Helper function to expand tilde in paths
 function expandTilde(filepath: string): string {
@@ -271,9 +272,9 @@ async function main() {
   const program = new Command();
 
   program
-    .name("superclaude-mcp")
-    .description("SuperClaude MCP server")
-    .version("1.0.0")
+    .name(packageJson.name)
+    .description(packageJson.description)
+    .version(packageJson.version)
     .option("--source-type <type>", "Data source type (local or remote)")
     .option("--source-path <path>", "Path for local source")
     .option("--source-url <url>", "URL for remote source")

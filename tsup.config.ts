@@ -5,11 +5,13 @@ export default defineConfig({
   format: ["cjs", "esm"],
   dts: true,
   clean: true,
-  minify: process.env.NODE_ENV === "production",
+  minify: false,
   target: "node18",
   outDir: "dist",
   sourcemap: true,
+  noExternal: [],
   esbuildOptions(options) {
     options.platform = "node";
+    options.packages = "external";
   },
 });

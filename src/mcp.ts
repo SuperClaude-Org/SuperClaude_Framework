@@ -9,6 +9,7 @@ import {
 import logger from "@logger";
 import { ISourceLoader } from "@/sources/index.js";
 import { SuperClaudeCommand, Persona, SuperClaudeRules } from "@types";
+import packageJson from "../package.json" with { type: "json" };
 
 /**
  * Creates and configures an MCP server instance with all handlers
@@ -22,9 +23,9 @@ export function createMCPServer(
 ): McpServer {
   const server = new McpServer(
     {
-      name: "superclaude-mcp",
-      version: "1.0.0",
-      description: "MCP server exposing SuperClaude commands as prompts",
+      name: packageJson.name,
+      version: packageJson.version,
+      description: packageJson.description,
     },
     {
       capabilities: {
