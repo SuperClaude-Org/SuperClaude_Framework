@@ -231,46 +231,15 @@ pnpm test --watch
 pnpm test --coverage
 ```
 
-## API Reference
-
-### MCP Server Methods
-
-- `initialize`: Initialize MCP server
-- `list_prompts`: List available SuperClaude commands
-- `get_prompt`: Get specific command prompt
-- `list_resources`: List available resources (rules, personas)
-- `read_resource`: Read resource content (rules text, persona configurations)
-
-### Configuration Schema
+## Configuration Schema
 
 See [docs/configuration.md](docs/configuration.md) for detailed configuration schema and options.
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Run the test suite
-6. Submit a pull request
-
-## License
-
-This project is licensed under the MIT License.
 
 ## Related Projects
 
 - [SuperClaude](https://github.com/NomenAK/SuperClaude) - The original SuperClaude command library
 - [Claude Code](https://claude.ai/code) - Anthropic's official CLI for Claude
 - [MCP SDK](https://github.com/modelcontextprotocol/typescript-sdk) - TypeScript SDK for MCP
-
-## Support
-
-For issues and questions:
-
-- Check the [documentation](docs/configuration.md)
-- Review existing [GitHub issues](../../issues)
-- Create a new issue with detailed information
 
 ---
 

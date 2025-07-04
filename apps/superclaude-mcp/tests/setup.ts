@@ -1,6 +1,7 @@
 import { vi, afterEach, beforeEach, afterAll, beforeAll } from "vitest";
 import fs from "fs/promises";
 import path from "path";
+import os from "os";
 
 // Mock logger to reduce noise in tests
 vi.mock("../src/logger.js", () => ({
@@ -14,6 +15,22 @@ vi.mock("../src/logger.js", () => ({
 
 // Ensure tests run in isolation
 beforeAll(async () => {
+  // Copy snapshot data from SuperClaude database to test location
+  const sourceDbPath = path.join(os.homedir(), ".superclaude", "data", "db.json");
+  const targetSnapshotPath = path.join(process.cwd(), "tests", "data", "snapshot.db.json");
+
+  try {
+    // Ensure target directory exists
+    await fs.mkdir(path.dirname(targetSnapshotPath), { recursive: true });
+
+    // Copy the database file if it exists
+    await fs.access(sourceDbPath);
+    await fs.copyFile(sourceDbPath, targetSnapshotPath);
+    console.log("Snapshot data copied successfully");
+  } catch (error) {
+    console.warn("Could not copy snapshot data - run 'pnpm run sync:snapshot' first:", error);
+  }
+
   // Clean up any existing test data
   const fixturesDir = path.join(process.cwd(), "tests", "fixtures");
   const tempDir = path.join(fixturesDir, "temp");

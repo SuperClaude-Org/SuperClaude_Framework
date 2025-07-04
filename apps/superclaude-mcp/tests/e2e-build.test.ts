@@ -11,13 +11,13 @@ describe("E2E Build Tests", () => {
   beforeAll(() => {
     // Read the package.json to get expected version
     packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
-    
+
     // Ensure the project is built
     try {
-      execSync("pnpm build", { 
-        cwd: projectRoot, 
+      execSync("pnpm build", {
+        cwd: projectRoot,
         stdio: "inherit",
-        timeout: 30000 
+        timeout: 30000,
       });
     } catch (error) {
       throw new Error(`Build failed: ${error}`);
@@ -38,7 +38,7 @@ describe("E2E Build Tests", () => {
     it("should execute CJS build help command successfully", () => {
       const result = execSync("node dist/main.cjs --help", {
         cwd: projectRoot,
-        encoding: "utf-8", 
+        encoding: "utf-8",
         timeout: 30000,
       });
 
@@ -80,7 +80,7 @@ describe("E2E Build Tests", () => {
 
       const esmResult = execSync("node dist/main.js --version", {
         cwd: projectRoot,
-        encoding: "utf-8", 
+        encoding: "utf-8",
         timeout: 30000,
       });
 
@@ -160,10 +160,10 @@ describe("E2E Build Tests", () => {
           });
           return { success: true, output: "" };
         } catch (error: any) {
-          return { 
-            success: false, 
+          return {
+            success: false,
             output: error.stdout?.toString() || "",
-            stderr: error.stderr?.toString() || ""
+            stderr: error.stderr?.toString() || "",
           };
         }
       };
@@ -174,7 +174,7 @@ describe("E2E Build Tests", () => {
       // Both should fail with invalid arguments but not crash
       expect(cjsResult.success).toBe(false);
       expect(esmResult.success).toBe(false);
-      
+
       // Should contain error message about unknown option
       [cjsResult.output + cjsResult.stderr, esmResult.output + esmResult.stderr].forEach(output => {
         expect(output.toLowerCase()).toMatch(/unknown.*option|error.*unknown/);

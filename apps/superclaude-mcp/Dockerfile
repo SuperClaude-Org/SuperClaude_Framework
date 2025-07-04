@@ -34,4 +34,6 @@ EXPOSE 8080
 USER node
 
 ENTRYPOINT ["/sbin/tini", "--"]
-CMD ["node", "dist/index.js"]
+
+# Make sure to start the MCP server in HTTP mode
+CMD ["node", "dist/main.js", "-t", "http"]

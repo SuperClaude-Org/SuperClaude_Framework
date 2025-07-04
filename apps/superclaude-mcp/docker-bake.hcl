@@ -13,8 +13,8 @@ group "default" {
 target "local" {
   context = "."
   dockerfile = "Dockerfile"
-  tags = ["superclaude-mcp:latest"]
-  platforms = ["linux/amd64"]
+  tags = ["superclaude-mcp:local"]
+  platforms = ["linux/amd64", "linux/arm64"]
   output = ["type=docker"]
 }
 

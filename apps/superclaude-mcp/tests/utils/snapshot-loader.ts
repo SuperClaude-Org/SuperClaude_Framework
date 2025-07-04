@@ -12,13 +12,9 @@ interface SnapshotData {
   commands: CommandModel[];
   personas: PersonaModel[];
   rules: Array<{
+    name: string;
+    content: string;
     id: string;
-    rules: {
-      rules: Array<{
-        name: string;
-        content: string;
-      }>;
-    };
     hash: string;
     lastUpdated: string;
   }>;
@@ -35,7 +31,7 @@ export function loadSnapshot(): SnapshotData {
     return cachedSnapshot;
   }
 
-  const snapshotPath = join(__dirname, "..", "data", "superclaude.snapshot.json");
+  const snapshotPath = join(__dirname, "..", "data", "snapshot.db.json");
   const rawData = readFileSync(snapshotPath, "utf-8");
   const snapshot = JSON.parse(rawData) as SnapshotData;
 
@@ -68,21 +64,16 @@ export function getSnapshotPersonas(): PersonaModel[] {
 export function getSnapshotRules(): RuleModel[] {
   const snapshot = loadSnapshot();
   const rulesData = snapshot.rules as any[];
-  if (rulesData.length === 0) return [];
+  if (!rulesData || rulesData.length === 0) return [];
 
-  // Assuming snapshot has rules in the old format, convert to new format
-  const firstRuleSet = rulesData[0];
-  if (firstRuleSet && firstRuleSet.rules && firstRuleSet.rules.rules) {
-    return firstRuleSet.rules.rules.map((rule: any, index: number) => ({
-      id: rule.name,
-      name: rule.name,
-      content: rule.content,
-      hash: `${rule.name}-hash`,
-      lastUpdated: new Date(),
-    }));
-  }
-
-  return [];
+  // Rules are stored directly as an array in the new format
+  return rulesData.map((rule: any) => ({
+    id: rule.id || rule.name,
+    name: rule.name,
+    content: rule.content,
+    hash: rule.hash || `${rule.name}-hash`,
+    lastUpdated: new Date(rule.lastUpdated || new Date()),
+  }));
 }
 
 export function getSnapshotPersonasAsRecord(): Record<string, PersonaModel> {
@@ -148,10 +139,9 @@ export function getRulesYamlContent(): string {
   const rulesData = loadSnapshot().rules;
   if (!rulesData || rulesData.length === 0) return "";
 
-  const rules = rulesData[0];
   let yaml = "rules:\n";
 
-  rules.rules.rules.forEach(rule => {
+  rulesData.forEach(rule => {
     yaml += `  - name: ${rule.name}\n`;
     yaml += `    content: ${rule.content}\n`;
   });
