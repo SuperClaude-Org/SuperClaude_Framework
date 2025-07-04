@@ -1,7 +1,7 @@
 {
   "name": "superclaude-mcp",
   "version": "1.0.0",
-  "description": "MCP server exposing SuperClaude commands as prompts",
+  "description": "MCP server providing portable access to SuperClaude configuration framework with real-time updates",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -35,8 +35,7 @@
     "clean:test-fixtures": "rm -rf tests/fixtures/*.json",
     "clean": "pnpm clean:data && pnpm clean:dist && pnpm clean:modules && pnpm clean:test-fixtures",
     "docker:build": "docker buildx bake -f docker-bake.hcl local",
-    "docker:build:dev": "docker buildx bake -f docker-bake.hcl development",
-    "docker:push": "DOCKER_REGISTRY=$(node .docker-env.js) docker buildx bake -f docker-bake.hcl registry"
+    "docker:build:dev": "docker buildx bake -f docker-bake.hcl development"
   },
   "exports": {
     ".": {
