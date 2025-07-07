@@ -20,7 +20,7 @@ check_bash_version() {
 }
 
 # Script version
-readonly SCRIPT_VERSION="2.0.0"
+readonly SCRIPT_VERSION="2.0.1"
 
 # Constants
 readonly REQUIRED_SPACE_KB=51200  # 50MB in KB
