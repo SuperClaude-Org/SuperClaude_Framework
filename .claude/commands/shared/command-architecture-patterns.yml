@@ -18,7 +18,7 @@ Required_Sections:
 
 Command_Categories:
   Analysis: ["analyze", "load", "explain", "troubleshoot"]
-  Build: ["build", "spawn"] 
+  Build: ["build", "spawn"]
   Quality: ["test", "scan", "improve"]
   Operations: ["deploy", "migrate", "cleanup"]
   Documentation: ["document", "estimate"]
@@ -80,12 +80,12 @@ UltraCompressed_Structure:
   Command_Header:
     Execute: "immediate. --plan→preview"
     Purpose: "[Action][Subject] in $ARGUMENTS"
-    
+
   Universal_Flags:
     Planning: "@see flag-inheritance.yml"
-    Thinking: "@see flag-inheritance.yml" 
+    Thinking: "@see flag-inheritance.yml"
     MCP_Control: "@see flag-inheritance.yml"
-    
+
   Shared_References:
     MCP_Explanations: "@see flag-inheritance.yml#MCP_Control"
     Thinking_Modes: "@see flag-inheritance.yml#Thinking_Modes"
@@ -98,11 +98,11 @@ Token_Optimization_Patterns:
     Conjunctions: "'and'→'&' | 'with'→'w/'"
     Prepositions: "'at'→'@' | 'to'→'→'"
     Verbose_Phrases: "'in order to'→'to' | 'make sure'→'ensure'"
-    
+
   Symbol_Expansion:
     Process: "▶(start) ⏸(pause) ⏹(stop) ⚡(fast) 🔄(cycle)"
     Quality: "✅(success) ❌(failure) ⚠(warning) 📊(metrics)"
-    
+
   Structure_Priority:
     1_YAML: "Most compact structured data"
     2_Tables: "Comparison & reference data"
@@ -116,20 +116,20 @@ Token_Optimization_Patterns:
 Universal_Flags_Always_Available:
   Planning:
     --plan: "Show execution plan before running"
-    
+
   Thinking_Modes:
     --think: "Multi-file analysis w/ context (4K tokens)"
     --think-hard: "Deep system analysis (10K tokens)"
     --ultrathink: "Comprehensive analysis (32K tokens)"
-    
+
   Compression:
     --uc: "UltraCompressed mode (~70% token reduction)"
-    
+
   MCP_Control:
     --c7: "Context7→docs & examples"
     --seq: "Sequential→complex thinking"
     --magic: "Magic→UI component generation"
-    --pup: "Puppeteer→browser automation"
+    --prit: "Playwright→browser automation"
     --all-mcp: "Enable all MCP servers"
     --no-mcp: "Disable all MCP servers"
 
@@ -154,11 +154,11 @@ Command_Chains:
   Feature_Development:
     Primary: "analyze → design → build → test"
     Secondary: "scan → document → deploy"
-    
+
   Bug_Investigation:
     Primary: "troubleshoot → analyze → improve"
     Secondary: "test → document"
-    
+
   Quality_Improvement:
     Primary: "scan → analyze → improve → test"
     Secondary: "document → deploy"
@@ -198,7 +198,7 @@ UltraCompressed_Mode_Integration:
     Manual: "--uc flag | 'ultracompressed' keyword"
     Auto: "Context >70% | Token budget specified"
     Smart: "Large docs → Suggest compression"
-    
+
   Token_Savings:
     Headers: "60-80% reduction"
     Paragraphs: "70-75% reduction"
@@ -234,7 +234,7 @@ Validation_Checklist:
     Examples: "At least 3 working examples"
     Flags: "All documented with descriptions"
     Integration: "Lifecycle hooks included"
-    
+
   Quality_Checks:
     Links: "All @include references valid"
     Consistency: "Follows naming conventions"
@@ -246,7 +246,7 @@ Consistency_Patterns:
     Commands: "Verb form: analyze, build, deploy"
     Flags: "Kebab-case: --think-hard, --no-magic"
     Outputs: "{command}-{timestamp}.{ext}"
-    
+
   Language_Patterns:
     Present_Tense: "Analyze the codebase"
     Active_Voice: "Creates components"

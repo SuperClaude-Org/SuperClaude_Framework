@@ -27,7 +27,7 @@ Standard_Lifecycle:
       Cache: "Previous results for efficiency"
       Lock: "Prevent concurrent modifications"
       MCP_Cache_Init: "@include mcp-cache-patterns.yml#Cache_Storage"
-      
+
   During_Execution:
     Progress_Monitoring:
       Track: ["Operation progress", "Resource usage", "Error rates", "Token consumption"]
@@ -37,7 +37,7 @@ Standard_Lifecycle:
       Fallback: ["Use alternatives if primary fails", "Degrade gracefully"]
     Error_Handling:
       "@include recovery-state-patterns.yml#Recovery_Framework"
-      
+
   Post_Execution:
     Verification:
       Confirm: ["Expected outcomes achieved", "No side effects", "State consistent"]
@@ -63,7 +63,7 @@ Servers:
       - get-library-docs: "Fetch up-to-date documentation"
     Success_Rate: "Very high for popular libraries"
     Fallback: "WebSearch official docs"
-    
+
   Sequential:
     Purpose: "Step-by-step complex problem solving"
     Best_For: ["Architecture", "debugging", "system design", "root cause analysis"]
@@ -72,7 +72,7 @@ Servers:
       - sequentialthinking: "Adaptive multi-step reasoning"
     Success_Rate: "High for complex problems"
     Fallback: "Native step-by-step analysis"
-    
+
   Magic:
     Purpose: "UI component generation with 21st.dev"
     Best_For: ["React/Vue components", "UI patterns", "prototypes"]
@@ -84,8 +84,8 @@ Servers:
       - logo_search: "Find company logos in TSX/JSX/SVG"
     Success_Rate: "High for common components"
     Fallback: "Search existing components in project"
-    
-  Puppeteer:
+
+  Playwright:
     Purpose: "Browser automation and testing"
     Best_For: ["E2E tests", "screenshots", "web scraping", "performance testing"]
     Token_Cost: "Low (minimal tokens, mostly actions)"
@@ -116,13 +116,13 @@ MCP_Control_Flags:
     --no-seq: "Disable Sequential"
     --magic: "Enable Magic only"
     --no-magic: "Disable Magic"
-    --pup: "Enable Puppeteer only"
-    --no-pup: "Disable Puppeteer"
-    
+    --prit: "Enable Playwright only"
+    --no-prit: "Disable Playwright"
+
   Combined:
     --all-mcp: "Enable all MCP servers"
     --no-mcp: "Disable all MCP servers (native tools only)"
-    
+
   Priority: "Explicit flags > Command defaults > Context triggers"
   Override: "--no-mcp overrides all individual flags"
 ```
@@ -156,17 +156,17 @@ Intelligent_MCP_Selection:
   Command_Defaults:
     analyze + --architecture: "Suggest --seq for system analysis"
     build + --react: "Suggest --magic for UI components"
-    test + --e2e: "Suggest --pup for browser testing"
+    test + --e2e: "Suggest --prit for browser testing"
     explain + library_name: "Suggest --c7 for documentation"
     design + --api: "Suggest --seq --c7 for comprehensive design"
     troubleshoot + --investigate: "Suggest --seq for root cause analysis"
-    improve + --performance: "Suggest --seq --pup for optimization analysis"
-    
+    improve + --performance: "Suggest --seq --prit for optimization analysis"
+
   Context_Triggers:
     Import_Errors: "→ C7 lookup REQUIRED"
     Complex_Debugging: "→ Sequential thinking"
     UI_Requests: "→ Magic builder"
-    E2E_Testing: "→ Puppeteer automation"
+    E2E_Testing: "→ Playwright automation"
 
 ## Automatic MCP Context Detection
 
@@ -180,24 +180,24 @@ Context_Detection_Patterns:
       - "@\\w+/"                           # Scoped packages
     Action: "→ C7 resolve-library-id REQUIRED"
     Blocking: "Implementation blocked until documentation found"
-    
+
   Complex_Problem_Indicators:
     Keywords: ["architecture", "design", "system", "complex", "debug", "investigate", "root cause", "bottleneck"]
     Error_Patterns: ["multiple errors", "cascading failures", "performance degradation"]
     Scope_Indicators: ["multi-file", "cross-component", "system-wide"]
     Action: "→ Sequential thinking RECOMMENDED"
-    
+
   UI_Component_Requests:
     Keywords: ["button", "form", "modal", "dialog", "dropdown", "table", "chart", "dashboard", "component"]
     Framework_Mentions: ["react", "vue", "svelte", "angular"]
     File_Types: ["*.tsx", "*.jsx", "*.vue", "*.svelte"]
     Action: "→ Magic builder RECOMMENDED"
-    
+
   Browser_Automation_Needs:
     Keywords: ["screenshot", "e2e", "integration test", "browser", "selenium", "automation"]
-    Test_Patterns: ["cypress", "playwright", "puppeteer", "webdriver"]
-    Action: "→ Puppeteer automation RECOMMENDED"
-    
+    Test_Patterns: ["cypress", "playwright", "Playwright", "webdriver"]
+    Action: "→ Playwright automation RECOMMENDED"
+
 Research_Requirements:
   External_Library_Detection:
     Pattern: "Any import/require from non-relative path"
@@ -207,13 +207,13 @@ Research_Requirements:
       2: "If not found → WebSearch '[library] official documentation'"
       3: "Extract: Installation, basic usage, common patterns"
       4: "Block implementation if confidence < 90%"
-      
+
   Unknown_Pattern_Detection:
     Triggers: ["unfamiliar syntax", "new framework", "unknown API"]
     Phrases_To_Block: ["might work", "probably", "I think", "typical pattern"]
     Required_Instead: "Documentation confirms", "Official source states"
     Action: "Research → Verify → Document source → Implement"
-    
+
   Low_Confidence_Indicators:
     Uncertainty_Language: ["maybe", "should", "typically", "usually"]
     Missing_Evidence: "No source citation available"
@@ -223,28 +223,28 @@ Auto_Activation_Rules:
   Command_Based:
     /build + UI_keywords: "Suggest --magic for component generation"
     /analyze + complexity_indicators: "Suggest --seq for deep analysis"
-    /test + browser_keywords: "Suggest --pup for automation"
+    /test + browser_keywords: "Suggest --prit for automation"
     /explain + library_name: "Suggest --c7 for documentation"
-    
+
   File_Based:
     "*.tsx|*.jsx": "Frontend context → --magic available"
-    "*.test.*|*.spec.*": "Testing context → --pup available"
+    "*.test.*|*.spec.*": "Testing context → --prit available"
     "*api*|*server*": "Backend context → --seq for design"
-    
+
   Error_Based:
     "ModuleNotFoundError": "→ C7 lookup REQUIRED"
     "TypeError": "→ Sequential analysis RECOMMENDED"
     "Build failures": "→ Sequential troubleshooting"
-    
+
 Override_Controls:
   User_Flags_Priority: "Explicit flags > Auto-detection > Defaults"
   Disable_All: "--no-mcp overrides all auto-detection"
-  Selective_Disable: "--no-c7, --no-seq, --no-magic, --no-pup"
-  Force_Enable: "--c7, --seq, --magic, --pup override context detection"
+  Selective_Disable: "--no-c7, --no-seq, --no-magic, --no-prit"
+  Force_Enable: "--c7, --seq, --magic, --prit override context detection"
 ```
-    
+
   Synergistic_Patterns:
-    --magic + --pup: "Generate UI components and test immediately"
+    --magic + --prit: "Generate UI components and test immediately"
     --seq + --c7: "Complex analysis with authoritative documentation"
     --seq + --think-hard: "Deep architectural analysis with documentation"
     --c7 + --uc: "Research with compressed output for token efficiency"
@@ -304,7 +304,7 @@ Git_Workflows:
       - "Test for conflicts"
       - "Verify branch policies"
       - "Check approval requirements"
-      
+
   Commit_Standards:
     Format: "{type}: {description}\n\n{body}\n\n🤖 Generated with [Claude Code]\n\nCo-Authored-By: Claude"
     Types: ["feat", "fix", "docs", "style", "refactor", "test", "chore"]
@@ -312,7 +312,7 @@ Git_Workflows:
       - "Type matches change nature"
       - "Description < 50 chars"
       - "Body explains why, not what"
-      
+
   Branch_Management:
     Strategy:
       Feature: "feature/{description}"
@@ -323,7 +323,7 @@ Git_Workflows:
       Main: "No direct push, PR required"
       Release: "Admin approval required"
       Feature: "Auto-delete after merge"
-      
+
   Conflict_Resolution:
     Detection: "Auto-detect during pull/merge"
     Strategies:
@@ -354,13 +354,13 @@ Cost_Categories:
   Light_MCP: "Minimal usage"
   Medium_MCP: "Moderate usage"
   Heavy_MCP: "Extensive usage"
-  
+
 Budget_Escalation:
   1: "Native first for simple tasks"
   2: "C7 for library questions"
   3: "Sequential for complex analysis"
   4: "Combine MCPs for synergy"
-  
+
 Abort_Conditions:
   Context_Usage: "High context usage → native tools"
   Timeout_Errors: "MCP timeout/error → fallback"
@@ -368,7 +368,7 @@ Abort_Conditions:
 
 Failover_Integration:
   "@include recovery-state-patterns.yml#Standard_Recovery_Patterns"
-  
+
 Error_Recovery_Standards:
   "@include recovery-state-patterns.yml#Standard_Recovery_Patterns"
 ```
@@ -401,19 +401,19 @@ Server_Performance:
     Context7: "Fast response (network dependent)"
     Sequential: "Moderate duration (complexity dependent)"
     Magic: "Fast to moderate (component complexity)"
-    Puppeteer: "Fast to moderate (page load dependent)"
-    
+    Playwright: "Fast to moderate (page load dependent)"
+
   Resource_Usage:
     Context7: "Low CPU, Medium Network"
     Sequential: "High CPU, Low Network"
     Magic: "Medium CPU, High Network"
-    Puppeteer: "Medium CPU, Low Network"
-    
+    Playwright: "Medium CPU, Low Network"
+
   Reliability_Scores:
     Context7: "Very high (dependent on library availability)"
     Sequential: "Very high (internal processing)"
     Magic: "High (external service dependency)"
-    Puppeteer: "Very high (browser dependency)"
+    Playwright: "Very high (browser dependency)"
 ```
 
 ## Command Integration
@@ -437,12 +437,12 @@ Command_Hooks:
     Pre: ["Clean artifacts", "Verify dependencies", "Set environment", "Check MCP health"]
     During: ["Monitor progress", "Cache layers", "Handle errors", "Track token usage"]
     Post: ["Verify output", "Run smoke tests", "Update manifests", "Log MCP performance"]
-    
+
   Test_Hooks:
-    Pre: ["Reset test data", "Start services", "Clear caches", "Connect Puppeteer if needed"]
+    Pre: ["Reset test data", "Start services", "Clear caches", "Connect Playwright if needed"]
     During: ["Track coverage", "Monitor performance", "Capture logs", "Handle browser events"]
     Post: ["Generate reports", "Clean test data", "Archive results", "Disconnect browser"]
-    
+
   Deploy_Hooks:
     Pre: ["Verify environment", "Check permissions", "Backup current", "Validate with Sequential"]
     During: ["Monitor health", "Track progress", "Handle rollback", "Log deployment events"]
@@ -460,42 +460,42 @@ Estimation_Methodology:
       Testing: "Unit, integration & system testing: 15-25% of total"
       Integration: "System integration & deployment: 5-10% of total"
       Buffer: "Unknown unknowns & contingency: 10-20% of total"
-      
+
   Complexity_Scoring:
     Low_Complexity: "Well-understood, established patterns: 1-3 days"
     Medium_Complexity: "Some unknowns, moderate integration: 3-10 days"
     High_Complexity: "Research required, complex integration: 1-4 weeks"
     Very_High_Complexity: "New technology, architectural changes: 1-3 months"
-    
+
   Team_Velocity_Factors:
     Solo_Developer: "Multiplier: 1.0 (baseline)"
     Small_Team_2_3: "Multiplier: 0.8 (coordination overhead)"
     Medium_Team_4_8: "Multiplier: 0.6 (communication overhead)"
     Large_Team_9Plus: "Multiplier: 0.4 (significant coordination)"
-    
+
   Risk_Assessment_Framework:
     Technical_Risks:
       New_Technology: "Learning curve impact: +25-50% time"
       Complex_Integration: "Multiple system touchpoints: +20-40% time"
       Performance_Requirements: "Optimization needs: +15-30% time"
       Legacy_System_Integration: "Technical debt impact: +30-60% time"
-      
+
     Resource_Risks:
       Key_Person_Dependency: "Single expert required: +20-40% time"
       External_Dependencies: "Third-party deliverables: +10-30% time"
       Skill_Gap: "Team learning required: +25-50% time"
-      
+
   Estimation_Output_Format:
     Three_Point_Estimation:
       Optimistic: "Best case scenario (10% probability)"
       Realistic: "Most likely outcome (50% probability)"
       Pessimistic: "Worst case scenario (90% probability)"
-      
+
     Confidence_Levels:
       High_Confidence: "Well-understood requirements: ±10%"
       Medium_Confidence: "Some unknowns present: ±25%"
       Low_Confidence: "Significant uncertainties: ±50%"
-      
+
     Resource_Planning:
       Developer_Hours: "Total development effort"
       QA_Hours: "Testing & quality assurance effort"

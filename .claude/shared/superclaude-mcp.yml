@@ -26,7 +26,7 @@ Magic:
   Token_Cost: "Medium | High-quality output | Design system compliance"
   Workflows: "Requirements → generate → refine → integrate → validate"
 
-Puppeteer:
+Playwright:
   Purpose: "Browser automation | E2E testing | Performance validation"
   Capabilities: "browser-connect | navigation | testing | screenshots | performance-monitoring"
   Best_For: "E2E testing | Performance monitoring | Visual validation | User interaction testing"
@@ -57,13 +57,13 @@ UI_Development:
   Trigger: "Component requirements | Design system needs | Frontend development"
   Process: "Magic component generation → design system integration → quality validation → testing"
   Standards: "Accessibility compliance | Design system adherence | Patterns"
-  Example: "'Dashboard components' → Magic('dashboard') → integrate patterns → Puppeteer validation"
+  Example: "'Dashboard components' → Magic('dashboard') → integrate patterns → Playwright validation"
 
 Testing:
   Trigger: "Quality assurance needs | E2E testing | Performance validation"
-  Process: "Puppeteer automation → comprehensive testing → performance monitoring → quality reports"
+  Process: "Playwright automation → comprehensive testing → performance monitoring → quality reports"
   Standards: "Testing patterns | Coverage requirements | Performance standards"
-  Example: "'E2E testing' → Puppeteer(test scenarios) → performance monitoring → quality reports"
+  Example: "'E2E testing' → Playwright(test scenarios) → performance monitoring → quality reports"
 
 ## Quality_Control
 Context7_Validation:
@@ -81,7 +81,7 @@ Magic_Validation:
   Partial_Results: "Component refinement needed | Pattern integration required | Customization needed"
   Failure_Recovery: "Search existing patterns | Manual implementation | Document component requirements"
 
-Puppeteer_Validation:
+Playwright_Validation:
   Success_Criteria: "Test execution successful | Performance metrics collected | User interactions validated"
   Partial_Results: "Limited testing possible | Performance data incomplete | Interaction issues"
   Failure_Recovery: "Native testing guidance | Manual validation steps | Alternative testing approaches"
@@ -90,18 +90,18 @@ Puppeteer_Validation:
 Development_Commands:
   build: "Magic for UI components | C7 for framework documentation | Sequential for architecture"
   dev_setup: "C7 for tooling documentation | Sequential for environment optimization"
-  test: "Puppeteer for E2E testing | C7 for testing frameworks | Sequential for coverage analysis"
+  test: "Playwright for E2E testing | C7 for testing frameworks | Sequential for coverage analysis"
 
 Analysis_Commands:
-  analyze: "Sequential for complex analysis | C7 for pattern research | Puppeteer for performance"
-  troubleshoot: "Sequential for root cause analysis | C7 for solution patterns | Puppeteer for reproduction"
-  improve: "Sequential for optimization analysis | C7 for best practices | Puppeteer for validation"
+  analyze: "Sequential for complex analysis | C7 for pattern research | Playwright for performance"
+  troubleshoot: "Sequential for root cause analysis | C7 for solution patterns | Playwright for reproduction"
+  improve: "Sequential for optimization analysis | C7 for best practices | Playwright for validation"
   explain: "C7 for official documentation | Sequential for complex explanations | Magic for examples"
 
 Operations_Commands:
-  deploy: "Sequential for deployment analysis | C7 for deployment patterns | Puppeteer for validation"
+  deploy: "Sequential for deployment analysis | C7 for deployment patterns | Playwright for validation"
   scan: "Sequential for comprehensive analysis | C7 for security standards | Native for speed"
-  migrate: "Sequential for migration planning | C7 for migration patterns | Puppeteer for validation"
+  migrate: "Sequential for migration planning | C7 for migration patterns | Playwright for validation"
   cleanup: "Sequential for impact analysis | Native for speed | C7 for best practices"
 
 Design_Commands:
@@ -128,7 +128,7 @@ Magic_Recovery:
   Quality_Issues: "Component review → improvement suggestions → alternative approaches"
   Integration_Problems: "Document requirements → provide integration steps → troubleshooting guidance"
 
-Puppeteer_Recovery:
+Playwright_Recovery:
   Browser_Connection_Failed: "Native testing commands → manual testing guidance → validation steps"
   Test_Execution_Issues: "Simplified test scenarios → manual validation → alternative approaches"
   Performance_Monitoring_Failed: "Native performance tools → manual monitoring → metrics guidance"

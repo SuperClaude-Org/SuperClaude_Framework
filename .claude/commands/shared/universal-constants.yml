@@ -50,7 +50,7 @@ Process_Flow:
   Because: "∵"
   Equivalent: "≡"
   Approximately: "≈"
-  
+
 Status_Indicators:
   Success: "✅"
   Failure: "❌"
@@ -61,7 +61,7 @@ Status_Indicators:
   Slow: "🐌"
   Progress: "🔄"
   Complete: "✨"
-  
+
 File_Operations:
   Read: "📖"
   Write: "📝"
@@ -71,7 +71,7 @@ File_Operations:
   Move: "➡"
   Create: "➕"
   Directory: "📁"
-  
+
 Control_Elements:
   Controls: "🎛"
   Configuration: "🔧"
@@ -95,13 +95,13 @@ Documentation_Paths:
   Task_In_Progress: ".claudedocs/tasks/in-progress/"
   Task_Completed: ".claudedocs/tasks/completed/"
   Task_Cancelled: ".claudedocs/tasks/cancelled/"
-  
+
 Project_Documentation:
   Documentation: "docs/"
   API_Docs: "docs/api/"
   User_Docs: "docs/user/"
   Developer_Docs: "docs/dev/"
-  
+
 Build_Artifacts:
   Build_Dir: "build/"
   Dist_Dir: "dist/"
@@ -110,7 +110,7 @@ Build_Artifacts:
   Temp_Dir: "tmp/"
   Cache_Dir: ".cache/"
   Node_Modules: "node_modules/"
-  
+
 Git_Paths:
   Git_Dir: ".git/"
   Git_Hooks: ".git/hooks/"
@@ -145,7 +145,7 @@ Technical_Terms:
   Severity: "sev"
   Response: "resp"
   Escalation: "esc"
-  
+
 Action_Abbreviations:
   Analyze: "anlz"
   Build: "bld"
@@ -156,7 +156,7 @@ Action_Abbreviations:
   Validate: "val"
   Execute: "exec"
   Optimize: "opt"
-  
+
 Severity_Levels:
   Critical: "C"
   High: "H"
@@ -173,21 +173,21 @@ Time_Limits:
   Long_Operation: "Extended duration"
   Critical_Timeout: "Maximum allowed duration"
   Session_Timeout: "Extended session limit"
-  
+
 Token_Limits:
   Small_Response: "Minimal usage"
   Medium_Response: "Moderate usage"
   Large_Response: "Extensive usage"
   Context_Warning: "High context usage"
   Context_Critical: "Very high context usage"
-  
+
 File_Size_Limits:
   Small_File: "Minimal size"
   Medium_File: "Moderate size"
   Large_File: "Large size"
   Huge_File: "Very large size"
   Max_Analysis: "Maximum analyzable size"
-  
+
 Retry_Limits:
   Default_Retries: "Multiple attempts"
   Network_Retries: "Several attempts"
@@ -204,13 +204,13 @@ Priority_Levels:
   High: "high"
   Medium: "medium"
   Low: "low"
-  
+
 Severity_Numbers:
   Critical: "Maximum severity"
   High: "High severity"
   Medium: "Medium severity"
   Low: "Low severity"
-  
+
 Status_Values:
   Pending: "pending"
   In_Progress: "in_progress"
@@ -230,21 +230,21 @@ Native_Tools:
   Notebook_Tools: ["NotebookRead", "NotebookEdit"]
   Web_Tools: ["WebFetch", "WebSearch"]
   Task_Tools: ["TodoRead", "TodoWrite"]
-  
+
 MCP_Servers:
   Context7: "mcp__context7__*"
   Sequential: "mcp__sequential-thinking__*"
   Magic: "mcp__magic__*"
-  Puppeteer: "mcp__puppeteer__*"
-  
+  Playwright: "mcp__Playwright__*"
+
 Universal_Flags:
   Planning: "--plan"
   Thinking: ["--think", "--think-hard", "--ultrathink"]
   Compression: ["--uc", "--ultracompressed"]
-  MCP_Control: ["--c7", "--seq", "--magic", "--pup", "--all-mcp", "--no-mcp"]
+  MCP_Control: ["--c7", "--seq", "--magic", "--prit", "--all-mcp", "--no-mcp"]
   Execution: ["--dry-run", "--watch", "--interactive", "--force"]
   Quality: ["--tdd", "--iterate", "--threshold", "--validate", "--security"]
-  
+
 Common_Commands:
   Git_Commands: ["status", "add", "commit", "push", "pull", "checkout", "branch", "merge"]
   Build_Commands: ["build", "test", "lint", "format", "typecheck"]
@@ -259,25 +259,25 @@ Success_Messages:
   File_Created: "📝 Created: {file_path}"
   File_Updated: "✏ Updated: {file_path}"
   Task_Complete: "✨ Task completed: {task_title}"
-  
+
 Warning_Messages:
   Performance_Warning: "⚠ Operation taking longer than expected"
   Context_Warning: "⚠ Context size approaching limit"
   Token_Warning: "⚠ High token usage detected"
   Fallback_Warning: "⚠ Using fallback method"
-  
+
 Error_Messages:
   File_Not_Found: "❌ File not found: {file_path}"
   Permission_Denied: "❌ Permission denied: {operation}"
   Operation_Failed: "❌ {operation} failed: {reason}"
   Timeout_Error: "❌ Operation timed out after {duration}"
-  
+
 Info_Messages:
   Operation_Started: "▶ Starting {operation}"
   Checkpoint_Created: "💾 Checkpoint created: {checkpoint_id}"
   Optimization_Applied: "⚡ Optimization applied: {optimization}"
   Fallback_Used: "🔄 Using alternative approach: {method}"
-  
+
 Report_References:
   Report_Saved: "📄 Report saved to: {path}"
   Metrics_Updated: "📊 Metrics updated: {path}"
@@ -295,18 +295,18 @@ Report_Files:
   Daily_Summary: "daily-summary-{YYYY-MM-DD}.md"
   Weekly_Trends: "weekly-trends-{YYYY-WW}.md"
   Monthly_Insights: "monthly-insights-{YYYY-MM}.md"
-  
+
 Task_Files:
   Task_Format: "{type}-{id}-{slug}.md"
   Task_ID_Format: "YYYYMMDD-HHMMSS"
   Task_Types: ["feature", "bugfix", "refactor", "docs", "test"]
-  
+
 Git_Branches:
   Task_Branch: "task/{id}-{slug}"
   Feature_Branch: "feature/{name}"
   Bugfix_Branch: "bugfix/{name}"
   Release_Branch: "release/{version}"
-  
+
 Log_Files:
   Performance_Log: "performance-{YYYY-MM-DD}.jsonl"
   Error_Log: "errors-{YYYY-MM-DD}.log"
@@ -323,13 +323,13 @@ Environment_Types:
   Staging: "staging"
   Production: "prod"
   Local: "local"
-  
+
 File_Extensions:
   Markdown: [".md", ".markdown"]
   Code: [".js", ".ts", ".tsx", ".jsx", ".py", ".go", ".rs", ".cpp", ".c", ".java"]
   Config: [".json", ".yml", ".yaml", ".toml", ".ini", ".env"]
   Documentation: [".md", ".rst", ".txt", ".adoc"]
-  
+
 Supported_Frameworks:
   Frontend: ["React", "Vue", "Angular", "Svelte", "Next.js", "Nuxt.js"]
   Backend: ["Express", "FastAPI", "Django", "Rails", "Spring", "Gin"]
@@ -344,7 +344,7 @@ File_Organization:
   Constants_File: "shared/universal-constants.yml"
   Patterns_Directory: "shared/*.yml"
   Commands_Directory: "commands/*.md"
-  
+
 Common_References:
   Legend: "See Universal Legend section above"
   Symbols: "See Process Flow section above"
@@ -352,7 +352,7 @@ Common_References:
   Limits: "See Time Limits section above"
   Messages: "See Success Messages section above"
   Flags: "@include universal-constants.yml#Universal_Flags"
-  
+
 Usage_Examples:
   Command_Header: |
     @include universal-constants.yml#Universal_Legend

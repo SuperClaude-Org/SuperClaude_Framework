@@ -9,7 +9,7 @@ Released with architectural improvements including the @include reference system
 
 ### Current Features
 - ✅ 19 slash commands with unified flag system
-- ✅ MCP integration (Context7, Sequential, Magic, Puppeteer)
+- ✅ MCP integration (Context7, Sequential, Magic, Playwright)
 - ✅ 9 Personas integrated as universal flags
 - ✅ Token economy with compression options
 - ✅ Evidence-based development methodology
@@ -113,11 +113,11 @@ curl -sSL https://superclaude.dev/install-mcp | bash
 1. **Getting Started**
    - Basic commands and flag system
    - First project setup
-   
+
 2. **Intermediate Workflows**
    - Task management
    - MCP integration patterns
-   
+
 3. **Advanced Techniques**
    - Subagent orchestration
    - Loop mode usage
@@ -191,7 +191,7 @@ Potential integrations:
 
 ## Get Involved
 
-**GitHub Discussions**: [Join the conversation](https://github.com/NomenAK/SuperClaude/discussions)  
+**GitHub Discussions**: [Join the conversation](https://github.com/NomenAK/SuperClaude/discussions)
 **Issue Tracker**: [Report bugs and request features](https://github.com/NomenAK/SuperClaude/issues)
 
 ---

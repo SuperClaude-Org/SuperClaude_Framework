@@ -25,7 +25,7 @@ See [ROADMAP.md](ROADMAP.md) for future development ideas and contribution oppor
 
 Claude Code provides powerful capabilities but can benefit from:
 - **Specialized expertise** for different technical domains
-- **Token efficiency** for complex projects  
+- **Token efficiency** for complex projects
 - **Evidence-based approaches** to development
 - **Context preservation** during debugging sessions
 - **Domain-specific thinking** for various tasks
@@ -37,7 +37,7 @@ SuperClaude enhances Claude Code with:
 - **9 Cognitive Personas** for domain-specific approaches
 - **Token Optimization** with compression options
 - **Evidence-Based Methodology** encouraging documentation
-- **MCP Integration** with Context7, Sequential, Magic, Puppeteer
+- **MCP Integration** with Context7, Sequential, Magic, Playwright
 - **Git Checkpoint Support** for safe experimentation
 - **Introspection Mode** for framework improvement and troubleshooting
 
@@ -80,7 +80,7 @@ Switch between different approaches with persona flags:
 
 ```bash
 /analyze --code --persona-architect     # Systems thinking approach
-/build --react --persona-frontend       # UX-focused development  
+/build --react --persona-frontend       # UX-focused development
 /scan --security --persona-security     # Security-first analysis
 /troubleshoot --prod --persona-analyzer # Root cause analysis approach
 ```
@@ -94,7 +94,7 @@ Development lifecycle coverage:
 ```bash
 /build --react --magic --tdd    # Development with AI components
 /dev-setup --ci --monitor       # Environment setup
-/test --coverage --e2e --pup    # Testing strategies
+/test --coverage --e2e --prit    # Testing strategies
 ```
 
 **Analysis & Quality**
@@ -118,9 +118,9 @@ Development lifecycle coverage:
 - **Context7**: Access to library documentation
 - **Sequential**: Multi-step reasoning capabilities
 - **Magic**: AI-generated UI components
-- **Puppeteer**: Browser testing and automation
+- **Playwright**: Browser testing and automation
 
-**⚠️ Important:** SuperClaude does not include MCP servers. You need to install them separately in Claude Code's MCP settings to use MCP-related flags (--c7, --seq, --magic, --pup).
+**⚠️ Important:** SuperClaude does not include MCP servers. You need to install them separately in Claude Code's MCP settings to use MCP-related flags (--c7, --seq, --magic, --prit).
 
 ### 📊 **Token Efficiency**
 SuperClaude's @include template system helps manage token usage:
@@ -144,7 +144,7 @@ SuperClaude's @include template system helps manage token usage:
 /troubleshoot --investigate --prod --persona-analyzer        # Analysis
 /analyze --profile --perf --seq                             # Performance review
 /improve --performance --threshold 95% --persona-performance # Optimization
-/test --integration --e2e --pup                             # Validation
+/test --integration --e2e --prit                             # Validation
 ```
 
 ### Framework Troubleshooting & Improvement
@@ -166,12 +166,12 @@ SuperClaude's @include template system helps manage token usage:
 | Persona | Focus Area | Tools | Use Cases |
 |---------|-----------|-------|-----------|
 | **architect** | System design | Sequential, Context7 | Architecture planning |
-| **frontend** | User experience | Magic, Puppeteer, Context7 | UI development |
+| **frontend** | User experience | Magic, Playwright, Context7 | UI development |
 | **backend** | Server systems | Context7, Sequential | API development |
 | **security** | Security analysis | Sequential, Context7 | Security reviews |
 | **analyzer** | Problem solving | All MCP tools | Debugging |
-| **qa** | Quality assurance | Puppeteer, Context7 | Testing |
-| **performance** | Optimization | Puppeteer, Sequential | Performance tuning |
+| **qa** | Quality assurance | Playwright, Context7 | Testing |
+| **performance** | Optimization | Playwright, Sequential | Performance tuning |
 | **refactorer** | Code quality | Sequential, Context7 | Code improvement |
 | **mentor** | Knowledge sharing | Context7, Sequential | Documentation |
 
@@ -182,7 +182,7 @@ SuperClaude's @include template system helps manage token usage:
 # Standard analysis
 /analyze --think
 
-# Deeper analysis  
+# Deeper analysis
 /design --think-hard
 
 # Maximum depth
@@ -359,7 +359,7 @@ SuperClaude v2's architecture enables extensibility:
 
 SuperClaude welcomes contributions:
 - **New Personas** for specialized workflows
-- **Commands** for domain-specific operations  
+- **Commands** for domain-specific operations
 - **Patterns** for development practices
 - **Integrations** for productivity tools
 

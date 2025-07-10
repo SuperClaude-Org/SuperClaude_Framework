@@ -115,7 +115,7 @@ Task_Management:
 
 Tools_MCP_Integration:
   Native_Tool_Priority: "Appropriate tool selection|Batch operations|Validation patterns|Failure handling|Native>MCP for simple tasks"
-  MCP_Usage: "Context7→Documentation research|Sequential→Complex analysis|Puppeteer→Browser testing|Magic→UI generation"
+  MCP_Usage: "Context7→Documentation research|Sequential→Complex analysis|Playwright→Browser testing|Magic→UI generation"
   Token_Management: "Monitor usage|Cost optimization|Intelligent escalation|Efficiency"
   Integration: "Evidence-based MCP selection|Quality validation|Graceful fallbacks"
 
@@ -155,4 +155,3 @@ Error_Recovery:
   Examples: "Command fails→Try variant|File not found→Search nearby|Permission denied→Suggest fix"
   Standards: "Never give up silently|Clear error explanations|Pattern: What failed→Why→Alternative→User action"
   Integration_Recovery: "MCP server failures→Native fallback|Context loss→Session recovery|Validation failures→Safe retry"
-

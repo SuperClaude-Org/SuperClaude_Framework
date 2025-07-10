@@ -45,13 +45,13 @@
 | `--c7` | Enable Context7 documentation lookup |
 | `--seq` | Enable Sequential thinking analysis |
 | `--magic` | Enable Magic UI component generation |
-| `--pup` | Enable Puppeteer browser automation |
+| `--prit` | Enable Playwright browser automation |
 | `--all-mcp` | Enable all MCP servers for maximum capability |
 | `--no-mcp` | Disable all MCP servers (native tools only) |
 | `--no-c7` | Disable Context7 specifically |
 | `--no-seq` | Disable Sequential thinking specifically |
 | `--no-magic` | Disable Magic UI builder specifically |
-| `--no-pup` | Disable Puppeteer specifically |
+| `--no-prit` | Disable Playwright specifically |
 
 ### 🔍 Analysis & Introspection
 | Flag | Description |
@@ -152,7 +152,7 @@ Create, run, and maintain testing strategies across the stack.
 
 **Examples:**
 ```bash
-/test --coverage --e2e --pup               # Full test suite
+/test --coverage --e2e --prit               # Full test suite
 /test --mutation --strict                  # Test quality validation
 ```
 
@@ -211,7 +211,7 @@ Systematic debugging and issue resolution.
 **Examples:**
 ```bash
 /troubleshoot --prod --five-whys --seq    # Production RCA
-/troubleshoot --perf --fix --pup          # Performance fix
+/troubleshoot --perf --fix --prit          # Performance fix
 ```
 
 #### `/improve` - Enhancement & Optimization
@@ -229,7 +229,7 @@ Evidence-based improvements with measurable outcomes.
 **Examples:**
 ```bash
 /improve --quality --iterate --threshold 95%    # Quality improvement
-/improve --performance --cache --pup            # Performance boost
+/improve --performance --cache --prit            # Performance boost
 ```
 
 #### `/explain` - Technical Documentation
@@ -472,7 +472,7 @@ Complex feature management across sessions with automatic breakdown and recovery
 ```bash
 /design --api --ddd --persona-architect
 /build --fullstack --tdd --magic
-/test --coverage --e2e --pup
+/test --coverage --e2e --prit
 /deploy --env staging --validate
 ```
 
@@ -487,7 +487,7 @@ Complex feature management across sessions with automatic breakdown and recovery
 **Performance Optimization**
 ```bash
 /analyze --profile --deep --persona-performance
-/troubleshoot --perf --investigate --pup
+/troubleshoot --perf --investigate --prit
 /improve --performance --iterate --threshold 90%
 /test --performance --load
 ```
@@ -517,7 +517,7 @@ Complex feature management across sessions with automatic breakdown and recovery
 3. **Combine MCP servers for maximum capability**
    ```bash
    /build --react --magic --seq --c7
-   /test --e2e --pup --coverage
+   /test --e2e --prit --coverage
    ```
 
 4. **Progressive thinking for complex tasks**
@@ -533,7 +533,7 @@ Complex feature management across sessions with automatic breakdown and recovery
 **Documentation Tasks**: Enable `--c7` for library lookups
 **Complex Analysis**: Use `--seq` for reasoning
 **UI Development**: Enable `--magic` for AI components
-**Testing**: Use `--pup` for browser automation
+**Testing**: Use `--prit` for browser automation
 **Token Saving**: Add `--uc` for 70% reduction
 
 ---

@@ -10,28 +10,28 @@
 Universal_Always:
   Planning:
     --plan: "Show execution plan before running"
-    
+
   Compression:
     --uc: "UltraCompressed mode (substantial token reduction)"
     --ultracompressed: "Alias for --uc"
-    
+
   Thinking_Modes:
     --think: "Multi-file analysis w/ context (4K tokens)"
     --think-hard: "Deep architectural analysis (10K tokens)"
     --ultrathink: "Critical system redesign (32K tokens)"
-    
+
   MCP_Control:
     --c7: "Enable Context7→library documentation lookup"
     --seq: "Enable Sequential→complex analysis & thinking"
     --magic: "Enable Magic→UI component generation"
-    --pup: "Enable Puppeteer→browser automation & testing"
+    --prit: "Enable Playwright→browser automation & testing"
     --all-mcp: "Enable all MCP servers"
     --no-mcp: "Disable all MCP servers (native tools only)"
     --no-c7: "Disable Context7 specifically"
     --no-seq: "Disable Sequential thinking specifically"
     --no-magic: "Disable Magic UI builder specifically"
-    --no-pup: "Disable Puppeteer specifically"
-    
+    --no-prit: "Disable Playwright specifically"
+
   Persona_Control:
     --persona-architect: "Systems architect thinking mode (sequential design, patterns)"
     --persona-frontend: "Frontend developer mode (UI/UX focus, Magic components)"
@@ -42,7 +42,7 @@ Universal_Always:
     --persona-refactorer: "Code refactoring mode (quality improvements, cleanup)"
     --persona-performance: "Performance optimization mode (profiling, bottlenecks)"
     --persona-qa: "Quality assurance mode (testing, edge cases, validation)"
-    
+
   Introspection:
     --introspect: "Deep transparency mode - expose thinking, decisions, workflow"
     --introspection: "Alias for --introspect"
@@ -56,19 +56,19 @@ Execution_Control:
   --interactive: "Step-by-step guided process w/ user control"
   --dry-run: "Preview changes without execution"
   --force: "Override safety checks & confirmations"
-  
+
 Quality_Assurance:
   --validate: "Pre-execution safety & validation checks"
   --security: "Security analysis & vulnerability scanning"
   --coverage: "Generate comprehensive coverage analysis"
   --strict: "Zero-tolerance mode w/ enhanced validation"
-  
+
 Performance:
   --profile: "Detailed performance profiling & metrics"
   --iterate: "Iterative improvement until threshold met"
   --threshold: "Set quality target (default high)"
   --watch-perf: "Continuous performance monitoring"
-  
+
 Development:
   --tdd: "Test-driven development workflow"
   --feature: "Feature-focused implementation"
@@ -88,9 +88,9 @@ Analysis_Commands:
     --profile: "Detailed performance profiling"
     --security: "Security vulnerability analysis"
     --deps: "Dependency analysis & audit"
-    
+
 Build_Commands:
-  # build, design, deploy  
+  # build, design, deploy
   Standard_Flags:
     --init: "Initialize new project w/ stack setup"
     --feature: "Implement feature using existing patterns"
@@ -98,7 +98,7 @@ Build_Commands:
     --react: "React/frontend focused build"
     --tdd: "Test-driven development workflow"
     --magic: "Use Magic for UI component generation"
-    
+
 Quality_Commands:
   # test, improve, cleanup
   Standard_Flags:
@@ -108,7 +108,7 @@ Quality_Commands:
     --threshold: "Set quality target (default high)"
     --all: "Comprehensive operation across all areas"
     --quick: "Fast operation focusing on critical issues"
-    
+
 Documentation_Commands:
   # document, explain
   Standard_Flags:
@@ -117,7 +117,7 @@ Documentation_Commands:
     --depth: "Explanation depth (ELI5|beginner|intermediate|expert)"
     --visual: "Include diagrams & visual aids"
     --examples: "Include practical code examples"
-    
+
 Operations_Commands:
   # deploy, migrate, git
   Standard_Flags:
@@ -138,15 +138,15 @@ High_Risk_Operations:
   Optional_Safety:
     - "--checkpoint (auto-create backup)"
     - "--interactive (step-by-step control)"
-    
+
 Development_Workflow:
-  # Standard development operations  
+  # Standard development operations
   Recommended_Combinations:
     - "--tdd --coverage (quality-first development)"
     - "--watch --interactive (guided real-time development)"
     - "--profile --iterate (performance optimization)"
     - "--security --validate (safe deployment)"
-    
+
 Research_Operations:
   # Operations requiring external research
   Auto_Enable:
@@ -154,12 +154,12 @@ Research_Operations:
     - "--seq (complex analysis)"
   Manual_Override:
     - "--no-mcp (native tools only)"
-    
+
 Complex_Analysis:
   # Operations requiring deep thinking
   Progressive_Flags:
     - "No flag: Basic single-file operations"
-    - "--think: Multi-file coordination"  
+    - "--think: Multi-file coordination"
     - "--think-hard: System architecture analysis"
     - "--ultrathink: Critical system redesign"
 ```
@@ -172,17 +172,17 @@ Inheritance_Priority:
   2: "Group flags override common flags"
   3: "Common flags override universal flags"
   4: "Universal flags always available"
-  
+
 Conflict_Resolution:
   --force_overrides: ["--validate", "--dry-run", "--interactive"]
-  --no-mcp_overrides: ["--c7", "--seq", "--magic", "--pup", "--all-mcp"]
+  --no-mcp_overrides: ["--c7", "--seq", "--magic", "--prit", "--all-mcp"]
   --strict_enhances: ["--validate", "--security", "--coverage"]
-  
+
 Auto_Combinations:
   --all + group_flags: "Enable all flags in command's group"
   --strict + quality_flags: "Enhanced validation for all quality operations"
   --watch + interactive: "Real-time guided operation"
-  
+
 Validation_Rules:
   Conflicting_Flags:
     - "--dry-run + --force" → "Warning: dry-run negates force"
@@ -198,11 +198,11 @@ Template_Usage:
     @include flag-inheritance.yml#Universal_Always
     @include flag-inheritance.yml#Execution_Control
     @include flag-inheritance.yml#Analysis_Commands
-    
+
   Flag_Reference: |
     Universal flags: @see shared/flag-inheritance.yml#Universal_Always
     Quality flags: @see shared/flag-inheritance.yml#Quality_Assurance
-    
+
   Command_Specific_Only: |
     # Only define flags unique to this command
     --special-flag: "Command-specific functionality"
@@ -215,7 +215,7 @@ Duplication_Reduction:
   Before: "~400 lines of flag definitions across 18 commands"
   After: "~80 lines in template + ~120 lines command-specific"
   Savings: "Significant reduction in flag definitions"
-  
+
 Consistency_Improvements:
   Standardized_Descriptions: "Single source of truth for flag meanings"
   Unified_Behavior: "Consistent flag behavior across all commands"

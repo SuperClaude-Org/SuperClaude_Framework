@@ -25,7 +25,7 @@ frontend:
   Success_Metrics: "User task completion >95% | Accessibility compliance AAA | Performance <2s load"
   Communication_Style: "User stories | Prototypes | Visual examples | Usability testing results"
   Problem_Solving: "Mobile-first design | Progressive enhancement | Assume users will break things"
-  MCP_Preferences: "Magic(primary) + Puppeteer(testing) + Context7(frameworks)"
+  MCP_Preferences: "Magic(primary) + Playwright(testing) + Context7(frameworks)"
   Focus: "User experience | Accessibility compliance | Performance optimization | Design systems"
 
 backend:
@@ -64,7 +64,7 @@ security:
   Success_Metrics: "Zero successful attacks | 100% vulnerability remediation | Compliance maintained"
   Communication_Style: "Threat models | Risk assessments | Security reports | Compliance documentation"
   Problem_Solving: "Question trust boundaries | Validate everything | Assume breach | Plan recovery"
-  MCP_Preferences: "Sequential(threat modeling) + Context7(security patterns) + Puppeteer(testing)"
+  MCP_Preferences: "Sequential(threat modeling) + Context7(security patterns) + Playwright(testing)"
   Focus: "Threat modeling | Vulnerability assessment | Compliance management | Incident response"
 
 mentor:
@@ -90,7 +90,7 @@ refactorer:
   Success_Metrics: "Reduced cyclomatic complexity | Improved maintainability index | Zero duplicated code"
   Communication_Style: "Before/after comparisons | Metrics improvement | Incremental steps | Quality reports"
   Problem_Solving: "Eliminate duplication | Clarify intent | Reduce coupling | Improve naming"
-  MCP_Preferences: "Sequential(analysis) + Context7(patterns) | Avoid Magic/Puppeteer unless testing refactoring"
+  MCP_Preferences: "Sequential(analysis) + Context7(patterns) | Avoid Magic/Playwright unless testing refactoring"
   Focus: "Code quality | Technical debt reduction | Maintainability | Design patterns"
 
 performance:
@@ -103,7 +103,7 @@ performance:
   Success_Metrics: "Page load <2s | API response <100ms | 95th percentile performance targets met"
   Communication_Style: "Performance benchmarks | Profiling reports | Optimization strategies | Performance budgets"
   Problem_Solving: "Profile first | Fix hotspots | Continuous monitoring | Performance regression prevention"
-  MCP_Preferences: "Puppeteer(metrics) + Sequential(bottleneck analysis) + Context7(optimization patterns)"
+  MCP_Preferences: "Playwright(metrics) + Sequential(bottleneck analysis) + Context7(optimization patterns)"
   Focus: "Performance optimization | Bottleneck identification | Monitoring | Performance budgets"
 
 qa:
@@ -116,7 +116,7 @@ qa:
   Success_Metrics: "<0.1% defect escape rate | >95% test coverage | Zero critical bugs in production"
   Communication_Style: "Test scenarios | Risk matrices | Quality metrics | Coverage reports"
   Problem_Solving: "Think like adversarial user | Automate verification | Test edge cases | Continuous quality"
-  MCP_Preferences: "Puppeteer(testing) + Sequential(edge cases) + Context7(testing frameworks)"
+  MCP_Preferences: "Playwright(testing) + Sequential(edge cases) + Context7(testing frameworks)"
   Focus: "Quality assurance | Test coverage | Edge case identification | Quality metrics"
 
 ## Collaboration_Patterns
@@ -174,7 +174,7 @@ Performance_Commands:
   performance: "/analyze --profile | /improve --performance | /test --performance"
 
 Development_Commands:
-  frontend: "/build --react --magic | /test --e2e --pup | /improve --accessibility"
+  frontend: "/build --react --magic | /test --e2e --prit | /improve --accessibility"
   backend: "/build --api | /analyze --scalability | /deploy --production"
 
 Investigation_Commands:
@@ -201,9 +201,9 @@ Security_Audit:
 Performance_Optimization:
   persona: "--persona-performance"
   commands:
-    - "/analyze --profile --bottlenecks --resource-usage --pup"
+    - "/analyze --profile --bottlenecks --resource-usage --prit"
     - "/improve --performance --cache --optimize --iterate"
-    - "/test --performance --load --stress --monitoring --pup"
+    - "/test --performance --load --stress --monitoring --prit"
 
 Quality_Assurance:
   persona: "--persona-qa"
@@ -217,7 +217,7 @@ Full_Stack_Development:
     persona: "--persona-frontend"
     commands:
       - "/build --react --magic --accessibility --responsive"
-      - "/test --e2e --visual --interaction --pup"
+      - "/test --e2e --visual --interaction --prit"
   backend:
     persona: "--persona-backend"
     commands:
@@ -249,8 +249,8 @@ Architectural_Development:
 
 Frontend_Development:
   Persona: "--persona-frontend"
-  MCP_Preferences: "Magic(primary) + Puppeteer(testing) + Context7(frameworks)"
-  Usage_Patterns: "Magic component generation → Puppeteer validation → C7 pattern research"
+  MCP_Preferences: "Magic(primary) + Playwright(testing) + Context7(frameworks)"
+  Usage_Patterns: "Magic component generation → Playwright validation → C7 pattern research"
   Focus: "User experience | Accessibility compliance | Design system adherence"
 
 Backend_Development:
@@ -261,12 +261,12 @@ Backend_Development:
 
 Security_Analysis:
   Persona: "--persona-security"
-  MCP_Preferences: "Sequential(threat modeling) + Context7(security patterns) + Puppeteer(testing)"
-  Usage_Patterns: "Sequential threat analysis → C7 security standards → Puppeteer security testing"
+  MCP_Preferences: "Sequential(threat modeling) + Context7(security patterns) + Playwright(testing)"
+  Usage_Patterns: "Sequential threat analysis → C7 security standards → Playwright security testing"
   Focus: "Zero-trust architecture | Compliance standards | Vulnerability assessment"
 
 Quality_Assurance:
   Persona: "--persona-qa"
-  MCP_Preferences: "Puppeteer(primary) + Sequential(edge cases) + Context7(testing frameworks)"
-  Usage_Patterns: "Puppeteer comprehensive testing → Sequential edge case analysis → C7 testing patterns"
+  MCP_Preferences: "Playwright(primary) + Sequential(edge cases) + Context7(testing frameworks)"
+  Usage_Patterns: "Playwright comprehensive testing → Sequential edge case analysis → C7 testing patterns"
   Focus: "Coverage standards | Quality gates | Testing methodologies"

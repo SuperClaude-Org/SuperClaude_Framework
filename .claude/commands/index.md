@@ -9,7 +9,7 @@ Commands: `/cmd --flags` | 19 total | Universal flags available
 
 ## Command Categories
 **Analysis**: `/analyze` `/scan` `/explain` `/review`
-**Build**: `/build` `/deploy` `/migrate` 
+**Build**: `/build` `/deploy` `/migrate`
 **Manage**: `/task` `/load` `/cleanup`
 **Dev**: `/test` `/troubleshoot` `/improve`
 **Utils**: `/design` `/document` `/estimate` `/dev-setup` `/git` `/spawn`
@@ -31,20 +31,20 @@ Commands: `/cmd --flags` | 19 total | Universal flags available
 ```yaml
 Power User Patterns:
   Deep Analysis: /analyze --architecture --seq --think-hard
-  UI Development: /build --react --magic --pup --watch
+  UI Development: /build --react --magic --prit --watch
   Production Deploy: /scan --validate --seq → /deploy --env prod --think-hard
   Emergency Debug: /troubleshoot --prod --ultrathink --seq
-  
+
 Research & Learning:
   Library Study: /explain --c7 --seq --depth expert "React hooks"
   Architecture: /design --ddd --seq --think-hard → /document --api
   Performance: /analyze --profile --seq → /improve --iterate --threshold 95%
-  
+
 Token Optimization:
   Compressed Docs: /document --uc → /explain --uc --c7
   Efficient Analysis: /analyze --uc --no-mcp → /improve --uc
   Rapid Workflow: /build --uc → /test --uc → /deploy --uc
-  
+
 Introspection & Learning:
   Transparent Workflow: /analyze --code --introspect
   Learning Development: /build --react --introspect --magic
@@ -58,12 +58,12 @@ Pre-Deployment Safety:
   Full Gate: /test --coverage → /scan --security → /scan --validate → /deploy
   Staged: /deploy --env staging → /test --e2e → /deploy --env prod --plan
   Rollback Ready: /git --checkpoint → /deploy → (if issues) /deploy --rollback
-  
+
 Development Safety:
   Clean First: /cleanup --code → /build → /test → /git --commit
   Quality Gate: /analyze → /improve --quality → /test → /git --commit
   Secure: /scan --security → fix issues → /scan --validate
-  
+
 Planning for Complex Operations:
   Architecture: /design --api --ddd --plan --think-hard
   Migration: /migrate --dry-run → /migrate --plan → verify

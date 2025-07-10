@@ -16,18 +16,18 @@ Build project/feature based on req in $ARGUMENTS.
 Examples:
 - `/build --react --magic` - React app w/ UI gen
 - `/build --api --c7` - API w/ docs
-- `/build --react --magic --pup` - Build & test UI
+- `/build --react --magic --prit` - Build & test UI
 
 Pre-build: Remove artifacts (dist/, build/, .next/) | Clean temp files & cache | Validate deps | Remove debug
 
 Build modes:
 **--init:** New project w/ stack (React|API|Fullstack|Mobile|CLI) | TS default | Testing setup | Git workflow
-**--feature:** Impl feature→existing patterns | Maintain consistency | Include tests  
+**--feature:** Impl feature→existing patterns | Maintain consistency | Include tests
 **--tdd:** Write failing tests→minimal code→pass tests→refactor
 
 Templates:
 - **React:** Vite|TS|Router|state mgmt|testing
-- **API:** Express|TS|auth|validation|OpenAPI  
+- **API:** Express|TS|auth|validation|OpenAPI
 - **Fullstack:** React+Node.js+Docker
 - **Mobile:** React Native+Expo
 - **CLI:** Commander.js+cfg+testing
