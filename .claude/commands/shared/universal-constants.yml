@@ -235,7 +235,7 @@ MCP_Servers:
   Context7: "mcp__context7__*"
   Sequential: "mcp__sequential-thinking__*"
   Magic: "mcp__magic__*"
-  Playwright: "mcp__Playwright__*"
+  Playwright: "mcp__playwright__*"
 
 Universal_Flags:
   Planning: "--plan"
