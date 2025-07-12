@@ -8,7 +8,7 @@ SuperClaude is a configuration framework for Claude Code that enhances developme
 Released with architectural improvements including the @include reference system, unified persona flags, and enhanced installer.
 
 ### Current Features
-- ✅ 18 slash commands with unified flag system
+- ✅ 19 slash commands with unified flag system
 - ✅ MCP integration (Context7, Sequential, Magic, Puppeteer)
 - ✅ 9 Personas integrated as universal flags
 - ✅ Token economy with compression options

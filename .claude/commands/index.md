@@ -19,7 +19,7 @@ Commands: `/cmd --flags` | 19 total | Universal flags available
 **Analysis**: `/analyze` --code|arch | `/review` --files|commit|pr | `/troubleshoot` --fix|prod | `/improve` --perf|quality | `/explain` --depth
 **Ops**: `/deploy` --env|rollback | `/migrate` --dry-run | `/scan` --security | `/estimate` --detailed | `/cleanup` --all | `/git` --commit|sync
 **Design**: `/design` --api|ddd | `/document` --api|user | `/spawn` --task
-**Manage**: `/task` --create|status | `/load` --context
+**Manage**: `/task` :create|:status|:resume | `/load` --context
 ## Workflow Patterns
 **Setup**: `/load` → `/dev-setup --install` → `/build --init` → `/test`
 **Feature**: `/analyze` → `/design --api` → `/build --tdd` → `/test --e2e` → `/deploy`
