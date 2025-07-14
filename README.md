@@ -44,8 +44,9 @@ SuperClaude enhances Claude Code with:
 ## 🚀 Installation
 
 ### Enhanced Installer v2.0.1
-The installer provides various options:
+The installer provides various options for different platforms:
 
+#### Linux/macOS/WSL
 ```bash
 git clone https://github.com/NomenAK/SuperClaude.git
 cd SuperClaude
@@ -61,17 +62,48 @@ cd SuperClaude
 ./install.sh --log install.log        # Log all operations
 ```
 
+#### Windows PowerShell (Recommended)
+```powershell
+git clone https://github.com/NomenAK/SuperClaude.git
+cd SuperClaude
+
+# Basic installation
+.\install.ps1                                    # Default: %USERPROFILE%\.claude
+
+# Advanced options
+.\install.ps1 -InstallDir "C:\Claude"            # Custom location
+.\install.ps1 -Update                            # Update existing installation
+.\install.ps1 -DryRun -Verbose                   # Preview changes with details
+.\install.ps1 -Force                             # Skip confirmations (automation)
+.\install.ps1 -LogFile "install.log"             # Log all operations
+```
+
+#### Windows Command Prompt
+```cmd
+git clone https://github.com/NomenAK/SuperClaude.git
+cd SuperClaude
+
+REM Basic installation
+install.bat                                      # Default: %USERPROFILE%\.claude
+
+REM Advanced options
+install.bat --dir "C:\Claude"                    # Custom location
+install.bat --update                             # Update existing installation
+install.bat --dry-run --verbose                  # Preview changes with details
+install.bat --force                              # Skip confirmations (automation)
+```
+
 **v2.0.1 Installer Features:**
 - 🔄 **Update Mode**: Preserves customizations while updating
 - 👁️ **Dry Run**: Preview changes before applying
 - 💾 **Smart Backups**: Automatic backup with timestamping
 - 🧹 **Clean Updates**: Removes obsolete files
-- 🖥️ **Platform Detection**: Works with Linux, macOS, WSL
+- 🖥️ **Platform Detection**: Works with Linux, macOS, WSL, Windows
 - 📊 **Progress Tracking**: Installation feedback
 
-Zero dependencies. Installs to `~/.claude/` by default.
+Zero dependencies. Installs to `~/.claude/` (Linux/macOS) or `%USERPROFILE%\.claude` (Windows) by default.
 
-**Note:** After installation, all configuration files are located in `~/.claude/` (your home directory), not in the project directory.
+**Note:** After installation, all configuration files are located in your home directory's `.claude` folder, not in the project directory.
 
 ## 💡 Core Capabilities
 
@@ -329,8 +361,20 @@ SuperClaude v2's architecture enables extensibility:
 ## 🚦 Getting Started
 
 1. **Install SuperClaude**
+   
+   **Linux/macOS/WSL:**
    ```bash
    git clone https://github.com/NomenAK/SuperClaude.git && cd SuperClaude && ./install.sh
+   ```
+   
+   **Windows PowerShell:**
+   ```powershell
+   git clone https://github.com/NomenAK/SuperClaude.git; cd SuperClaude; .\install.ps1
+   ```
+   
+   **Windows Command Prompt:**
+   ```cmd
+   git clone https://github.com/NomenAK/SuperClaude.git && cd SuperClaude && install.bat
    ```
 
 2. **Validate Installation**
@@ -350,8 +394,11 @@ SuperClaude v2's architecture enables extensibility:
 
 ## 🛟 Support
 
-- **Installation Help**: Run `./install.sh --help`
-- **Command Details**: Check `~/.claude/commands/`
+- **Installation Help**: 
+  - Linux/macOS/WSL: Run `./install.sh --help`
+  - Windows PowerShell: Run `.\install.ps1 -Help`
+  - Windows Command Prompt: Run `install.bat --help`
+- **Command Details**: Check `~/.claude/commands/` (Linux/macOS) or `%USERPROFILE%\.claude\commands\` (Windows)
 - **Contributing**: See [CONTRIBUTING.md](CONTRIBUTING.md)
 - **Issues**: [GitHub Issues](https://github.com/NomenAK/SuperClaude/issues)
 
