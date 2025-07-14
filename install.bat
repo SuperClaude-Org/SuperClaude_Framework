@@ -269,11 +269,20 @@ if "%VERBOSE_MODE%"=="true" (
     echo Copying directory: %source_dir% to %dest_dir%
 )
 
-for /r "%source_dir%" %%f in (*) do (
-    set "rel_path=%%f"
-    set "rel_path=!rel_path:%source_dir%\=!"
-    set "dest_file=%dest_dir%\!rel_path!"
-    call :copy_file "%%f" "!dest_file!"
+if "%DRY_RUN_MODE%"=="false" (
+    xcopy "%source_dir%\*" "%dest_dir%\" /e /i /q /y >nul 2>&1
+    if errorlevel 1 (
+        echo Error: Failed to copy directory %source_dir% to %dest_dir%
+    ) else (
+        REM Count copied files
+        for /r "%source_dir%" %%f in (*) do (
+            set /a copied_count+=1
+        )
+    )
+) else (
+    if "%VERBOSE_MODE%"=="true" (
+        echo Would copy directory: %source_dir% to %dest_dir%
+    )
 )
 goto :eof
 
