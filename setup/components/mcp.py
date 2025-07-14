@@ -28,18 +28,21 @@ class MCPComponent(Component):
                 "name": "sequential-thinking",
                 "description": "Multi-step problem solving and systematic analysis",
                 "npm_package": "@modelcontextprotocol/server-sequential-thinking",
+                "command": "npx @modelcontextprotocol/server-sequential-thinking",
                 "required": True
             },
             "context7": {
                 "name": "context7", 
                 "description": "Official library documentation and code examples",
                 "npm_package": "@context7/mcp",
+                "command": "npx @context7/mcp",
                 "required": True
             },
             "magic": {
                 "name": "magic",
                 "description": "Modern UI component generation and design systems",
                 "npm_package": "@21st/mcp",
+                "command": "npx @21st/mcp",
                 "required": False,
                 "api_key_env": "TWENTYFIRST_API_KEY",
                 "api_key_description": "21st.dev API key for UI component generation"
@@ -48,6 +51,7 @@ class MCPComponent(Component):
                 "name": "playwright",
                 "description": "Cross-browser E2E testing and automation",
                 "npm_package": "@modelcontextprotocol/server-playwright",
+                "command": "npx @modelcontextprotocol/server-playwright",
                 "required": False
             }
         }
@@ -170,6 +174,7 @@ class MCPComponent(Component):
         """Install a single MCP server"""
         server_name = server_info["name"]
         npm_package = server_info["npm_package"]
+        command = server_info["command"]
         
         try:
             self.logger.info(f"Installing MCP server: {server_name}")
@@ -197,13 +202,13 @@ class MCPComponent(Component):
             
             # Install using Claude CLI
             if config.get("dry_run", False):
-                self.logger.info(f"Would install MCP server: claude mcp add {npm_package}")
+                self.logger.info(f"Would install MCP server: claude mcp add {server_name} {command}")
                 return True
             
-            self.logger.debug(f"Running: claude mcp add {npm_package}")
+            self.logger.debug(f"Running: claude mcp add {server_name} {command}")
             
             result = subprocess.run(
-                ["claude", "mcp", "add", npm_package],
+                ["claude", "mcp", "add", server_name, command],
                 capture_output=True,
                 text=True,
                 timeout=120  # 2 minutes timeout for installation
