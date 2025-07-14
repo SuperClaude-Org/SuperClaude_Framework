@@ -26,6 +26,7 @@ class CommandsComponent(Component):
         self.command_files = [
             "analyze.md",
             "build.md", 
+            "implement.md",
             "cleanup.md",
             "design.md",
             "document.md",
