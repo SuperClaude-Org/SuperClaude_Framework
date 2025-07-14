@@ -30,7 +30,8 @@ class SecurityValidator:
         r'/sys/',
         r'c:\\windows\\',   # Windows system dirs
         r'c:\\program files\\',
-        r'c:\\users\\',
+        # Note: Removed c:\\users\\ to allow installation in user directories
+        # Claude Code installs to user home directory by default
     ]
     
     # Dangerous filename patterns
@@ -310,7 +311,27 @@ class SecurityValidator:
         """
         errors = []
         
-        # Validate path
+        # Special handling for Claude installation directory
+        abs_target = target_dir.resolve()
+        abs_target_str = str(abs_target).lower()
+        
+        # Allow installation to .claude directory in user home
+        if abs_target_str.endswith('.claude') or abs_target_str.endswith('.claude' + os.sep):
+            home_path = Path.home()
+            try:
+                # Check if it's under user home directory
+                abs_target.relative_to(home_path)
+                # If we reach here, it's under home directory - allow it
+                # Still check permissions
+                has_perms, missing = cls.check_permissions(target_dir, {'read', 'write'})
+                if not has_perms:
+                    errors.append(f"Insufficient permissions: missing {missing}")
+                return len(errors) == 0, errors
+            except ValueError:
+                # Not under home directory, continue with normal validation
+                pass
+        
+        # Validate path for non-.claude directories
         is_safe, msg = cls.validate_path(target_dir)
         if not is_safe:
             errors.append(f"Invalid target path: {msg}")
@@ -321,7 +342,6 @@ class SecurityValidator:
             errors.append(f"Insufficient permissions: missing {missing}")
         
         # Check if it's a system directory
-        abs_target = target_dir.resolve()
         system_dirs = [
             Path('/etc'), Path('/bin'), Path('/sbin'), Path('/usr/bin'), Path('/usr/sbin'),
             Path('/var'), Path('/tmp'), Path('/dev'), Path('/proc'), Path('/sys')
