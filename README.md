@@ -92,7 +92,7 @@ This is because v3 has a different structure and the old files can cause conflic
 ### Quick Start
 ```bash
 # Clone the repo
-git clone <repository-url>
+git clone https://github.com/NomenAK/SuperClaude.git
 cd SuperClaude
 
 # Install with our unified CLI
