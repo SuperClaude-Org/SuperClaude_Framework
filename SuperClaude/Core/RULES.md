@@ -19,7 +19,7 @@ Simple actionable rules for Claude Code SuperClaude framework operation.
 - Never commit automatically unless explicitly requested
 
 ### Framework Compliance
-- Check package.json/requirements.txt before using libraries
+- Check package.json/pyproject.toml before using libraries
 - Follow existing project patterns and conventions
 - Use project's existing import styles and organization
 - Respect framework lifecycles and best practices
