@@ -32,6 +32,7 @@ class CommandsComponent(Component):
             "estimate.md",
             "explain.md",
             "git.md",
+            "implement.md",
             "improve.md",
             "index.md",
             "load.md",
