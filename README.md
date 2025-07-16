@@ -98,14 +98,14 @@ SuperClaude installation is a **two-step process**:
 
 **Option A: From PyPI (Recommended)**
 ```bash
-pip install SuperClaude
+uv add SuperClaude
 ```
 
 **Option B: From Source**
 ```bash
 git clone https://github.com/NomenAK/SuperClaude.git
 cd SuperClaude
-pip install .
+uv sync
 ```
 
 **Missing Python?** Install Python 3.7+ first:
