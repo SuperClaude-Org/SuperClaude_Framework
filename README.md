@@ -91,25 +91,25 @@ This is because v3 has a different structure and the old files can cause conflic
 
 ## Installation 📦
 
-### Quick Start
+SuperClaude installation is a **two-step process**:
+1. First install the Python package
+2. Then run the installer to set up Claude Code integration
+
+### Step 1: Install the Package
+
+**Option A: From PyPI (Recommended)**
 ```bash
 pip install SuperClaude
-#Install with python-pip
 ```
-### Install via Git
+
+**Option B: From Source**
 ```bash
-# Clone the repo
 git clone https://github.com/NomenAK/SuperClaude.git
 cd SuperClaude
-
-# Install with our unified CLI
 pip install .
-
-# That's it! 🎉
 ```
 
-
-**Missing Python?**
+**Missing Python?** Install Python 3.7+ first:
 ```bash
 # Linux (Ubuntu/Debian)
 sudo apt update && sudo apt install python3 python3-pip
@@ -121,22 +121,28 @@ brew install python3
 # Download from https://python.org/downloads/
 ```
 
-### Other Installation Options
+### Step 2: Run the Installer
+
+After installing the package, run the SuperClaude installer to configure Claude Code:
+
 ```bash
+# Quick setup (recommended for most users)
+python3 SuperClaude install
+
+# Interactive selection (choose components)
+python3 SuperClaude install --interactive
+
 # Minimal install (just core framework)
 python3 SuperClaude install --minimal
 
-# Developer setup (everything)  
+# Developer setup (everything included)
 python3 SuperClaude install --profile developer
 
-# Interactive selection
-python3 SuperClaude install
-
-# See what's available
-python3 SuperClaude install --list-components
+# See all available options
+python3 SuperClaude install --help
 ```
 
-The installer handles everything: framework files, MCP servers, and Claude Code configuration.
+**That's it! 🎉** The installer handles everything: framework files, MCP servers, and Claude Code configuration.
 
 ## How It Works 🔄
 
