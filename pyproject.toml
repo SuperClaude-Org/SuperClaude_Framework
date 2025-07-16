@@ -1,4 +1,61 @@
 [build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "SuperClaude"
+dynamic = ["version"]
+description = "SuperClaude Framework Management Hub"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Mithun Gowda B", email = "contact@superclaude.dev"},
+    {name = "NomenAK", email = "contact@superclaude.dev"},
+]
+requires-python = ">=3.8"
+dependencies = [
+    "setuptools>=45.0.0",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+[project.urls]
+Homepage = "https://github.com/NomenAK/SuperClaude"
+Repository = "https://github.com/NomenAK/SuperClaude"
+"Bug Tracker" = "https://github.com/NomenAK/SuperClaude/issues"
+"GitHub" = "https://github.com/NomenAK/SuperClaude"
+"Mithun Gowda B" = "https://github.com/mithun50"
+"NomenAK" = "https://github.com/NomenAK"
+
+[project.scripts]
+SuperClaude = "SuperClaude.__main__:main"
+
+[tool.hatch.version]
+path = "VERSION"
+pattern = "(?P<version>.*)"
+
+[tool.hatch.build.targets.wheel]
+packages = ["SuperClaude"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "SuperClaude/",
+    "config/",
+    "profiles/",
+    "setup/",
+    "VERSION",
+    "README.md",
+    "LICENSE",
+    "MANIFEST.in",
+]
 
