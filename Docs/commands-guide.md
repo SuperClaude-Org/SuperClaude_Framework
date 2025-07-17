@@ -2,7 +2,7 @@
 
 ## 💡 Don't Overthink It - SuperClaude Tries to Help
 
-**The truth about these 16 commands**: You don't need to memorize them. Just start with `/sc:analyze` or `/sc:implement` and see what happens! 
+**The truth about these 17 commands**: You don't need to memorize them. Just start with `/sc:analyze` or `/sc:implement` and see what happens! 
 
 **Here's how it usually works:**
 - Type `/` in Claude Code → See available commands
@@ -20,6 +20,7 @@
 ```bash
 /sc:help                    # See what's available
 /sc:analyze src/            # Tries to analyze your code smartly 
+/sc:workflow feature-100-prd.md  # Creates step-by-step implementation workflow from PRD
 /sc:implement user-auth     # Creates features and components (replaces v2 /build)
 /sc:build                   # Attempts intelligent project building
 /sc:improve messy-file.js   # Tries to clean up code 
@@ -53,11 +54,40 @@ A practical guide to all 16 SuperClaude slash commands. We'll be honest about wh
 | `/sc:estimate` | Smart estimation | Planning experts | Time/effort planning, complexity analysis |
 | `/sc:spawn` | Complex workflows | Orchestration system | Multi-step operations, workflow automation |
 | `/sc:task` | Project management | Planning system | Long-term feature planning, task tracking |
+| `/sc:workflow` | Implementation planning | Workflow system | Creating step-by-step workflows from PRDs |
 | `/sc:index` | Command navigation | Help system | Finding the right command for your task |
 
 **Pro tip**: Just try the ones that sound useful. SuperClaude usually tries to activate helpful experts and tools for each situation! 🎯
 
 ## Development Commands 🔨
+
+### `/workflow` - Implementation Workflow Generator 🗺️
+**What it does**: Analyzes PRDs and feature requirements to create comprehensive step-by-step implementation workflows.
+
+**The helpful part**: Takes your PRD and breaks it down into a structured implementation plan with expert guidance, dependency mapping, and task orchestration! 🎯
+
+**When to use it**:
+- Starting a new feature from a PRD or specification
+- Need a clear implementation roadmap
+- Want expert guidance on implementation strategy
+- Planning complex features with multiple dependencies
+
+**The magic**: Auto-activates appropriate expert personas (architect, security, frontend, backend) and MCP servers (Context7 for patterns, Sequential for complex analysis) based on your feature requirements.
+
+**Examples**:
+```bash
+/sc:workflow docs/feature-100-prd.md --strategy systematic --c7 --sequential
+/sc:workflow "user authentication system" --persona security --output detailed
+/sc:workflow payment-api --strategy mvp --risks --dependencies
+```
+
+**What you get**:
+- **Roadmap Format**: Phase-based implementation plan with timelines
+- **Tasks Format**: Organized epics, stories, and actionable tasks  
+- **Detailed Format**: Step-by-step instructions with time estimates
+- **Risk Assessment**: Potential issues and mitigation strategies
+- **Dependency Mapping**: Internal and external dependencies
+- **Expert Guidance**: Domain-specific best practices and patterns
 
 ### `/implement` - Feature Implementation
 **What it does**: Implements features, components, and functionality with intelligent expert activation.

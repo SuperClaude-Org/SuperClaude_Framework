@@ -146,14 +146,14 @@ complex: "Resource-intensive with comprehensive analysis"
 
 ### Command Categories
 - **Development**: build, implement, design
+- **Planning**: workflow, estimate, task
 - **Analysis**: analyze, troubleshoot, explain
 - **Quality**: improve, cleanup
 - **Testing**: test
 - **Documentation**: document
-- **Planning**: estimate, task
 - **Version-Control**: git
 - **Meta**: index, load, spawn
 
 ### Wave-Enabled Commands
-6 commands: `/analyze`, `/build`, `/design`, `/implement`, `/improve`, `/task`
+7 commands: `/analyze`, `/build`, `/design`, `/implement`, `/improve`, `/task`, `/workflow`
 

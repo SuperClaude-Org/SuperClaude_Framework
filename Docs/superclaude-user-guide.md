@@ -48,6 +48,7 @@ A comprehensive guide to understanding and using SuperClaude v3.0 effectively. B
 # Try these commands in Claude Code:
 /sc:help                    # See what's available
 /sc:analyze README.md       # SuperClaude analyzes your project
+/sc:workflow feature-prd.md # Generate implementation workflow from PRD (NEW!)
 /sc:implement user-auth     # Create features and components (NEW in v3!)
 /sc:build                   # Smart build with auto-optimization  
 /sc:improve messy-file.js   # Clean up code automatically
@@ -77,12 +78,14 @@ SuperClaude makes Claude Code smarter for development work. Instead of generic r
 
 ### What SuperClaude Adds ✨
 
-**🛠️ 16 Specialized Commands**
+**🛠️ 17 Specialized Commands**
+- Planning tools: `/workflow` (NEW!), `/estimate`, `/task`
 - Development tools: `/implement`, `/build`, `/design`
 - Analysis tools: `/analyze`, `/troubleshoot`, `/explain` 
 - Quality tools: `/improve`, `/cleanup`, `/test`
 - Plus utilities for documentation, git, deployment, and more
 - **You just use them** - SuperClaude handles the complexity automatically
+- **NEW**: `/workflow` command for PRD-to-implementation planning
 - **NEW**: `/implement` command for feature creation (restores v2 functionality) 
 
 **🎭 11 Smart Personas** *(that know when to jump in)*
