@@ -26,17 +26,17 @@ A comprehensive guide to understanding and using SuperClaude v3.0 effectively. B
 
 ## Table of Contents 📖
 
-1. [Welcome & Overview](#welcome--overview-👋)
-2. [Core Components](#core-components-🧩)
-3. [The Three Operational Modes](#the-three-operational-modes-🎭)
-4. [The Orchestrator System](#the-orchestrator-system-🎯)
-5. [Rules & Principles](#rules--principles-📏)
-6. [Getting Started Workflows](#getting-started-workflows-🛣️)
-7. [Integration & Coordination](#integration--coordination-🤝)
-8. [Practical Examples](#practical-examples-💡)
-9. [Tips & Best Practices](#tips--best-practices-🎯)
-10. [Troubleshooting](#troubleshooting--common-issues-🚨)
-11. [What's Next](#whats-next-🔮)
+1. [Welcome & Overview](#welcome--overview-)
+2. [Core Components](#core-components-)
+3. [The Three Operational Modes](#the-three-operational-modes-)
+4. [The Orchestrator System](#the-orchestrator-system-)
+5. [Rules & Principles](#rules--principles-)
+6. [Getting Started Workflows](#getting-started-workflows-)
+7. [Integration & Coordination](#integration--coordination-)
+8. [Practical Examples](#practical-examples-)
+9. [Tips & Best Practices](#tips--best-practices-)
+10. [Troubleshooting](#troubleshooting--common-issues-)
+11. [What's Next](#whats-next-)
 
 ---
 
