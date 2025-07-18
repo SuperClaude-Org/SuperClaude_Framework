@@ -4,13 +4,48 @@
 
 **The honest truth**: This guide looks long because we want to cover all the details, but installation is actually pretty simple. Most people are done in 2 minutes with one command! 
 
-**TL;DR for the impatient:**
+### Step 1: Install the Package
+
+**Option A: From PyPI (Recommended)**
 ```bash
-pip install SuperClaude
-SuperClaude install --quick
-# That's it! 🎉
+uv add SuperClaude
 ```
----
+
+**Option B: From Source**
+```bash
+git clone https://github.com/NomenAK/SuperClaude.git
+cd SuperClaude
+uv sync
+```
+### 🔧 UV / UVX Setup Guide
+
+SuperClaude v3 also supports installation via [`uv`](https://github.com/astral-sh/uv) (a faster, modern Python package manager) or `uvx` for cross-platform usage.
+
+### 🌀 Install with `uv`
+
+Make sure `uv` is installed:
+
+```bash
+curl -Ls https://astral.sh/uv/install.sh | sh
+```
+
+> Or follow instructions from: [https://github.com/astral-sh/uv](https://github.com/astral-sh/uv)
+
+Once `uv` is available, you can install SuperClaude like this:
+
+```bash
+uv venv
+source .venv/bin/activate
+uv pip install SuperClaude
+```
+
+### ⚡ Install with `uvx` (Cross-platform CLI)
+
+If you’re using `uvx`, just run:
+
+```bash
+uvx pip install SuperClaude
+```
 ## 🔧 UV / UVX Setup Guide
 
 SuperClaude v3 also supports installation via [`uv`](https://github.com/astral-sh/uv) (a faster, modern Python package manager) or `uvx` for cross-platform usage.
