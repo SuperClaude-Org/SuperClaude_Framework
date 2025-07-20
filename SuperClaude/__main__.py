@@ -203,7 +203,7 @@ def main() -> int:
         operations = register_operation_parsers(subparsers, global_parser)
         args = parser.parse_args()
         # === PATCH to fix install_dir mismatch for Microsoft account ===
-  
+
         actual_home = Path.home()
 
         # If SuperClaude thinks install_dir is not your real user folder, correct it
