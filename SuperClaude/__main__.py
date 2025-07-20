@@ -202,15 +202,6 @@ def main() -> int:
         parser, subparsers, global_parser = create_parser()
         operations = register_operation_parsers(subparsers, global_parser)
         args = parser.parse_args()
-        # === PATCH to fix install_dir mismatch for Microsoft account ===
-  
-        actual_home = Path.home()
-
-        # If SuperClaude thinks install_dir is not your real user folder, correct it
-        if args.install_dir and not str(args.install_dir).startswith(str(actual_home)):
-            print(f"[INFO] Overriding incorrect install path: {args.install_dir} → {actual_home}")
-            args.install_dir = actual_home
-        # === END PATCH ===
 
         # No operation provided? Show help manually unless in quiet mode
         if not args.operation:
