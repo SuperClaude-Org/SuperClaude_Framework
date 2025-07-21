@@ -135,6 +135,9 @@ class CoreComponent(Component):
                 self.logger.error(f"Could not create install directory: {self.install_dir}")
                 return False
             
+            # Protect existing user configuration
+            user_config_preserved = self._protect_user_configuration()
+            
             # Copy framework files
             success_count = 0
             for source, target in files_to_install:
@@ -149,6 +152,9 @@ class CoreComponent(Component):
             if success_count != len(files_to_install):
                 self.logger.error(f"Only {success_count}/{len(files_to_install)} files copied successfully")
                 return False
+            
+            # Update CLAUDE.md to conditionally include USER.md
+            self._update_claude_md_user_reference(user_config_preserved)
             
             # Create or update metadata
             try:
@@ -408,3 +414,126 @@ class CoreComponent(Component):
             "install_directory": str(self.install_dir),
             "dependencies": self.get_dependencies()
         }
+    
+    def _protect_user_configuration(self) -> bool:
+        """
+        Protect existing user CLAUDE.md configuration file
+        
+        If an existing CLAUDE.md file is detected, rename it to USER.md to preserve
+        user customizations before installing SuperClaude framework files.
+        
+        Returns:
+            bool: True if user configuration was protected, False if no protection needed
+        """
+        existing_claude_md = self.install_dir / "CLAUDE.md"
+        user_config_file = self.install_dir / "USER.md"
+        
+        # Check if existing CLAUDE.md file exists
+        if not existing_claude_md.exists():
+            self.logger.debug("No existing CLAUDE.md file found, no user configuration to protect")
+            return False
+        
+        # Check if file is already a SuperClaude framework file (avoid duplicate protection)
+        if self._is_superclaude_framework_file(existing_claude_md):
+            self.logger.debug("Existing CLAUDE.md appears to be SuperClaude framework file, no protection needed")
+            return False
+        
+        try:
+            # If USER.md already exists, create backup
+            if user_config_file.exists():
+                backup_path = self.file_manager.backup_file(user_config_file)
+                if backup_path:
+                    self.logger.info(f"Existing USER.md backed up to: {backup_path.name}")
+            
+            # Rename existing CLAUDE.md to USER.md
+            existing_claude_md.rename(user_config_file)
+            
+            # Log successful protection
+            self.logger.success("🛡️  User configuration protected!")
+            self.logger.info(f"Your existing CLAUDE.md has been preserved as USER.md")
+            self.logger.info(f"SuperClaude will automatically include your configuration")
+            
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Failed to protect user configuration: {e}")
+            self.logger.warning("Your existing CLAUDE.md may be overwritten")
+            return False
+    
+    def _is_superclaude_framework_file(self, file_path: Path) -> bool:
+        """
+        Check if file is a SuperClaude framework file
+        
+        Args:
+            file_path: Path to file to check
+            
+        Returns:
+            bool: True if it's a framework file, False if it's a user file
+        """
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Check for SuperClaude framework file markers
+            superclaude_markers = [
+                "# SuperClaude Entry Point",
+                "@COMMANDS.md",
+                "@FLAGS.md", 
+                "@PRINCIPLES.md",
+                "@ORCHESTRATOR.md"
+            ]
+            
+            # If file contains multiple framework markers, consider it a framework file
+            marker_count = sum(1 for marker in superclaude_markers if marker in content)
+            return marker_count >= 2
+            
+        except Exception:
+            # If reading fails, assume it's a user file for safety
+            return False
+    
+    def _update_claude_md_user_reference(self, user_config_preserved: bool) -> None:
+        """
+        Update CLAUDE.md to conditionally include USER.md reference
+        
+        If user configuration was preserved, ensure the @USER.md reference is active.
+        If no user configuration exists, comment out the @USER.md reference.
+        
+        Args:
+            user_config_preserved: Whether user configuration was preserved
+        """
+        claude_md_path = self.install_dir / "CLAUDE.md"
+        
+        if not claude_md_path.exists():
+            self.logger.warning("CLAUDE.md not found, cannot update user reference")
+            return
+        
+        try:
+            # Read current content
+            with open(claude_md_path, 'r', encoding='utf-8') as f:
+                lines = f.readlines()
+            
+            # Update USER.md reference based on whether user config was preserved
+            updated_lines = []
+            for line in lines:
+                if line.strip() == "@USER.md":
+                    if user_config_preserved:
+                        # Keep active reference
+                        updated_lines.append(line)
+                        self.logger.debug("Activated @USER.md reference in CLAUDE.md")
+                    else:
+                        # Comment out reference
+                        updated_lines.append("# @USER.md  # No user configuration found\n")
+                        self.logger.debug("Commented out @USER.md reference in CLAUDE.md")
+                else:
+                    updated_lines.append(line)
+            
+            # Write updated content
+            with open(claude_md_path, 'w', encoding='utf-8') as f:
+                f.writelines(updated_lines)
+            
+            if user_config_preserved:
+                self.logger.info("CLAUDE.md updated to include your preserved configuration")
+            
+        except Exception as e:
+            self.logger.error(f"Failed to update CLAUDE.md user reference: {e}")
+            # This is not critical, so we don't fail the installation
