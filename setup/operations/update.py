@@ -335,6 +335,15 @@ def run(args: argparse.Namespace) -> int:
     operation = UpdateOperation()
     operation.setup_operation_logging(args)
     logger = get_logger()
+    # ✅ Inserted validation code
+    expected_home = Path.home().resolve()
+    actual_dir = args.install_dir.resolve()
+
+    if not str(actual_dir).startswith(str(expected_home)):
+        print(f"\n[✗] Installation must be inside your user profile directory.")
+        print(f"    Expected prefix: {expected_home}")
+        print(f"    Provided path:   {actual_dir}")
+        sys.exit(1)
     
     try:
         # Validate global arguments
