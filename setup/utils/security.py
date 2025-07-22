@@ -427,11 +427,17 @@ class SecurityValidator:
                             errors.append("Installation to junction points or symbolic links is not allowed for security")
                             return False, errors
                         
-                        # Additional validation: verify it's in a user profile directory structure
-                        # Only check if it looks like a Windows path (contains drive letter)
+                        # Additional validation: verify it's in the current user's profile directory
+                        # Use actual home directory comparison instead of username-based path construction
                         if ':' in abs_target_str and '\\users\\' in abs_target_str:
-                            current_user = os.environ.get('USERNAME', '')
-                            if current_user and f'\\users\\{current_user.lower()}\\' not in abs_target_str:
+                            try:
+                                # Check if target is within the user's actual home directory
+                                home_path = Path.home()
+                                abs_target.relative_to(home_path)
+                                # Path is valid - within user's home directory
+                            except ValueError:
+                                # Path is outside user's home directory
+                                current_user = os.environ.get('USERNAME', home_path.name)
                                 errors.append(f"Installation must be in current user's directory ({current_user})")
                                 return False, errors
                     
