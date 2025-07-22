@@ -533,7 +533,7 @@ class Validator:
             Installation commands dict
         """
         try:
-            from .config_manager import ConfigManager
+            from ..managers.config_manager import ConfigManager
             from .. import PROJECT_ROOT
             
             config_manager = ConfigManager(PROJECT_ROOT / "config")
