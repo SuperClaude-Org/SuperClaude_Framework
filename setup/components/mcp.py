@@ -43,7 +43,7 @@ class MCPComponent(Component):
             "playwright": {
                 "name": "playwright",
                 "description": "Cross-browser E2E testing and automation",
-                "npm_package": "@playright/mcp@latest",
+                "npm_package": "@playwright/mcp@latest",
                 "required": False
             }
         }
