@@ -4,12 +4,10 @@ Base installer logic for SuperClaude installation system fixed some issues
 
 from typing import List, Dict, Optional, Set, Tuple, Any
 from pathlib import Path
-import json
 import shutil
 import tempfile
 from datetime import datetime
 from .component import Component
-
 
 class Installer:
     """Main installer orchestrator"""
@@ -217,8 +215,6 @@ class Installer:
                 
             if success:
                 self.installed_components.add(component_name)
-                self._update_settings_registry(component)
-                # Component handles its own metadata registration
             else:
                 self.failed_components.add(component_name)
                 
@@ -270,101 +266,10 @@ class Installer:
                 all_success = False
                 # Continue installing other components even if one fails
         
-        # Post-installation validation
-        if all_success and not self.dry_run:
+        if not self.dry_run:
             self._run_post_install_validation()
         
         return all_success
-    
-    def uninstall_component(self, component_name: str) -> bool:
-        """
-        Uninstall a single component
-        
-        Args:
-            component_name: Name of component to uninstall
-            
-        Returns:
-            True if successful, False otherwise
-        """
-        if component_name not in self.components:
-            raise ValueError(f"Unknown component: {component_name}")
-            
-        component = self.components[component_name]
-        
-        try:
-            if self.dry_run:
-                print(f"[DRY RUN] Would uninstall {component_name}")
-                return True
-            else:
-                success = component.uninstall()
-                # Component handles its own metadata removal
-                return success
-        except Exception as e:
-            print(f"Error uninstalling {component_name}: {e}")
-            return False
-    
-    def _update_settings_registry(self, component: Component) -> None:
-        """Update settings.json with component registration"""
-        if self.dry_run:
-            return
-            
-        settings_file = self.install_dir / "settings.json"
-        settings = {}
-        
-        if settings_file.exists():
-            with open(settings_file, 'r') as f:
-                settings = json.load(f)
-        
-        # Update components registry
-        if 'components' not in settings:
-            settings['components'] = {}
-            
-        metadata = component.get_metadata()
-        settings['components'][metadata['name']] = {
-            'version': metadata['version'],
-            'installed_at': datetime.now().isoformat(),
-            'category': metadata.get('category', 'unknown')
-        }
-        
-        # Update framework.components array for operation compatibility
-        if 'framework' not in settings:
-            settings['framework'] = {}
-        if 'components' not in settings['framework']:
-            settings['framework']['components'] = []
-        
-        # Add component to framework.components if not already present
-        component_name = metadata['name']
-        if component_name not in settings['framework']['components']:
-            settings['framework']['components'].append(component_name)
-        
-        # Save settings
-        settings_file.parent.mkdir(parents=True, exist_ok=True)
-        with open(settings_file, 'w') as f:
-            json.dump(settings, f, indent=2)
-    
-    def _remove_from_settings_registry(self, component_name: str) -> None:
-        """Remove component from settings.json registry"""
-        if self.dry_run:
-            return
-            
-        settings_file = self.install_dir / "settings.json"
-        if not settings_file.exists():
-            return
-            
-        with open(settings_file, 'r') as f:
-            settings = json.load(f)
-        
-        # Remove from components registry
-        if 'components' in settings and component_name in settings['components']:
-            del settings['components'][component_name]
-        
-        # Remove from framework.components array for operation compatibility
-        if 'framework' in settings and 'components' in settings['framework']:
-            if component_name in settings['framework']['components']:
-                settings['framework']['components'].remove(component_name)
-            
-        with open(settings_file, 'w') as f:
-            json.dump(settings, f, indent=2)
     
     def _run_post_install_validation(self) -> None:
         """Run post-installation validation for all installed components"""
