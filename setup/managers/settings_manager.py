@@ -1,6 +1,7 @@
 """
 Settings management for SuperClaude installation system
-Handles settings.json manipulation with deep merge and backup
+Handles settings.json migration to the new SuperClaude metadata json file
+Allows for manipulation of these json files with deep merge and backup
 """
 
 import json
@@ -96,7 +97,31 @@ class SettingsManager:
                 json.dump(metadata, f, indent=2, ensure_ascii=False, sort_keys=True)
         except IOError as e:
             raise ValueError(f"Could not save metadata to {self.metadata_file}: {e}")
-    
+
+    def merge_metadata(self, modifications: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Deep merge modifications into existing settings
+
+        Args:
+            modifications: Settings modifications to merge
+
+        Returns:
+            Merged settings dict
+        """
+        existing = self.load_metadata()
+        return self._deep_merge(existing, modifications)
+
+    def update_metadata(self, modifications: Dict[str, Any]) -> None:
+        """
+        Update settings with modifications
+
+        Args:
+            modifications: Settings modifications to apply
+            create_backup: Whether to create backup before updating
+        """
+        merged = self.merge_metadata(modifications)
+        self.save_metadata(merged)
+
     def migrate_superclaude_data(self) -> bool:
         """
         Migrate SuperClaude-specific data from settings.json to metadata file
@@ -322,16 +347,23 @@ class SettingsManager:
         
         self.save_metadata(metadata)
     
-    def get_framework_version(self) -> Optional[str]:
+    def check_installation_exists(self) -> bool:
         """
         Get SuperClaude framework version from metadata
         
         Returns:
             Version string or None if not set
         """
-        metadata = self.load_metadata()
-        framework = metadata.get("framework", {})
-        return framework.get("version")
+        return self.metadata_file.exists()
+
+    def check_v2_installation_exists(self) -> bool:
+        """
+        Get SuperClaude framework version from metadata
+
+        Returns:
+            Version string or None if not set
+        """
+        return self.settings_file.exists()
     
     def get_metadata_setting(self, key_path: str, default: Any = None) -> Any:
         """
