@@ -11,7 +11,7 @@ import argparse
 
 from ..base.installer import Installer
 from ..core.registry import ComponentRegistry
-from ..core.config_manager import ConfigManager
+from ..managers.config_manager import ConfigManager
 from ..core.validator import Validator
 from ..utils.ui import (
     display_header, display_info, display_success, display_error, 
@@ -137,6 +137,8 @@ def get_components_to_install(args: argparse.Namespace, registry: ComponentRegis
     
     # Explicit components specified
     if args.components:
+        if 'all' in args.components:
+            return ["core", "commands", "hooks", "mcp"]
         return args.components
     
     # Profile-based selection

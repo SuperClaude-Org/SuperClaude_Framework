@@ -12,8 +12,7 @@ from datetime import datetime
 from typing import List, Optional, Dict, Any, Tuple
 import argparse
 
-from ..core.settings_manager import SettingsManager
-from ..core.file_manager import FileManager
+from ..managers.settings_manager import SettingsManager
 from ..utils.ui import (
     display_header, display_info, display_success, display_error, 
     display_warning, Menu, confirm, ProgressBar, Colors, format_size
@@ -138,8 +137,10 @@ def get_backup_directory(args: argparse.Namespace) -> Path:
 
 
 def check_installation_exists(install_dir: Path) -> bool:
-    """Check if SuperClaude installation exists"""
-    return install_dir.exists() and (install_dir / "settings.json").exists()
+    """Check if SuperClaude installation (v2 included) exists"""
+    settings_manager = SettingsManager(install_dir)
+
+    return settings_manager.check_installation_exists() or settings_manager.check_v2_installation_exists()
 
 
 def get_backup_info(backup_path: Path) -> Dict[str, Any]:

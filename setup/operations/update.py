@@ -11,8 +11,7 @@ import argparse
 
 from ..base.installer import Installer
 from ..core.registry import ComponentRegistry
-from ..core.config_manager import ConfigManager
-from ..core.settings_manager import SettingsManager
+from ..managers.settings_manager import SettingsManager
 from ..core.validator import Validator
 from ..utils.ui import (
     display_header, display_info, display_success, display_error, 
@@ -85,28 +84,17 @@ Examples:
     
     return parser
 
-
 def check_installation_exists(install_dir: Path) -> bool:
-    """Check if SuperClaude is installed"""
-    settings_file = install_dir / "settings.json"
-    return settings_file.exists()
+    """Check if SuperClaude installation exists"""
+    settings_manager = SettingsManager(install_dir)
 
+    return settings_manager.check_installation_exists()
 
-def get_installed_components(install_dir: Path) -> Dict[str, str]:
+def get_installed_components(install_dir: Path) -> Dict[str, Dict[str, Any]]:
     """Get currently installed components and their versions"""
     try:
         settings_manager = SettingsManager(install_dir)
-        components = {}
-        
-        # Check for framework configuration in metadata
-        framework_config = settings_manager.get_metadata_setting("framework")
-        if framework_config and "components" in framework_config:
-            for component_name in framework_config["components"]:
-                version = settings_manager.get_component_version(component_name)
-                if version:
-                    components[component_name] = version
-        
-        return components
+        return settings_manager.get_installed_components()
     except Exception:
         return {}
 
