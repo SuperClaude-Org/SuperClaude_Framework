@@ -4,24 +4,19 @@ MCP component for MCP server integration
 
 import subprocess
 import sys
-import json
-from typing import Dict, List, Tuple, Any
+from typing import Dict, List, Tuple, Optional, Any
 from pathlib import Path
 
 from ..base.component import Component
-from ..core.settings_manager import SettingsManager
-from ..utils.logger import get_logger
-from ..utils.ui import confirm, display_info, display_warning
+from ..utils.ui import display_info, display_warning
 
 
 class MCPComponent(Component):
     """MCP servers integration component"""
     
-    def __init__(self, install_dir: Path = None):
+    def __init__(self, install_dir: Optional[Path] = None):
         """Initialize MCP component"""
         super().__init__(install_dir)
-        self.logger = get_logger()
-        self.settings_manager = SettingsManager(self.install_dir)
         
         # Define MCP servers to install
         self.mcp_servers = {
@@ -29,21 +24,18 @@ class MCPComponent(Component):
                 "name": "sequential-thinking",
                 "description": "Multi-step problem solving and systematic analysis",
                 "npm_package": "@modelcontextprotocol/server-sequential-thinking",
-                "command": "npx @modelcontextprotocol/server-sequential-thinking",
                 "required": True
             },
             "context7": {
                 "name": "context7", 
                 "description": "Official library documentation and code examples",
-                "npm_package": "@context7/mcp",
-                "command": "npx @context7/mcp",
+                "npm_package": "@upstash/context7-mcp",
                 "required": True
             },
             "magic": {
                 "name": "magic",
                 "description": "Modern UI component generation and design systems",
-                "npm_package": "@21st/mcp",
-                "command": "npx @21st/mcp",
+                "npm_package": "@21st-dev/magic",
                 "required": False,
                 "api_key_env": "TWENTYFIRST_API_KEY",
                 "api_key_description": "21st.dev API key for UI component generation"
@@ -51,8 +43,7 @@ class MCPComponent(Component):
             "playwright": {
                 "name": "playwright",
                 "description": "Cross-browser E2E testing and automation",
-                "npm_package": "@modelcontextprotocol/server-playwright",
-                "command": "npx @modelcontextprotocol/server-playwright",
+                "npm_package": "@playright/mcp@latest",
                 "required": False
             }
         }
@@ -66,7 +57,7 @@ class MCPComponent(Component):
             "category": "integration"
         }
     
-    def validate_prerequisites(self) -> Tuple[bool, List[str]]:
+    def validate_prerequisites(self, installSubPath: Optional[Path] = None) -> Tuple[bool, List[str]]:
         """Check prerequisites"""
         errors = []
         
@@ -152,11 +143,6 @@ class MCPComponent(Component):
             }
         }
     
-    def get_settings_modifications(self) -> Dict[str, Any]:
-        """Get settings.json modifications (now only Claude Code compatible settings)"""
-        # Return empty dict as we don't modify Claude Code settings
-        return {}
-    
     def _check_mcp_server_installed(self, server_name: str) -> bool:
         """Check if MCP server is already installed"""
         try:
@@ -185,8 +171,7 @@ class MCPComponent(Component):
         server_name = server_info["name"]
         npm_package = server_info["npm_package"]
         
-        # Get the command to use - either specified in server_info or default to npx format
-        command = server_info.get("command", f"npx {npm_package}")
+        command = "npx"
         
         try:
             self.logger.info(f"Installing MCP server: {server_name}")
@@ -213,14 +198,14 @@ class MCPComponent(Component):
                         self.logger.warning(f"Proceeding without {api_key_env} - server may not function properly")
             
             # Install using Claude CLI
-            if config.get("dry_run", False):
-                self.logger.info(f"Would install MCP server (user scope): claude mcp add -s user {server_name} {command}")
+            if config.get("dry_run"):
+                self.logger.info(f"Would install MCP server (user scope): claude mcp add -s user {server_name} {command} -y {npm_package}")
                 return True
             
-            self.logger.debug(f"Running: claude mcp add -s user {server_name} {command}")
+            self.logger.debug(f"Running: claude mcp add -s user {server_name} {command} -y {npm_package}")
             
             result = subprocess.run(
-                ["claude", "mcp", "add", "-s", "user", server_name, command],
+                ["claude", "mcp", "add", "-s", "user", "--", server_name, command, "-y", npm_package],
                 capture_output=True,
                 text=True,
                 timeout=120,  # 2 minutes timeout for installation
@@ -277,90 +262,83 @@ class MCPComponent(Component):
             self.logger.error(f"Error uninstalling MCP server {server_name}: {e}")
             return False
     
-    def install(self, config: Dict[str, Any]) -> bool:
+    def _install(self, config: Dict[str, Any]) -> bool:
         """Install MCP component"""
-        try:
-            self.logger.info("Installing SuperClaude MCP servers...")
-            
-            # Validate prerequisites
-            success, errors = self.validate_prerequisites()
-            if not success:
-                for error in errors:
-                    self.logger.error(error)
-                return False
-            
-            # Install each MCP server
-            installed_count = 0
-            failed_servers = []
-            
-            for server_name, server_info in self.mcp_servers.items():
-                if self._install_mcp_server(server_info, config):
-                    installed_count += 1
-                else:
-                    failed_servers.append(server_name)
-                    
-                    # Check if this is a required server
-                    if server_info.get("required", False):
-                        self.logger.error(f"Required MCP server {server_name} failed to install")
-                        return False
-            
-            # Update metadata
-            try:
-                # Add component registration to metadata
-                self.settings_manager.add_component_registration("mcp", {
-                    "version": "3.0.0",
-                    "category": "integration",
-                    "servers_count": len(self.mcp_servers)
-                })
-                
-                # Add MCP configuration to metadata
-                metadata = self.settings_manager.load_metadata()
-                metadata["mcp"] = {
-                    "enabled": True,
-                    "servers": list(self.mcp_servers.keys()),
-                    "auto_update": False
-                }
-                self.settings_manager.save_metadata(metadata)
-                
-                self.logger.info("Updated metadata with MCP component registration")
-            except Exception as e:
-                self.logger.error(f"Failed to update metadata: {e}")
-                return False
-            
-            # Verify installation
-            if not config.get("dry_run", False):
-                self.logger.info("Verifying MCP server installation...")
-                try:
-                    result = subprocess.run(
-                        ["claude", "mcp", "list"],
-                        capture_output=True,
-                        text=True,
-                        timeout=15,
-                        shell=(sys.platform == "win32")
-                    )
-                    
-                    if result.returncode == 0:
-                        self.logger.debug("MCP servers list:")
-                        for line in result.stdout.strip().split('\n'):
-                            if line.strip():
-                                self.logger.debug(f"  {line.strip()}")
-                    else:
-                        self.logger.warning("Could not verify MCP server installation")
-                        
-                except Exception as e:
-                    self.logger.warning(f"Could not verify MCP installation: {e}")
-            
-            if failed_servers:
-                self.logger.warning(f"Some MCP servers failed to install: {failed_servers}")
-                self.logger.success(f"MCP component partially installed ({installed_count} servers)")
-            else:
-                self.logger.success(f"MCP component installed successfully ({installed_count} servers)")
-            
-            return True
-            
-        except Exception as e:
-            self.logger.exception(f"Unexpected error during MCP installation: {e}")
+        self.logger.info("Installing SuperClaude MCP servers...")
+
+        # Validate prerequisites
+        success, errors = self.validate_prerequisites()
+        if not success:
+            for error in errors:
+                self.logger.error(error)
             return False
+
+        # Install each MCP server
+        installed_count = 0
+        failed_servers = []
+
+        for server_name, server_info in self.mcp_servers.items():
+            if self._install_mcp_server(server_info, config):
+                installed_count += 1
+            else:
+                failed_servers.append(server_name)
+                
+                # Check if this is a required server
+                if server_info.get("required", False):
+                    self.logger.error(f"Required MCP server {server_name} failed to install")
+                    return False
+
+        # Verify installation
+        if not config.get("dry_run", False):
+            self.logger.info("Verifying MCP server installation...")
+            try:
+                result = subprocess.run(
+                    ["claude", "mcp", "list"],
+                    capture_output=True,
+                    text=True,
+                    timeout=15,
+                    shell=(sys.platform == "win32")
+                )
+                
+                if result.returncode == 0:
+                    self.logger.debug("MCP servers list:")
+                    for line in result.stdout.strip().split('\n'):
+                        if line.strip():
+                            self.logger.debug(f"  {line.strip()}")
+                else:
+                    self.logger.warning("Could not verify MCP server installation")
+                    
+            except Exception as e:
+                self.logger.warning(f"Could not verify MCP installation: {e}")
+
+        if failed_servers:
+            self.logger.warning(f"Some MCP servers failed to install: {failed_servers}")
+            self.logger.success(f"MCP component partially installed ({installed_count} servers)")
+        else:
+            self.logger.success(f"MCP component installed successfully ({installed_count} servers)")
+
+        return self._post_install()
+
+    def _post_install(self) -> bool:
+        # Update metadata
+        try:
+            metadata_mods = self.get_metadata_modifications()
+            self.settings_manager.update_metadata(metadata_mods)
+
+            # Add component registration to metadata
+            self.settings_manager.add_component_registration("mcp", {
+                "version": "3.0.0",
+                "category": "integration",
+                "servers_count": len(self.mcp_servers)
+            })
+
+            self.logger.info("Updated metadata with MCP component registration")
+        except Exception as e:
+            self.logger.error(f"Failed to update metadata: {e}")
+            return False
+
+        return True
+
     
     def uninstall(self) -> bool:
         """Uninstall MCP component"""
@@ -497,6 +475,10 @@ class MCPComponent(Component):
         
         return len(errors) == 0, errors
     
+    def _get_source_dir(self):
+        """Get source directory for framework files"""
+        return None
+
     def get_size_estimate(self) -> int:
         """Get estimated installation size"""
         # MCP servers are installed via npm, estimate based on typical sizes
