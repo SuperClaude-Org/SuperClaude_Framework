@@ -19,7 +19,6 @@ from pathlib import Path
 from typing import Dict, Callable
 
 # Add the 'setup' directory to the Python import path (with deprecation-safe logic)
-import sys
 
 try:
     # Python 3.9+ preferred modern way
