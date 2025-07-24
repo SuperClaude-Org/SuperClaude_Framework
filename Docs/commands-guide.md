@@ -18,7 +18,7 @@
 
 **Start here** (no reading required):
 ```bash
-/sc:help                    # See what's available
+/sc:index                    # See what's available
 /sc:analyze src/            # Tries to analyze your code smartly 
 /sc:workflow feature-100-prd.md  # Creates step-by-step implementation workflow from PRD
 /sc:implement user-auth     # Creates features and components (replaces v2 /build)
