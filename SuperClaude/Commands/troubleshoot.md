@@ -10,7 +10,7 @@ Systematically diagnose and resolve issues in code, builds, deployments, or syst
 
 ## Usage
 ```
-/sc:troubleshoot [issue] [--type bug|build|performance|deployment] [--trace]
+/sc:troubleshoot [issue] [--type bug|build|performance|deployment] [--trace] [--fix]
 ```
 
 ## Arguments
