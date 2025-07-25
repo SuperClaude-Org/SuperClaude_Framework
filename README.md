@@ -105,7 +105,7 @@ uv add SuperClaude
 
 **Option B: From Source**
 ```bash
-git clone https://github.com/NomenAK/SuperClaude.git
+git clone https://github.com/SuperClaude-Org/SuperClaude_Framework.git
 cd SuperClaude
 uv sync
 ```
