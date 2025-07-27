@@ -1,4 +1,5 @@
 # Unified P2SA v2.0 Implementation Plan
+
 ## Board-Based Sub-Agent Orchestration System
 
 ### Overview
@@ -76,10 +77,12 @@ SuperClaude/
 
 ## Unified Implementation Roadmap
 
-### Phase 1: Foundation (Weeks 1-2) 🏗️
+### Phase 1: Foundation 🏗️
+
 **Core Infrastructure for Safe Multi-Agent Operations**
 
-#### Critical Path Items:
+#### Critical Path Items
+
 - [x] **Persona Parser** (`persona_parser.py`) - Extract persona definitions ✅
 - [x] **Prompt Generator** (`prompt_generator.py`) - Create agent system prompts ✅
 - [ ] **Card Data Model** (`card_model.py`) - Task representation and context preservation
@@ -87,70 +90,83 @@ SuperClaude/
 - [ ] **Resource Tracker** (`resource_tracker.py`) - **CRITICAL: 20K token limit enforcement**
 - [ ] **Workflow Engine** (`workflow_engine.py`) - Column transition rules and limits
 
-#### Success Criteria:
+#### Success Criteria
+
 - ✅ Basic card creation and storage
 - ✅ Resource limits enforced (max 3 active cards)
 - ✅ Sub-agent creation API integration
 - ✅ Fallback to documentation personas if board fails
 
-#### Risk Mitigation:
+#### Risk Mitigation
+
 - **Resource Safety**: Hard limits prevent the 88K token crisis
 - **State Preservation**: Card-based context eliminates distributed state issues
 - **Graceful Degradation**: System falls back to current SuperClaude behavior
 
-### Phase 2: Visual Workflow (Weeks 3-4) 👁️
+### Phase 2: Visual Workflow 👁️
+
 **User Interface and Agent Coordination**
 
-#### Critical Path Items:
+#### Critical Path Items
+
 - [ ] **Board Renderer** (`board_renderer.py`) - ASCII visualization with resource indicators
 - [ ] **Agent Coordinator** (`agent_coordinator.py`) - Sub-agent lifecycle management
 - [ ] **Basic Commands** (`/sc:board status`, `/sc:board show`) - User control interface
 - [ ] **Card Movement Logic** - Automated workflow progression
 - [ ] **Error Recovery** (`recovery_manager.py`) - Visible error handling
 
-#### Success Criteria:
+#### Success Criteria
+
 - ✅ Users can see board state and task progress
 - ✅ Manual card management works (pause, move, reassign)
 - ✅ Error attribution clear and actionable
 - ✅ Resource pressure visible before limits hit
 
-#### User Experience Goals:
+#### User Experience Goals
+
 - **Transparency**: Users understand what's happening and why
 - **Control**: Users can intervene and direct the workflow
 - **Confidence**: Clear progress indicators and error explanations
 
-### Phase 3: Advanced Orchestration (Weeks 5-6) 🧠
+### Phase 3: Advanced Orchestration 🧠
+
 **Multi-Agent Collaboration and Intelligence**
 
-#### Critical Path Items:
+#### Critical Path Items
+
 - [ ] **Delegation Engine** (`delegation_engine.py`) - Smart agent assignment
 - [ ] **Multi-Agent Workflows** - INTEGRATE column for complex coordination
 - [ ] **Enhanced Visualization** - Real-time progress updates and metrics
 - [ ] **Performance Analytics** - Optimization based on actual usage
 - [ ] **Advanced Recovery** - Automatic reassignment and fallback strategies
 
-#### Success Criteria:
+#### Success Criteria
+
 - ✅ Multi-agent collaboration works seamlessly
 - ✅ Smart assignment improves task efficiency
 - ✅ System learns and optimizes from usage patterns
 - ✅ Advanced error recovery reduces manual intervention
 
-#### Intelligence Features:
+#### Intelligence Features
+
 - **Pattern Learning**: System improves delegation over time
 - **Resource Optimization**: Dynamic adjustment based on actual usage
 - **Conflict Resolution**: Automatic handling of agent coordination issues
 
-### Phase 4: Production Readiness (Weeks 7-8) 🚀
+### Phase 4: Production Readiness 🚀
+
 **Integration, Testing, and Optimization**
 
-#### Critical Path Items:
+#### Critical Path Items
+
 - [ ] **Backward Compatibility** - Seamless migration from current SuperClaude
 - [ ] **Integration Testing** - Full system testing with existing commands
 - [ ] **Performance Tuning** - Optimize for real-world usage patterns
 - [ ] **Documentation** - User guides and troubleshooting
 - [ ] **Metrics Collection** - Success rate monitoring and optimization
 
-#### Success Criteria:
+#### Success Criteria
+
 - ✅ Existing users experience no breaking changes
 - ✅ Performance meets or exceeds current SuperClaude
 - ✅ Error recovery rate > 95%
@@ -158,7 +174,7 @@ SuperClaude/
 
 ## Risk Management Strategy
 
-### Critical Risks Addressed:
+### Critical Risks Addressed
 
 | Risk Category | P2SA v1.1 Risk | Board Solution | Status |
 |---|---|---|---|
@@ -169,9 +185,10 @@ SuperClaude/
 | 🟡 **Errors** | Attribution confusion | Visual error tracking | Phase 2 |
 | 🟡 **UX** | Mental model disruption | Familiar Trello interface | Phase 2 |
 
-### Mitigation Strategies:
+### Mitigation Strategies
 
 #### Resource Safety (Critical Priority)
+
 ```python
 # Enforced limits prevent system overload
 MAX_ACTIVE_CARDS = 3        # Max concurrent sub-agents
@@ -180,6 +197,7 @@ MAX_MCP_CALLS_PER_MIN = 30  # Rate limiting
 ```
 
 #### Graceful Degradation
+
 ```python
 # Always fallback to working system
 if board_system_fails():
@@ -193,6 +211,7 @@ if agent_creation_fails():
 ```
 
 #### User Control
+
 ```bash
 # Users maintain control over the system
 /sc:board pause card_001        # Stop resource consumption
@@ -203,25 +222,29 @@ if agent_creation_fails():
 
 ## Testing Strategy
 
-### Phase 1 Testing:
+### Phase 1 Testing
+
 - [ ] Resource limit enforcement under load
 - [ ] Card creation and persistence
 - [ ] Fallback behavior when board unavailable
 - [ ] Integration with existing persona parser
 
-### Phase 2 Testing:
+### Phase 2 Testing
+
 - [ ] Board visualization accuracy
 - [ ] Manual card management operations
 - [ ] Error recovery and user feedback
 - [ ] Command integration with existing SuperClaude
 
-### Phase 3 Testing:
+### Phase 3 Testing
+
 - [ ] Multi-agent coordination scenarios
 - [ ] Performance under various workloads
 - [ ] Intelligence and learning algorithms
 - [ ] Edge cases and error conditions
 
-### Phase 4 Testing:
+### Phase 4 Testing
+
 - [ ] Full regression testing
 - [ ] Performance benchmarking
 - [ ] User acceptance testing
@@ -230,56 +253,70 @@ if agent_creation_fails():
 ## Success Metrics
 
 ### Resource Safety (Phase 1)
+
 - ✅ Zero instances of >20K token usage
 - ✅ Zero system crashes due to resource exhaustion
 - ✅ Graceful degradation rate: 100%
 
 ### User Experience (Phase 2)
+
 - ✅ Task visibility: 100% of operations visible on board
 - ✅ User control: All operations can be paused/modified
 - ✅ Error clarity: <2min average error resolution time
 
 ### System Performance (Phase 3)
+
 - ✅ Multi-agent success rate: >80%
 - ✅ Response quality improvement: 25-40%
 - ✅ Task completion speedup: 30%
 
 ### Production Readiness (Phase 4)
+
 - ✅ Backward compatibility: 100% of existing workflows work
 - ✅ System reliability: >99% uptime
 - ✅ User satisfaction: Measurable improvement over current system
 
 ## Key Decision Points
 
-### Week 2 (End of Phase 1):
+### End of Phase 1
+
 **Decision**: Proceed with Phase 2 or iterate on foundation?
+
 - **Go Criteria**: Resource limits working, basic board functional, fallback tested
 - **No-Go**: Resource safety concerns, integration issues, performance problems
 
-### Week 4 (End of Phase 2):
+### End of Phase 2
+
 **Decision**: Enable board mode for beta users?
+
 - **Go Criteria**: UI usable, error handling clear, user feedback positive
 - **No-Go**: UX confusion, reliability issues, negative user feedback
 
-### Week 6 (End of Phase 3):
+### End of Phase 3
+
 **Decision**: Prepare for production deployment?
+
 - **Go Criteria**: Multi-agent workflows stable, performance acceptable, edge cases handled
 - **No-Go**: Coordination failures, performance regression, unresolved bugs
 
-### Week 8 (End of Phase 4):
+### End of Phase 4
+
 **Decision**: Full production release or extended beta?
+
 - **Go Criteria**: All tests pass, user satisfaction improved, metrics positive
 - **No-Go**: Any critical issues, user satisfaction regression, reliability concerns
 
 ## Documentation Plan
 
-### User-Facing Documentation:
+### User-Facing Documentation
+
 - [ ] **Quick Start Guide** - Getting started with board mode
 - [ ] **Board Commands Reference** - Complete command documentation
 - [ ] **Troubleshooting Guide** - Common issues and solutions
 - [ ] **Migration Guide** - Moving from personas to board system
 
-### Developer Documentation:
+### Developer Documentation
+
 - [ ] **API Reference** - Board system APIs and interfaces
 - [ ] **Architecture Guide** - System design and component interaction
 - [ ] **Extension Guide** - Adding new agent types or board features

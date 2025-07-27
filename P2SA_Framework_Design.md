@@ -1,4 +1,5 @@
 # P2SA Framework Design v2.0
+
 ## Persona-to-SubAgent Transformation with Board-Based Orchestration
 
 ### Executive Summary
@@ -40,7 +41,9 @@ graph TD
 ### Core Components
 
 #### 1. Persona Definition Parser
+
 Extracts and structures persona attributes from PERSONAS.md:
+
 - Identity and role descriptions
 - Priority hierarchies and decision frameworks
 - Core principles and quality standards
@@ -48,14 +51,18 @@ Extracts and structures persona attributes from PERSONAS.md:
 - Auto-activation triggers
 
 #### 2. Sub-Agent Generator
+
 Creates Claude Code sub-agents with:
+
 - Specialized system prompts based on persona characteristics
 - Tool restrictions matching persona preferences
 - Activation patterns for automatic delegation
 - Performance optimization configurations
 
 #### 3. Board-Based Orchestration Layer
+
 Manages intelligent delegation through visual workflow:
+
 - **Visual task cards** flowing through controlled columns
 - **Resource-aware queuing** with hard limits (max 3 active agents)
 - **Transparent progress tracking** and user control
@@ -64,6 +71,7 @@ Manages intelligent delegation through visual workflow:
 - **Multi-agent coordination** in dedicated INTEGRATE column
 
 **Board Workflow Columns:**
+
 - **INBOX** (∞): New user requests
 - **TRIAGE** (∞): Pattern analysis and agent scoring  
 - **ASSIGNED** (10): Queued tasks waiting for resources
@@ -112,16 +120,19 @@ When working with other agents, provide structured handoffs using:
   "next_steps": ["for other agents"]
 }
 ```
+
 ```
 
 ### Concrete Example: Security Sub-Agent
 
 ```
+
 You are security-agent, a specialized sub-agent for security analysis and threat modeling.
 
 IDENTITY: Threat modeler, compliance expert, and vulnerability specialist focused on proactive security.
 
 CORE MISSION:
+
 - Identify and mitigate security vulnerabilities before they become exploits
 - Ensure compliance with security standards and best practices
 - Implement defense-in-depth strategies across all systems
@@ -131,12 +142,14 @@ Priority order: Security > Compliance > Reliability > Performance > Convenience
 Always evaluate decisions against these priorities.
 
 SPECIALIZED CAPABILITIES:
+
 - Threat modeling using STRIDE methodology
 - Vulnerability assessment and penetration testing strategies
 - Security pattern implementation (OAuth, JWT, encryption)
 - Compliance mapping (OWASP, GDPR, SOC2)
 
 QUALITY STANDARDS:
+
 - Zero critical vulnerabilities in production
 - 100% coverage of authentication endpoints
 - Response time <24h for high-severity issues
@@ -148,17 +161,20 @@ Secondary: Context7 (security patterns), Read (code review)
 Restricted: Magic (UI generation not security-relevant)
 
 OUTPUT STYLE:
+
 - Be precise about threat levels and risk assessments
 - Focus on actionable security improvements
 - Always provide remediation steps with priority levels
+
 ```
 
 ### Implementation Structure
 
 ```
+
 SuperClaude/
 ├── SubAgents/
-│   ├── __init__.py
+│   ├── **init**.py
 │   ├── core/
 │   │   ├── persona_parser.py      # Parse PERSONAS.md
 │   │   ├── prompt_generator.py    # Generate system prompts
@@ -170,7 +186,7 @@ SuperClaude/
 │   └── agents/
 │       └── .gitkeep              # Generated agents stored here
 ├── Orchestration/                 # NEW: Board-Based System
-│   ├── __init__.py
+│   ├── **init**.py
 │   ├── board/
 │   │   ├── board_manager.py       # Core board logic & workflow
 │   │   ├── card_model.py          # Card data structures
@@ -192,6 +208,7 @@ SuperClaude/
     ├── board.md                   # Board management commands
     ├── create_agents.md           # /sc:create-agents command
     └── orchestrate.md             # Enhanced coordination commands
+
 ```
 
 ### Delegation Intelligence
@@ -222,6 +239,7 @@ delegation_patterns = {
 ```
 
 #### Advanced Scoring Algorithm
+
 ```python
 def calculate_persona_score(request, persona_config):
     scores = {
@@ -259,6 +277,7 @@ def calculate_persona_score(request, persona_config):
 ### Multi-Agent Collaboration
 
 #### Collaboration Workflows
+
 ```yaml
 security_review:
   lead: security
@@ -284,6 +303,7 @@ performance_optimization:
 ### Command Integration
 
 #### Enhanced Commands with Board Integration
+
 - `/sc:analyze --board` → Creates analysis card, shows board progress
 - `/sc:implement --board` → Creates implementation card with visual tracking
 - `/sc:improve --multi-agent` → Creates coordinated improvement cards
@@ -291,6 +311,7 @@ performance_optimization:
 - `/sc:implement --persona frontend` → Forces specific agent via board assignment
 
 #### New Board Management Commands
+
 - `/sc:board status` → Display current board state with resource usage
 - `/sc:board show [card_id]` → Show detailed card information
 - `/sc:board move [card_id] [column]` → Manual card management
@@ -299,6 +320,7 @@ performance_optimization:
 - `/sc:board metrics` → Performance analytics and optimization insights
 
 #### Agent Management Commands
+
 - `/sc:create-agents` → Initialize all persona sub-agents for board use
 - `/sc:agent-status` → View sub-agent health, metrics, and board assignments
 - `/sc:agents list` → Show available agents and their capabilities
@@ -322,32 +344,40 @@ performance_optimization:
 
 ### Unified Implementation Phases
 
-#### Phase 1: Core Infrastructure (Weeks 1-2)
+#### Phase 1: Core Infrastructure
+
 **SubAgent Foundation + Board Core**
+
 - [x] Persona parser implementation (`persona_parser.py`)
 - [x] System prompt generator (`prompt_generator.py`)
 - [ ] Board data model and storage (`card_model.py`, `board_manager.py`)
 - [ ] Resource tracking system (`resource_tracker.py`)
 - [ ] Basic workflow engine (`workflow_engine.py`)
 
-#### Phase 2: Board Integration (Weeks 3-4)
+#### Phase 2: Board Integration
+
 **Visual Workflow + Agent Coordination**
+
 - [ ] ASCII board rendering (`board_renderer.py`)
 - [ ] Card creation and movement logic
 - [ ] Sub-agent lifecycle integration (`agent_coordinator.py`)
 - [ ] Basic command integration (`/sc:board` commands)
 - [ ] Error handling and recovery mechanisms
 
-#### Phase 3: Advanced Orchestration (Weeks 5-6)
+#### Phase 3: Advanced Orchestration
+
 **Multi-Agent Collaboration + User Interface**
+
 - [ ] Enhanced board visualization with real-time updates
 - [ ] Multi-agent collaboration workflows (INTEGRATE column)
 - [ ] Advanced delegation engine (`delegation_engine.py`)
 - [ ] Performance analytics and optimization
 - [ ] Interactive card management
 
-#### Phase 4: Production Readiness (Weeks 7-8)
+#### Phase 4: Production Readiness
+
 **Optimization + Integration Testing**
+
 - [ ] Learning algorithms and pattern optimization
 - [ ] Comprehensive error recovery (`recovery_manager.py`)
 - [ ] Backward compatibility and migration tools
@@ -357,6 +387,7 @@ performance_optimization:
 ### Backward Compatibility & Migration Strategy
 
 #### Execution Mode Detection
+
 ```python
 def determine_execution_mode(request):
     \"\"\"Auto-detect simple vs board mode\"\"\"
@@ -383,6 +414,7 @@ def determine_execution_mode(request):
 ```
 
 #### Migration Path
+
 - **Phase 1**: Board system operates alongside existing personas (opt-in)
 - **Phase 2**: Auto-detection routes complex requests to board
 - **Phase 3**: Board becomes default for multi-step operations
@@ -408,6 +440,7 @@ def determine_execution_mode(request):
 ### Real-World Usage Scenarios
 
 #### Scenario 1: Complex Feature Implementation
+
 ```bash
 User: "Implement a secure user authentication system with OAuth2"
 
@@ -421,6 +454,7 @@ P2SA Response:
 ```
 
 #### Scenario 2: Performance Crisis
+
 ```bash
 User: "Our app is running slow, help!"
 
@@ -433,6 +467,7 @@ P2SA Response:
 ```
 
 #### Scenario 3: Security Audit
+
 ```bash
 User: "/sc:analyze --focus security --multi-agent"
 
@@ -447,6 +482,7 @@ P2SA Response:
 ### Installation and Setup
 
 #### Quick Start
+
 ```bash
 # Install P2SA Framework
 python3 -m SuperClaude install --component p2sa
@@ -462,6 +498,7 @@ python3 -m SuperClaude install --component p2sa
 ```
 
 #### Configuration
+
 ```json
 {
   "p2sa": {
@@ -497,12 +534,14 @@ python3 -m SuperClaude install --component p2sa
 ### Monitoring and Metrics
 
 #### Key Performance Indicators
+
 - Delegation accuracy rate
 - Average response time per agent
 - Context preservation efficiency
 - User satisfaction scores
 
 #### Metrics Collection
+
 ```python
 {
   "agent_metrics": {
@@ -521,6 +560,7 @@ python3 -m SuperClaude install --component p2sa
 The P2SA Framework v2.0 transforms SuperClaude from a single-agent system with personality modes into a **safe, transparent, and controllable multi-agent ecosystem**. By integrating board-based orchestration, we solve the critical architectural risks while maintaining the benefits of specialized sub-agents.
 
 **Key Achievement**: The visual workflow system addresses all major P2SA v1.1 issues:
+
 - ✅ **Resource Safety**: Hard limits prevent system overload
 - ✅ **User Control**: Transparent, manageable task workflow  
 - ✅ **Error Recovery**: Visible, actionable problem resolution
@@ -532,6 +572,7 @@ This design provides a foundation for safe, scalable multi-agent coordination wh
 ## Related Documentation
 
 📋 **[Board_Orchestration_Design.md](./Board_Orchestration_Design.md)** - Detailed technical specifications for the visual workflow system, including:
+
 - Complete card data model and workflow engine specifications
 - ASCII board rendering and user interface details  
 - Resource management algorithms and error recovery mechanisms
@@ -553,24 +594,28 @@ The Board Orchestration Design provides the detailed technical foundation that i
 ### Success Metrics (Updated)
 
 #### Resource Safety (Critical)
+
 - ✅ Token usage never exceeds 20K active limit
 - ✅ Maximum 3 concurrent sub-agents enforced
 - ✅ MCP rate limits respected through queuing
 - ✅ Graceful degradation under resource pressure
 
 #### User Experience (High Priority)
+
 - ✅ Transparent workflow with visual progress
 - ✅ User control over task prioritization and assignment
 - ✅ Clear error attribution and recovery options
 - ✅ Seamless fallback to familiar single-agent mode
 
 #### System Performance (Medium Priority)
+
 - ✅ 95% successful card completion rate
 - ✅ Average error recovery time < 2 minutes
 - ✅ Response quality improvement: 25-40% (maintained from v1.1)
 - ✅ Multi-agent coordination success rate > 80%
 
 **Next Steps**:
+
 1. ✅ Unified P2SA v2.0 design with board orchestration complete
 2. 🔄 Begin Phase 1: Core board infrastructure and resource tracking
 3. 📋 Implement proof-of-concept with 3 personas (security, architect, frontend)
