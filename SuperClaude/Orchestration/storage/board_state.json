@@ -1,0 +1,121 @@
+{
+  "session_id": "ac1f3821",
+  "created_at": "2025-07-26T22:37:21.603013",
+  "last_activity": "2025-07-26T22:37:21.605918",
+  "cards": {
+    "3e009bc7": {
+      "id": "3e009bc7",
+      "title": "Implement user authentication system",
+      "description": "Implement user authentication system",
+      "status": "backlog",
+      "priority": "high",
+      "card_type": "implementation",
+      "assigned_agent": "security-agent-3e00",
+      "created_by": "user",
+      "context": {
+        "original_request": "Implement user authentication system",
+        "persona_name": "security",
+        "auto_flags": [],
+        "user_flags": [],
+        "mcp_servers": [],
+        "file_paths": [],
+        "dependencies": [],
+        "parent_card_id": null,
+        "session_state": {}
+      },
+      "result": {
+        "output": "",
+        "artifacts": [],
+        "errors": [],
+        "warnings": [],
+        "recommendations": [],
+        "next_steps": [],
+        "handoff_data": {}
+      },
+      "metrics": {
+        "token_usage": 0,
+        "processing_time": 0.0,
+        "tool_calls": 0,
+        "mcp_calls": 0,
+        "error_count": 0,
+        "retry_count": 0
+      },
+      "created_at": "2025-07-26T22:37:21.603593",
+      "updated_at": "2025-07-26T22:37:21.603609",
+      "started_at": null,
+      "completed_at": null,
+      "tags": [],
+      "metadata": {
+        "assignment_history": [
+          {
+            "agent": "security-agent-3e00",
+            "timestamp": "2025-07-26T22:37:21.603609"
+          }
+        ]
+      }
+    },
+    "3bf2ba0e": {
+      "id": "3bf2ba0e",
+      "title": "Analyze system performance",
+      "description": "Analyze system performance",
+      "status": "active",
+      "priority": "medium",
+      "card_type": "analysis",
+      "assigned_agent": "analyzer-agent-3bf2",
+      "created_by": "user",
+      "context": {
+        "original_request": "Analyze system performance",
+        "persona_name": "analyzer",
+        "auto_flags": [],
+        "user_flags": [],
+        "mcp_servers": [],
+        "file_paths": [],
+        "dependencies": [],
+        "parent_card_id": null,
+        "session_state": {}
+      },
+      "result": {
+        "output": "",
+        "artifacts": [],
+        "errors": [],
+        "warnings": [],
+        "recommendations": [],
+        "next_steps": [],
+        "handoff_data": {}
+      },
+      "metrics": {
+        "token_usage": 0,
+        "processing_time": 0.0,
+        "tool_calls": 0,
+        "mcp_calls": 0,
+        "error_count": 0,
+        "retry_count": 0
+      },
+      "created_at": "2025-07-26T22:37:21.605676",
+      "updated_at": "2025-07-26T22:37:21.605906",
+      "started_at": "2025-07-26T22:37:21.605907",
+      "completed_at": null,
+      "tags": [],
+      "metadata": {
+        "assignment_history": [
+          {
+            "agent": "analyzer-agent-3bf2",
+            "timestamp": "2025-07-26T22:37:21.605690"
+          }
+        ],
+        "status_history": [
+          {
+            "from": "backlog",
+            "to": "active",
+            "timestamp": "2025-07-26T22:37:21.605906",
+            "reason": "Started by user"
+          }
+        ]
+      }
+    }
+  },
+  "active_agents": {
+    "security-agent-3e00": "3e009bc7",
+    "analyzer-agent-3bf2": "3bf2ba0e"
+  }
+}

@@ -584,7 +584,7 @@ The Board Orchestration Design provides the detailed technical foundation that i
 
 | Original P2SA v1.1 Risk | Board-Based Solution | Implementation Status |
 |---|---|---|
-| 🔴 Resource Exhaustion (88K+ tokens) | Hard limits: Max 3 active cards = Max 3 agents | Phase 1 |
+| 🔴 Resource Exhaustion (88K+ tokens) | Graceful handoff protocol: 17K effective + 3K buffer | Phase 1.5 |
 | 🔴 Dual Routing System Conflicts | Unified board entry point replaces ORCHESTRATOR conflicts | Phase 2 |
 | 🔴 State Management Breakdown | Card-based context preservation, no distributed state | Phase 1 |
 | 🟡 Tool Access Conflicts | Smart reassignment when tools restricted | Phase 3 |
@@ -598,7 +598,9 @@ The Board Orchestration Design provides the detailed technical foundation that i
 - ✅ Token usage never exceeds 20K active limit
 - ✅ Maximum 3 concurrent sub-agents enforced
 - ✅ MCP rate limits respected through queuing
-- ✅ Graceful degradation under resource pressure
+- ✅ Graceful handoff protocol replaces emergency shutdown
+- ✅ Graduated resource management (60%→75%→85%→95% thresholds) 
+- ✅ Auto-compression activation at 60% usage for token efficiency
 
 #### User Experience (High Priority)
 
@@ -614,10 +616,38 @@ The Board Orchestration Design provides the detailed technical foundation that i
 - ✅ Response quality improvement: 25-40% (maintained from v1.1)
 - ✅ Multi-agent coordination success rate > 80%
 
+### Phase 1.5 Enhancement: Graceful Handoff Protocol
+
+**Critical Improvement**: Replaced binary emergency shutdown with intelligent context transfer
+
+#### Implementation Overview
+
+```python
+# Graduated resource thresholds replace emergency-only approach
+effective_limits = {
+    "tokens": 17000,      # Reserve 3K for handoff operations  
+    "cards": 2.5          # Reserve 0.5 for handoff operations
+}
+
+thresholds = {
+    "yellow": 0.60,       # Auto-enable --uc compression
+    "orange": 0.75,       # Prepare handoff, compress context
+    "red": 0.85,          # Execute graceful handoff
+    "critical": 0.95      # Emergency fallback (last resort)
+}
+```
+
+#### User Experience Impact
+
+- **Before**: Sudden workflow interruption requiring manual restart
+- **After**: Seamless "Optimizing resources..." → workflow continues
+- **Benefits**: Zero downtime, preserved context, maintained quality
+
 **Next Steps**:
 
 1. ✅ Unified P2SA v2.0 design with board orchestration complete
-2. 🔄 Begin Phase 1: Core board infrastructure and resource tracking
-3. 📋 Implement proof-of-concept with 3 personas (security, architect, frontend)
-4. 🧪 User testing with controlled resource limits
-5. 🔄 Iterative enhancement based on real-world usage
+2. ✅ Phase 1: Core board infrastructure and resource tracking implemented 
+3. ✅ Phase 1.5: Graceful handoff protocol implemented
+4. 📋 Phase 2: Visual board interface and user controls
+5. 🧪 User testing with graceful resource management
+6. 🔄 Iterative enhancement based on real-world usage
