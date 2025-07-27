@@ -10,10 +10,7 @@ from pathlib import Path
 import json
 import uuid
 
-from .card_model import (
-    Card, CardStatus, CardPriority, CardType, CardFactory, 
-    CardContext, CardResult, CardMetrics
-)
+from .card_model import TaskCard, CardStatus
 from .resource_tracker import ResourceTracker, ResourceLimits, get_resource_tracker
 from .workflow_engine import WorkflowEngine, WorkflowEvent
 
@@ -40,11 +37,21 @@ class BoardConfig:
 @dataclass
 class BoardState:
     """Current state of the board"""
-    cards: Dict[str, Card] = field(default_factory=dict)
+    cards: Dict[str, TaskCard] = field(default_factory=dict)
     active_agents: Dict[str, str] = field(default_factory=dict)  # agent_id -> card_id
     session_id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     created_at: datetime = field(default_factory=datetime.now)
     last_activity: datetime = field(default_factory=datetime.now)
+    columns: List[CardStatus] = field(default_factory=lambda: [
+        CardStatus.BACKLOG,
+        CardStatus.TODO,
+        CardStatus.IN_PROGRESS,
+        CardStatus.INTEGRATE,
+        CardStatus.REVIEW,
+        CardStatus.DONE,
+        CardStatus.FAILED,
+        CardStatus.BLOCKED
+    ])
 
 class BoardManager:
     """
@@ -52,6 +59,7 @@ class BoardManager:
     
     Coordinates card lifecycle, resource management, and sub-agent creation.
     Provides high-level API for the board-based orchestration system.
+    Integrates with Phase 2 components for visualization and error recovery.
     """
     
     def __init__(self, 
@@ -74,6 +82,7 @@ class BoardManager:
         self.is_active = True
         self.error_count = 0
         self.last_error = None
+        self.columns = self.board_state.columns
         
         # Storage paths
         self.storage_path = Path(self.config.storage_path)
@@ -89,21 +98,22 @@ class BoardManager:
     def create_card_from_request(self, 
                                 request: str,
                                 persona_name: Optional[str] = None,
-                                priority: CardPriority = CardPriority.MEDIUM,
+                                priority: str = 'medium',
                                 user_flags: Optional[List[str]] = None,
-                                file_paths: Optional[List[str]] = None) -> Tuple[bool, str, Optional[Card]]:
+                                file_paths: Optional[List[str]] = None) -> Tuple[bool, str, Optional[TaskCard]]:
         """
         Create a new card from a user request.
         This is the main entry point for the board system.
         """
         try:
-            # Create card using factory
-            card = CardFactory.create_from_request(
-                request=request,
-                persona_name=persona_name,
+            # Create new task card
+            card = TaskCard(
+                title=request[:100],  # First 100 chars as title
+                context=request,
                 priority=priority,
-                user_flags=user_flags,
-                file_paths=file_paths
+                persona_type=persona_name,
+                allowed_tools=self._determine_allowed_tools(persona_name),
+                scope='task'
             )
             
             # Add to workflow engine
@@ -163,6 +173,68 @@ class BoardManager:
         
         return success, message
     
+    def transition_card(self, card_id: str, new_status: CardStatus, reason: str = "") -> Tuple[bool, str]:
+        """Transition a card to a new status with validation"""
+        if card_id not in self.board_state.cards:
+            return False, f"Card {card_id} not found"
+            
+        card = self.board_state.cards[card_id]
+        old_status = card.status
+        
+        # Validate transition
+        if not self._is_valid_transition(old_status, new_status):
+            return False, f"Invalid transition from {old_status.value} to {new_status.value}"
+            
+        # Update card status
+        card.status = new_status
+        card.updated_at = datetime.now()
+        
+        # Handle status-specific logic
+        if new_status == CardStatus.IN_PROGRESS:
+            card.started_at = datetime.now()
+        elif new_status in [CardStatus.DONE, CardStatus.FAILED]:
+            card.completed_at = datetime.now()
+            
+        # Update workflow engine
+        success, message = self.workflow_engine.move_card(card_id, new_status, reason)
+        
+        if success:
+            self.board_state.last_activity = datetime.now()
+            if self.config.persist_state:
+                self._save_board_state()
+                
+        return success, message
+    
+    def move_card(self, card_id: str, target_column: str, force: bool = False) -> Tuple[bool, str]:
+        """Move a card to a specific column with optional force flag"""
+        # Map column names to CardStatus
+        column_map = {
+            'backlog': CardStatus.BACKLOG,
+            'todo': CardStatus.TODO,
+            'in_progress': CardStatus.IN_PROGRESS,
+            'integrate': CardStatus.INTEGRATE,
+            'review': CardStatus.REVIEW,
+            'done': CardStatus.DONE,
+            'failed': CardStatus.FAILED,
+            'blocked': CardStatus.BLOCKED
+        }
+        
+        target_status = column_map.get(target_column.lower())
+        if not target_status:
+            return False, f"Invalid column: {target_column}"
+            
+        if force:
+            # Force move without validation
+            card = self.board_state.cards.get(card_id)
+            if not card:
+                return False, f"Card {card_id} not found"
+            card.status = target_status
+            card.updated_at = datetime.now()
+            return True, f"Card {card_id} force-moved to {target_column}"
+        else:
+            # Use validated transition
+            return self.transition_card(card_id, target_status, f"Moved to {target_column}")
+    
     def complete_card(self, card_id: str, result: Optional[CardResult] = None) -> Tuple[bool, str]:
         """Complete a card with optional result data"""
         if card_id not in self.board_state.cards:
@@ -209,7 +281,7 @@ class BoardManager:
         
         return success, message
     
-    def get_next_task(self, agent_name: Optional[str] = None) -> Optional[Card]:
+    def get_next_task(self, agent_name: Optional[str] = None) -> Optional[TaskCard]:
         """Get the next task that should be processed"""
         return self.workflow_engine.get_next_card(agent_name)
     
@@ -240,11 +312,11 @@ class BoardManager:
             "workflow": workflow_status
         }
     
-    def get_card(self, card_id: str) -> Optional[Card]:
+    def get_card(self, card_id: str) -> Optional[TaskCard]:
         """Get a specific card"""
         return self.board_state.cards.get(card_id)
     
-    def get_cards_by_status(self, status: CardStatus) -> List[Card]:
+    def get_cards_by_status(self, status: CardStatus) -> List[TaskCard]:
         """Get all cards with specific status"""
         return [card for card in self.board_state.cards.values() if card.status == status]
     
@@ -291,7 +363,7 @@ class BoardManager:
         
         return should_handoff, reason
     
-    def execute_graceful_handoff(self, card_id: str) -> Tuple[bool, str, Optional[Card]]:
+    def execute_graceful_handoff(self, card_id: str) -> Tuple[bool, str, Optional[TaskCard]]:
         """Execute graceful handoff by compressing context and creating new agent"""
         if not self.config.enable_graceful_handoff:
             return False, "Graceful handoff disabled", None
@@ -340,52 +412,42 @@ class BoardManager:
             self.resource_tracker.complete_handoff(card_id, "")
             return False, f"Graceful handoff failed: {e}", None
     
-    def _compress_card_context(self, card: Card) -> str:
+    def _compress_card_context(self, card: TaskCard) -> str:
         """Compress card context for handoff using --uc style compression"""
         # Use SuperClaude's symbol system for compression
         compressed = f"""🎯 Task: {card.title}
 📋 Status: {card.status.value} → Continue from here
-⚡ Progress: {len(card.result.artifacts)} artifacts created
-🔍 Context: {card.context.original_request[:200]}...
-📊 Metrics: {card.metrics.token_usage}t/{card.metrics.tool_calls}c
+⚡ Progress: {card.metadata.get('artifacts_count', 0)} artifacts created
+🔍 Context: {card.context[:200]}...
+📊 Metrics: {card.token_usage}t used
 """
         
         # Add key context elements
-        if card.context.file_paths:
-            compressed += f"📁 Files: {', '.join(card.context.file_paths[:5])}\n"
-        
-        if card.result.errors:
-            compressed += f"⚠️ Errors: {len(card.result.errors)} (resolved)\n"
-        
-        if card.result.next_steps:
-            compressed += f"→ Next: {', '.join(card.result.next_steps[:3])}\n"
+        if card.error_count > 0:
+            compressed += f"⚠️ Errors: {card.error_count} encountered\n"
         
         # Preserve essential flags and persona
-        if card.context.persona_name:
-            compressed += f"👤 Persona: {card.context.persona_name}\n"
-        
-        if card.context.user_flags:
-            compressed += f"🏃 Flags: {' '.join(card.context.user_flags)}\n"
+        if card.persona_type:
+            compressed += f"👤 Persona: {card.persona_type}\n"
         
         return compressed.strip()
     
-    def _create_handoff_card(self, old_card: Card, compressed_context: str) -> Card:
+    def _create_handoff_card(self, old_card: TaskCard, compressed_context: str) -> TaskCard:
         """Create new card for handoff with compressed context"""
         # Create new card maintaining essential context
-        new_card = Card(
+        new_card = TaskCard(
             title=f"Continue: {old_card.title}",
-            description=compressed_context,
+            context=compressed_context,
             priority=old_card.priority,
-            card_type=old_card.card_type,
-            created_by="handoff_system"
+            persona_type=old_card.persona_type,
+            allowed_tools=old_card.allowed_tools,
+            scope=old_card.scope
         )
         
         # Preserve critical context elements
-        new_card.context.original_request = compressed_context
-        new_card.context.persona_name = old_card.context.persona_name
-        new_card.context.user_flags = old_card.context.user_flags + ["--uc"]  # Auto-enable compression
-        new_card.context.file_paths = old_card.context.file_paths
-        new_card.context.parent_card_id = old_card.id
+        new_card.context = compressed_context
+        new_card.persona_type = old_card.persona_type
+        new_card.dependencies = [old_card.id]
         
         # Mark as handoff continuation
         new_card.metadata["handoff_from"] = old_card.id
@@ -536,11 +598,49 @@ class BoardManager:
         
         return fallback_personas
     
-    def _assign_agent_to_card(self, card: Card, persona_name: str) -> bool:
+    def _is_valid_transition(self, from_status: CardStatus, to_status: CardStatus) -> bool:
+        """Check if a status transition is valid"""
+        # Define valid transitions
+        valid_transitions = {
+            CardStatus.BACKLOG: [CardStatus.TODO, CardStatus.BLOCKED],
+            CardStatus.TODO: [CardStatus.IN_PROGRESS, CardStatus.BLOCKED],
+            CardStatus.IN_PROGRESS: [CardStatus.INTEGRATE, CardStatus.REVIEW, CardStatus.BLOCKED, CardStatus.FAILED],
+            CardStatus.INTEGRATE: [CardStatus.REVIEW, CardStatus.IN_PROGRESS, CardStatus.BLOCKED, CardStatus.FAILED],
+            CardStatus.REVIEW: [CardStatus.DONE, CardStatus.IN_PROGRESS, CardStatus.FAILED],
+            CardStatus.BLOCKED: [CardStatus.TODO, CardStatus.IN_PROGRESS, CardStatus.FAILED],
+            CardStatus.DONE: [],  # Terminal state
+            CardStatus.FAILED: [CardStatus.TODO, CardStatus.IN_PROGRESS]  # Can retry
+        }
+        
+        return to_status in valid_transitions.get(from_status, [])
+    
+    def _determine_allowed_tools(self, persona_name: Optional[str]) -> List[str]:
+        """Determine allowed tools based on persona type"""
+        if not persona_name:
+            return []  # All tools allowed
+            
+        # Tool restrictions by persona
+        tool_map = {
+            'architect': ['Read', 'Grep', 'Glob', 'Sequential'],
+            'frontend': ['Read', 'Write', 'Edit', 'Magic', 'Playwright'],
+            'backend': ['Read', 'Write', 'Edit', 'Bash', 'Context7'],
+            'security': ['Read', 'Grep', 'Sequential'],
+            'qa': ['Read', 'Grep', 'Playwright', 'Sequential'],
+            'performance': ['Read', 'Grep', 'Bash', 'Sequential'],
+            'mentor': ['Read', 'Context7', 'Sequential'],
+            'scribe': ['Read', 'Write', 'Context7'],
+            'analyzer': ['Read', 'Grep', 'Glob', 'Sequential'],
+            'refactorer': ['Read', 'Edit', 'MultiEdit', 'Sequential'],
+            'devops': ['Read', 'Bash', 'Write', 'Edit']
+        }
+        
+        return tool_map.get(persona_name, [])
+    
+    def _assign_agent_to_card(self, card: TaskCard, persona_name: str) -> bool:
         """Assign an agent to a card"""
         agent_id = f"{persona_name}-agent-{card.id[:4]}"
         
-        card.assign_agent(agent_id)
+        card.assigned_agent = agent_id
         self.board_state.active_agents[agent_id] = card.id
         
         return True
@@ -589,9 +689,8 @@ class BoardManager:
             
             # Restore cards
             for card_id, card_data in state_data.get("cards", {}).items():
-                card = Card.from_dict(card_data)
-                self.board_state.cards[card_id] = card
-                self.workflow_engine.cards[card_id] = card
+                # For now, skip loading cards until we have proper serialization
+                pass  # TODO: Implement TaskCard.from_dict()
                 
         except Exception as e:
             self.last_error = f"Error loading board state: {e}"
