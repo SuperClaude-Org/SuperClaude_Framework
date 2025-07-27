@@ -15,6 +15,7 @@ class CardStatus(Enum):
     BACKLOG = "backlog"      # Not yet started
     ACTIVE = "active"        # Currently being worked on by sub-agent
     REVIEW = "review"        # Completed, awaiting validation
+    INTEGRATE = "integrate"  # Multi-agent work being combined/coordinated
     BLOCKED = "blocked"      # Cannot proceed due to dependency/error
     DONE = "done"           # Successfully completed
     FAILED = "failed"       # Failed and cannot be completed
@@ -123,6 +124,8 @@ class Card:
     # Assignment and ownership
     assigned_agent: Optional[str] = None
     created_by: str = "user"
+    contributing_agents: List[str] = field(default_factory=list)  # Agents that contributed
+    integration_strategy: Optional[str] = None  # How to integrate multi-agent work
     
     # Context and execution data
     context: CardContext = field(default_factory=CardContext)
@@ -204,7 +207,8 @@ class Card:
         valid_transitions = {
             CardStatus.BACKLOG: [CardStatus.ACTIVE, CardStatus.BLOCKED],
             CardStatus.ACTIVE: [CardStatus.REVIEW, CardStatus.BLOCKED, CardStatus.FAILED],
-            CardStatus.REVIEW: [CardStatus.DONE, CardStatus.ACTIVE, CardStatus.FAILED],
+            CardStatus.REVIEW: [CardStatus.INTEGRATE, CardStatus.DONE, CardStatus.ACTIVE, CardStatus.FAILED],
+            CardStatus.INTEGRATE: [CardStatus.DONE, CardStatus.BLOCKED, CardStatus.FAILED],
             CardStatus.BLOCKED: [CardStatus.ACTIVE, CardStatus.FAILED],
             CardStatus.DONE: [],  # Terminal state
             CardStatus.FAILED: [CardStatus.ACTIVE]  # Allow retry

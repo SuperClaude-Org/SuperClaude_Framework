@@ -18,6 +18,7 @@ import json
 from ..board.card_model import TaskCard, CardStatus
 from ..board.board_manager import BoardManager
 from .agent_coordinator import AgentCoordinator, AgentStatus
+from ...SubAgents.core.delegation_engine import DelegationEngine
 
 
 class ErrorSeverity(Enum):
@@ -54,11 +55,13 @@ class ErrorContext:
 
 
 class RecoveryManager:
-    """Manages error recovery strategies and fallback mechanisms"""
+    """Manages error recovery strategies and fallback mechanisms with automatic reassignment"""
     
-    def __init__(self, board_manager: BoardManager, agent_coordinator: AgentCoordinator):
+    def __init__(self, board_manager: BoardManager, agent_coordinator: AgentCoordinator, 
+                 delegation_engine: Optional[DelegationEngine] = None):
         self.board = board_manager
         self.coordinator = agent_coordinator
+        self.delegation_engine = delegation_engine
         
         # Error history for pattern detection
         self.error_history: List[ErrorContext] = []
@@ -68,6 +71,7 @@ class RecoveryManager:
         self.max_retry_attempts = 3
         self.backoff_base = 2  # seconds
         self.error_window = timedelta(minutes=15)  # For pattern detection
+        self.auto_reassignment_enabled = True
         
         # Error patterns and strategies
         self.error_strategies = self._initialize_error_strategies()
@@ -123,7 +127,44 @@ class RecoveryManager:
         return True
     
     async def execute_reassignment(self, context: ErrorContext) -> Tuple[bool, str]:
-        """Reassign card to a different agent"""
+        """Reassign card to a different agent using intelligent delegation"""
+        card = self.board.get_card(context.card_id)
+        if not card:
+            return False, "Card not found"
+            
+        # Use delegation engine for intelligent reassignment
+        if self.delegation_engine and self.auto_reassignment_enabled:
+            # Get alternative agent, excluding the failed one
+            exclude_agents = [context.agent_id] if context.agent_id else []
+            new_agent_id = self.delegation_engine.find_alternative_agent(card, exclude_agents)
+            
+            if new_agent_id:
+                # Release the failed agent
+                if context.agent_id:
+                    self.delegation_engine.release_agent(context.agent_id)
+                    await self.coordinator.terminate_agent(context.agent_id, 
+                                                         reason="Failed and reassigned")
+                
+                # Assign to new agent
+                card.assign_agent(new_agent_id)
+                
+                # Add context preservation for the new agent
+                card.context.session_state["previous_attempt"] = {
+                    "failed_agent": context.agent_id,
+                    "error_type": context.error_type,
+                    "error_message": context.error_message,
+                    "recovery_strategy": "reassignment"
+                }
+                
+                return True, f"Intelligently reassigned to {new_agent_id}"
+            else:
+                return False, "No suitable alternative agent found"
+        
+        # Fallback to basic reassignment
+        return await self._basic_reassignment(context)
+        
+    async def _basic_reassignment(self, context: ErrorContext) -> Tuple[bool, str]:
+        """Basic reassignment without delegation engine"""
         card = self.board.get_card(context.card_id)
         if not card:
             return False, "Card not found"
@@ -372,6 +413,59 @@ class RecoveryManager:
             return True, "Falling back to main system"
             
         return False, "Unknown strategy"
+    
+    def enable_auto_reassignment(self, enabled: bool = True):
+        """Enable or disable automatic reassignment"""
+        self.auto_reassignment_enabled = enabled
+        
+    def get_failure_analysis(self, agent_id: str) -> Dict[str, Any]:
+        """Analyze failure patterns for a specific agent"""
+        agent_errors = [e for e in self.error_history if e.agent_id == agent_id]
+        
+        if not agent_errors:
+            return {"agent_id": agent_id, "status": "no_errors"}
+            
+        # Calculate failure rate
+        recent_errors = agent_errors[-10:]  # Last 10 errors
+        error_types = {}
+        for error in recent_errors:
+            error_types[error.error_type] = error_types.get(error.error_type, 0) + 1
+            
+        # Check if agent should be terminated
+        critical_errors = sum(1 for e in recent_errors if e.severity == ErrorSeverity.CRITICAL)
+        high_errors = sum(1 for e in recent_errors if e.severity == ErrorSeverity.HIGH)
+        
+        should_terminate = (
+            critical_errors >= 2 or  # 2+ critical errors
+            high_errors >= 5 or     # 5+ high errors
+            len(recent_errors) >= 8  # 8+ total errors
+        )
+        
+        return {
+            "agent_id": agent_id,
+            "total_errors": len(agent_errors),
+            "recent_errors": len(recent_errors),
+            "error_types": error_types,
+            "should_terminate": should_terminate,
+            "recommendation": self._get_agent_recommendation(agent_id, recent_errors)
+        }
+        
+    def _get_agent_recommendation(self, agent_id: str, recent_errors: List[ErrorContext]) -> str:
+        """Get recommendation for handling a problematic agent"""
+        if not recent_errors:
+            return "Agent performing well"
+            
+        critical_count = sum(1 for e in recent_errors if e.severity == ErrorSeverity.CRITICAL)
+        high_count = sum(1 for e in recent_errors if e.severity == ErrorSeverity.HIGH)
+        
+        if critical_count >= 2:
+            return "🚨 Terminate agent immediately - multiple critical errors"
+        elif high_count >= 5:
+            return "⚠️  Consider terminating agent - high error rate"
+        elif len(recent_errors) >= 6:
+            return "💡 Monitor closely - frequent errors detected"
+        else:
+            return "✅ Continue monitoring - acceptable error rate"
     
     def _update_card_error_info(self, card: TaskCard, context: ErrorContext,
                                strategy: RecoveryStrategy, message: str) -> None:
