@@ -56,7 +56,7 @@ setuptools.setup(
     description="SuperClaude Framework Management Hub",
     long_description=get_long_description(),
     long_description_content_type="text/markdown",
-    url="https://github.com/NomenAK/SuperClaude",
+    url="https://github.com/SuperClaude-Org/SuperClaude_Framework",
     packages=setuptools.find_packages(),
     include_package_data=True,
     install_requires=get_install_requires(),
@@ -68,10 +68,10 @@ setuptools.setup(
     },
     python_requires=">=3.8",
     project_urls={
-        "GitHub": "https://github.com/NomenAK/SuperClaude",
+        "GitHub": "https://github.com/SuperClaude-Org/SuperClaude_Framework",
         "Mithun Gowda B": "https://github.com/mithun50",
         "NomenAK": "https://github.com/NomenAK",
-        "Bug Tracker": "https://github.com/NomenAK/SuperClaude/issues",
+        "Bug Tracker": "https://github.com/SuperClaude-Org/SuperClaude_Framework/issues",
     },
     classifiers=[
         "Programming Language :: Python :: 3",

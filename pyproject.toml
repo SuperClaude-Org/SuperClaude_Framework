@@ -30,10 +30,10 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/NomenAK/SuperClaude"
-Repository = "https://github.com/NomenAK/SuperClaude"
-"Bug Tracker" = "https://github.com/NomenAK/SuperClaude/issues"
-"GitHub" = "https://github.com/NomenAK/SuperClaude"
+Homepage = "https://github.com/SuperClaude-Org/SuperClaude_Framework"
+Repository = "https://github.com/SuperClaude-Org/SuperClaude_Framework"
+"Bug Tracker" = "https://github.com/SuperClaude-Org/SuperClaude_Framework/issues"
+"GitHub" = "https://github.com/SuperClaude-Org/SuperClaude_Framework"
 "Mithun Gowda B" = "https://github.com/mithun50"
 "NomenAK" = "https://github.com/NomenAK"
 

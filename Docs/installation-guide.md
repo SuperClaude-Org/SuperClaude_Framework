@@ -13,8 +13,8 @@ uv add SuperClaude
 
 **Option B: From Source**
 ```bash
-git clone https://github.com/NomenAK/SuperClaude.git
-cd SuperClaude
+git clone https://github.com/SuperClaude-Org/SuperClaude_Framework.git
+cd SuperClaude_Framework
 uv sync
 ```
 ### 🔧 UV / UVX Setup Guide
@@ -516,7 +516,7 @@ SuperClaude install --quick --dry-run
 ### Still Having Issues? 🤔
 
 **Check our troubleshooting resources:**
-- GitHub Issues: https://github.com/NomenAK/SuperClaude/issues
+- GitHub Issues: https://github.com/SuperClaude-Org/SuperClaude_Framework/issues
 - Look for existing issues similar to yours
 - Create a new issue if you can't find a solution
 
