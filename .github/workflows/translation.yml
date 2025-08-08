@@ -1,0 +1,421 @@
+name: SuperClaude Translation Automation
+
+on:
+  push:
+    branches: [ main, develop, feature/i18n ]
+    paths:
+      - 'SuperClaude/Commands/*.md'
+      - 'SuperClaude/Core/PERSONAS.md'
+      - 'SuperClaude/Core/COMMANDS.md'
+      - 'setup/utils/ui.py'
+      - '**/*.py'
+      - 'README*.md'
+      - 'docs/**/*.md'
+  
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'SuperClaude/Commands/*.md'
+      - 'SuperClaude/Core/PERSONAS.md'
+      - 'SuperClaude/Core/COMMANDS.md'
+      - 'setup/utils/ui.py'
+      - '**/*.py'
+      - 'README*.md'
+      - 'docs/**/*.md'
+  
+  workflow_dispatch:
+    inputs:
+      translation_mode:
+        description: 'Translation mode'
+        required: true
+        default: 'incremental'
+        type: choice
+        options:
+          - incremental
+          - full
+          - validate-only
+      target_languages:
+        description: 'Target languages (comma-separated)'
+        required: false
+        default: 'zh_CN,ja_JP,ko_KR'
+      force_translation:
+        description: 'Force translation even if no changes detected'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  PYTHONPATH: ${{ github.workspace }}
+  SUPERCLAUDE_BUILD_MODE: ci
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      translation-needed: ${{ steps.check-changes.outputs.translation-needed }}
+      changed-files: ${{ steps.check-changes.outputs.changed-files }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      
+      - name: Check for translation-relevant changes
+        id: check-changes
+        run: |
+          echo "🔍 检测翻译相关变更..."
+          
+          # 获取变更的文件
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }}...${{ github.sha }})
+          else
+            CHANGED_FILES=$(git diff --name-only HEAD~1..HEAD)
+          fi
+          
+          echo "变更的文件:"
+          echo "$CHANGED_FILES"
+          
+          # 检查是否有翻译相关的变更
+          TRANSLATION_RELEVANT="false"
+          
+          echo "$CHANGED_FILES" | while read file; do
+            if [[ "$file" =~ SuperClaude/Commands/.*\.md$ ]] || \
+               [[ "$file" =~ SuperClaude/Core/PERSONAS\.md$ ]] || \
+               [[ "$file" =~ SuperClaude/Core/COMMANDS\.md$ ]] || \
+               [[ "$file" =~ setup/utils/ui\.py$ ]] || \
+               [[ "$file" =~ .*\.py$ ]] || \
+               [[ "$file" =~ README.*\.md$ ]] || \
+               [[ "$file" =~ docs/.*\.md$ ]]; then
+              echo "发现翻译相关文件: $file"
+              echo "translation-needed=true" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+          done
+          
+          # 检查强制翻译标志
+          if [ "${{ github.event.inputs.force_translation }}" = "true" ]; then
+            echo "强制翻译模式"
+            echo "translation-needed=true" >> $GITHUB_OUTPUT
+          elif [ "$TRANSLATION_RELEVANT" = "false" ]; then
+            echo "translation-needed=false" >> $GITHUB_OUTPUT
+          fi
+          
+          # 输出变更文件（用于后续步骤）
+          echo "changed-files<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+  incremental-translation:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.translation-needed == 'true' || github.event.inputs.translation_mode == 'full'
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        python-version: ['3.9']
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      
+      - name: Cache Python dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          
+          # 安装基础依赖
+          pip install openai httpx asyncio pathlib dataclasses
+          
+          # 如果有requirements文件，安装额外依赖
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+          
+          # 验证安装
+          python -c "import sys; print(f'Python: {sys.version}')"
+          python -c "import openai; print('OpenAI client available')"
+      
+      - name: Setup translation environment
+        run: |
+          echo "🔧 配置翻译环境..."
+          
+          # 创建必要的目录
+          mkdir -p .superclaude/hooks
+          mkdir -p .superclaude/incremental
+          mkdir -p i18n/locales
+          
+          # 设置Python路径
+          echo "PYTHONPATH=${{ github.workspace }}" >> $GITHUB_ENV
+          
+          # 显示环境信息
+          echo "工作目录: $(pwd)"
+          echo "Python路径: $PYTHONPATH"
+          ls -la
+      
+      - name: Test i18n system availability
+        run: |
+          echo "🧪 测试i18n系统可用性..."
+          
+          # 测试导入
+          python -c "
+          try:
+              from i18n.extractor import SuperClaudeContentExtractor
+              from i18n.incremental import IncrementalTranslationManager
+              print('✅ i18n系统导入成功')
+          except ImportError as e:
+              print(f'❌ i18n系统导入失败: {e}')
+              exit(1)
+          "
+          
+          # 测试内容提取
+          python -c "
+          from i18n.extractor import SuperClaudeContentExtractor
+          extractor = SuperClaudeContentExtractor('.')
+          content = extractor.extract_all_content()
+          stats = extractor.get_content_statistics()
+          print(f'📊 提取内容统计: {dict(stats)}')
+          "
+      
+      - name: Run incremental translation
+        env:
+          QWEN_API_KEY: ${{ secrets.QWEN_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          CI: true
+        run: |
+          echo "🚀 运行增量翻译..."
+          
+          # 确定目标语言
+          if [ "${{ github.event.inputs.target_languages }}" ]; then
+            TARGET_LANGS="${{ github.event.inputs.target_languages }}"
+          else
+            TARGET_LANGS="zh_CN,ja_JP,ko_KR"
+          fi
+          
+          echo "目标语言: $TARGET_LANGS"
+          
+          # 检查API密钥
+          if [ -z "$QWEN_API_KEY" ] && [ -z "$OPENROUTER_API_KEY" ]; then
+            echo "⚠️ 未配置翻译API密钥，运行验证模式"
+            python setup/components/i18n_integration.py validate
+          else
+            echo "✅ API密钥已配置，运行增量翻译"
+            
+            # 运行增量翻译检测
+            python -c "
+            import asyncio
+            import sys
+            from i18n.incremental import IncrementalTranslationManager
+            
+            async def main():
+                manager = IncrementalTranslationManager('.')
+                changes = manager.detect_content_changes()
+                
+                if changes:
+                    print(f'📋 检测到 {len(changes)} 项变更，准备翻译...')
+                    
+                    # 在CI环境中，我们只做检测和缓存，不执行实际翻译
+                    # 除非明确设置了API密钥并且是手动触发的workflow
+                    if '${{ github.event_name }}' == 'workflow_dispatch':
+                        target_langs = '$TARGET_LANGS'.split(',')
+                        result = await manager.translate_changes(changes, target_langs)
+                        print(f'✅ 翻译完成: {result}')
+                    else:
+                        print('ℹ️ 自动触发的工作流，跳过实际翻译执行')
+                        print('💡 使用workflow_dispatch手动触发以执行翻译')
+                else:
+                    print('✅ 未检测到需要翻译的变更')
+                    
+            asyncio.run(main())
+            "
+          fi
+      
+      - name: Validate translation quality
+        if: github.event.inputs.translation_mode != 'validate-only'
+        run: |
+          echo "✅ 验证翻译质量..."
+          
+          # 运行构建后验证
+          python setup/components/i18n_integration.py validate
+      
+      - name: Generate translation report
+        if: always()
+        run: |
+          echo "📊 生成翻译报告..."
+          
+          # 获取翻译统计信息
+          python -c "
+          import json
+          import os
+          from pathlib import Path
+          from i18n.cache import TranslationCache
+          from i18n.incremental import IncrementalTranslationManager
+          
+          try:
+              # 缓存统计
+              cache = TranslationCache()
+              cache_stats = cache.get_cache_statistics()
+              
+              # 增量翻译统计
+              manager = IncrementalTranslationManager('.')
+              incremental_stats = manager.get_incremental_statistics()
+              
+              # 构建报告
+              report = {
+                  'workflow': {
+                      'trigger': '${{ github.event_name }}',
+                      'ref': '${{ github.ref }}',
+                      'sha': '${{ github.sha }}'
+                  },
+                  'cache_stats': cache_stats,
+                  'incremental_stats': incremental_stats,
+                  'api_keys_available': {
+                      'qwen': bool(os.getenv('QWEN_API_KEY')),
+                      'openrouter': bool(os.getenv('OPENROUTER_API_KEY'))
+                  }
+              }
+              
+              print('SuperClaude Translation Report:')
+              print(json.dumps(report, ensure_ascii=False, indent=2))
+              
+              # 保存报告文件
+              with open('translation_report.json', 'w', encoding='utf-8') as f:
+                  json.dump(report, f, ensure_ascii=False, indent=2)
+                  
+          except Exception as e:
+              print(f'报告生成失败: {e}')
+          "
+      
+      - name: Upload translation artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: translation-report
+          path: |
+            translation_report.json
+            i18n/locales/*.json
+            .superclaude/incremental/*.json*
+          retention-days: 30
+      
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && needs.detect-changes.outputs.translation-needed == 'true'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            
+            try {
+              const reportData = fs.readFileSync('translation_report.json', 'utf8');
+              const report = JSON.parse(reportData);
+              
+              const comment = `## 🌍 SuperClaude 翻译自动化报告
+              
+              **变更检测**: 发现翻译相关变更  
+              **缓存统计**: ${report.cache_stats.total_entries} 项缓存翻译  
+              **增量翻译**: ${report.incremental_stats.total_incremental_runs} 次增量更新  
+              **API状态**: ${report.api_keys_available.qwen ? '✅' : '❌'} Qwen, ${report.api_keys_available.openrouter ? '✅' : '❌'} OpenRouter
+              
+              > 💡 手动触发完整翻译: 使用 \`workflow_dispatch\` 事件手动运行此工作流
+              `;
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            } catch (error) {
+              console.log('无法创建PR评论:', error.message);
+            }
+
+  quality-check:
+    needs: [detect-changes, incremental-translation]
+    if: always() && (needs.detect-changes.outputs.translation-needed == 'true' || github.event.inputs.translation_mode != 'validate-only')
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      
+      - name: Download translation artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: translation-report
+          path: ./artifacts
+      
+      - name: Quality assessment
+        run: |
+          echo "🔍 翻译质量评估..."
+          
+          # 检查本地化文件
+          if [ -d "i18n/locales" ]; then
+            echo "本地化文件:"
+            ls -la i18n/locales/
+            
+            # 验证JSON格式
+            for file in i18n/locales/*.json; do
+              if [ -f "$file" ]; then
+                echo "验证 $file..."
+                python -c "
+                import json
+                try:
+                    with open('$file', 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                    print(f'✅ {\"$file\"}: JSON格式正确')
+                    
+                    # 检查必要字段
+                    required_fields = ['metadata', 'commands', 'personas', 'ui']
+                    missing_fields = [f for f in required_fields if f not in data or not data[f]]
+                    
+                    if missing_fields:
+                        print(f'⚠️ {\"$file\"}: 缺少字段 {missing_fields}')
+                    else:
+                        total_items = sum(len(data[f]) for f in required_fields[1:])
+                        print(f'✅ {\"$file\"}: {total_items} 项翻译')
+                        
+                except Exception as e:
+                    print(f'❌ {\"$file\"}: JSON解析失败 - {e}')
+                "
+              fi
+            done
+          else
+            echo "⚠️ 本地化文件目录不存在"
+          fi
+      
+      - name: Set workflow status
+        run: |
+          echo "📋 工作流状态总结:"
+          echo "- 变更检测: ${{ needs.detect-changes.outputs.translation-needed == 'true' && '✅ 发现翻译相关变更' || '⚪ 未发现翻译相关变更' }}"
+          echo "- 增量翻译: ${{ needs.incremental-translation.result == 'success' && '✅ 执行成功' || needs.incremental-translation.result == 'skipped' && '⚪ 已跳过' || '❌ 执行失败' }}"
+          echo "- 质量检查: ✅ 已完成"
+          
+          if [ "${{ needs.incremental-translation.result }}" = "failure" ]; then
+            echo "❌ 工作流包含失败步骤"
+            exit 1
+          else
+            echo "✅ 工作流执行完成"
+          fi
