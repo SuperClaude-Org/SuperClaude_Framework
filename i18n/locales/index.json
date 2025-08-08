@@ -1,0 +1,72 @@
+{
+  "supported_languages": [
+    "zh_CN",
+    "zh_TW",
+    "ja_JP",
+    "ko_KR",
+    "ru_RU",
+    "es_ES",
+    "de_DE",
+    "fr_FR",
+    "ar_SA"
+  ],
+  "default_language": "en_US",
+  "fallback_language": "en_US",
+  "build_time": "2025-08-08T16:24:15.100074",
+  "languages": {
+    "zh_CN": {
+      "name": "简体中文",
+      "total_items": 118,
+      "quality_score": 0.991,
+      "build_cost": 1e-06
+    },
+    "zh_TW": {
+      "name": "繁體中文",
+      "total_items": 118,
+      "quality_score": 0.994,
+      "build_cost": 1e-06
+    },
+    "ja_JP": {
+      "name": "日本語",
+      "total_items": 118,
+      "quality_score": 0.99,
+      "build_cost": 1e-06
+    },
+    "ko_KR": {
+      "name": "한국어",
+      "total_items": 118,
+      "quality_score": 0.995,
+      "build_cost": 1e-06
+    },
+    "ru_RU": {
+      "name": "Русский",
+      "total_items": 118,
+      "quality_score": 0.993,
+      "build_cost": 1e-06
+    },
+    "es_ES": {
+      "name": "Español",
+      "total_items": 118,
+      "quality_score": 0.994,
+      "build_cost": 1e-06
+    },
+    "de_DE": {
+      "name": "Deutsch",
+      "total_items": 118,
+      "quality_score": 0.996,
+      "build_cost": 1e-06
+    },
+    "fr_FR": {
+      "name": "Français",
+      "total_items": 118,
+      "quality_score": 0.994,
+      "build_cost": 1e-06
+    },
+    "ar_SA": {
+      "name": "العربية",
+      "total_items": 118,
+      "quality_score": 0.993,
+      "build_cost": 1e-06
+    }
+  }
+}

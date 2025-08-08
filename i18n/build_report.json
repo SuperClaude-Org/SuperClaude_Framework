@@ -1,0 +1,69 @@
+{
+  "summary": {
+    "languages_built": 9,
+    "total_translations": 1062,
+    "total_cost_rmb": 0.0,
+    "average_quality": 0.993,
+    "build_time": "2025-08-08T16:24:15.100364"
+  },
+  "by_language": {
+    "zh_CN": {
+      "name": "简体中文",
+      "items": 118,
+      "cost": 1e-06,
+      "quality": 0.991
+    },
+    "zh_TW": {
+      "name": "繁體中文",
+      "items": 118,
+      "cost": 1e-06,
+      "quality": 0.994
+    },
+    "ja_JP": {
+      "name": "日本語",
+      "items": 118,
+      "cost": 1e-06,
+      "quality": 0.99
+    },
+    "ko_KR": {
+      "name": "한국어",
+      "items": 118,
+      "cost": 1e-06,
+      "quality": 0.995
+    },
+    "ru_RU": {
+      "name": "Русский",
+      "items": 118,
+      "cost": 1e-06,
+      "quality": 0.993
+    },
+    "es_ES": {
+      "name": "Español",
+      "items": 118,
+      "cost": 1e-06,
+      "quality": 0.994
+    },
+    "de_DE": {
+      "name": "Deutsch",
+      "items": 118,
+      "cost": 1e-06,
+      "quality": 0.996
+    },
+    "fr_FR": {
+      "name": "Français",
+      "items": 118,
+      "cost": 1e-06,
+      "quality": 0.994
+    },
+    "ar_SA": {
+      "name": "العربية",
+      "items": 118,
+      "cost": 1e-06,
+      "quality": 0.993
+    }
+  },
+  "recommendations": [
+    "定期更新术语词典以提高翻译一致性 / Regularly update terminology dictionary to improve translation consistency",
+    "建议社区贡献者review翻译质量 / Recommend community contributors to review translation quality"
+  ]
+}
