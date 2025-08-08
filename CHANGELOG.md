@@ -15,16 +15,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **NEW COMMAND**: `/sc:implement` for feature and code implementation (addresses v2 user feedback)
+- **NEW COMMAND**: `/sc:i18n` for super-simple language switching 
+- **NEW**: Complete i18n system with 10 language translations (English, 简体中文, 繁體中文, 日本語, 한국어, Русский, Español, Deutsch, Français, العربية)
+- **NEW**: 100% offline language switching - no network connection required
+- **NEW**: Instant language switching with `/sc:i18n switch zh_CN` command
+- **NEW**: Traditional Chinese (zh_TW) translation with 118 high-quality translation items
 - Migration logic to move existing commands to new namespace automatically
 - Enhanced uninstaller to handle both old and new command locations
 - Improved command conflict prevention
 - Better command organization and discoverability
+- Localized command descriptions that update dynamically based on selected language
 
 ### Technical Details
 - Commands now accessible as `/sc:analyze`, `/sc:build`, `/sc:improve`, etc.
 - Migration preserves existing functionality while preventing naming conflicts
 - Installation process detects and migrates existing commands automatically
 - Tab completion support for `/sc:` prefix to discover all SuperClaude commands
+- **i18n Architecture**: Uses Python's `importlib.resources` for reliable package-based translation access
+- **Language Configuration**: Stored in `~/.claude/i18n/config.json` with persistence across sessions
+- **Translation Management**: Dual-layer system - simple user commands vs. developer translation workflow
+- **Quality Assurance**: Translation quality scoring and MD5-based incremental update system
 
 ## [3.0.0] - 2025-07-14
 

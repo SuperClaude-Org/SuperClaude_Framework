@@ -18,6 +18,7 @@ SuperClaude tries to make Claude Code more helpful for development work by addin
 - 🛠️ **16 specialized commands** for common dev tasks (some work better than others!)
 - 🎭 **Smart personas** that usually pick the right expert for different domains 
 - 🔧 **MCP server integration** for docs, UI components, and browser automation
+- 🌍 **Localized i18n system** with 9 languages, fully offline switching
 - 📋 **Task management** that tries to keep track of progress
 - ⚡ **Token optimization** to help with longer conversations
 
@@ -46,6 +47,7 @@ We focused on 16 essential commands for the most common tasks:
 **Development**: `/sc:implement`, `/sc:build`, `/sc:design`  
 **Analysis**: `/sc:analyze`, `/sc:troubleshoot`, `/sc:explain`  
 **Quality**: `/sc:improve`, `/sc:test`, `/sc:cleanup`  
+**Localization**: `/sc:i18n` - Switch interface language (10 languages supported)  
 **Others**: `/sc:document`, `/sc:git`, `/sc:estimate`, `/sc:task`, `/sc:index`, `/sc:load`, `/sc:spawn`
 
 ### Smart Personas 🎭
@@ -68,6 +70,36 @@ External tools that connect when useful:
 - **Playwright** - Browser automation and testing stuff
 
 *(These work pretty well when they connect properly! 🤞)*
+
+### 🌍 Internationalization (i18n) - Super Simple Language Switching!
+**3秒切换语言 - 傻瓜也会用！/ Switch language in 3 seconds - so easy a dummy can do it!**
+
+**Supported Languages**: 🇺🇸 English, 🇨🇳 简体中文, 🇨🇳 繁體中文, 🇯🇵 日本語, 🇰🇷 한국어, 🇷🇺 Русский, 🇪🇸 Español, 🇩🇪 Deutsch, 🇫🇷 Français, 🇸🇦 العربية
+
+**Key Features**:
+- ✅ **100% Offline** - No internet connection required
+- ✅ **Instant switching** - Takes effect immediately  
+- ✅ **Super simple** - One command and you're done
+- ✅ **Local translations** - All included with SuperClaude package
+
+**🚀 Super Simple Usage (NEW!):**
+```bash
+# Just remember this one command!
+/sc:i18n switch zh_CN    # Switch to Chinese instantly!
+/sc:i18n switch ja_JP    # Switch to Japanese
+/sc:i18n switch en_US    # Switch back to English
+
+# Other helpful commands
+/sc:i18n list           # See all languages  
+/sc:i18n current        # What language am I using?
+/sc:i18n help          # Show help
+```
+
+**How it works:**
+1. Type `/sc:i18n switch zh_CN` in Claude Code
+2. See success message
+3. Restart Claude Code session  
+4. Done! Everything is now in Chinese! 🎉
 
 ## ⚠️ Upgrading from v2? Important!
 

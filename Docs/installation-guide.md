@@ -102,7 +102,20 @@ SuperClaude install
 **You can use `SuperClaude commands`
 , `python3 -m SuperClaude commands` or also `python3 SuperClaude commands`**
 
-**What just happened?** SuperClaude tried to set up everything you need. Usually no complex configuration, dependency hunting, or setup headaches! 🎉
+**What just happened?** SuperClaude set up everything you need, including:
+- ✅ **16 specialized commands** ready to use
+- ✅ **10 language translations** for instant language switching  
+- ✅ **Smart personas** that auto-activate based on your tasks
+- ✅ **MCP server integration** for enhanced functionality
+
+**🌍 Want to use SuperClaude in your language?** Try this:
+```bash
+/sc:i18n switch zh_CN    # 切换到中文
+/sc:i18n switch ja_JP    # 日本語に切り替え
+/sc:i18n list           # See all 10 languages
+```
+
+No complex configuration, dependency hunting, or setup headaches! 🎉
 
 ---
 
