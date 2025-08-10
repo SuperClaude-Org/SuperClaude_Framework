@@ -10,7 +10,7 @@ Build, compile, and package projects with comprehensive error handling and optim
 
 ## Usage
 ```
-/sc:build [target] [--type dev|prod|test] [--clean] [--optimize]
+/sc:build [target] [--type dev|prod|test] [--clean] [--optimize] [--verbose]
 ```
 
 ## Arguments

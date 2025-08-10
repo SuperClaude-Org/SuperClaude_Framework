@@ -10,7 +10,7 @@ Apply systematic improvements to code quality, performance, maintainability, and
 
 ## Usage
 ```
-/sc:improve [target] [--type quality|performance|maintainability|style] [--safe]
+/sc:improve [target] [--type quality|performance|maintainability|style] [--safe] [--preview]
 ```
 
 ## Arguments

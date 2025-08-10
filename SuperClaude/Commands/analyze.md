@@ -10,7 +10,7 @@ Execute comprehensive code analysis across quality, security, performance, and a
 
 ## Usage
 ```
-/sc:analyze [target] [--focus quality|security|performance|architecture] [--depth quick|deep]
+/sc:analyze [target] [--focus quality|security|performance|architecture] [--depth quick|deep] [--format text|json|report]
 ```
 
 ## Arguments

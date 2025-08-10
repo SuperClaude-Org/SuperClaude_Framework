@@ -10,7 +10,7 @@ Implement features, components, and code functionality with intelligent expert a
 
 ## Usage
 ```
-/sc:implement [feature-description] [--type component|api|service|feature] [--framework react|vue|express|etc] [--safe]
+/sc:implement [feature-description] [--type component|api|service|feature] [--framework react|vue|express|etc] [--safe] [--iterative] [--with-tests] [--documentation]
 ```
 
 ## Arguments
