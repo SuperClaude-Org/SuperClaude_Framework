@@ -15,7 +15,7 @@ Analyze Product Requirements Documents (PRDs) and feature specifications to gene
 
 ## Usage
 ```
-/sc:workflow [prd-file|feature-description] [--persona expert] [--c7] [--sequential] [--strategy systematic|agile|mvp] [--output roadmap|tasks|detailed]
+/sc:workflow [prd-file|feature-description] [--persona expert] [--c7] [--sequential] [--magic] [--all-mcp] [--strategy systematic|agile|mvp] [--output roadmap|tasks|detailed] [--estimate] [--dependencies] [--risks] [--parallel] [--milestones]
 ```
 
 ## Arguments
