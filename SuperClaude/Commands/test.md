@@ -10,7 +10,7 @@ Execute tests, generate comprehensive test reports, and maintain test coverage s
 
 ## Usage
 ```
-/sc:test [target] [--type unit|integration|e2e|all] [--coverage] [--watch]
+/sc:test [target] [--type unit|integration|e2e|all] [--coverage] [--watch] [--fix]
 ```
 
 ## Arguments

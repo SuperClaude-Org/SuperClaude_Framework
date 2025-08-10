@@ -10,7 +10,7 @@ Systematically clean up code, remove dead code, optimize imports, and improve pr
 
 ## Usage
 ```
-/sc:cleanup [target] [--type code|imports|files|all] [--safe|--aggressive]
+/sc:cleanup [target] [--type code|imports|files|all] [--safe|--aggressive] [--dry-run]
 ```
 
 ## Arguments
