@@ -18,17 +18,13 @@ import difflib
 from pathlib import Path
 from typing import Dict, Callable
 
-# Add the 'setup' directory to the Python import path (with deprecation-safe logic)
-
-try:
-    # Python 3.9+ preferred modern way
-    from importlib.resources import files, as_file
-    with as_file(files("setup")) as resource:
-        setup_dir = str(resource)
-except (ImportError, ModuleNotFoundError, AttributeError):
-    # Fallback for Python < 3.9
-    from pkg_resources import resource_filename
-    setup_dir = resource_filename('setup', '')
+# This needed a modification for windows and python 3.10 - JPShag
+# Resolved ImportError: cannot import 'setup.utils.ui' because the sibling 'setup' directory was not on sys.path.
+# Find the setup directory relative to this file
+setup_dir = Path(__file__).parent.parent / "setup"
+if not setup_dir.exists():
+    # Try alternative location if running from installed package
+    setup_dir = Path(__file__).parent / "setup"
 
 # Add to sys.path
 sys.path.insert(0, str(setup_dir))
@@ -58,6 +54,9 @@ except ImportError:
         ERROR = 40
         INFO = 20
         DEBUG = 10
+    
+    # Default install directory fallback
+    DEFAULT_INSTALL_DIR = Path.home() / ".claude"
 
 
 def create_global_parser() -> argparse.ArgumentParser:
