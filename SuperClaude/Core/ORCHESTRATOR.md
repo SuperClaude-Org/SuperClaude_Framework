@@ -202,6 +202,8 @@ wave-strategies:
 | "optimize performance" | complex | backend | performance persona, --think-hard, Playwright | 90% |
 | "security audit" | complex | security | security persona, --ultrathink, Sequential | 95% |
 | "write documentation" | moderate | documentation | scribe persona, --persona-scribe=en, Context7 | 95% |
+| "critique code" | moderate | quality | critic persona, --ultrathink, Sequential | 95% |
+| "harsh review" | moderate | quality | critic persona, --seq, --validate | 90% |
 | "improve iteratively" | moderate | iterative | intelligent persona, --seq, loop creation | 90% |
 | "analyze large codebase" | complex | any | --delegate --parallel-dirs, domain specialists | 95% |
 | "comprehensive audit" | complex | multi | --multi-agent --parallel-focus, specialized agents | 95% |
@@ -353,6 +355,10 @@ token_optimization:
 - **Trigger Conditions**: README, wiki, guides, commit messages, API docs
 - **Confidence Threshold**: 70% for automatic activation
 
+**Critical Review Tasks** → `--persona-critic` + `--ultrathink`
+- **Trigger Conditions**: Code review, critique, audit, validation requests
+- **Confidence Threshold**: 85% for automatic activation
+
 #### Flag Auto-Activation Patterns
 
 **Context-Based Auto-Activation**:
@@ -364,6 +370,7 @@ token_optimization:
 - Testing operations → --persona-qa + --play + --validate
 - DevOps operations → --persona-devops + --safe-mode + --validate
 - Refactoring → --persona-refactorer + --wave-strategy systematic + --validate
+- Critical review → --persona-critic + --ultrathink + --validate
 - Iterative improvement → --loop for polish, refine, enhance keywords
 
 **Wave Auto-Activation**:

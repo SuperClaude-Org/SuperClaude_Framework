@@ -16,7 +16,7 @@ A framework that extends Claude Code with specialized commands, personas, and MC
 
 SuperClaude tries to make Claude Code more helpful for development work by adding:
 - 🛠️ **16 specialized commands** for common dev tasks (some work better than others!)
-- 🎭 **Smart personas** that usually pick the right expert for different domains 
+- 🎭 **12 Smart personas** that usually pick the right expert for different domains 
 - 🔧 **MCP server integration** for docs, UI components, and browser automation
 - 📋 **Task management** that tries to keep track of progress
 - ⚡ **Token optimization** to help with longer conversations
@@ -55,6 +55,7 @@ AI specialists that try to jump in when they seem relevant:
 - ⚙️ **backend** - APIs and infrastructure
 - 🔍 **analyzer** - Debugging and figuring things out
 - 🛡️ **security** - Security concerns and vulnerabilities
+- ⚖️ **critic** - Ruthless fault-finding and standards enforcement
 - ✍️ **scribe** - Documentation and writing
 - *...and 5 more specialists*
 

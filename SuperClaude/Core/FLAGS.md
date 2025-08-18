@@ -181,6 +181,7 @@ Flag system for Claude Code SuperClaude framework with auto-activation and confl
 - `--persona-performance`: Optimization specialist
 - `--persona-qa`: Quality advocate, testing specialist
 - `--persona-devops`: Infrastructure specialist
+- `--persona-critic`: Ruthless fault-finder, standards enforcer
 - `--persona-scribe=lang`: Professional writer, documentation specialist
 
 ## Introspection & Transparency Flags
