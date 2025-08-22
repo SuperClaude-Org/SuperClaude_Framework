@@ -1,200 +1,492 @@
-# SuperClaude Quick Start Guide
+<div align="center">
 
-> **Context Framework Guide**: SuperClaude enhances Claude Code through behavioral context injection, NOT CLI commands. `/sc:` patterns are conversation triggers that activate installed behavioral instructions.
+# 🚀 SuperClaude Quick Start Guide
 
-## How SuperClaude Really Works
+### **Context Engineering Framework for Claude Code**
 
-SuperClaude is a **Context Engineering Framework** that enhances Claude Code by installing behavioral `.md` files that Claude reads during conversations. When you type `/sc:brainstorm`, you're not running a command - you're triggering context patterns that guide Claude's responses.
+<p align="center">
+  <img src="https://img.shields.io/badge/Framework-Context_Engineering-purple?style=for-the-badge" alt="Framework">
+  <img src="https://img.shields.io/badge/Version-4.0.4-blue?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/Time_to_Start-5_Minutes-green?style=for-the-badge" alt="Quick Start">
+</p>
 
-**5-Minute Start**: Install context framework → Try `/sc:brainstorm` in Claude conversation → Experience enhanced behaviors.
+> **💡 Key Insight**: SuperClaude doesn't replace Claude Code - it **configures and enhances** it through behavioral context injection
 
-## Just Start Here
+<p align="center">
+  <a href="#-how-it-works">How It Works</a> •
+  <a href="#-instant-start">Instant Start</a> •
+  <a href="#-core-components">Components</a> •
+  <a href="#-workflow-patterns">Workflows</a> •
+  <a href="#-when-to-use">When to Use</a>
+</p>
 
-### 🖥️ Installation - Run in Terminal
+</div>
+
+---
+
+<div align="center">
+
+## 📊 **Framework Capabilities**
+
+| **Commands** | **AI Agents** | **Behavioral Modes** | **MCP Servers** |
+|:------------:|:-------------:|:-------------------:|:---------------:|
+| **21** | **14** | **6** | **6** |
+| `/sc:` triggers | Domain specialists | Context adaptation | Tool integration |
+
+</div>
+
+---
+
+## 🎯 **How It Works**
+
+<div align="center">
+
+### **Framework Architecture Flow**
+
+```
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│  User Input     │────>│   Claude Code    │────>│  Context Files  │
+│  /sc:command    │     │  Reads Context   │     │  (.md behaviors)│
+└─────────────────┘     └──────────────────┘     └─────────────────┘
+                               │                          │
+                               ▼                          ▼
+┌─────────────────┐      ┌──────────────────┐     ┌─────────────────┐
+│   Enhanced      │<─────│    Behavioral    │<────│   MCP Servers   │
+│   Response      │      │    Activation    │     │ (if configured) │
+└─────────────────┘      └──────────────────┘     └─────────────────┘
+```
+
+**The Magic**: When you type `/sc:brainstorm`, Claude reads behavioral instructions from installed `.md` files and responds with enhanced capabilities
+
+</div>
+
+---
+
+## ⚡ **Instant Start**
+
+<div align="center">
+
+### **5-Minute Journey from Installation to First Command**
+
+</div>
+
+<table>
+<tr>
+<th width="50%">📦 Step 1: Install (Terminal)</th>
+<th width="50%">💬 Step 2: Use (Claude Code)</th>
+</tr>
+<tr>
+<td valign="top">
+
 ```bash
-# Recommended for Linux/macOS
+# Quick install with pipx
 pipx install SuperClaude && SuperClaude install
 
-# Traditional method
+# Or traditional pip
 pip install SuperClaude && SuperClaude install
 
-# Cross-platform via NPM
+# Or via npm
 npm install -g @bifrost_inc/superclaude && superclaude install
 ```
 
-### 💬 First Context Triggers - Type in Claude Code Conversation
-```
-# Interactive project discovery
+</td>
+<td valign="top">
+
+```text
+# Interactive discovery
 /sc:brainstorm "web app for task management"
 
-# Analyze existing code  
+# Analyze existing code
 /sc:analyze src/
 
-# Generate implementation plan
-/sc:workflow "add user authentication"
+# Generate implementation
+/sc:implement "user authentication"
 
-# Invoke specialist persona
-@agent-security "review authentication implementation"
+# Activate specialist
+@agent-security "review auth flow"
 ```
 
-**What Happens with Context Framework:**
-- Claude reads behavioral instructions from installed .md files
-- Specialist personas activate based on trigger patterns (security, frontend, backend)
-- MCP servers provide enhanced tool capabilities when configured
-- Behavioral modes guide conversation structure and depth
-- Session memory maintains context across interactions
+</td>
+</tr>
+</table>
 
-**Key Understanding**: These are conversation patterns with Claude Code, not executable commands. The framework provides Claude with behavioral context to respond more expertly.
+<details>
+<summary><b>🎥 What Happens Behind the Scenes</b></summary>
 
----
+1. **Context Loading**: Claude Code imports behavioral `.md` files via `CLAUDE.md`
+2. **Pattern Recognition**: Recognizes `/sc:` and `@agent-` trigger patterns
+3. **Behavioral Activation**: Applies corresponding instructions from context files
+4. **MCP Integration**: Uses configured external tools when available
+5. **Response Enhancement**: Follows framework patterns for comprehensive responses
 
-## What is SuperClaude Really?
-
-### Framework Philosophy
-
-**SuperClaude is NOT standalone software** - it's a **Context Oriented Configuration Framework** for Claude Code. Think of it as a sophisticated prompt engineering system that configures Claude Code's behavior through structured context files. Everything runs through Claude Code - SuperClaude provides the behavioral context, commands, and coordination.
-
-### Core Components
-
-SuperClaude enhances Claude Code with:
-
-**21 Slash Commands** for workflow automation (/sc:brainstorm, /sc:implement, /sc:analyze)
-**14 AI Specialists** with domain expertise (@agent-architect, @agent-security, @agent-frontend)
-**5 Behavioral Modes** for different contexts (brainstorming, introspection, orchestration)
-**6 MCP Servers** for enhanced capabilities (Context7, Sequential, Magic, Playwright)
-
-**Important**: The `.md` files in `SuperClaude/` directory are NOT documentation - they are the actual context framework instructions that Claude Code reads to enhance its capabilities.
-
-**Version 4.0** delivers workflow orchestration capabilities with intelligent agent coordination and session persistence.
-
-## How It Works
-
-**Context Framework Architecture:**
-SuperClaude installs behavioral context files that Claude Code reads during conversations. When you type trigger patterns like `/sc:implement`, Claude accesses the corresponding behavioral instructions and responds accordingly.
-
-**User Experience Flow:**
-You type `/sc:implement "user login"` → Claude reads context from `implement.md` → activates security specialist behavioral patterns → uses configured MCP servers → generates implementation following framework guidelines.
-
-**Technical Architecture:**
-1. **Context Loading** (Claude Code imports behavioral .md files via CLAUDE.md)
-2. **Pattern Recognition** (Recognizes /sc: and @agent- trigger patterns)
-3. **Behavioral Activation** (Applies corresponding behavioral instructions from context files)
-4. **MCP Integration** (Uses configured external tools when available)
-5. **Response Enhancement** (Follows framework patterns for comprehensive responses)
+</details>
 
 ---
 
-## First Steps Workflow
+## 🔧 **Core Components**
 
-**First Context Session Pattern:**
-```
-# 1. Project Discovery (context trigger)
-/sc:brainstorm "e-commerce mobile app"
+<div align="center">
 
-# 2. Load Context (existing projects)
-/sc:load src/
+### **Four Pillars of SuperClaude**
 
-# 3. Analyze Current State
-/sc:analyze --focus architecture
+<table>
+<tr>
+<td align="center" width="25%">
 
-# 4. Plan Implementation
-/sc:workflow "add payment integration"
+### 📝 **Commands**
+<h2>21</h2>
 
-# 5. Implement Features
-/sc:implement "Stripe payment flow"
+**Slash Commands**
 
-# 6. Validate Quality
-/sc:test --coverage
+`/sc:brainstorm`  
+`/sc:implement`  
+`/sc:analyze`  
+`/sc:workflow`
 
-# 7. Save Session
-/sc:save "payment-integration-complete"
-```
+*Workflow automation*
 
-**Domain-Specific Workflows:**
-- **Frontend**: Magic MCP activates for UI components
-- **Backend**: Security specialist ensures proper validation
-- **DevOps**: Infrastructure specialist handles deployment
-- **Testing**: QA specialist creates comprehensive test suites
+</td>
+<td align="center" width="25%">
 
----
+### 🤖 **Agents**
+<h2>14</h2>
 
-## Key Takeaways
+**AI Specialists**
 
-### SuperClaude's Core Value
+`@agent-architect`  
+`@agent-security`  
+`@agent-frontend`  
+`@agent-backend`
 
-SuperClaude transforms Claude Code from a general-purpose AI assistant into a **specialized development framework** with:
+*Domain expertise*
 
-- **Systematic Workflows** instead of ad-hoc requests
-- **Domain Expertise** through specialized agents
-- **Tool Coordination** with MCP server integration
-- **Session Persistence** for long-term project continuity
-- **Quality Assurance** through built-in validation gates
+</td>
+<td align="center" width="25%">
 
-### The Power is in the Coordination
+### 🎯 **Modes**
+<h2>6</h2>
 
-**Intelligent Coordination Benefits:**
+**Behavioral Modes**
 
-- **Auto-activation**: Right tools for the right tasks
-- **Multi-agent Workflows**: Frontend + Backend + Security working together
-- **Context Preservation**: No losing track of complex projects
-- **Parallel Processing**: Multiple operations running simultaneously
-- **Progressive Enhancement**: Simple tasks stay simple, complex tasks get expert attention
+Brainstorming  
+Introspection  
+Orchestration  
+Task Management
 
-### Start Simple, Scale Intelligently
+*Context adaptation*
 
-**Learning Path:**
+</td>
+<td align="center" width="25%">
 
-**Week 1**: Master core commands (`/sc:brainstorm`, `/sc:analyze`, `/sc:implement`)
-**Week 2**: Explore behavioral modes and flag combinations
-**Week 3**: Configure MCP servers for enhanced capabilities
-**Week 4**: Create custom workflows and session management patterns
+### 🔌 **MCP**
+<h2>6</h2>
 
-**Usage Recommendations:**
-- Start with simple commands and let complexity emerge naturally
-- Use `/sc:index` to discover relevant commands for your context
-- Enable MCP servers gradually as you understand their benefits
-- Save successful patterns with `/sc:save` for reuse
+**Server Integration**
 
-### When to Use SuperClaude
+Context7 (docs)  
+Sequential (analysis)  
+Magic (UI)  
+Playwright (testing)
 
-**Use SuperClaude When:**
-- Building software projects (any language/framework)
-- Need systematic workflows and quality gates
-- Working on complex, multi-component systems
-- Require session persistence across development cycles
-- Want specialized domain expertise (invoke with @agent-[specialist] or auto-activation)
+*Enhanced tools*
 
-**Use Standard Claude Code When:**
-- Simple questions or explanations
-- One-off coding tasks
-- Learning programming concepts
-- Quick prototypes or experiments
+</td>
+</tr>
+</table>
 
-**Key Distinction**: SuperClaude doesn't replace Claude Code - it configures and enhances it through context. All execution happens within Claude Code itself.
-
-**SuperClaude Excellence**: Multi-step development workflows with quality requirements
+</div>
 
 ---
 
-## Next Steps
+## 📚 **Workflow Patterns**
 
-**Learning Progression:**
+<div align="center">
 
-**🌱 Beginner (First Week)**
-- [Installation Guide](installation.md) - Get set up
-- [Commands Reference](../User-Guide/commands.md) - Learn core commands
-- [Examples Cookbook](../Reference/examples-cookbook.md) - Try practical examples
+### **Complete Development Lifecycle**
 
-**🌿 Intermediate (Growing Skills)**
-- [Behavioral Modes](../User-Guide/modes.md) - Optimize for context
-- [Agents Guide](../User-Guide/agents.md) - Understand specialists
-- [Session Management](../User-Guide/session-management.md) - Long-term projects
+</div>
 
-**🌲 Advanced (Expert Usage)**
-- [MCP Servers](../User-Guide/mcp-servers.md) - Enhanced capabilities
-- [Commands Reference](../User-Guide/commands.md) - All commands and workflows
-- [Technical Architecture](../Developer-Guide/technical-architecture.md) - Deep understanding
+### **🌟 First Project Session**
 
-**🚑 Support**
-- [Troubleshooting](../Reference/troubleshooting.md) - Problem solving
-- [Contributing](../Developer-Guide/contributing-code.md) - Join development
+<table>
+<tr>
+<th>Step</th>
+<th>Command</th>
+<th>What Happens</th>
+</tr>
+<tr>
+<td><b>1. Discovery</b></td>
+<td><code>/sc:brainstorm "e-commerce app"</code></td>
+<td>Interactive requirements exploration</td>
+</tr>
+<tr>
+<td><b>2. Load Context</b></td>
+<td><code>/sc:load src/</code></td>
+<td>Import existing project structure</td>
+</tr>
+<tr>
+<td><b>3. Analysis</b></td>
+<td><code>/sc:analyze --focus architecture</code></td>
+<td>Deep architectural review</td>
+</tr>
+<tr>
+<td><b>4. Planning</b></td>
+<td><code>/sc:workflow "payment integration"</code></td>
+<td>Generate implementation roadmap</td>
+</tr>
+<tr>
+<td><b>5. Implementation</b></td>
+<td><code>/sc:implement "Stripe checkout"</code></td>
+<td>Build with best practices</td>
+</tr>
+<tr>
+<td><b>6. Validation</b></td>
+<td><code>/sc:test --coverage</code></td>
+<td>Comprehensive testing</td>
+</tr>
+<tr>
+<td><b>7. Save Session</b></td>
+<td><code>/sc:save "payment-complete"</code></td>
+<td>Persist for next session</td>
+</tr>
+</table>
+
+### **🎨 Domain-Specific Workflows**
+
+<div align="center">
+
+| Domain | Trigger | Specialist Activation | MCP Server |
+|--------|---------|----------------------|------------|
+| **Frontend** | UI component request | `@agent-frontend` | Magic |
+| **Backend** | API endpoint creation | `@agent-backend` | Sequential |
+| **Security** | Auth implementation | `@agent-security` | Context7 |
+| **Testing** | E2E test scenarios | `@agent-qa` | Playwright |
+| **DevOps** | Deployment setup | `@agent-devops` | Morphllm |
+
+</div>
+
+---
+
+## 🎯 **When to Use**
+
+<div align="center">
+
+### **SuperClaude vs Standard Claude Code**
+
+<table>
+<tr>
+<th width="50%">✅ Use SuperClaude</th>
+<th width="50%">💭 Use Standard Claude</th>
+</tr>
+<tr>
+<td valign="top">
+
+**Perfect for:**
+- 🏗️ Building complete software projects
+- 📊 Systematic workflows with quality gates
+- 🔄 Complex, multi-component systems
+- 💾 Long-term projects needing persistence
+- 👥 Team collaboration with standards
+- 🎯 Domain-specific expertise needs
+
+**Examples:**
+- "Build a full-stack application"
+- "Implement secure authentication"
+- "Refactor legacy codebase"
+- "Create comprehensive test suite"
+
+</td>
+<td valign="top">
+
+**Better for:**
+- 💡 Simple questions or explanations
+- ⚡ One-off coding tasks
+- 📚 Learning programming concepts
+- 🧪 Quick prototypes or experiments
+- 🔍 Code snippet generation
+- ❓ General programming help
+
+**Examples:**
+- "Explain how async/await works"
+- "Write a sorting function"
+- "Debug this error message"
+- "Convert this loop to functional"
+
+</td>
+</tr>
+</table>
+
+</div>
+
+---
+
+## 🎓 **Learning Path**
+
+<div align="center">
+
+### **Your 4-Week Journey to Mastery**
+
+<table>
+<tr>
+<th>Week</th>
+<th>Focus</th>
+<th>Skills</th>
+<th>Milestone</th>
+</tr>
+<tr>
+<td align="center"><b>1</b><br/>🌱</td>
+<td><b>Core Commands</b></td>
+<td>
+• <code>/sc:brainstorm</code><br/>
+• <code>/sc:analyze</code><br/>
+• <code>/sc:implement</code>
+</td>
+<td>Complete first project</td>
+</tr>
+<tr>
+<td align="center"><b>2</b><br/>🌿</td>
+<td><b>Behavioral Modes</b></td>
+<td>
+• Mode combinations<br/>
+• Flag usage<br/>
+• Context optimization
+</td>
+<td>Optimize workflows</td>
+</tr>
+<tr>
+<td align="center"><b>3</b><br/>🌿</td>
+<td><b>MCP Servers</b></td>
+<td>
+• Server configuration<br/>
+• Tool integration<br/>
+• Enhanced capabilities
+</td>
+<td>Full tool utilization</td>
+</tr>
+<tr>
+<td align="center"><b>4</b><br/>🌲</td>
+<td><b>Advanced Patterns</b></td>
+<td>
+• Custom workflows<br/>
+• Session management<br/>
+• Team patterns
+</td>
+<td>Framework mastery</td>
+</tr>
+</table>
+
+</div>
+
+---
+
+## 💡 **Key Insights**
+
+<div align="center">
+
+### **Understanding SuperClaude's Value**
+
+<table>
+<tr>
+<td width="33%" align="center">
+
+### 🧠 **Not Software**
+**It's a Framework**
+
+SuperClaude is behavioral configuration, not standalone software. Everything runs through Claude Code.
+
+</td>
+<td width="33%" align="center">
+
+### 🔄 **Systematic**
+**Not Ad-hoc**
+
+Transforms random requests into structured workflows with quality gates and validation.
+
+</td>
+<td width="33%" align="center">
+
+### 🚀 **Progressive**
+**Not Complex**
+
+Start simple with basic commands. Complexity emerges naturally as needed.
+
+</td>
+</tr>
+</table>
+
+</div>
+
+---
+
+## 📖 **Next Steps**
+
+<div align="center">
+
+### **Continue Your Learning Journey**
+
+<table>
+<tr>
+<th>🌱 Beginner</th>
+<th>🌿 Intermediate</th>
+<th>🌲 Advanced</th>
+</tr>
+<tr>
+<td valign="top">
+
+**First Week:**
+- [Installation Guide](installation.md)
+- [Commands Reference](../User-Guide/commands.md)
+- [Examples Cookbook](../Reference/examples-cookbook.md)
+
+Start with `/sc:brainstorm`
+
+</td>
+<td valign="top">
+
+**Growing Skills:**
+- [Behavioral Modes](../User-Guide/modes.md)
+- [Agents Guide](../User-Guide/agents.md)
+- [Session Management](../User-Guide/session-management.md)
+
+Explore mode combinations
+
+</td>
+<td valign="top">
+
+**Expert Usage:**
+- [MCP Servers](../User-Guide/mcp-servers.md)
+- [Technical Architecture](../Developer-Guide/technical-architecture.md)
+- [Contributing](../Developer-Guide/contributing-code.md)
+
+Create custom workflows
+
+</td>
+</tr>
+</table>
+
+<p align="center">
+  <a href="../User-Guide/commands.md">
+    <img src="https://img.shields.io/badge/📚_Explore-All_21_Commands-blue?style=for-the-badge" alt="Commands">
+  </a>
+  <a href="../Reference/examples-cookbook.md">
+    <img src="https://img.shields.io/badge/🍳_Try-Real_Examples-green?style=for-the-badge" alt="Examples">
+  </a>
+</p>
+
+</div>
+
+---
+
+<div align="center">
+
+### **🎉 Ready to Transform Your Development Workflow?**
+
+<p align="center">
+  <b>Start now with</b> <code>/sc:brainstorm</code> <b>in Claude Code!</b>
+</p>
+
+<p align="center">
+  <sub>SuperClaude v4.0.4 - Context Engineering for Claude Code</sub>
+</p>
+
+</div>

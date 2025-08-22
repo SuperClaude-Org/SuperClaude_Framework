@@ -1,232 +1,514 @@
-# SuperClaude Installation Guide 📦
+<div align="center">
 
-SuperClaude installs behavioral context files that Claude Code reads to enhance its capabilities with 21 commands, 14 agents, and 5 modes.
+# 📦 SuperClaude Installation Guide
 
-## Quick Start 🚀
+### **Transform Claude Code with 21 Commands, 14 Agents & 6 MCP Servers**
 
-**pipx (Recommended for Linux/macOS):**
+<p align="center">
+  <img src="https://img.shields.io/badge/version-4.0.4-blue?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/Python-3.8+-green?style=for-the-badge" alt="Python">
+  <img src="https://img.shields.io/badge/Platform-Linux%20|%20macOS%20|%20Windows-orange?style=for-the-badge" alt="Platform">
+</p>
+
+<p align="center">
+  <a href="#-quick-installation">Quick Install</a> •
+  <a href="#-requirements">Requirements</a> •
+  <a href="#-installation-methods">Methods</a> •
+  <a href="#-verification">Verify</a> •
+  <a href="#-troubleshooting">Troubleshoot</a>
+</p>
+
+</div>
+
+---
+
+## ⚡ **Quick Installation**
+
+<div align="center">
+
+### **Choose Your Preferred Method**
+
+| Method | Command | Platform | Best For |
+|:------:|---------|:--------:|----------|
+| **🐍 pipx** | `pipx install SuperClaude && SuperClaude install` | Linux/macOS | **✅ Recommended** - Isolated environment |
+| **📦 pip** | `pip install SuperClaude && SuperClaude install` | All | Traditional Python setups |
+| **🌐 npm** | `npm install -g @bifrost_inc/superclaude && superclaude install` | All | Node.js developers |
+| **🔧 Dev** | `git clone ... && pip install -e ".[dev]"` | All | Contributors & developers |
+
+</div>
+
+---
+
+## 📋 **Requirements**
+
+<div align="center">
+
+<table>
+<tr>
+<td align="center" width="50%">
+
+### ✅ **Required**
+
+| Component | Version | Check Command |
+|-----------|---------|---------------|
+| **Python** | 3.8+ | `python3 --version` |
+| **pip** | Latest | `pip --version` |
+| **Claude Code** | Latest | `claude --version` |
+| **Disk Space** | 50MB | `df -h` |
+
+</td>
+<td align="center" width="50%">
+
+### 💡 **Optional**
+
+| Component | Purpose | Check Command |
+|-----------|---------|---------------|
+| **Node.js** | MCP Servers | `node --version` |
+| **Git** | Version Control | `git --version` |
+| **pipx** | Isolated Install | `pipx --version` |
+| **RAM** | Performance | 1GB recommended |
+
+</td>
+</tr>
+</table>
+
+</div>
+
+<details>
+<summary><b>🔍 Quick System Check</b></summary>
+
 ```bash
+# Run this to check all requirements at once
+python3 --version && echo "✅ Python OK" || echo "❌ Python missing"
+claude --version && echo "✅ Claude Code OK" || echo "❌ Claude Code missing"
+node --version 2>/dev/null && echo "✅ Node.js OK (optional)" || echo "⚠️ Node.js missing (optional)"
+git --version 2>/dev/null && echo "✅ Git OK (optional)" || echo "⚠️ Git missing (optional)"
+```
+
+</details>
+
+---
+
+## 🚀 **Installation Methods**
+
+<div align="center">
+
+### **Detailed Installation Instructions**
+
+</div>
+
+### **Method 1: pipx (Recommended)**
+
+<table>
+<tr>
+<td width="60%">
+
+```bash
+# Install pipx if not present
+python3 -m pip install --user pipx
+python3 -m pipx ensurepath
+
+# Install SuperClaude
 pipx install SuperClaude
+
+# Run the installer
 SuperClaude install
 ```
 
-**pip (Traditional):**
+</td>
+<td width="40%">
+
+**✅ Advantages:**
+- Isolated environment
+- No dependency conflicts
+- Clean uninstall
+- Automatic PATH setup
+
+**📍 Best for:**
+- Linux/macOS users
+- Clean system installs
+- Multiple Python projects
+
+</td>
+</tr>
+</table>
+
+### **Method 2: pip (Traditional)**
+
+<table>
+<tr>
+<td width="60%">
+
 ```bash
+# Standard installation
 pip install SuperClaude
+
+# Or user installation
+pip install --user SuperClaude
+
+# Run the installer
 SuperClaude install
 ```
 
-**NPM (Cross-platform):**
+</td>
+<td width="40%">
+
+**✅ Advantages:**
+- Works everywhere
+- Familiar to Python users
+- Direct installation
+
+**📍 Best for:**
+- Windows users
+- Virtual environments
+- Quick setup
+
+</td>
+</tr>
+</table>
+
+### **Method 3: npm (Cross-platform)**
+
+<table>
+<tr>
+<td width="60%">
+
 ```bash
+# Global installation
 npm install -g @bifrost_inc/superclaude
-SuperClaude install
+
+# Run the installer
+superclaude install
 ```
 
-**Development:**
+</td>
+<td width="40%">
+
+**✅ Advantages:**
+- Cross-platform
+- NPM ecosystem
+- JavaScript familiar
+
+**📍 Best for:**
+- Node.js developers
+- NPM users
+- Cross-platform needs
+
+</td>
+</tr>
+</table>
+
+### **Method 4: Development Installation**
+
+<table>
+<tr>
+<td width="60%">
+
 ```bash
+# Clone repository
 git clone https://github.com/SuperClaude-Org/SuperClaude_Framework.git
 cd SuperClaude_Framework
+
+# Install in development mode
 pip install -e ".[dev]"
+
+# Test installation
 SuperClaude install --dry-run
 ```
 
-**If you encounter PEP 668 errors:**
+</td>
+<td width="40%">
+
+**✅ Advantages:**
+- Latest features
+- Contribute to project
+- Full source access
+
+**📍 Best for:**
+- Contributors
+- Custom modifications
+- Testing new features
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🎛️ **Installation Options**
+
+<div align="center">
+
+### **Customize Your Installation**
+
+| Option | Command | Description |
+|--------|---------|-------------|
+| **Interactive** | `SuperClaude install` | Guided setup with prompts |
+| **Specific Components** | `SuperClaude install --components core mcp modes` | Install only what you need |
+| **Preview Mode** | `SuperClaude install --dry-run` | See what will be installed |
+| **Force Install** | `SuperClaude install --force --yes` | Skip all confirmations |
+| **List Components** | `SuperClaude install --list-components` | View available components |
+
+</div>
+
+---
+
+## ✅ **Verification**
+
+<div align="center">
+
+### **Confirm Successful Installation**
+
+</div>
+
+### **Step 1: Check Installation**
+
 ```bash
-# Option 1: Use pipx (recommended)
-pipx install SuperClaude
+# Verify SuperClaude version
+python3 -m SuperClaude --version
+# Expected: SuperClaude 4.0.4
 
-# Option 2: Use pip with --user flag
-pip install --user SuperClaude
-
-# Option 3: Force installation (use with caution)
-pip install --break-system-packages SuperClaude
-```
-
-## Command Types
-
-| Type | Where Used | Format | Example |
-|------|------------|--------|----------|
-| **Installation** | Terminal | `SuperClaude [command]` | `SuperClaude install` |
-| **Slash Commands** | Claude Code | `/sc:[command]` | `/sc:brainstorm "idea"` |
-| **Agents** | Claude Code | `@agent-[type]` | `@agent-security "review"` |
-
-## Requirements
-
-**Required:**
-- Python 3.8+ with pip
-- Claude Code installed and working
-- 50MB free space
-
-**Optional:**
-- Node.js 16+ (for MCP servers)
-- Git (for version control integration)
-
-## Quick Check
-```bash
-python3 --version    # Should be 3.8+
-claude --version     # Verify Claude Code
-node --version       # Optional: for MCP servers
-```
-
-## Installation Options 🎛️
-
-**Interactive Installation (Default):**
-```bash
-SuperClaude install
-```
-
-**With Options:**
-```bash
-SuperClaude install --components core mcp modes  # Specific components
-SuperClaude install --dry-run                    # Preview only
-SuperClaude install --force --yes                # Skip confirmations
-```
-
-### Getting SuperClaude 📥
-
-**Choose Your Preferred Method:**
-
-**Python Users:**
-```bash
-pip install SuperClaude
-```
-
-**JavaScript/Node.js Users:**
-```bash
-npm install -g @bifrost_inc/superclaude
-```
-
-**Development/Contributors:**
-```bash
-git clone https://github.com/SuperClaude-Org/SuperClaude_Framework.git
-cd SuperClaude_Framework
-pip install -e ".[dev]"
-```
-
-### Running the Installer 🎬
-
-**Interactive Installation (Default):**
-```bash
-SuperClaude install
-```
-The installer will:
-1. Validate system requirements
-2. Show available components
-3. Install selected components to `~/.claude/`
-4. Configure MCP servers if selected
-5. Update CLAUDE.md with framework imports
-
-## After Installation ✅
-
-**Verify Installation:**
-```bash
-python3 -m SuperClaude --version    # Should show 4.0.4
+# List installed components
 SuperClaude install --list-components
+# Expected: List of available components
 ```
 
-**Test Commands:**
+### **Step 2: Test in Claude Code**
+
 ```bash
-# In Claude Code, try:
-/sc:brainstorm "test project"    # Should ask discovery questions
-/sc:analyze README.md           # Should provide analysis
+# Open Claude Code and try these commands:
+/sc:brainstorm "test project"     # Should trigger discovery questions
+/sc:analyze README.md              # Should provide structured analysis
+@agent-security "review code"     # Should activate security specialist
 ```
 
-**What's Installed:**
-- Framework files in `~/.claude/`
-- 21 slash commands (`/sc:*`)
-- 14 agents (`@agent-*`)
-- 5 behavioral modes
-- MCP server configurations (if selected)
+### **Step 3: What's Installed**
 
-## Managing Your Installation 🛠️
+<div align="center">
 
-**Update:**
+| Location | Contents | Size |
+|----------|----------|------|
+| `~/.claude/` | Framework files | ~50MB |
+| `~/.claude/CLAUDE.md` | Main entry point | ~2KB |
+| `~/.claude/*.md` | Behavioral instructions | ~200KB |
+| `~/.claude/claude-code-settings.json` | MCP configurations | ~5KB |
+
+</div>
+
+---
+
+## 🛠️ **Management**
+
+<div align="center">
+
+<table>
+<tr>
+<th>📦 Update</th>
+<th>💾 Backup</th>
+<th>🗑️ Uninstall</th>
+</tr>
+<tr>
+<td>
+
 ```bash
+# Update to latest
 pip install --upgrade SuperClaude
 SuperClaude update
 ```
 
-**Backup & Restore:**
+</td>
+<td>
+
 ```bash
+# Create backup
 SuperClaude backup --create
-SuperClaude backup --restore ~/.claude.backup.YYYYMMDD_HHMMSS
+
+# Restore backup
+SuperClaude backup --restore [file]
 ```
 
-**Uninstall:**
+</td>
+<td>
+
 ```bash
+# Remove framework
 SuperClaude uninstall
+
+# Uninstall package
 pip uninstall SuperClaude
 ```
 
-## Troubleshooting 🔧
+</td>
+</tr>
+</table>
 
-**Common Issues:**
-- **Command not found**: Verify installation with `python3 -m SuperClaude --version`
-- **Permission denied**: Use `pip install --user SuperClaude`
-- **Claude Code not found**: Install from https://claude.ai/code
+</div>
 
-**Get Help:**
-- [Troubleshooting Guide](../Reference/troubleshooting.md)
-- [GitHub Issues](https://github.com/SuperClaude-Org/SuperClaude_Framework/issues)
+---
 
-## Next Steps 🚀
+## 🔧 **Troubleshooting**
 
-- [Quick Start Guide](quick-start.md) - First commands and workflows
-- [Commands Reference](../User-Guide/commands.md) - All 21 commands
-- [Examples Cookbook](../Reference/examples-cookbook.md) - Real-world usage
+<details>
+<summary><b>❌ PEP 668 Error (Python Package Management)</b></summary>
 
-## Prerequisites Setup 🛠️
+This error occurs on systems with externally managed Python environments.
 
-**Missing Python?**
+**Solutions (in order of preference):**
+
 ```bash
-# Linux: sudo apt install python3 python3-pip
-# macOS: brew install python3
-# Windows: Download from python.org
+# Option 1: Use pipx (Recommended)
+pipx install SuperClaude
+
+# Option 2: User installation
+pip install --user SuperClaude
+
+# Option 3: Virtual environment
+python3 -m venv superclaude-env
+source superclaude-env/bin/activate  # Linux/macOS
+# or
+superclaude-env\Scripts\activate  # Windows
+pip install SuperClaude
+
+# Option 4: Force (use with caution)
+pip install --break-system-packages SuperClaude
 ```
 
-**Missing Claude Code?**
-- Download from https://claude.ai/code
-- Verify with: `claude --version`
+</details>
 
-## What's Next? 🚀
+<details>
+<summary><b>❌ Command Not Found</b></summary>
 
-1. [Quick Start Guide](quick-start.md) - Essential workflows
-2. [Commands Reference](../User-Guide/commands.md) - All 21 commands  
-3. [Examples Cookbook](../Reference/examples-cookbook.md) - Real-world usage
+If `SuperClaude` command is not found after installation:
+
+```bash
+# Check if package is installed
+python3 -m pip show SuperClaude
+
+# Run using Python module
+python3 -m SuperClaude install
+
+# Add to PATH (if using --user)
+export PATH="$HOME/.local/bin:$PATH"
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc  # Linux
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc   # macOS
+```
+
+</details>
+
+<details>
+<summary><b>❌ Claude Code Not Found</b></summary>
+
+If Claude Code is not installed or not in PATH:
+
+1. Download from [https://claude.ai/code](https://claude.ai/code)
+2. Install following platform instructions
+3. Verify with: `claude --version`
+4. Restart terminal after installation
+
+</details>
+
+<details>
+<summary><b>❌ Permission Denied</b></summary>
+
+For permission errors during installation:
+
+```bash
+# Use user installation
+pip install --user SuperClaude
+
+# Or use sudo (not recommended)
+sudo pip install SuperClaude
+
+# Better: use pipx
+pipx install SuperClaude
+```
+
+</details>
+
+<details>
+<summary><b>❌ Missing Python or pip</b></summary>
+
+**Linux (Ubuntu/Debian):**
+```bash
+sudo apt update
+sudo apt install python3 python3-pip python3-venv
+```
+
+**macOS:**
+```bash
+# Install Homebrew first if needed
+brew install python3
+```
+
+**Windows:**
+- Download from [python.org](https://python.org)
+- Check "Add Python to PATH" during installation
+- Restart terminal after installation
+
+</details>
 
 ---
 
-## Final Notes 📝
+## 📚 **Next Steps**
 
-**Installation Summary:**
+<div align="center">
 
-- **Space**: 50MB for full installation
-- **Requirements**: Python 3.8+, Claude Code, 1GB RAM recommended
-- **Platform**: Linux, macOS, Windows supported
-- **Usage**: Immediate access to 21 commands and 5 behavioral modes
+### **Your Learning Journey**
 
-**What's Next**: Your Claude Code now has enhanced capabilities. Try `/sc:brainstorm` for your first SuperClaude experience!
+<table>
+<tr>
+<th>🌱 Start Here</th>
+<th>🌿 Expand Skills</th>
+<th>🌲 Master Framework</th>
+</tr>
+<tr>
+<td valign="top">
+
+**First Week:**
+- [Quick Start Guide](quick-start.md)
+- [Commands Reference](../User-Guide/commands.md)
+- Try `/sc:brainstorm`
+
+</td>
+<td valign="top">
+
+**Week 2-3:**
+- [Behavioral Modes](../User-Guide/modes.md)
+- [Agents Guide](../User-Guide/agents.md)
+- [Examples Cookbook](../Reference/examples-cookbook.md)
+
+</td>
+<td valign="top">
+
+**Advanced:**
+- [MCP Servers](../User-Guide/mcp-servers.md)
+- [Technical Architecture](../Developer-Guide/technical-architecture.md)
+- [Contributing Code](../Developer-Guide/contributing-code.md)
+
+</td>
+</tr>
+</table>
+
+</div>
 
 ---
 
-## Related Guides
+<div align="center">
 
-**Documentation Roadmap:**
+### **🎉 Installation Complete!**
 
-**Beginner** (🌱 Start Here)
-- [Quick Start Guide](quick-start.md) - quick setup guide
-- [Commands Reference](../User-Guide/commands.md) - Basic usage
+You now have access to:
 
-**Intermediate** (🌿 Growing)
-- [Behavioral Modes](../User-Guide/modes.md) - Context optimization
-- [MCP Servers](../User-Guide/mcp-servers.md) - Enhanced capabilities
-- [Examples Cookbook](../Reference/examples-cookbook.md) - Practical patterns
+<p align="center">
+  <b>21 Commands</b> • <b>14 AI Agents</b> • <b>6 Behavioral Modes</b> • <b>6 MCP Servers</b>
+</p>
 
-**Advanced** (🌲 Expert)
-- [Technical Architecture](../Developer-Guide/technical-architecture.md) - System design
-- [Contributing Code](../Developer-Guide/contributing-code.md) - Development
-- [Quick Start Guide](quick-start.md) - Essential workflows
+**Ready to start?** Try `/sc:brainstorm` in Claude Code for your first SuperClaude experience!
 
----
+<p align="center">
+  <a href="quick-start.md">
+    <img src="https://img.shields.io/badge/📖_Continue_to-Quick_Start_Guide-blue?style=for-the-badge" alt="Quick Start">
+  </a>
+</p>
 
-**Installation Complete!** You now have access to 21 commands, 14 agents, and 5 behavioral modes. Try `/sc:brainstorm` in Claude Code to get started.
+</div>
