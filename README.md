@@ -110,7 +110,13 @@ pip install --break-system-packages SuperClaude
 
 ## 💖 **Support the Project**
 
-> *Maintaining SuperClaude takes time and resources. Your support helps keep development active!*
+> Hey, let's be real - maintaining SuperClaude takes time and resources.
+> 
+> *The Claude Max subscription alone runs $100/month for testing, and that's before counting the hours spent on documentation, bug fixes, and feature development.*
+> *If you're finding value in SuperClaude for your daily work, consider supporting the project.*
+> *Even a few dollars helps cover the basics and keeps development active.*
+> 
+> Every contributor matters, whether through code, feedback, or support. Thanks for being part of this community! 🙏
 
 <table>
 <tr>
@@ -152,19 +158,17 @@ pip install --break-system-packages SuperClaude
 | 🔧 **MCP Integration** | Testing new server connections |
 | 🌐 **Infrastructure** | Hosting & deployment costs |
 
-> **Note:** The framework stays open source regardless. Contributing code, documentation, or spreading the word helps too! 🙏
+> **Note:** No pressure though - the framework stays open source regardless. Just knowing people use and appreciate it is motivating. Contributing code, documentation, or spreading the word helps too! 🙏
 
 </div>
 
 ---
 
-## 🎉 **What's New in V4**
-
 <div align="center">
 
-> *Version 4 brings significant improvements based on community feedback and real-world usage patterns.*
+## 🎉 **What's New in V4**
 
-</div>
+> *Version 4 brings significant improvements based on community feedback and real-world usage patterns.*
 
 <table>
 <tr>
@@ -238,11 +242,13 @@ pip install --break-system-packages SuperClaude
 </tr>
 </table>
 
+</div>
+
 ---
 
-## 📚 **Documentation**
-
 <div align="center">
+
+## 📚 **Documentation**
 
 ### **Complete Guide to SuperClaude**
 
@@ -315,9 +321,9 @@ pip install --break-system-packages SuperClaude
 
 ---
 
-## 🤝 **Contributing**
-
 <div align="center">
+
+## 🤝 **Contributing**
 
 ### **Join the SuperClaude Community**
 
@@ -344,9 +350,9 @@ We welcome contributions of all kinds! Here's how you can help:
 
 ---
 
-## ⚖️ **License**
-
 <div align="center">
+
+## ⚖️ **License**
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
@@ -358,9 +364,9 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ---
 
-## ⭐ **Star History**
-
 <div align="center">
+
+## ⭐ **Star History**
 
 <a href="https://www.star-history.com/#SuperClaude-Org/SuperClaude_Framework&Date">
   <picture>
