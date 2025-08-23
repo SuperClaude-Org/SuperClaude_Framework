@@ -234,7 +234,7 @@ def display_backup_list(backups: List[Dict[str, Any]]) -> None:
 def create_backup_metadata(install_dir: Path) -> Dict[str, Any]:
     """Create metadata for the backup"""
     metadata = {
-        "backup_version": "3.0.0",
+        "backup_version": "4.0.6",
         "created": datetime.now().isoformat(),
         "install_dir": str(install_dir),
         "components": {},

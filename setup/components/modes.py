@@ -20,7 +20,7 @@ class ModesComponent(Component):
         """Get component metadata"""
         return {
             "name": "modes",
-            "version": "4.0.4",
+            "version": "4.0.6",
             "description": "SuperClaude behavioral modes (Brainstorming, Introspection, Task Management, Token Efficiency)",
             "category": "modes"
         }
@@ -69,7 +69,7 @@ class ModesComponent(Component):
             metadata_mods = {
                 "components": {
                     "modes": {
-                        "version": "4.0.4",
+                        "version": "4.0.6",
                         "installed": True,
                         "files_count": len(self.component_files)
                     }

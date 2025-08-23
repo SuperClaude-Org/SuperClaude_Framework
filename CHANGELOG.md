@@ -48,6 +48,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tab completion support for `/sc:` prefix to discover all SuperClaude commands
 - Guides/ directory replaces Docs/ for improved organization
 
+## [4.0.6] - 2025-08-23
+
+### Fixed
+- Component validation now correctly checks .superclaude-metadata.json instead of settings.json (#291)
+- Standardized version numbers across all components to 4.0.6
+- Fixed agent validation to check for correct filenames (architect vs specialist/engineer)
+- Fixed package.json version inconsistency (was 4.0.5)
+
+### Changed  
+- Bumped version from 4.0.4 to 4.0.6 across entire project
+- All component versions now synchronized at 4.0.6
+- Cleaned up metadata file structure for consistency
+
 ## [4.0.4] - 2025-08-22
 
 ### Added

@@ -13,7 +13,7 @@ Test: /sc:brainstorm "test" should ask questions
 
 ### 2. Installation Verification
 ```bash
-python3 -m SuperClaude --version    # Should show 4.0.4
+python3 -m SuperClaude --version    # Should show 4.0.6
 
 # If not working:
 # For pipx users
@@ -71,7 +71,7 @@ pip3 install SuperClaude
 ```
 
 ## Verification Checklist
-- [ ] `python3 -m SuperClaude --version` returns 4.0.4
+- [ ] `python3 -m SuperClaude --version` returns 4.0.6
 - [ ] `/sc:brainstorm "test"` works in Claude Code
 - [ ] `SuperClaude install --list-components` shows components
 

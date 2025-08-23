@@ -518,7 +518,7 @@ This code of conduct draws inspiration from several established community standa
 
 **Last Updated**: December 2024 (SuperClaude Framework v4.0)
 **Next Review**: June 2025 (Semi-annual review cycle)
-**Version**: 4.0.4 (Updated for v4 community structure and governance)
+**Version**: 4.0.6 (Updated for v4 community structure and governance)
 
 **Review Schedule:**
 - **Semi-Annual Reviews**: Policy effectiveness assessment and community feedback integration

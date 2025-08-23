@@ -2,7 +2,7 @@
   "components": {
     "core": {
       "name": "core",
-      "version": "4.0.4",
+      "version": "4.0.6",
       "description": "SuperClaude framework documentation and core files",
       "category": "core",
       "dependencies": [],
@@ -11,7 +11,7 @@
     },
     "commands": {
       "name": "commands",
-      "version": "4.0.4", 
+      "version": "4.0.6", 
       "description": "SuperClaude slash command definitions",
       "category": "commands",
       "dependencies": ["core"],
@@ -20,7 +20,7 @@
     },
     "mcp": {
       "name": "mcp",
-      "version": "4.0.4",
+      "version": "4.0.6",
       "description": "MCP server configuration management via .claude.json",
       "category": "integration",
       "dependencies": ["core"],
@@ -29,7 +29,7 @@
     },
     "modes": {
       "name": "modes",
-      "version": "4.0.4",
+      "version": "4.0.6",
       "description": "SuperClaude behavioral modes (Brainstorming, Introspection, Task Management, Token Efficiency)",
       "category": "modes",
       "dependencies": ["core"],
@@ -38,7 +38,7 @@
     },
     "mcp_docs": {
       "name": "mcp_docs",
-      "version": "4.0.4",
+      "version": "4.0.6",
       "description": "MCP server documentation and usage guides",
       "category": "documentation",
       "dependencies": ["core"],
@@ -47,7 +47,7 @@
     },
     "agents": {
       "name": "agents",
-      "version": "4.0.4",
+      "version": "4.0.6",
       "description": "14 specialized AI agents with domain expertise and intelligent routing",
       "category": "agents",
       "dependencies": ["core"],

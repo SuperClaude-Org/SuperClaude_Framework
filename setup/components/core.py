@@ -20,7 +20,7 @@ class CoreComponent(Component):
         """Get component metadata"""
         return {
             "name": "core",
-            "version": "4.0.4",
+            "version": "4.0.6",
             "description": "SuperClaude framework documentation and core files",
             "category": "core"
         }
@@ -29,7 +29,7 @@ class CoreComponent(Component):
         """Get metadata modifications for SuperClaude"""
         return {
             "framework": {
-                "version": "4.0.4",
+                "version": "4.0.6",
                 "name": "SuperClaude",
                 "description": "AI-enhanced development framework for Claude Code",
                 "installation_type": "global",
@@ -37,7 +37,7 @@ class CoreComponent(Component):
             },
             "superclaude": {
                 "enabled": True,
-                "version": "4.0.4",
+                "version": "4.0.6",
                 "profile": "default",
                 "auto_update": False
             }
@@ -58,7 +58,7 @@ class CoreComponent(Component):
             
             # Add component registration to metadata
             self.settings_manager.add_component_registration("core", {
-                "version": "4.0.4",
+                "version": "4.0.6",
                 "category": "core",
                 "files_count": len(self.component_files)
             })

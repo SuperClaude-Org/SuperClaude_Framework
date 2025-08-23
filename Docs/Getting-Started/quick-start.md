@@ -6,7 +6,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Framework-Context_Engineering-purple?style=for-the-badge" alt="Framework">
-  <img src="https://img.shields.io/badge/Version-4.0.4-blue?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/Version-4.0.6-blue?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/Time_to_Start-5_Minutes-green?style=for-the-badge" alt="Quick Start">
 </p>
 
@@ -486,7 +486,7 @@ Create custom workflows
 </p>
 
 <p align="center">
-  <sub>SuperClaude v4.0.4 - Context Engineering for Claude Code</sub>
+  <sub>SuperClaude v4.0.6 - Context Engineering for Claude Code</sub>
 </p>
 
 </div>
