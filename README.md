@@ -72,7 +72,8 @@ SuperClaude is a **meta-programming configuration framework** that transforms Cl
 
 ```bash
 # Uninstall V3 first
-SuperClaude uninstall --complete
+Remove all related files and directories :
+*.md *.json and commands/
 
 # Then install V4
 pipx install SuperClaude && SuperClaude install
@@ -85,8 +86,6 @@ pipx install SuperClaude && SuperClaude install
 - ✓ Any custom agents and files you've added
 
 **⚠️ Note:** Other SuperClaude-related `.json` files from V3 may cause conflicts and should be removed.
-
-**📝 Note:** V4 uses a new structure with the `/sc:` prefix for commands and improved organization. Your existing custom commands will continue to work alongside the new SuperClaude commands.
 
 </details>
 
