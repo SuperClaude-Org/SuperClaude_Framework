@@ -4,7 +4,7 @@ SuperClaude CLI Base Module
 Base class for all CLI operations providing common functionality
 """
 
-__version__ = "3.0.0"
+__version__ = "4.0.4"
 
 
 def get_command_info():

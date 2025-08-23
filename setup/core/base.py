@@ -228,20 +228,20 @@ class Component(ABC):
             Version string if installed, None otherwise
         """
         self.logger.debug("Checking installed version")
-        settings_file = self.install_dir / "settings.json"
-        if settings_file.exists():
-            self.logger.debug("Settings file exists, reading version")
+        metadata_file = self.install_dir / ".superclaude-metadata.json"
+        if metadata_file.exists():
+            self.logger.debug("Metadata file exists, reading version")
             try:
-                with open(settings_file, 'r') as f:
-                    settings = json.load(f)
+                with open(metadata_file, 'r') as f:
+                    metadata = json.load(f)
                 component_name = self.get_metadata()['name']
-                version = settings.get('components', {}).get(component_name, {}).get('version')
+                version = metadata.get('components', {}).get(component_name, {}).get('version')
                 self.logger.debug(f"Found version: {version}")
                 return version
             except Exception as e:
-                self.logger.warning(f"Failed to read version from settings: {e}")
+                self.logger.warning(f"Failed to read version from metadata: {e}")
         else:
-            self.logger.debug("Settings file does not exist")
+            self.logger.debug("Metadata file does not exist")
         return None
     
     def is_installed(self) -> bool:
@@ -267,9 +267,9 @@ class Component(ABC):
             if not target.exists():
                 errors.append(f"Missing file: {target}")
         
-        # Check version in settings
+        # Check version in metadata
         if not self.get_installed_version():
-            errors.append("Component not registered in settings.json")
+            errors.append("Component not registered in .superclaude-metadata.json")
         
         return len(errors) == 0, errors
     

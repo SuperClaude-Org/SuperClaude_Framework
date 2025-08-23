@@ -405,7 +405,7 @@ def run(args: argparse.Namespace) -> int:
         # Display header
         if not args.quiet:
             display_header(
-                "SuperClaude Update v3.0",
+                "SuperClaude Update v4.0.4",
                 "Updating SuperClaude framework components"
             )
         

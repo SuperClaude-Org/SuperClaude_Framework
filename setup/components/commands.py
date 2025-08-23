@@ -18,7 +18,7 @@ class CommandsComponent(Component):
         """Get component metadata"""
         return {
             "name": "commands",
-            "version": "3.0.0",
+            "version": "4.0.4",
             "description": "SuperClaude slash command definitions",
             "category": "commands"
         }
@@ -28,14 +28,14 @@ class CommandsComponent(Component):
         return {
             "components": {
                 "commands": {
-                    "version": "3.0.0",
+                    "version": "4.0.4",
                     "installed": True,
                     "files_count": len(self.component_files)
                 }
             },
             "commands": {
                 "enabled": True,
-                "version": "3.0.0",
+                "version": "4.0.4",
                 "auto_update": False
             }
         }
@@ -58,7 +58,7 @@ class CommandsComponent(Component):
 
             # Add component registration to metadata
             self.settings_manager.add_component_registration("commands", {
-                "version": "3.0.0",
+                "version": "4.0.4",
                 "category": "commands",
                 "files_count": len(self.component_files)
             })

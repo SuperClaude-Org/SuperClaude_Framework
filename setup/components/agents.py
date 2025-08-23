@@ -216,16 +216,16 @@ class AgentsComponent(Component):
         if missing_agents:
             errors.append(f"Missing agent files: {missing_agents}")
         
-        # Check version in settings
+        # Check version in metadata
         if not self.get_installed_version():
             errors.append("Agents component not registered in metadata")
         
         # Check if at least some standard agents are present
         expected_agents = [
             "system-architect.md",
-            "frontend-specialist.md", 
-            "backend-engineer.md",
-            "security-auditor.md"
+            "frontend-architect.md", 
+            "backend-architect.md",
+            "security-engineer.md"
         ]
         
         missing_core_agents = []
