@@ -23,6 +23,18 @@
 </p>
 
 <p align="center">
+  <a href="README.md">
+    <img src="https://img.shields.io/badge/🇺🇸_English-blue" alt="English">
+  </a>
+  <a href="README-zh.md">
+    <img src="https://img.shields.io/badge/🇨🇳_中文-red" alt="中文">
+  </a>
+  <a href="README-ja.md">
+    <img src="https://img.shields.io/badge/🇯🇵_日本語-green" alt="日本語">
+  </a>
+</p>
+
+<p align="center">
   <a href="#-quick-installation">Quick Start</a> •
   <a href="#-support-the-project">Support</a> •
   <a href="#-whats-new-in-v4">Features</a> •
