@@ -74,6 +74,10 @@ class MCPComponent(Component):
             "description": "MCP server integration (Context7, Sequential, Magic, Playwright)",
             "category": "integration"
         }
+
+    def is_reinstallable(self) -> bool:
+        """This component manages sub-components (servers) and should be re-run."""
+        return True
     
     def validate_prerequisites(self, installSubPath: Optional[Path] = None) -> Tuple[bool, List[str]]:
         """Check prerequisites"""

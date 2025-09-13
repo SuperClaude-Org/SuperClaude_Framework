@@ -3,6 +3,7 @@ from pathlib import Path
 import shutil
 import tarfile
 import tempfile
+from unittest.mock import MagicMock
 from setup.core.installer import Installer
 
 class TestInstaller:
@@ -28,3 +29,43 @@ class TestInstaller:
                         assert len(members) == 0
             except tarfile.ReadError as e:
                 pytest.fail(f"Backup file is not a valid tar.gz file: {e}")
+
+    def test_skips_already_installed_component(self):
+        # Create a mock component that is NOT reinstallable
+        mock_component = MagicMock()
+        mock_component.get_metadata.return_value = {'name': 'test_component'}
+        mock_component.is_reinstallable.return_value = False
+        mock_component.install.return_value = True
+        mock_component.validate_prerequisites.return_value = (True, [])
+
+        installer = Installer()
+        installer.register_component(mock_component)
+
+        # Simulate component is already installed
+        installer.installed_components = {'test_component'}
+
+        installer.install_component('test_component', {})
+
+        # Assert that the install method was NOT called
+        mock_component.install.assert_not_called()
+        assert 'test_component' in installer.skipped_components
+
+    def test_installs_reinstallable_component(self):
+        # Create a mock component that IS reinstallable
+        mock_component = MagicMock()
+        mock_component.get_metadata.return_value = {'name': 'reinstallable_component'}
+        mock_component.is_reinstallable.return_value = True
+        mock_component.install.return_value = True
+        mock_component.validate_prerequisites.return_value = (True, [])
+
+        installer = Installer()
+        installer.register_component(mock_component)
+
+        # Simulate component is already installed
+        installer.installed_components = {'reinstallable_component'}
+
+        installer.install_component('reinstallable_component', {})
+
+        # Assert that the install method WAS called
+        mock_component.install.assert_called_once()
+        assert 'reinstallable_component' not in installer.skipped_components

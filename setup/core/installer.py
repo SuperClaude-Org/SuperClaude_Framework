@@ -201,8 +201,10 @@ class Installer:
 
         component = self.components[component_name]
 
-        # Skip if already installed and not in update mode
-        if component_name in self.installed_components and not config.get("update_mode"):
+        # Skip if already installed and not in update mode, unless component is reinstallable
+        if not component.is_reinstallable() and component_name in self.installed_components and not config.get("update_mode"):
+            self.skipped_components.add(component_name)
+            self.logger.info(f"Skipping already installed component: {component_name}")
             return True
 
         # Check prerequisites

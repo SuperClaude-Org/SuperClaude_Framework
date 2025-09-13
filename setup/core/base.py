@@ -45,6 +45,13 @@ class Component(ABC):
                 - category: Component category (core, command, integration, etc.)
         """
         pass
+
+    def is_reinstallable(self) -> bool:
+        """
+        Whether this component should be re-installed if already present.
+        Useful for container-like components that can install sub-parts.
+        """
+        return False
     
     def validate_prerequisites(self, installSubPath: Optional[Path] = None) -> Tuple[bool, List[str]]:
         """
