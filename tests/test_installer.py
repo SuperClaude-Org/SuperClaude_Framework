@@ -69,3 +69,27 @@ class TestInstaller:
         # Assert that the install method WAS called
         mock_component.install.assert_called_once()
         assert 'reinstallable_component' not in installer.skipped_components
+
+    def test_post_install_validation_only_validates_updated_components(self):
+        # Arrange
+        installer = Installer()
+
+        mock_comp1 = MagicMock()
+        mock_comp1.get_metadata.return_value = {'name': 'comp1'}
+        mock_comp1.validate_installation.return_value = (True, [])
+
+        mock_comp2 = MagicMock()
+        mock_comp2.get_metadata.return_value = {'name': 'comp2'}
+        mock_comp2.validate_installation.return_value = (True, [])
+
+        installer.register_component(mock_comp1)
+        installer.register_component(mock_comp2)
+
+        installer.updated_components = {'comp1'}
+
+        # Act
+        installer._run_post_install_validation()
+
+        # Assert
+        mock_comp1.validate_installation.assert_called_once()
+        mock_comp2.validate_installation.assert_not_called()

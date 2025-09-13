@@ -294,7 +294,11 @@ class Installer:
         self.logger.info("Running post-installation validation...")
 
         all_valid = True
-        for name in self.installed_components:
+        for name in self.updated_components:
+            if name not in self.components:
+                self.logger.warning(f"Cannot validate component '{name}' as it was not part of this installation session.")
+                continue
+
             component = self.components[name]
             success, errors = component.validate_installation()
 

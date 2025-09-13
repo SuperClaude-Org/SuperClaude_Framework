@@ -121,8 +121,22 @@ def get_components_to_install(args: argparse.Namespace, registry: ComponentRegis
     # Explicit components specified
     if args.components:
         if 'all' in args.components:
-            return ["core", "commands", "agents", "modes", "mcp", "mcp_docs"]
-        return args.components
+            components = ["core", "commands", "agents", "modes", "mcp", "mcp_docs"]
+        else:
+            components = args.components
+
+        # If mcp is specified non-interactively, we should still ask which servers to install.
+        if 'mcp' in components:
+            selected_servers = select_mcp_servers(registry)
+            if not hasattr(config_manager, '_installation_context'):
+                config_manager._installation_context = {}
+            config_manager._installation_context["selected_mcp_servers"] = selected_servers
+
+            # If the user selected some servers, but didn't select mcp_docs, add it.
+            if selected_servers and 'mcp_docs' not in components:
+                components.append('mcp_docs')
+
+        return components
     
     # Interactive two-stage selection
     return interactive_component_selection(registry, config_manager)
