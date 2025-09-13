@@ -294,6 +294,31 @@ def display_header(title: str, subtitle: str = '') -> None:
     print(f"{Colors.CYAN}{Colors.BRIGHT}{'='*60}{Colors.RESET}\n")
 
 
+def display_authors() -> None:
+    """Display author information"""
+    from SuperClaude import __author__, __email__, __github__
+
+    print(f"\n{Colors.CYAN}{Colors.BRIGHT}{'='*60}{Colors.RESET}")
+    print(f"{Colors.CYAN}{Colors.BRIGHT}{'SuperClaude Authors':^60}{Colors.RESET}")
+    print(f"{Colors.CYAN}{Colors.BRIGHT}{'='*60}{Colors.RESET}\n")
+
+    authors = [a.strip() for a in __author__.split(',')]
+    emails = [e.strip() for e in __email__.split(',')]
+    github_users = [g.strip() for g in __github__.split(',')]
+
+    for i in range(len(authors)):
+        name = authors[i]
+        email = emails[i] if i < len(emails) else 'N/A'
+        github = github_users[i] if i < len(github_users) else 'N/A'
+
+        print(f"  {Colors.BRIGHT}{name}{Colors.RESET}")
+        print(f"    Email: {Colors.YELLOW}{email}{Colors.RESET}")
+        print(f"    GitHub: {Colors.YELLOW}https://github.com/{github}{Colors.RESET}")
+        print()
+
+    print(f"{Colors.CYAN}{'='*60}{Colors.RESET}\n")
+
+
 def display_info(message: str) -> None:
     """Display info message"""
     print(f"{Colors.BLUE}[INFO] {message}{Colors.RESET}")

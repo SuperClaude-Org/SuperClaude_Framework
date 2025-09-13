@@ -35,7 +35,7 @@ else:
 try:
     from setup.utils.ui import (
         display_header, display_info, display_success, display_error,
-        display_warning, Colors
+        display_warning, Colors, display_authors
     )
     from setup.utils.logger import setup_logging, get_logger, LogLevel
     from setup import DEFAULT_INSTALL_DIR
@@ -100,6 +100,7 @@ Examples:
 
     from SuperClaude import __version__
     parser.add_argument("--version", action="version", version=f"SuperClaude {__version__}")
+    parser.add_argument("--authors", action="store_true", help="Show author information and exit")
 
     subparsers = parser.add_subparsers(
         dest="operation",
@@ -203,6 +204,11 @@ def main() -> int:
         parser, subparsers, global_parser = create_parser()
         operations = register_operation_parsers(subparsers, global_parser)
         args = parser.parse_args()
+
+        # Handle --authors flag
+        if args.authors:
+            display_authors()
+            return 0
         
         # Check for updates unless disabled
         if not args.quiet and not getattr(args, 'no_update_check', False):
