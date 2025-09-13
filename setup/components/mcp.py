@@ -362,20 +362,33 @@ class MCPComponent(Component):
                 self.logger.error(error)
             return False
 
-        # Install each MCP server
+        # Get selected servers from config
+        selected_servers = config.get("selected_mcp_servers", [])
+
+        if not selected_servers:
+            self.logger.info("No MCP servers selected for installation.")
+            return self._post_install()
+
+        self.logger.info(f"Installing selected MCP servers: {', '.join(selected_servers)}")
+
+        # Install each selected MCP server
         installed_count = 0
         failed_servers = []
 
-        for server_name, server_info in self.mcp_servers.items():
-            if self._install_mcp_server(server_info, config):
-                installed_count += 1
+        for server_name in selected_servers:
+            if server_name in self.mcp_servers:
+                server_info = self.mcp_servers[server_name]
+                if self._install_mcp_server(server_info, config):
+                    installed_count += 1
+                else:
+                    failed_servers.append(server_name)
+
+                    # Check if this is a required server
+                    if server_info.get("required", False):
+                        self.logger.error(f"Required MCP server {server_name} failed to install")
+                        return False
             else:
-                failed_servers.append(server_name)
-                
-                # Check if this is a required server
-                if server_info.get("required", False):
-                    self.logger.error(f"Required MCP server {server_name} failed to install")
-                    return False
+                self.logger.warning(f"Unknown MCP server '{server_name}' selected for installation.")
 
         # Verify installation
         if not config.get("dry_run", False):

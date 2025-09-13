@@ -172,16 +172,13 @@ class Installer:
                         # Log warning but continue backup process
                         self.logger.warning(f"Could not backup {item.name}: {e}")
 
-            # Create archive only if there are files to backup
-            if any(temp_backup.iterdir()):
-                # shutil.make_archive adds .tar.gz automatically, so use base name without extensions
-                base_path = backup_dir / backup_name
-                shutil.make_archive(str(base_path), 'gztar', temp_backup)
-            else:
-                # Create empty backup file to indicate backup was attempted
-                backup_path.touch()
+            # Always create an archive, even if empty, to ensure it's a valid tarball
+            base_path = backup_dir / backup_name
+            shutil.make_archive(str(base_path), 'gztar', temp_backup)
+
+            if not any(temp_backup.iterdir()):
                 self.logger.warning(
-                    f"No files to backup, created empty backup marker: {backup_path.name}"
+                    f"No files to backup, created empty backup archive: {backup_path.name}"
                 )
 
         self.backup_path = backup_path
