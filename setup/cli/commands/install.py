@@ -446,8 +446,8 @@ def perform_installation(components: List[str], args: argparse.Namespace, config
         # Register components with installer
         installer.register_components(list(component_instances.values()))
         
-        # Resolve dependencies
-        ordered_components = registry.resolve_dependencies(components)
+        # The 'components' list is already resolved, so we can use it directly.
+        ordered_components = components
         
         # Setup progress tracking
         progress = ProgressBar(
@@ -609,13 +609,20 @@ def run(args: argparse.Namespace) -> int:
             return 1
         
         # Get components to install
-        components = get_components_to_install(args, registry, config_manager)
-        if not components:
+        components_to_install = get_components_to_install(args, registry, config_manager)
+        if not components_to_install:
             logger.error("No components selected for installation")
             return 1
+
+        # Resolve dependencies
+        try:
+            resolved_components = registry.resolve_dependencies(components_to_install)
+        except ValueError as e:
+            logger.error(f"Dependency resolution error: {e}")
+            return 1
         
-        # Validate system requirements
-        if not validate_system_requirements(validator, components):
+        # Validate system requirements for all components
+        if not validate_system_requirements(validator, resolved_components):
             if not args.force:
                 logger.error("System requirements not met. Use --force to override.")
                 return 1
@@ -632,7 +639,7 @@ def run(args: argparse.Namespace) -> int:
         
         # Display installation plan
         if not args.quiet:
-            display_installation_plan(components, registry, args.install_dir)
+            display_installation_plan(resolved_components, registry, args.install_dir)
             
             if not args.dry_run:
                 if not args.yes and not confirm("Proceed with installation?", default=True):
@@ -640,7 +647,7 @@ def run(args: argparse.Namespace) -> int:
                     return 0
         
         # Perform installation
-        success = perform_installation(components, args, config_manager)
+        success = perform_installation(resolved_components, args, config_manager)
         
         if success:
             if not args.quiet:
