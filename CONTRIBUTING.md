@@ -27,7 +27,7 @@ SuperClaude Framework transforms Claude Code into a structured development platf
 **Good Bug Report Example:**
 ```
 **Environment:**
-- SuperClaude: 4.0.9
+- SuperClaude: 4.1.0
 - OS: Ubuntu 22.04
 - Claude Code: 1.5.2
 - Python: 3.9.7

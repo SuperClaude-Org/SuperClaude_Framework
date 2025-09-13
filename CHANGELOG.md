@@ -6,8 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-## [4.0.9] - 2025-09-05
+
+## [4.1.0] - 2025-09-13
+### Added
+- Display author names and emails in the installer UI header.
+- `is_reinstallable` flag for components to allow re-running installation.
+
 ### Fixed
+- Installer now correctly installs only selected MCP servers on subsequent runs.
+- Corrected validation logic for `mcp` and `mcp_docs` components to prevent incorrect failures.
+- Ensured empty backup archives are created as valid tar files.
+- Addressed an issue where only selected MCPs were being installed.
+- Added Mithun Gowda B as an author.
 - **MCP Installer:** Addressed several critical bugs in the MCP installation and update process to improve reliability.
   - Corrected the npm package name for the `morphllm` server in `setup/components/mcp.py`.
   - Implemented a custom installation method for the `serena` server using `uv`, as it is not an npm package.
@@ -16,8 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added the `claude` CLI as a formal prerequisite for MCP server management, which was previously undocumented.
 
 ### Changed
-- Version bump for PyPI release
-- Updated all version references across project files
+- Version bump to 4.1.0
 
 ### Technical
 - Prepared package for PyPI distribution

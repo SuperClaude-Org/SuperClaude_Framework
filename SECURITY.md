@@ -155,7 +155,7 @@ For actively exploited vulnerabilities or critical security issues:
 
 | Version | Security Support | End of Support |
 |---------|------------------|----------------|
-| 4.0.x   | ✅ Full support  | TBD (current) |
+| 4.1.x   | ✅ Full support  | TBD (current) |
 | 3.x.x   | ⚠️ Critical only | June 2025 |
 | 2.x.x   | ❌ No support   | December 2024 |
 | 1.x.x   | ❌ No support   | June 2024 |
@@ -723,7 +723,7 @@ For organizations requiring dedicated security support:
 
 **Last Updated**: December 2024 (SuperClaude Framework v4.0)
 **Next Review**: March 2025 (Quarterly review cycle)
-**Version**: 4.0.9 (Updated for v4 architectural changes)
+**Version**: 4.1.0 (Updated for v4 architectural changes)
 
 **Review Schedule:**
 - **Quarterly Reviews**: Security policy accuracy and completeness assessment
