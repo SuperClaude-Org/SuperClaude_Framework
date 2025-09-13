@@ -19,5 +19,5 @@ try:
 except Exception:
     __version__ = "4.0.9"  # Fallback
 __author__ = "NomenAK, Mithun Gowda B"
-__email__ = "anton.knoery@gmail.com"
+__email__ = "anton.knoery@gmail.com, mithungowda.b7411@gmail.com"
 __license__ = "MIT"

@@ -271,10 +271,26 @@ def display_header(title: str, subtitle: str = '') -> None:
         title: Main title
         subtitle: Optional subtitle
     """
+    from SuperClaude import __author__, __email__
+
     print(f"\n{Colors.CYAN}{Colors.BRIGHT}{'='*60}{Colors.RESET}")
     print(f"{Colors.CYAN}{Colors.BRIGHT}{title:^60}{Colors.RESET}")
     if subtitle:
         print(f"{Colors.WHITE}{subtitle:^60}{Colors.RESET}")
+
+    # Display authors
+    authors = [a.strip() for a in __author__.split(',')]
+    emails = [e.strip() for e in __email__.split(',')]
+
+    author_lines = []
+    for i in range(len(authors)):
+        name = authors[i]
+        email = emails[i] if i < len(emails) else ''
+        author_lines.append(f"{name} <{email}>")
+
+    authors_str = " | ".join(author_lines)
+    print(f"{Colors.BLUE}{authors_str:^60}{Colors.RESET}")
+
     print(f"{Colors.CYAN}{Colors.BRIGHT}{'='*60}{Colors.RESET}\n")
 
 

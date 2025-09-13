@@ -1,0 +1,20 @@
+import pytest
+from unittest.mock import patch, MagicMock
+from setup.utils.ui import display_header
+import io
+
+@patch('sys.stdout', new_callable=io.StringIO)
+def test_display_header_with_authors(mock_stdout):
+    # Mock the author and email info from SuperClaude/__init__.py
+    with patch('SuperClaude.__author__', "Author One, Author Two"), \
+         patch('SuperClaude.__email__', "one@example.com, two@example.com"):
+
+        display_header("Test Title", "Test Subtitle")
+
+        output = mock_stdout.getvalue()
+
+        assert "Test Title" in output
+        assert "Test Subtitle" in output
+        assert "Author One <one@example.com>" in output
+        assert "Author Two <two@example.com>" in output
+        assert "Author One <one@example.com> | Author Two <two@example.com>" in output
