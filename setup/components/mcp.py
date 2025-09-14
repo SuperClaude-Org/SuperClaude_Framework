@@ -51,8 +51,8 @@ class MCPComponent(Component):
             "serena": {
                 "name": "serena",
                 "description": "Semantic code analysis and intelligent editing",
-                "install_method": "uv",
-                "install_command": "uvx --from git+https://github.com/oraios/serena",
+                "mode": "uvx",
+                "run_command": "uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant --project $(pwd)",
                 "required": False
             },
             "morphllm": {
@@ -165,63 +165,36 @@ class MCPComponent(Component):
             }
         }
     
-    def _install_uv_mcp_server(self, server_info: Dict[str, Any], config: Dict[str, Any]) -> bool:
+    def _install_uvx_mcp_server(self, server_info: Dict[str, Any], config: Dict[str, Any]) -> bool:
         """Install a single MCP server using uv"""
         server_name = server_info["name"]
-        install_command = server_info.get("install_command")
-
-        if not install_command:
-            self.logger.error(f"No install_command found for uv-based server {server_name}")
+        run_command = server_info.get("run_command")        
+        if not run_command:
+            self.logger.error(f"No run command found for uvx-based server {server_name}")
             return False
 
         try:
-            self.logger.info(f"Installing MCP server using uv: {server_name}")
 
-            if self._check_mcp_server_installed(server_name):
-                self.logger.info(f"MCP server {server_name} already installed")
-                return True
+            self.logger.success(f"Successfully installed MCP server (user scope): {server_name}")
 
-            if config.get("dry_run"):
-                self.logger.info(f"Would install MCP server (user scope): {install_command}")
-                return True
+            self.logger.info(f"Registering {server_name} with Claude CLI. Run command: {run_command}")
 
-            self.logger.debug(f"Running: {install_command}")
-
-
-            cmd_parts = shlex.split(install_command)
-            result = subprocess.run(
-                cmd_parts,
+            reg_result = subprocess.run(
+                ["claude", "mcp", "add", "-s", "user", "--", server_name] + run_command.split(),
                 capture_output=True,
                 text=True,
-                timeout=900,   # 15 minutes
+                timeout=120,
                 shell=(sys.platform == "win32")
             )
 
-            if result.returncode == 0:
-                self.logger.success(f"Successfully installed MCP server (user scope): {server_name}")
-                run_command = install_command
-
-                self.logger.info(f"Registering {server_name} with Claude CLI. Run command: {run_command}")
-
-                reg_result = subprocess.run(
-                    ["claude", "mcp", "add", "-s", "user", "--", server_name] + run_command.split(),
-                    capture_output=True,
-                    text=True,
-                    timeout=120,
-                    shell=(sys.platform == "win32")
-                )
-
-                if reg_result.returncode == 0:
-                    self.logger.success(f"Successfully registered {server_name} with Claude CLI.")
-                    return True
-                else:
-                    error_msg = reg_result.stderr.strip() if reg_result.stderr else "Unknown error"
-                    self.logger.error(f"Failed to register MCP server {server_name} with Claude CLI: {error_msg}")
-                    return False
+            if reg_result.returncode == 0:
+                self.logger.success(f"Successfully registered {server_name} with Claude CLI.")
+                return True
             else:
-                error_msg = result.stderr.strip() if result.stderr else "Unknown error"
-                self.logger.error(f"Failed to install MCP server {server_name} using uv: {error_msg}\n{result.stdout}")
+                error_msg = reg_result.stderr.strip() if reg_result.stderr else "Unknown error"
+                self.logger.error(f"Failed to register MCP server {server_name} with Claude CLI: {error_msg}")
                 return False
+    
 
         except subprocess.TimeoutExpired:
             self.logger.error(f"Timeout installing MCP server {server_name} using uv")
@@ -255,8 +228,8 @@ class MCPComponent(Component):
     
     def _install_mcp_server(self, server_info: Dict[str, Any], config: Dict[str, Any]) -> bool:
         """Install a single MCP server"""
-        if server_info.get("install_method") == "uv":
-            return self._install_uv_mcp_server(server_info, config)
+        if server_info.get("mode") == "uvx":
+            return self._install_uvx_mcp_server(server_info, config)
 
         server_name = server_info["name"]
         npm_package = server_info.get("npm_package")
