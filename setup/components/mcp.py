@@ -141,7 +141,37 @@ class MCPComponent(Component):
                 self.logger.debug(f"Found npm {version}")
         except (subprocess.TimeoutExpired, FileNotFoundError):
             errors.append("npm not found - required for MCP server installation")
+        try:
+            result = subprocess.run(
+                ["uv", "--version"], 
+                capture_output=True, 
+                text=True, 
+                timeout=10,
+                shell=(sys.platform == "win32")
+            )
+            if  result.returncode != 0:
+                errors.append("uv not found - required for MCP server installation")
+            else:
+                version = result.stdout.strip()
+                self.logger.debug(f"Found uv {version}")
+        except (subprocess.TimeoutExpired, FileNotFoundError):
+            errors.append("uv not found - required for MCP server installation")
         
+        try:
+            result = subprocess.run(
+                ["uvx", "--version"], 
+                capture_output=True, 
+                text=True, 
+                timeout=10,
+                shell=(sys.platform == "win32")
+            )
+            if result.returncode != 0:
+                errors.append("uvx not found - required for MCP server installation")
+            else:
+                version = result.stdout.strip()
+                self.logger.debug(f"Found uvx {version}")
+        except (subprocess.TimeoutExpired, FileNotFoundError):
+            errors.append("uvx not found - required for MCP server installation")
         return len(errors) == 0, errors
     
     def get_files_to_install(self) -> List[Tuple[Path, Path]]:
