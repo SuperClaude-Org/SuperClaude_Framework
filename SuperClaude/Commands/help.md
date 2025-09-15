@@ -7,7 +7,20 @@ mcp-servers: []
 personas: []
 ---
 
-# /sc:help - All Available Commands
+# /sc:help - Command Reference Documentation
+
+## Triggers
+- Command discovery and reference lookup requests
+- Framework exploration and capability understanding needs
+- Documentation requests for available SuperClaude commands
+
+## Behavioral Flow
+1. **Display**: Present complete command list with descriptions
+2. **Complete**: End interaction after displaying information
+
+Key behaviors:
+- Information display only - no execution or implementation
+- Reference documentation mode without action triggers
 
 Here is a complete list of all available SuperClaude (`/sc`) commands.
 
@@ -37,6 +50,18 @@ Here is a complete list of all available SuperClaude (`/sc`) commands.
 | `/sc:test` | Execute tests with coverage analysis and automated quality reporting |
 | `/sc:troubleshoot` | Diagnose and resolve issues in code, builds, deployments, and system behavior |
 | `/sc:workflow` | Generate structured implementation workflows from PRDs and feature requirements |
+
+## Boundaries
+
+**Will:**
+- Display comprehensive list of available SuperClaude commands
+- Provide clear descriptions of each command's functionality
+- Present information in readable tabular format
+
+**Will Not:**
+- Execute any commands or create any files
+- Activate implementation modes or start projects
+- Engage TodoWrite or any execution tools
 
 ---
 
