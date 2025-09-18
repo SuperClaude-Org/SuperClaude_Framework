@@ -2,15 +2,19 @@
 MCP component for MCP server integration
 """
 
+import os
+import platform
+import shlex
 import subprocess
 import sys
-from typing import Dict, List, Tuple, Optional, Any
 from pathlib import Path
-import shlex
+from typing import Any, Dict, List, Optional, Tuple
+
+from setup import __version__
 
 from ..core.base import Component
 from ..utils.ui import display_info, display_warning
-from setup import __version__
+
 
 class MCPComponent(Component):
     """MCP servers integration component"""
@@ -56,7 +60,7 @@ class MCPComponent(Component):
                 "run_command": "serena start-mcp-server --context ide-assistant --project $(pwd)",
                 "required": False
             },
-            "morphllm": {
+            "morphllm-fast-apply": {
                 "name": "morphllm-fast-apply",
                 "description": "Fast Apply capability for context-aware code modifications",
                 "npm_package": "@morph-llm/morph-fast-apply",
@@ -78,6 +82,31 @@ class MCPComponent(Component):
     def is_reinstallable(self) -> bool:
         """This component manages sub-components (servers) and should be re-run."""
         return True
+
+    def _run_command_cross_platform(self, cmd: List[str], **kwargs) -> subprocess.CompletedProcess:
+        """
+        Run a command with proper cross-platform shell handling.
+
+        Args:
+            cmd: Command as list of strings
+            **kwargs: Additional subprocess.run arguments
+
+        Returns:
+            CompletedProcess result
+        """
+        if platform.system() == "Windows":
+            # Windows: Use list format with shell=True
+            return subprocess.run(cmd, shell=True, **kwargs)
+        else:
+            # macOS/Linux: Use string format with proper shell to support aliases
+            cmd_str = " ".join(shlex.quote(str(arg)) for arg in cmd)
+
+            # Use the user's shell with interactive mode to load aliases
+            user_shell = os.environ.get('SHELL', '/bin/bash')
+
+            # Execute command with user's shell in interactive mode to load aliases
+            full_cmd = f"{user_shell} -i -c {shlex.quote(cmd_str)}"
+            return subprocess.run(full_cmd, shell=True, env=os.environ, **kwargs)
     
     def validate_prerequisites(self, installSubPath: Optional[Path] = None) -> Tuple[bool, List[str]]:
         """Check prerequisites"""
@@ -85,12 +114,11 @@ class MCPComponent(Component):
         
         # Check if Node.js is available
         try:
-            result = subprocess.run(
+            result = self._run_command_cross_platform(
                 ["node", "--version"], 
                 capture_output=True, 
                 text=True, 
-                timeout=10,
-                shell=(sys.platform == "win32")
+                timeout=10
             )
             if result.returncode != 0:
                 errors.append("Node.js not found - required for MCP servers")
@@ -110,12 +138,11 @@ class MCPComponent(Component):
         
         # Check if Claude CLI is available
         try:
-            result = subprocess.run(
+            result = self._run_command_cross_platform(
                 ["claude", "--version"], 
                 capture_output=True, 
                 text=True, 
-                timeout=10,
-                shell=(sys.platform == "win32")
+                timeout=10
             )
             if result.returncode != 0:
                 errors.append("Claude CLI not found - required for MCP server management")
@@ -127,12 +154,11 @@ class MCPComponent(Component):
         
         # Check if npm is available
         try:
-            result = subprocess.run(
+            result = self._run_command_cross_platform(
                 ["npm", "--version"], 
                 capture_output=True, 
                 text=True, 
-                timeout=10,
-                shell=(sys.platform == "win32")
+                timeout=10
             )
             if result.returncode != 0:
                 errors.append("npm not found - required for MCP server installation")
@@ -193,24 +219,22 @@ class MCPComponent(Component):
             # Run install command
             self.logger.debug(f"Running: {install_command}")
             cmd_parts = shlex.split(install_command)
-            result = subprocess.run(
+            result = self._run_command_cross_platform(
                 cmd_parts,
                 capture_output=True,
                 text=True,
-                timeout=900,   # 15 minutes
-                shell=(sys.platform == "win32")
+                timeout=900   # 15 minutes
             )
 
             if result.returncode == 0:
                 self.logger.success(f"Successfully installed MCP server (user scope): {server_name}")
 
                 self.logger.info(f"Registering {server_name} with Claude CLI. Run command: {run_command}")
-                reg_result = subprocess.run(
+                reg_result = self._run_command_cross_platform(
                     ["claude", "mcp", "add", "-s", "user", "--", server_name] + shlex.split(run_command),
                     capture_output=True,
                     text=True,
-                    timeout=120,
-                    shell=(sys.platform == "win32")
+                    timeout=120
                 )
 
                 if reg_result.returncode == 0:
@@ -235,12 +259,11 @@ class MCPComponent(Component):
     def _check_mcp_server_installed(self, server_name: str) -> bool:
         """Check if MCP server is already installed"""
         try:
-            result = subprocess.run(
+            result = self._run_command_cross_platform(
                 ["claude", "mcp", "list"], 
                 capture_output=True, 
                 text=True, 
-                timeout=60,
-                shell=(sys.platform == "win32")
+                timeout=60
             )
             
             if result.returncode != 0:
@@ -300,12 +323,11 @@ class MCPComponent(Component):
             
             self.logger.debug(f"Running: claude mcp add -s user {server_name} {command} -y {npm_package}")
             
-            result = subprocess.run(
+            result = self._run_command_cross_platform(
                 ["claude", "mcp", "add", "-s", "user", "--", server_name, command, "-y", npm_package],
                 capture_output=True,
                 text=True,
-                timeout=120,  # 2 minutes timeout for installation
-                shell=(sys.platform == "win32")
+                timeout=120  # 2 minutes timeout for installation
             )
             
             if result.returncode == 0:
@@ -335,12 +357,11 @@ class MCPComponent(Component):
             
             self.logger.debug(f"Running: claude mcp remove {server_name} (auto-detect scope)")
             
-            result = subprocess.run(
+            result = self._run_command_cross_platform(
                 ["claude", "mcp", "remove", server_name],
                 capture_output=True,
                 text=True,
-                timeout=60,
-                shell=(sys.platform == "win32")
+                timeout=60
             )
             
             if result.returncode == 0:
@@ -403,12 +424,11 @@ class MCPComponent(Component):
         if not config.get("dry_run", False):
             self.logger.info("Verifying MCP server installation...")
             try:
-                result = subprocess.run(
+                result = self._run_command_cross_platform(
                     ["claude", "mcp", "list"],
                     capture_output=True,
                     text=True,
-                    timeout=60,
-                    shell=(sys.platform == "win32")
+                    timeout=60
                 )
                 
                 if result.returncode == 0:
@@ -562,12 +582,11 @@ class MCPComponent(Component):
         
         # Check if Claude CLI is available and validate installed servers
         try:
-            result = subprocess.run(
+            result = self._run_command_cross_platform(
                 ["claude", "mcp", "list"],
                 capture_output=True,
                 text=True,
-                timeout=60,
-                shell=(sys.platform == "win32")
+                timeout=60
             )
 
             if result.returncode != 0:
