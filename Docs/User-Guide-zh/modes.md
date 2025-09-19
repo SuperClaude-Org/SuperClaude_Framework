@@ -297,10 +297,10 @@ Standard Approach: Consistent, professional baseline for all tasks
 /sc:implement "user login" --brainstorm
 
 # 为调试添加推理透明度
-/sc:fix auth-issue --introspect
+# 使用透明推理调试认证问题
 
 # 为简单操作启用任务管理
-/sc:update styles.css --task-manage
+# 系统化任务管理更新样式文件
 ```
 
 ### 模式边界和优先级
@@ -351,7 +351,7 @@ Standard Approach: Consistent, professional baseline for all tasks
 → 💡 跨相似问题的模式识别
 
 # 系统性解决（任务管理协调）
-/sc:fix auth-system --comprehensive
+# 全面修复认证系统
 → 📋 阶段 1：根因分析
 → 📋 阶段 2：解决方案实现
 → 📋 阶段 3：测试和验证

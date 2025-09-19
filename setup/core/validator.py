@@ -8,6 +8,7 @@ import shutil
 from typing import Tuple, List, Dict, Any, Optional
 from pathlib import Path
 import re
+from ..utils.environment import get_home_directory
 
 # Handle packaging import - if not available, use a simple version comparison
 try:
@@ -407,7 +408,7 @@ class Validator:
         # Check disk space
         if "disk_space_mb" in requirements:
             success, message = self.check_disk_space(
-                Path.home(),
+                get_home_directory(),
                 requirements["disk_space_mb"]
             )
             if not success:
@@ -504,7 +505,7 @@ class Validator:
         
         # Add disk space info
         try:
-            home_path = Path.home()
+            home_path = get_home_directory()
             stat_result = shutil.disk_usage(home_path)
             info["disk_space"] = {
                 "total_gb": stat_result.total / (1024**3),
@@ -620,7 +621,7 @@ class Validator:
             diagnostics["recommendations"].append(self.get_installation_help("claude_cli"))
         
         # Check disk space
-        disk_success, disk_msg = self.check_disk_space(Path.home())
+        disk_success, disk_msg = self.check_disk_space(get_home_directory())
         diagnostics["checks"]["disk_space"] = {
             "status": "pass" if disk_success else "fail",
             "message": disk_msg

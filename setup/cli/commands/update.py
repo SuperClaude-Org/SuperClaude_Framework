@@ -6,6 +6,7 @@ Refactored from update.py for unified CLI hub
 import sys
 import time
 from pathlib import Path
+from ...utils.environment import get_home_directory
 from typing import List, Optional, Dict, Any
 import argparse
 
@@ -384,7 +385,7 @@ def run(args: argparse.Namespace) -> int:
     from setup.cli.base import __version__
 
     # ✅ Inserted validation code
-    expected_home = Path.home().resolve()
+    expected_home = get_home_directory().resolve()
     actual_dir = args.install_dir.resolve()
 
     if not str(actual_dir).startswith(str(expected_home)):

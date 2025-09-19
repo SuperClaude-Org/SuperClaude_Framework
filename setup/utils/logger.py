@@ -11,6 +11,7 @@ from enum import Enum
 
 from .ui import Colors
 from .symbols import symbols
+from .environment import get_home_directory
 
 
 class LogLevel(Enum):
@@ -36,7 +37,7 @@ class Logger:
             file_level: Minimum level for file output
         """
         self.name = name
-        self.log_dir = log_dir or (Path.home() / ".claude" / "logs")
+        self.log_dir = log_dir or (get_home_directory() / ".claude" / "logs")
         self.console_level = console_level
         self.file_level = file_level
         self.session_start = datetime.now()

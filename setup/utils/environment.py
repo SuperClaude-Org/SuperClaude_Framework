@@ -14,10 +14,57 @@ from .ui import display_info, display_success, display_warning, Colors
 from .logger import get_logger
 
 
+def get_home_directory() -> Path:
+    """
+    Get the correct home directory path, handling immutable distros.
+
+    On immutable distros like Fedora Silverblue/Universal Blue,
+    the home directory is at /var/home/$USER instead of /home/$USER.
+    This function properly detects the actual home directory.
+
+    Returns:
+        Path: The actual home directory path
+    """
+    # First try the standard method
+    try:
+        home = get_home_directory()
+        # Verify the path actually exists and is accessible
+        if home.exists() and home.is_dir():
+            return home
+    except Exception:
+        pass
+
+    # Fallback methods for edge cases and immutable distros
+
+    # Method 1: Use $HOME environment variable
+    home_env = os.environ.get('HOME')
+    if home_env:
+        home_path = Path(home_env)
+        if home_path.exists() and home_path.is_dir():
+            return home_path
+
+    # Method 2: Check for immutable distro patterns
+    username = os.environ.get('USER') or os.environ.get('USERNAME')
+    if username:
+        # Check common immutable distro paths
+        immutable_paths = [
+            Path(f'/var/home/{username}'),  # Fedora Silverblue/Universal Blue
+            Path(f'/home/{username}'),      # Standard Linux
+        ]
+
+        for path in immutable_paths:
+            if path.exists() and path.is_dir():
+                return path
+
+    # Method 3: Last resort - use the original Path.home() even if it seems wrong
+    # This ensures we don't crash the installation
+    return Path.home()
+
+
 def _get_env_tracking_file() -> Path:
     """Get path to environment variable tracking file"""
     from .. import DEFAULT_INSTALL_DIR
-    install_dir = Path.home() / ".claude"
+    install_dir = get_home_directory() / ".claude"
     install_dir.mkdir(exist_ok=True)
     return install_dir / "superclaude_env_vars.json"
 
@@ -90,7 +137,7 @@ def detect_shell_config() -> Optional[Path]:
     Returns:
         Path to the shell configuration file, or None if not found
     """
-    home = Path.home()
+    home = get_home_directory()
     
     # Check in order of preference
     configs = [
@@ -340,7 +387,7 @@ def cleanup_environment_variables(env_vars_to_remove: Dict[str, str], create_res
 def _create_restore_script(env_vars: Dict[str, str]) -> Optional[Path]:
     """Create a script to restore environment variables"""
     try:
-        home = Path.home()
+        home = get_home_directory()
         if os.name == 'nt':  # Windows
             script_path = home / "restore_superclaude_env.bat"
             with open(script_path, 'w') as f:
@@ -423,7 +470,7 @@ def create_env_file(api_keys: Dict[str, str], env_file_path: Optional[Path] = No
         True if .env file was created successfully, False otherwise
     """
     if env_file_path is None:
-        env_file_path = Path.home() / ".env"
+        env_file_path = get_home_directory() / ".env"
     
     logger = get_logger()
     

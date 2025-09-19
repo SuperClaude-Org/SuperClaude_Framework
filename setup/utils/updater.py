@@ -17,13 +17,14 @@ from datetime import datetime, timedelta
 
 from .ui import display_info, display_warning, display_success, Colors
 from .logger import get_logger
+from .environment import get_home_directory
 
 
 class UpdateChecker:
     """Handles automatic update checking for SuperClaude"""
     
     PYPI_URL = "https://pypi.org/pypi/SuperClaude/json"
-    CACHE_FILE = Path.home() / ".claude" / ".update_check"
+    CACHE_FILE = get_home_directory() / ".claude" / ".update_check"
     CHECK_INTERVAL = 86400  # 24 hours in seconds
     TIMEOUT = 2  # seconds
     
@@ -162,7 +163,7 @@ class UpdateChecker:
             )
             if result.returncode == 0:
                 # Check if it's a user installation
-                if '--user' in result.stdout or Path.home() in Path(result.stdout):
+                if '--user' in result.stdout or get_home_directory() in Path(result.stdout):
                     return 'pip-user'
                 return 'pip'
         except:

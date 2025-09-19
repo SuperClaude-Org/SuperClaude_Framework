@@ -298,10 +298,10 @@ Standard Approach: Consistent, professional baseline for all tasks
 /sc:implement "user login" --brainstorm
 
 # Add reasoning transparency to debugging
-/sc:fix auth-issue --introspect
+# Debug authentication issue with transparent reasoning
 
 # Enable task management for simple operations
-/sc:update styles.css --task-manage
+# Update styles.css with systematic task management
 ```
 
 ### Mode Boundaries and Priority
@@ -352,7 +352,7 @@ Standard Approach: Consistent, professional baseline for all tasks
 → 💡 Pattern recognition across similar issues
 
 # Systematic resolution (Task Management coordinates)
-/sc:fix auth-system --comprehensive
+# Fix authentication system comprehensively
 → 📋 Phase 1: Root cause analysis
 → 📋 Phase 2: Solution implementation  
 → 📋 Phase 3: Testing and validation

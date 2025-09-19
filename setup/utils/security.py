@@ -32,6 +32,7 @@ import os
 from pathlib import Path
 from typing import List, Optional, Tuple, Set
 import urllib.parse
+from .environment import get_home_directory
 
 
 class SecurityValidator:
@@ -410,7 +411,7 @@ class SecurityValidator:
         
         if is_claude_dir:
             try:
-                home_path = Path.home()
+                home_path = get_home_directory()
             except (RuntimeError, OSError):
                 # If we can't determine home directory, skip .claude special handling
                 cls._log_security_decision("WARN", f"Cannot determine home directory for .claude validation: {abs_target}")
@@ -432,7 +433,7 @@ class SecurityValidator:
                         if ':' in abs_target_str and '\\users\\' in abs_target_str:
                             try:
                                 # Check if target is within the user's actual home directory
-                                home_path = Path.home()
+                                home_path = get_home_directory()
                                 abs_target.relative_to(home_path)
                                 # Path is valid - within user's home directory
                             except ValueError:

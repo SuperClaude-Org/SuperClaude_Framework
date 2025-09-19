@@ -6,6 +6,7 @@ Refactored from install.py for unified CLI hub
 import sys
 import time
 from pathlib import Path
+from ...utils.environment import get_home_directory
 from typing import List, Optional, Dict, Any
 import argparse
 
@@ -187,7 +188,7 @@ def select_mcp_servers(registry: ComponentRegistry) -> List[str]:
     
     try:
         # Get MCP component to access server list
-        mcp_instance = registry.get_component_instance("mcp", Path.home() / ".claude")
+        mcp_instance = registry.get_component_instance("mcp", get_home_directory() / ".claude")
         if not mcp_instance or not hasattr(mcp_instance, 'mcp_servers'):
             logger.error("Could not access MCP server information")
             return []
@@ -526,7 +527,7 @@ def run(args: argparse.Namespace) -> int:
     operation.setup_operation_logging(args)
     logger = get_logger()
     # ✅ Enhanced security validation with symlink protection
-    expected_home = Path.home().resolve()
+    expected_home = get_home_directory().resolve()
     install_dir_original = args.install_dir
     install_dir_resolved = args.install_dir.resolve()
 
