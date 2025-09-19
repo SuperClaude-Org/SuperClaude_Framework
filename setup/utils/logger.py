@@ -11,7 +11,7 @@ from enum import Enum
 
 from .ui import Colors
 from .symbols import symbols
-from .environment import get_home_directory
+from .paths import get_home_directory
 
 
 class LogLevel(Enum):

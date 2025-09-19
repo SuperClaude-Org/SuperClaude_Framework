@@ -8,7 +8,7 @@ import time
 import tarfile
 import json
 from pathlib import Path
-from ...utils.environment import get_home_directory
+from ...utils.paths import get_home_directory
 from datetime import datetime
 from typing import List, Optional, Dict, Any, Tuple
 import argparse

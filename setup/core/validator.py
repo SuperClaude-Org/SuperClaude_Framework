@@ -8,7 +8,7 @@ import shutil
 from typing import Tuple, List, Dict, Any, Optional
 from pathlib import Path
 import re
-from ..utils.environment import get_home_directory
+from ..utils.paths import get_home_directory
 
 # Handle packaging import - if not available, use a simple version comparison
 try:

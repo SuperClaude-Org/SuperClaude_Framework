@@ -6,7 +6,7 @@ Refactored from install.py for unified CLI hub
 import sys
 import time
 from pathlib import Path
-from ...utils.environment import get_home_directory
+from ...utils.paths import get_home_directory
 from typing import List, Optional, Dict, Any
 import argparse
 

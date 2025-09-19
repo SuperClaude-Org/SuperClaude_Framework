@@ -18,7 +18,7 @@ PROJECT_ROOT = SETUP_DIR.parent
 DATA_DIR = SETUP_DIR / "data"
 
 # Import home directory detection for immutable distros
-from .utils.environment import get_home_directory
+from .utils.paths import get_home_directory
 
 # Installation target
 DEFAULT_INSTALL_DIR = get_home_directory() / ".claude"

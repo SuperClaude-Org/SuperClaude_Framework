@@ -32,7 +32,7 @@ import os
 from pathlib import Path
 from typing import List, Optional, Tuple, Set
 import urllib.parse
-from .environment import get_home_directory
+from .paths import get_home_directory
 
 
 class SecurityValidator:

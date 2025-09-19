@@ -17,7 +17,7 @@ from datetime import datetime, timedelta
 
 from .ui import display_info, display_warning, display_success, Colors
 from .logger import get_logger
-from .environment import get_home_directory
+from .paths import get_home_directory
 
 
 class UpdateChecker:
