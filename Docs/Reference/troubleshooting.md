@@ -6,7 +6,7 @@ Quick fixes to advanced diagnostics for SuperClaude Framework issues.
 
 **Installation Verification:**
 ```bash
-python3 -m SuperClaude --version    # Should show 4.1.1
+python3 -m SuperClaude --version    # Should show 4.1.2
 SuperClaude install --list-components
 ```
 
@@ -19,7 +19,7 @@ SuperClaude install --list-components
 ```
 
 **Resolution Checklist:**
-- [ ] Version commands work and show 4.1.1
+- [ ] Version commands work and show 4.1.2
 - [ ] `/sc:` commands respond in Claude Code  
 - [ ] MCP servers listed: `SuperClaude install --list-components | grep mcp`
 
