@@ -10,7 +10,7 @@ from pathlib import Path
 try:
     __version__ = (Path(__file__).parent.parent.parent / "VERSION").read_text().strip()
 except Exception:
-    __version__ = "4.1.2"  # Fallback
+    __version__ = "4.1.3"  # Fallback
 
 
 def get_command_info():

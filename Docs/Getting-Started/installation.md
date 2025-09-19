@@ -5,7 +5,7 @@
 ### **Transform Claude Code with 21 Commands, 14 Agents & 6 MCP Servers**
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-4.1.2-blue?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/version-4.1.3-blue?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/Python-3.8+-green?style=for-the-badge" alt="Python">
   <img src="https://img.shields.io/badge/Platform-Linux%20|%20macOS%20|%20Windows-orange?style=for-the-badge" alt="Platform">
 </p>
@@ -266,7 +266,7 @@ SuperClaude install --dry-run
 ```bash
 # Verify SuperClaude version
 python3 -m SuperClaude --version
-# Expected: SuperClaude 4.1.2
+# Expected: SuperClaude 4.1.3
 
 # List installed components
 SuperClaude install --list-components
