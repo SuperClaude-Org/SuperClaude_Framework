@@ -1,11 +1,13 @@
 {
   "serena": {
-      "command": "uvx",
+      "command": "uv",
       "args": [
-        "--from",
-        "git+https://github.com/oraios/serena",
-        "serena",
-        "start-mcp-server"
+        "tool",
+        "run",
+        "serena-ai",
+        "start-mcp-server",
+        "--context",
+        "ide-assistant"
       ]
     }
   }

@@ -469,11 +469,11 @@ def interactive_uninstall_selection(installed_components: Dict[str, str]) -> Opt
 def display_preservation_info() -> None:
     """Show what will NOT be removed (user's custom files)"""
     print(f"\n{Colors.GREEN}{Colors.BRIGHT}Files that will be preserved:{Colors.RESET}")
-    print(f"{Colors.GREEN}✓ User's custom commands (not in commands/sc/){Colors.RESET}")
-    print(f"{Colors.GREEN}✓ User's custom agents (not SuperClaude agents){Colors.RESET}")
-    print(f"{Colors.GREEN}✓ User's custom .claude.json configurations{Colors.RESET}")
-    print(f"{Colors.GREEN}✓ User's custom files in shared directories{Colors.RESET}")
-    print(f"{Colors.GREEN}✓ Claude Code settings and other tools' configurations{Colors.RESET}")
+    print(f"{Colors.GREEN}+ User's custom commands (not in commands/sc/){Colors.RESET}")
+    print(f"{Colors.GREEN}+ User's custom agents (not SuperClaude agents){Colors.RESET}")
+    print(f"{Colors.GREEN}+ User's custom .claude.json configurations{Colors.RESET}")
+    print(f"{Colors.GREEN}+ User's custom files in shared directories{Colors.RESET}")
+    print(f"{Colors.GREEN}+ Claude Code settings and other tools' configurations{Colors.RESET}")
 
 
 def display_component_details(component: str, info: Dict[str, Any]) -> Dict[str, Any]:
@@ -562,10 +562,10 @@ def display_uninstall_plan(components: List[str], args: argparse.Namespace, info
     
     # Show detailed preservation information
     print(f"\n{Colors.GREEN}{Colors.BRIGHT}Safety Guarantees - Will Preserve:{Colors.RESET}")
-    print(f"{Colors.GREEN}✓ User's custom commands (not in commands/sc/){Colors.RESET}")
-    print(f"{Colors.GREEN}✓ User's custom agents (not SuperClaude agents){Colors.RESET}")
-    print(f"{Colors.GREEN}✓ User's .claude.json customizations{Colors.RESET}")
-    print(f"{Colors.GREEN}✓ Claude Code settings and other tools' configurations{Colors.RESET}")
+    print(f"{Colors.GREEN}+ User's custom commands (not in commands/sc/){Colors.RESET}")
+    print(f"{Colors.GREEN}+ User's custom agents (not SuperClaude agents){Colors.RESET}")
+    print(f"{Colors.GREEN}+ User's .claude.json customizations{Colors.RESET}")
+    print(f"{Colors.GREEN}+ Claude Code settings and other tools' configurations{Colors.RESET}")
     
     # Show additional preserved items
     preserved = []
@@ -578,7 +578,7 @@ def display_uninstall_plan(components: List[str], args: argparse.Namespace, info
     
     if preserved:
         for item in preserved:
-            print(f"{Colors.GREEN}✓ {item}{Colors.RESET}")
+            print(f"{Colors.GREEN}+ {item}{Colors.RESET}")
     
     if args.complete:
         print(f"\n{Colors.RED}⚠️  WARNING: Complete uninstall will remove all SuperClaude files{Colors.RESET}")
@@ -591,11 +591,11 @@ def display_uninstall_plan(components: List[str], args: argparse.Namespace, info
             for env_var in env_vars.keys():
                 print(f"  - {env_var}")
             if not args.no_restore_script:
-                print(f"{Colors.GREEN}  ✓ Restore script will be created{Colors.RESET}")
+                print(f"{Colors.GREEN}  + Restore script will be created{Colors.RESET}")
         else:
             print(f"{Colors.BLUE}Will preserve {len(env_vars)} API key environment variables:{Colors.RESET}")
             for env_var in env_vars.keys():
-                print(f"  ✓ {env_var}")
+                print(f"  + {env_var}")
     
     print()
 
@@ -770,7 +770,7 @@ def run(args: argparse.Namespace) -> int:
     actual_dir = args.install_dir.resolve()
 
     if not str(actual_dir).startswith(str(expected_home)):
-        print(f"\n[✗] Installation must be inside your user profile directory.")
+        print(f"\n[x] Installation must be inside your user profile directory.")
         print(f"    Expected prefix: {expected_home}")
         print(f"    Provided path:   {actual_dir}")
         sys.exit(1)

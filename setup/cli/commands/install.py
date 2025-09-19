@@ -165,7 +165,7 @@ def collect_api_keys_for_servers(selected_servers: List[str], mcp_instance) -> D
         return {}
     
     # Display API key configuration header
-    print(f"\n{Colors.CYAN}{Colors.BRIGHT}═══ API Key Configuration ═══{Colors.RESET}")
+    print(f"\n{Colors.CYAN}{Colors.BRIGHT}=== API Key Configuration ==={Colors.RESET}")
     print(f"{Colors.YELLOW}The following servers require API keys for full functionality:{Colors.RESET}\n")
     
     collected_keys = {}
@@ -201,9 +201,9 @@ def select_mcp_servers(registry: ComponentRegistry) -> List[str]:
             api_key_note = " (requires API key)" if server_info.get("requires_api_key", False) else ""
             server_options.append(f"{server_key} - {description}{api_key_note}")
         
-        print(f"\n{Colors.CYAN}{Colors.BRIGHT}═══════════════════════════════════════════════════{Colors.RESET}")
+        print(f"\n{Colors.CYAN}{Colors.BRIGHT}{'='*51}{Colors.RESET}")
         print(f"{Colors.CYAN}{Colors.BRIGHT}Stage 1: MCP Server Selection (Optional){Colors.RESET}")
-        print(f"{Colors.CYAN}{Colors.BRIGHT}═══════════════════════════════════════════════════{Colors.RESET}")
+        print(f"{Colors.CYAN}{Colors.BRIGHT}{'='*51}{Colors.RESET}")
         print(f"\n{Colors.BLUE}MCP servers extend Claude Code with specialized capabilities.{Colors.RESET}")
         print(f"{Colors.BLUE}Select servers to configure (you can always add more later):{Colors.RESET}")
         
@@ -275,9 +275,9 @@ def select_framework_components(registry: ComponentRegistry, config_manager: Con
             component_options.append("mcp_docs - MCP server documentation (none selected)")
             auto_selected_mcp_docs = False
         
-        print(f"\n{Colors.CYAN}{Colors.BRIGHT}═══════════════════════════════════════════════════{Colors.RESET}")
+        print(f"\n{Colors.CYAN}{Colors.BRIGHT}{'='*51}{Colors.RESET}")
         print(f"{Colors.CYAN}{Colors.BRIGHT}Stage 2: Framework Component Selection{Colors.RESET}")
-        print(f"{Colors.CYAN}{Colors.BRIGHT}═══════════════════════════════════════════════════{Colors.RESET}")
+        print(f"{Colors.CYAN}{Colors.BRIGHT}{'='*51}{Colors.RESET}")
         print(f"\n{Colors.BLUE}Select SuperClaude framework components to install:{Colors.RESET}")
         
         menu = Menu("Select components (Core is recommended):", component_options, multi_select=True)
@@ -553,13 +553,13 @@ def run(args: argparse.Namespace) -> int:
                         # Ensure symlink target is also within user home
                         symlink_target.relative_to(expected_home)
     except ValueError:
-        print(f"\n[✗] Installation must be inside your user profile directory.")
+        print(f"\n[x] Installation must be inside your user profile directory.")
         print(f"    Expected prefix: {expected_home}")
         print(f"    Provided path:   {install_dir_resolved}")
         print(f"    Security: Symlinks outside user directory are not allowed.")
         sys.exit(1)
     except Exception as e:
-        print(f"\n[✗] Security validation failed: {e}")
+        print(f"\n[x] Security validation failed: {e}")
         print(f"    Please use a standard directory path within your user profile.")
         sys.exit(1)
     

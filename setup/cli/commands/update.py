@@ -197,7 +197,7 @@ def collect_api_keys_for_servers(selected_servers: List[str], mcp_instance) -> D
         return {}
     
     # Display API key configuration header
-    print(f"\n{Colors.CYAN}{Colors.BRIGHT}═══ API Key Configuration ═══{Colors.RESET}")
+    print(f"\n{Colors.CYAN}{Colors.BRIGHT}=== API Key Configuration ==={Colors.RESET}")
     print(f"{Colors.YELLOW}New MCP servers require API keys for full functionality:{Colors.RESET}\n")
     
     collected_keys = {}
@@ -388,7 +388,7 @@ def run(args: argparse.Namespace) -> int:
     actual_dir = args.install_dir.resolve()
 
     if not str(actual_dir).startswith(str(expected_home)):
-        print(f"\n[✗] Installation must be inside your user profile directory.")
+        print(f"\n[x] Installation must be inside your user profile directory.")
         print(f"    Expected prefix: {expected_home}")
         print(f"    Provided path:   {actual_dir}")
         sys.exit(1)

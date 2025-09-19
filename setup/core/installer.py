@@ -303,9 +303,9 @@ class Installer:
             success, errors = component.validate_installation()
 
             if success:
-                self.logger.info(f"  ✓ {name}: Valid")
+                self.logger.info(f"  + {name}: Valid")
             else:
-                self.logger.error(f"  ✗ {name}: Invalid")
+                self.logger.error(f"  x {name}: Invalid")
                 for error in errors:
                     self.logger.error(f"    - {error}")
                 all_valid = False

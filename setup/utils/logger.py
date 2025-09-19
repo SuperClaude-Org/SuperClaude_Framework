@@ -10,6 +10,7 @@ from typing import Optional, Dict, Any
 from enum import Enum
 
 from .ui import Colors
+from .symbols import symbols
 
 
 class LogLevel(Enum):
@@ -81,7 +82,7 @@ class Logger:
                     'DEBUG': '[DEBUG]',
                     'INFO': '[INFO]',
                     'WARNING': '[!]',
-                    'ERROR': '[✗]',
+                    'ERROR': f'[{symbols.crossmark}]',
                     'CRITICAL': '[CRITICAL]'
                 }
                 
@@ -177,7 +178,7 @@ class Logger:
                 original_format = console_handler.formatter.format
                 
                 def success_format(record):
-                    return f"{Colors.GREEN}[✓] {record.getMessage()}{Colors.RESET}"
+                    return f"{Colors.GREEN}[{symbols.checkmark}] {record.getMessage()}{Colors.RESET}"
                 
                 console_handler.formatter.format = success_format
                 self.logger.info(message, **kwargs)

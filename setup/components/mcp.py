@@ -55,9 +55,9 @@ class MCPComponent(Component):
             "serena": {
                 "name": "serena",
                 "description": "Semantic code analysis and intelligent editing",
-                "install_method": "uv",
-                "install_command": "uv tool install --from git+https://github.com/oraios/serena serena-agent",
-                "run_command": "serena start-mcp-server --context ide-assistant --project $(pwd)",
+                "install_method": "github",
+                "install_command": "uvx --from git+https://github.com/oraios/serena serena --help",
+                "run_command": "uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant",
                 "required": False
             },
             "morphllm-fast-apply": {
@@ -111,13 +111,13 @@ class MCPComponent(Component):
     def validate_prerequisites(self, installSubPath: Optional[Path] = None) -> Tuple[bool, List[str]]:
         """Check prerequisites"""
         errors = []
-        
+
         # Check if Node.js is available
         try:
             result = self._run_command_cross_platform(
-                ["node", "--version"], 
-                capture_output=True, 
-                text=True, 
+                ["node", "--version"],
+                capture_output=True,
+                text=True,
                 timeout=10
             )
             if result.returncode != 0:
@@ -125,7 +125,7 @@ class MCPComponent(Component):
             else:
                 version = result.stdout.strip()
                 self.logger.debug(f"Found Node.js {version}")
-                
+
                 # Check version (require 18+)
                 try:
                     version_num = int(version.lstrip('v').split('.')[0])
@@ -135,13 +135,13 @@ class MCPComponent(Component):
                     self.logger.warning(f"Could not parse Node.js version: {version}")
         except (subprocess.TimeoutExpired, FileNotFoundError):
             errors.append("Node.js not found - required for MCP servers")
-        
+
         # Check if Claude CLI is available
         try:
             result = self._run_command_cross_platform(
-                ["claude", "--version"], 
-                capture_output=True, 
-                text=True, 
+                ["claude", "--version"],
+                capture_output=True,
+                text=True,
                 timeout=10
             )
             if result.returncode != 0:
@@ -151,13 +151,13 @@ class MCPComponent(Component):
                 self.logger.debug(f"Found Claude CLI {version}")
         except (subprocess.TimeoutExpired, FileNotFoundError):
             errors.append("Claude CLI not found - required for MCP server management")
-        
+
         # Check if npm is available
         try:
             result = self._run_command_cross_platform(
-                ["npm", "--version"], 
-                capture_output=True, 
-                text=True, 
+                ["npm", "--version"],
+                capture_output=True,
+                text=True,
                 timeout=10
             )
             if result.returncode != 0:
@@ -167,7 +167,23 @@ class MCPComponent(Component):
                 self.logger.debug(f"Found npm {version}")
         except (subprocess.TimeoutExpired, FileNotFoundError):
             errors.append("npm not found - required for MCP server installation")
-        
+
+        # Check if uv is available (required for Serena)
+        try:
+            result = self._run_command_cross_platform(
+                ["uv", "--version"],
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
+            if result.returncode != 0:
+                self.logger.warning("uv not found - required for Serena MCP server installation")
+            else:
+                version = result.stdout.strip()
+                self.logger.debug(f"Found uv {version}")
+        except (subprocess.TimeoutExpired, FileNotFoundError):
+            self.logger.warning("uv not found - required for Serena MCP server installation")
+
         return len(errors) == 0, errors
     
     def get_files_to_install(self) -> List[Tuple[Path, Path]]:
@@ -211,6 +227,21 @@ class MCPComponent(Component):
                 self.logger.info(f"MCP server {server_name} already installed")
                 return True
 
+            # Check if uv is available
+            try:
+                uv_check = self._run_command_cross_platform(
+                    ["uv", "--version"],
+                    capture_output=True,
+                    text=True,
+                    timeout=10
+                )
+                if uv_check.returncode != 0:
+                    self.logger.error(f"uv not found - required for {server_name} installation")
+                    return False
+            except (subprocess.TimeoutExpired, FileNotFoundError):
+                self.logger.error(f"uv not found - required for {server_name} installation")
+                return False
+
             if config.get("dry_run"):
                 self.logger.info(f"Would install MCP server (user scope): {install_command}")
                 self.logger.info(f"Would register MCP server run command: {run_command}")
@@ -229,9 +260,19 @@ class MCPComponent(Component):
             if result.returncode == 0:
                 self.logger.success(f"Successfully installed MCP server (user scope): {server_name}")
 
-                self.logger.info(f"Registering {server_name} with Claude CLI. Run command: {run_command}")
+                # For Serena, we need to handle the run command specially
+                if server_name == "serena":
+                    # Serena needs project-specific registration, use current working directory
+                    current_dir = os.getcwd()
+                    serena_run_cmd = f"{run_command} --project {shlex.quote(current_dir)}"
+                    self.logger.info(f"Registering {server_name} with Claude CLI for project: {current_dir}")
+                    reg_cmd = ["claude", "mcp", "add", "-s", "user", "--", server_name] + shlex.split(serena_run_cmd)
+                else:
+                    self.logger.info(f"Registering {server_name} with Claude CLI. Run command: {run_command}")
+                    reg_cmd = ["claude", "mcp", "add", "-s", "user", "--", server_name] + shlex.split(run_command)
+
                 reg_result = self._run_command_cross_platform(
-                    ["claude", "mcp", "add", "-s", "user", "--", server_name] + shlex.split(run_command),
+                    reg_cmd,
                     capture_output=True,
                     text=True,
                     timeout=120
@@ -254,6 +295,89 @@ class MCPComponent(Component):
             return False
         except Exception as e:
             self.logger.error(f"Error installing MCP server {server_name} using uv: {e}")
+            return False
+
+    def _install_github_mcp_server(self, server_info: Dict[str, Any], config: Dict[str, Any]) -> bool:
+        """Install a single MCP server from GitHub using uvx"""
+        server_name = server_info["name"]
+        install_command = server_info.get("install_command")
+        run_command = server_info.get("run_command")
+
+        if not install_command:
+            self.logger.error(f"No install_command found for GitHub-based server {server_name}")
+            return False
+        if not run_command:
+            self.logger.error(f"No run_command found for GitHub-based server {server_name}")
+            return False
+
+        try:
+            self.logger.info(f"Installing MCP server from GitHub: {server_name}")
+
+            if self._check_mcp_server_installed(server_name):
+                self.logger.info(f"MCP server {server_name} already installed")
+                return True
+
+            # Check if uvx is available
+            try:
+                uvx_check = self._run_command_cross_platform(
+                    ["uvx", "--version"],
+                    capture_output=True,
+                    text=True,
+                    timeout=10
+                )
+                if uvx_check.returncode != 0:
+                    self.logger.error(f"uvx not found - required for {server_name} installation")
+                    return False
+            except (subprocess.TimeoutExpired, FileNotFoundError):
+                self.logger.error(f"uvx not found - required for {server_name} installation")
+                return False
+
+            if config.get("dry_run"):
+                self.logger.info(f"Would install MCP server from GitHub: {install_command}")
+                self.logger.info(f"Would register MCP server run command: {run_command}")
+                return True
+
+            # Run install command to test the GitHub installation
+            self.logger.debug(f"Testing GitHub installation: {install_command}")
+            cmd_parts = shlex.split(install_command)
+            result = self._run_command_cross_platform(
+                cmd_parts,
+                capture_output=True,
+                text=True,
+                timeout=300   # 5 minutes for GitHub clone and build
+            )
+
+            if result.returncode == 0:
+                self.logger.success(f"Successfully tested GitHub MCP server: {server_name}")
+
+                # Register with Claude CLI using the run command
+                self.logger.info(f"Registering {server_name} with Claude CLI. Run command: {run_command}")
+                reg_cmd = ["claude", "mcp", "add", "-s", "user", "--", server_name] + shlex.split(run_command)
+
+                reg_result = self._run_command_cross_platform(
+                    reg_cmd,
+                    capture_output=True,
+                    text=True,
+                    timeout=120
+                )
+
+                if reg_result.returncode == 0:
+                    self.logger.success(f"Successfully registered {server_name} with Claude CLI.")
+                    return True
+                else:
+                    error_msg = reg_result.stderr.strip() if reg_result.stderr else "Unknown error"
+                    self.logger.error(f"Failed to register MCP server {server_name} with Claude CLI: {error_msg}")
+                    return False
+            else:
+                error_msg = result.stderr.strip() if result.stderr else "Unknown error"
+                self.logger.error(f"Failed to install MCP server {server_name} from GitHub: {error_msg}\n{result.stdout}")
+                return False
+
+        except subprocess.TimeoutExpired:
+            self.logger.error(f"Timeout installing MCP server {server_name} from GitHub")
+            return False
+        except Exception as e:
+            self.logger.error(f"Error installing MCP server {server_name} from GitHub: {e}")
             return False
 
     def _check_mcp_server_installed(self, server_name: str) -> bool:
@@ -282,6 +406,8 @@ class MCPComponent(Component):
         """Install a single MCP server"""
         if server_info.get("install_method") == "uv":
             return self._install_uv_mcp_server(server_info, config)
+        elif server_info.get("install_method") == "github":
+            return self._install_github_mcp_server(server_info, config)
 
         server_name = server_info["name"]
         npm_package = server_info.get("npm_package")

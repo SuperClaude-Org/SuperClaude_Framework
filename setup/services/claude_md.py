@@ -78,7 +78,7 @@ class CLAUDEMdService:
             User content without framework imports
         """
         # Look for framework imports section marker
-        framework_marker = "# ═══════════════════════════════════════════════════\n# SuperClaude Framework Components"
+        framework_marker = "# ===================================================\n# SuperClaude Framework Components"
         
         if framework_marker in content:
             user_content = content.split(framework_marker)[0].rstrip()
@@ -104,9 +104,9 @@ class CLAUDEMdService:
         sections = []
         
         # Framework imports section header
-        sections.append("# ═══════════════════════════════════════════════════")
+        sections.append("# ===================================================")
         sections.append("# SuperClaude Framework Components")
-        sections.append("# ═══════════════════════════════════════════════════")
+        sections.append("# ===================================================")
         sections.append("")
         
         # Add each category
@@ -197,7 +197,7 @@ class CLAUDEMdService:
         imports_by_category = {}
         
         # Look for framework imports section
-        framework_marker = "# ═══════════════════════════════════════════════════\n# SuperClaude Framework Components"
+        framework_marker = "# ===================================================\n# SuperClaude Framework Components"
         
         if framework_marker not in content:
             return imports_by_category
@@ -213,11 +213,11 @@ class CLAUDEMdService:
             line = line.strip()
             
             # Skip section header lines and empty lines
-            if line.startswith('# ═══') or not line:
+            if line.startswith('# ===') or not line:
                 continue
             
             # Category header (starts with # but not the section divider)
-            if line.startswith('# ') and not line.startswith('# ═══'):
+            if line.startswith('# ') and not line.startswith('# ==='):
                 current_category = line[2:].strip()  # Remove "# "
                 if current_category not in imports_by_category:
                     imports_by_category[current_category] = []

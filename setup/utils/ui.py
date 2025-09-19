@@ -9,6 +9,7 @@ import shutil
 import getpass
 from typing import List, Optional, Any, Dict, Union
 from enum import Enum
+from .symbols import symbols, safe_print, format_with_symbols
 
 # Try to import colorama for cross-platform color support
 try:
@@ -88,8 +89,8 @@ class ProgressBar:
         
         # Calculate filled and empty portions
         filled_width = int(self.width * current / self.total) if self.total > 0 else self.width
-        filled = '█' * filled_width
-        empty = '░' * (self.width - filled_width)
+        filled = symbols.block_filled * filled_width
+        empty = symbols.block_empty * (self.width - filled_width)
         
         # Calculate elapsed time and ETA
         elapsed = time.time() - self.start_time
@@ -118,7 +119,7 @@ class ProgressBar:
             if len(plain_line) > max_length:
                 progress_line = progress_line[:max_length] + "..."
         
-        print(progress_line, end='', flush=True)
+        safe_print(progress_line, end='', flush=True)
     
     def increment(self, message: str = '') -> None:
         """
@@ -326,7 +327,7 @@ def display_info(message: str) -> None:
 
 def display_success(message: str) -> None:
     """Display success message"""
-    print(f"{Colors.GREEN}[✓] {message}{Colors.RESET}")
+    safe_print(f"{Colors.GREEN}[{symbols.checkmark}] {message}{Colors.RESET}")
 
 
 def display_warning(message: str) -> None:
@@ -336,7 +337,7 @@ def display_warning(message: str) -> None:
 
 def display_error(message: str) -> None:
     """Display error message"""
-    print(f"{Colors.RED}[✗] {message}{Colors.RESET}")
+    safe_print(f"{Colors.RED}[{symbols.crossmark}] {message}{Colors.RESET}")
 
 
 def display_step(step: int, total: int, message: str) -> None:
@@ -410,11 +411,11 @@ def prompt_api_key(service_name: str, env_var_name: str) -> Optional[str]:
             if not confirm("", default=False):
                 return None
         
-        print(f"{Colors.GREEN}[✓] {env_var_name} configured{Colors.RESET}")
+        safe_print(f"{Colors.GREEN}[{symbols.checkmark}] {env_var_name} configured{Colors.RESET}")
         return api_key
         
     except KeyboardInterrupt:
-        print(f"\n{Colors.YELLOW}[SKIPPED] {env_var_name}{Colors.RESET}")
+        safe_print(f"\n{Colors.YELLOW}[SKIPPED] {env_var_name}{Colors.RESET}")
         return None
 
 
@@ -444,7 +445,7 @@ class StatusSpinner:
         """
         self.message = message
         self.spinning = False
-        self.chars = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
+        self.chars = symbols.spinner_chars
         self.current = 0
     
     def start(self) -> None:
@@ -454,7 +455,7 @@ class StatusSpinner:
         def spin():
             while self.spinning:
                 char = self.chars[self.current % len(self.chars)]
-                print(f"\r{Colors.BLUE}{char} {self.message}{Colors.RESET}", end='', flush=True)
+                safe_print(f"\r{Colors.BLUE}{char} {self.message}{Colors.RESET}", end='', flush=True)
                 self.current += 1
                 time.sleep(0.1)
         
@@ -474,10 +475,10 @@ class StatusSpinner:
             self.thread.join(timeout=0.2)
         
         # Clear spinner line
-        print(f"\r{' ' * (len(self.message) + 5)}\r", end='')
-        
+        safe_print(f"\r{' ' * (len(self.message) + 5)}\r", end='')
+
         if final_message:
-            print(final_message)
+            safe_print(final_message)
 
 
 def format_size(size_bytes: int) -> str:

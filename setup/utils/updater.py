@@ -202,10 +202,10 @@ class UpdateChecker:
         update_cmd = self.get_update_command()
         
         # Display banner
-        print(f"\n{Colors.CYAN}╔════════════════════════════════════════════════╗{Colors.RESET}")
+        print(f"\n{Colors.CYAN}+================================================+{Colors.RESET}")
         print(f"{Colors.CYAN}║{Colors.YELLOW}  🚀 Update Available: {self.current_version} → {latest}        {Colors.CYAN}║{Colors.RESET}")
         print(f"{Colors.CYAN}║{Colors.GREEN}  Run: {update_cmd:<30} {Colors.CYAN}║{Colors.RESET}")
-        print(f"{Colors.CYAN}╚════════════════════════════════════════════════╝{Colors.RESET}\n")
+        print(f"{Colors.CYAN}+================================================+{Colors.RESET}\n")
         
         if auto_update:
             return True
