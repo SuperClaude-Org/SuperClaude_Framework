@@ -137,8 +137,12 @@ def get_components_to_install(args: argparse.Namespace, registry: ComponentRegis
             if selected_servers:
                 if 'mcp' not in components:
                     components.append('mcp')
+                    logger.debug(f"Auto-added 'mcp' component for selected servers: {selected_servers}")
                 if 'mcp_docs' not in components:
                     components.append('mcp_docs')
+                    logger.debug(f"Auto-added 'mcp_docs' component for selected servers: {selected_servers}")
+
+                logger.info(f"Final components to install: {components}")
 
             # If mcp_docs was explicitly requested but no servers selected, warn user
             elif not selected_servers and 'mcp_docs' in components:

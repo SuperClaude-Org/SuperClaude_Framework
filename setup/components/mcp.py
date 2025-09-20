@@ -587,7 +587,8 @@ class MCPComponent(Component):
             self.settings_manager.add_component_registration("mcp", {
                 "version": __version__,
                 "category": "integration",
-                "servers_count": len(self.mcp_servers)
+                "servers_count": len(self.installed_servers_in_session),
+                "installed_servers": self.installed_servers_in_session
             })
 
             self.logger.info("Updated metadata with MCP component registration")
