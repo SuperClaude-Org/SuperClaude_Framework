@@ -338,7 +338,7 @@ Standard Approach: Consistent, professional baseline for all tasks
 → 🎯 Phase coordination with quality gates
 
 # Phase 3: Implementation (Orchestration Mode coordinates tools)
-/sc:develop frontend + backend
+/sc:implement "frontend and backend systems"
 → 🎯 Magic (UI) + Context7 (patterns) + Sequential (architecture)
 → ⚡ Parallel execution optimization
 ```
@@ -363,7 +363,7 @@ Standard Approach: Consistent, professional baseline for all tasks
 **High-Complexity Scenarios:**
 ```bash
 # Large refactoring with multiple constraints
-/sc:modernize legacy-system/ --introspect --uc --orchestrate
+/sc:improve legacy-system/ --introspect --uc --orchestrate
 → 🔍 Transparent reasoning (Introspection)
 → ⚡ Compressed communication (Token Efficiency)  
 → 🎯 Optimal tool coordination (Orchestration)
@@ -437,7 +437,7 @@ For troubleshooting help, see:
 # Problem: Simple tasks getting complex coordination
 # Quick Fix: Reduce scope or use simpler commands
 /sc:implement "function" --no-task-manage     # Disable coordination
-/sc:simple-fix bug.js                         # Use basic commands
+/sc:troubleshoot bug.js                       # Use basic commands
 # Check if task really is complex (>3 files, >2 directories)
 ```
 

@@ -337,7 +337,7 @@ Standard Approach: Consistent, professional baseline for all tasks
 → 🎯 带质量门控的阶段协调
 
 # 阶段 3：实现（编排模式协调工具）
-/sc:develop frontend + backend
+/sc:implement "frontend and backend systems"
 → 🎯 Magic (UI) + Context7 (模式) + Sequential (架构)
 → ⚡ 并行执行优化
 ```
@@ -362,7 +362,7 @@ Standard Approach: Consistent, professional baseline for all tasks
 **高复杂度场景：**
 ```bash
 # 带多重约束的大型重构
-/sc:modernize legacy-system/ --introspect --uc --orchestrate
+/sc:improve legacy-system/ --introspect --uc --orchestrate
 → 🔍 透明推理introspect（内省）
 → ⚡ 压缩通信uc（令牌效率）
 → 🎯 最优工具协调orchestrate（编排）
@@ -436,7 +436,7 @@ Standard Approach: Consistent, professional baseline for all tasks
 # 问题：简单任务得到复杂协调
 # 快速修复：减少范围或使用更简单的命令
 /sc:implement "function" --no-task-manage     # 禁用协调
-/sc:simple-fix bug.js                         # 使用基本命令
+/sc:troubleshoot bug.js                       # 使用基本命令
 # 检查任务是否真正复杂（>3 文件，>2 目录）
 ```
 
