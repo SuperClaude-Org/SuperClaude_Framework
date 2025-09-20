@@ -169,9 +169,8 @@ export MORPH_API_KEY="your_key_here"
       "env": {"MORPH_API_KEY": "${MORPH_API_KEY}"}
     },
     "serena": {
-      "command": "uv",
-      "args": ["run", "serena", "start-mcp-server", "--context", "ide-assistant"],
-      "cwd": "$HOME/.claude/serena"
+      "command": "uvx",
+      "args": ["--from", "git+https://github.com/oraios/serena", "serena", "start-mcp-server", "--context", "ide-assistant"]
     }
   }
 }
