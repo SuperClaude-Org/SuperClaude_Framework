@@ -92,7 +92,7 @@ class MCPDocsComponent(Component):
 
         if not selected_servers:
             self.logger.info("No MCP servers selected - skipping documentation installation")
-            return self._post_install()
+            return False
 
         # Validate installation
         success, errors = self.validate_prerequisites()
@@ -106,7 +106,7 @@ class MCPDocsComponent(Component):
 
         if not files_to_install:
             self.logger.warning("No MCP documentation files found to install")
-            return self._post_install()
+            return False
 
         # Copy documentation files
         success_count = 0

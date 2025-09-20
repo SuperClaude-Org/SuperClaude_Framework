@@ -126,8 +126,8 @@ def get_components_to_install(args: argparse.Namespace, registry: ComponentRegis
         else:
             components = args.components
 
-        # If mcp is specified non-interactively, we should still ask which servers to install.
-        if 'mcp' in components:
+        # If mcp or mcp_docs is specified non-interactively, we should still ask which servers to install.
+        if 'mcp' in components or 'mcp_docs' in components:
             selected_servers = select_mcp_servers(registry)
             if not hasattr(config_manager, '_installation_context'):
                 config_manager._installation_context = {}
@@ -136,6 +136,13 @@ def get_components_to_install(args: argparse.Namespace, registry: ComponentRegis
             # If the user selected some servers, but didn't select mcp_docs, add it.
             if selected_servers and 'mcp_docs' not in components:
                 components.append('mcp_docs')
+
+            # If mcp_docs was explicitly requested but no servers selected, warn user
+            elif not selected_servers and 'mcp_docs' in components:
+                logger.warning("mcp_docs component was requested but no MCP servers were selected")
+                logger.info("MCP documentation requires at least one MCP server to be selected")
+                # Remove mcp_docs since it can't be installed without servers
+                components.remove('mcp_docs')
 
         return components
     
