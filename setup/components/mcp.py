@@ -67,6 +67,15 @@ class MCPComponent(Component):
                 "required": False,
                 "api_key_env": "MORPH_API_KEY",
                 "api_key_description": "Morph API key for Fast Apply"
+            },
+            "tavily": {
+                "name": "tavily",
+                "description": "Web search and real-time information retrieval for deep research",
+                "install_method": "npm",
+                "install_command": "npx -y tavily-mcp@0.1.2",
+                "required": False,
+                "api_key_env": "TAVILY_API_KEY",
+                "api_key_description": "Tavily API key for web search (get from https://app.tavily.com)"
             }
         }
     
@@ -296,6 +305,7 @@ class MCPComponent(Component):
         except Exception as e:
             self.logger.error(f"Error installing MCP server {server_name} using uv: {e}")
             return False
+    
 
     def _install_github_mcp_server(self, server_info: Dict[str, Any], config: Dict[str, Any]) -> bool:
         """Install a single MCP server from GitHub using uvx"""
@@ -535,9 +545,10 @@ class MCPComponent(Component):
 
         server_name = server_info["name"]
         npm_package = server_info.get("npm_package")
+        install_command = server_info.get("install_command")
 
-        if not npm_package:
-            self.logger.error(f"No npm_package found for server {server_name}")
+        if not npm_package and not install_command:
+            self.logger.error(f"No npm_package or install_command found for server {server_name}")
             return False
         
         command = "npx"
@@ -567,18 +578,35 @@ class MCPComponent(Component):
                         self.logger.warning(f"Proceeding without {api_key_env} - server may not function properly")
             
             # Install using Claude CLI
-            if config.get("dry_run"):
-                self.logger.info(f"Would install MCP server (user scope): claude mcp add -s user {server_name} {command} -y {npm_package}")
-                return True
-            
-            self.logger.debug(f"Running: claude mcp add -s user {server_name} {command} -y {npm_package}")
-            
-            result = self._run_command_cross_platform(
-                ["claude", "mcp", "add", "-s", "user", "--", server_name, command, "-y", npm_package],
-                capture_output=True,
-                text=True,
-                timeout=120  # 2 minutes timeout for installation
-            )
+            if install_command:
+                # Use the full install command (e.g., for tavily-mcp@0.1.2)
+                install_args = install_command.split()
+                if config.get("dry_run"):
+                    self.logger.info(f"Would install MCP server (user scope): claude mcp add -s user {server_name} {' '.join(install_args)}")
+                    return True
+                
+                self.logger.debug(f"Running: claude mcp add -s user {server_name} {' '.join(install_args)}")
+                
+                result = self._run_command_cross_platform(
+                    ["claude", "mcp", "add", "-s", "user", "--", server_name] + install_args,
+                    capture_output=True,
+                    text=True,
+                    timeout=120  # 2 minutes timeout for installation
+                )
+            else:
+                # Use npm_package
+                if config.get("dry_run"):
+                    self.logger.info(f"Would install MCP server (user scope): claude mcp add -s user {server_name} {command} -y {npm_package}")
+                    return True
+                
+                self.logger.debug(f"Running: claude mcp add -s user {server_name} {command} -y {npm_package}")
+                
+                result = self._run_command_cross_platform(
+                    ["claude", "mcp", "add", "-s", "user", "--", server_name, command, "-y", npm_package],
+                    capture_output=True,
+                    text=True,
+                    timeout=120  # 2 minutes timeout for installation
+                )
             
             if result.returncode == 0:
                 self.logger.success(f"Successfully installed MCP server (user scope): {server_name}")

@@ -1,6 +1,6 @@
 # SuperClaude Commands Guide
 
-SuperClaude provides 24 commands for Claude Code: `/sc:*` commands for workflows and `@agent-*` for specialists.
+SuperClaude provides 25 commands for Claude Code: `/sc:*` commands for workflows and `@agent-*` for specialists.
 
 ## Command Types
 
@@ -106,7 +106,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 
 - [Essential Commands](#essential-commands) - Start here (8 core commands)
 - [Common Workflows](#common-workflows) - Command combinations that work
-- [Full Command Reference](#full-command-reference) - All 23 commands organized by category
+- [Full Command Reference](#full-command-reference) - All 25 commands organized by category
 - [Troubleshooting](#troubleshooting) - Common issues and solutions
 - [Command Index](#command-index) - Find commands by category
 
@@ -132,6 +132,24 @@ python3 -m SuperClaude install --list-components | grep mcp
 **Use Cases**:
 - Discovering available commands: `/sc:help`
 - Getting a quick reminder of command names: `/sc:help`
+
+### `/sc:research` - Deep Research Command
+**Purpose**: Comprehensive web research with adaptive planning and intelligent search  
+**Syntax**: `/sc:research "[query]"` `[--depth quick|standard|deep|exhaustive] [--strategy planning|intent|unified]`
+
+**Use Cases**:
+- Technical research: `/sc:research "latest React 19 features" --depth deep`
+- Market analysis: `/sc:research "AI coding assistant landscape 2024" --strategy unified`
+- Academic investigation: `/sc:research "quantum computing breakthroughs" --depth exhaustive`
+- Current events: `/sc:research "latest AI developments 2024"`
+
+**Key Capabilities**:
+- **6-Phase Workflow**: Understand → Plan → TodoWrite → Execute → Track → Validate
+- **Adaptive Depth**: Quick (basic search), Standard (extended), Deep (comprehensive), Exhaustive (maximum depth)
+- **Planning Strategies**: Planning (direct), Intent (clarify first), Unified (collaborative)
+- **Parallel Execution**: Default parallel searches and extractions
+- **Evidence Management**: Clear citations with relevance scoring
+- **Output Standards**: Reports saved to `claudedocs/research_[topic]_[timestamp].md`
 
 ### `/sc:implement` - Feature Development  
 **Purpose**: Full-stack feature implementation with intelligent specialist routing  
@@ -277,6 +295,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 | Command | Purpose | Best For |
 |---------|---------|----------|
 | **analyze** | Code assessment | Quality audits, security reviews |
+| **research** | Web research with intelligent search | Technical research, current events, market analysis |
 | **business-panel** | Strategic analysis | Business decisions, competitive assessment |
 | **spec-panel** | Specification review | Requirements validation, architecture analysis |
 | **troubleshoot** | Problem diagnosis | Bug investigation, performance issues |

@@ -22,7 +22,7 @@ class ModesComponent(Component):
         return {
             "name": "modes",
             "version": __version__,
-            "description": "SuperClaude behavioral modes (Brainstorming, Introspection, Task Management, Token Efficiency)",
+            "description": "7 behavioral modes for enhanced Claude Code operation",
             "category": "modes"
         }
     

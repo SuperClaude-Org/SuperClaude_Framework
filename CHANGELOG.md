@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.2.0] - 2025-09-18
+### Added
+- **Deep Research System** - Complete implementation of autonomous web research capabilities
+  - New `/sc:research` command for intelligent web research with DR Agent architecture
+  - `deep-research-agent` - 15th specialized agent for research orchestration
+  - `MODE_DeepResearch` - 7th behavioral mode for research workflows
+  - Tavily MCP integration (7th MCP server) for real-time web search
+  - Research configuration system (`RESEARCH_CONFIG.md`)
+  - Comprehensive workflow examples (`deep_research_workflows.md`)
+  - Three planning strategies: Planning-Only, Intent-to-Planning, Unified Intent-Planning
+  - Multi-hop reasoning with genealogy tracking for complex queries
+  - Case-based reasoning for learning from past research patterns
+
+### Changed
+- Updated agent count from 14 to 15 (added deep-research-agent)
+- Updated mode count from 6 to 7 (added MODE_DeepResearch)
+- Updated MCP server count from 6 to 7 (added Tavily)
+- Updated command count from 24 to 25 (added /sc:research)
+- Enhanced MCP component with remote server support for Tavily
+- Added `_install_remote_mcp_server` method to handle remote MCP configurations
+
+### Technical
+- Added Tavily to `server_docs_map` in `setup/components/mcp_docs.py`
+- Implemented remote MCP server handler in `setup/components/mcp.py`
+- Added `check_research_prerequisites()` function in `setup/utils/environment.py`
+- Created verification script `scripts/verify_research_integration.sh`
+
+### Requirements
+- `TAVILY_API_KEY` environment variable for web search functionality
+- Node.js and npm for Tavily MCP execution
+
 ## [4.1.4] - 2025-09-20
 ### Added
 - Comprehensive flag documentation integrated into `/sc:help` command
@@ -19,7 +50,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Smart server merging (existing + selected + previously installed)
 - Documentation cleanup: removed non-existent commands (sc:fix, sc:simple-pix, sc:update, sc:develop, sc:modernize, sc:simple-fix)
 - CLI logic to allow mcp_docs installation without server selection
-
 ### Changed
 - MCP component now supports true incremental installation
 - mcp_docs component auto-detects and installs documentation for all detected servers

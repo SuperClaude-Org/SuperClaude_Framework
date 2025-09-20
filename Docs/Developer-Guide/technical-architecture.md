@@ -34,14 +34,19 @@ This guide documents how SuperClaude's Context-Oriented Configuration Framework 
 ├── MCP_Playwright.md               # Playwright MCP integration
 ├── MCP_Sequential.md               # Sequential MCP integration
 ├── MCP_Serena.md                   # Serena MCP integration
+├── MCP_Tavily.md                   # Tavily MCP integration
 ├── MCP_Zig.md                      # Zig MCP integration
 ├── MODE_Brainstorming.md           # Collaborative discovery mode
+├── MODE_Business_Panel.md          # Business expert panel mode
+├── MODE_DeepResearch.md            # Deep research mode
 ├── MODE_Introspection.md           # Transparent reasoning mode
 ├── MODE_Orchestration.md           # Tool coordination mode
 ├── MODE_Task_Management.md         # Task orchestration mode
 ├── MODE_Token_Efficiency.md        # Compressed communication mode
-├── agents/                         # Domain specialist contexts (14 total)
+├── agents/                         # Domain specialist contexts (19 total)
 │   ├── backend-architect.md        # Backend expertise
+│   ├── business-panel-experts.md   # Business strategy panel
+│   ├── deep-research-agent.md      # Deep research expertise
 │   ├── devops-architect.md         # DevOps expertise
 │   ├── frontend-architect.md       # Frontend expertise
 │   ├── learning-guide.md           # Educational expertise
@@ -53,27 +58,34 @@ This guide documents how SuperClaude's Context-Oriented Configuration Framework 
 │   ├── root-cause-analyst.md       # Problem diagnosis expertise
 │   ├── security-engineer.md        # Security expertise
 │   ├── socratic-mentor.md          # Educational expertise
+│   ├── spec-panel-experts.md       # Specification review panel
 │   ├── system-architect.md         # System design expertise
-│   └── technical-writer.md         # Documentation expertise
+│   ├── technical-writer.md         # Documentation expertise
+│   ├── test-runner.md              # Test execution expertise
+│   └── wave-orchestrator.md        # Wave orchestration patterns
 └── commands/                       # Workflow pattern contexts
-    └── sc/                         # SuperClaude command namespace (21 total)
+    └── sc/                         # SuperClaude command namespace (25 total)
         ├── analyze.md              # Analysis patterns
         ├── brainstorm.md           # Discovery patterns
         ├── build.md                # Build patterns
+        ├── business-panel.md       # Business expert panel patterns
         ├── cleanup.md              # Cleanup patterns
         ├── design.md               # Design patterns
         ├── document.md             # Documentation patterns
         ├── estimate.md             # Estimation patterns
         ├── explain.md              # Explanation patterns
         ├── git.md                  # Git workflow patterns
+        ├── help.md                 # Help and command listing
         ├── implement.md            # Implementation patterns
         ├── improve.md              # Improvement patterns
         ├── index.md                # Index patterns
         ├── load.md                 # Context loading patterns
         ├── reflect.md              # Reflection patterns
+        ├── research.md             # Deep research patterns
         ├── save.md                 # Session persistence patterns
         ├── select-tool.md          # Tool selection patterns
         ├── spawn.md                # Multi-agent patterns
+        ├── spec-panel.md           # Specification review panel
         ├── task.md                 # Task management patterns
         ├── test.md                 # Testing patterns
         ├── troubleshoot.md         # Troubleshooting patterns
@@ -112,9 +124,12 @@ The main `CLAUDE.md` file uses an import system to load multiple context files:
 @MCP_Playwright.md         # Playwright MCP integration
 @MCP_Sequential.md         # Sequential MCP integration
 @MCP_Serena.md             # Serena MCP integration
+@MCP_Tavily.md             # Tavily MCP integration
 @MCP_Zig.md                # Zig MCP integration
 *CRITICAL*
 @MODE_Brainstorming.md     # Collaborative discovery mode
+@MODE_Business_Panel.md    # Business expert panel mode
+@MODE_DeepResearch.md      # Deep research mode
 @MODE_Introspection.md     # Transparent reasoning mode
 @MODE_Task_Management.md   # Task orchestration mode
 @MODE_Orchestration.md     # Tool coordination mode
