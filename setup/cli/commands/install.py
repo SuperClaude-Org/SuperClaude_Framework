@@ -133,9 +133,12 @@ def get_components_to_install(args: argparse.Namespace, registry: ComponentRegis
                 config_manager._installation_context = {}
             config_manager._installation_context["selected_mcp_servers"] = selected_servers
 
-            # If the user selected some servers, but didn't select mcp_docs, add it.
-            if selected_servers and 'mcp_docs' not in components:
-                components.append('mcp_docs')
+            # If the user selected some servers, ensure both mcp and mcp_docs are included
+            if selected_servers:
+                if 'mcp' not in components:
+                    components.append('mcp')
+                if 'mcp_docs' not in components:
+                    components.append('mcp_docs')
 
             # If mcp_docs was explicitly requested but no servers selected, warn user
             elif not selected_servers and 'mcp_docs' in components:

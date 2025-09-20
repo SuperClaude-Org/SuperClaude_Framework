@@ -119,11 +119,14 @@ class MCPDocsComponent(Component):
 
         # Copy documentation files
         success_count = 0
+        successfully_copied_files = []
+
         for source, target in files_to_install:
             self.logger.debug(f"Copying {source.name} to {target}")
-            
+
             if self.file_manager.copy_file(source, target):
                 success_count += 1
+                successfully_copied_files.append(source.name)
                 self.logger.debug(f"Successfully copied {source.name}")
             else:
                 self.logger.error(f"Failed to copy {source.name}")
@@ -132,6 +135,8 @@ class MCPDocsComponent(Component):
             self.logger.error(f"Only {success_count}/{len(files_to_install)} documentation files copied successfully")
             return False
 
+        # Update component_files to only include successfully copied files
+        self.component_files = successfully_copied_files
         self.logger.success(f"MCP documentation installed successfully ({success_count} files for {len(selected_servers)} servers)")
 
         return self._post_install()
