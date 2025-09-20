@@ -41,7 +41,14 @@ class MCPDocsComponent(Component):
             "description": "MCP server documentation and usage guides",
             "category": "documentation"
         }
-    
+
+    def is_reinstallable(self) -> bool:
+        """
+        Allow mcp_docs to be reinstalled to handle different server selections.
+        This enables users to add or change MCP server documentation.
+        """
+        return True
+
     def set_selected_servers(self, selected_servers: List[str]) -> None:
         """Set which MCP servers were selected for documentation installation"""
         self.selected_servers = selected_servers
