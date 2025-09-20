@@ -92,7 +92,7 @@ SuperClaude は、Claude Code が特殊な動作を実行するために読み�
 ```shell
 # Verify SuperClaude is working (primary method)
 python3 -m SuperClaude --version
-# Example output: SuperClaude 4.1.3
+# Example output: SuperClaude 4.1.4
 
 # Claude Code CLI version check
 claude --version

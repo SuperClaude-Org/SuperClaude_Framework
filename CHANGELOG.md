@@ -7,9 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [4.1.3] - 2025-09-15
+## [4.1.4] - 2025-09-20
+### Added
+- Comprehensive flag documentation integrated into `/sc:help` command
+- All 25 SuperClaude framework flags now discoverable from help system
+- Practical usage examples and flag priority rules
+
+### Fixed
+- MCP incremental installation and auto-detection system
+- Auto-detection of existing MCP servers from .claude.json and claude_desktop_config.json
+- Smart server merging (existing + selected + previously installed)
+- Documentation cleanup: removed non-existent commands (sc:fix, sc:simple-pix, sc:update, sc:develop, sc:modernize, sc:simple-fix)
+- CLI logic to allow mcp_docs installation without server selection
+
 ### Changed
-- Version bump from 4.1.0 to 4.1.3
+- MCP component now supports true incremental installation
+- mcp_docs component auto-detects and installs documentation for all detected servers
+- Improved error handling and graceful fallback for corrupted config files
+- Enhanced user experience with single-source reference for all SuperClaude capabilities
 
 ## [4.1.0] - 2025-09-13
 ### Added

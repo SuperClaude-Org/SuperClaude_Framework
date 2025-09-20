@@ -67,7 +67,7 @@ SuperClaude 提供行为上下文文件，Claude Code 通过读取这些文件�
 ```bash
 # 验证 SuperClaude 是否正常工作（主要方法）
 python3 -m SuperClaude --version
-# 示例输出：SuperClaude 4.1.3
+# 示例输出：SuperClaude 4.1.4
 
 # Claude Code CLI 版本检查
 claude --version

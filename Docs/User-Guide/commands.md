@@ -67,7 +67,7 @@ SuperClaude provides behavioral context files that Claude Code reads to adopt sp
 ```bash
 # Verify SuperClaude is working (primary method)
 python3 -m SuperClaude --version
-# Example output: SuperClaude 4.1.3
+# Example output: SuperClaude 4.1.4
 
 # Claude Code CLI version check
 claude --version
