@@ -51,12 +51,92 @@ Here is a complete list of all available SuperClaude (`/sc`) commands.
 | `/sc:troubleshoot` | Diagnose and resolve issues in code, builds, deployments, and system behavior |
 | `/sc:workflow` | Generate structured implementation workflows from PRDs and feature requirements |
 
+## SuperClaude Framework Flags
+
+SuperClaude supports behavioral flags to enable specific execution modes and tool selection patterns. Use these flags with any `/sc` command to customize behavior.
+
+### Mode Activation Flags
+
+| Flag | Trigger | Behavior |
+|------|---------|----------|
+| `--brainstorm` | Vague project requests, exploration keywords | Activate collaborative discovery mindset, ask probing questions |
+| `--introspect` | Self-analysis requests, error recovery | Expose thinking process with transparency markers |
+| `--task-manage` | Multi-step operations (>3 steps) | Orchestrate through delegation, systematic organization |
+| `--orchestrate` | Multi-tool operations, parallel execution | Optimize tool selection matrix, enable parallel thinking |
+| `--token-efficient` | Context usage >75%, large-scale operations | Symbol-enhanced communication, 30-50% token reduction |
+
+### MCP Server Flags
+
+| Flag | Trigger | Behavior |
+|------|---------|----------|
+| `--c7` / `--context7` | Library imports, framework questions | Enable Context7 for curated documentation lookup |
+| `--seq` / `--sequential` | Complex debugging, system design | Enable Sequential for structured multi-step reasoning |
+| `--magic` | UI component requests (/ui, /21) | Enable Magic for modern UI generation from 21st.dev |
+| `--morph` / `--morphllm` | Bulk code transformations | Enable Morphllm for efficient multi-file pattern application |
+| `--serena` | Symbol operations, project memory | Enable Serena for semantic understanding and session persistence |
+| `--play` / `--playwright` | Browser testing, E2E scenarios | Enable Playwright for real browser automation and testing |
+| `--all-mcp` | Maximum complexity scenarios | Enable all MCP servers for comprehensive capability |
+| `--no-mcp` | Native-only execution needs | Disable all MCP servers, use native tools |
+
+### Analysis Depth Flags
+
+| Flag | Trigger | Behavior |
+|------|---------|----------|
+| `--think` | Multi-component analysis needs | Standard structured analysis (~4K tokens), enables Sequential |
+| `--think-hard` | Architectural analysis, system-wide dependencies | Deep analysis (~10K tokens), enables Sequential + Context7 |
+| `--ultrathink` | Critical system redesign, legacy modernization | Maximum depth analysis (~32K tokens), enables all MCP servers |
+
+### Execution Control Flags
+
+| Flag | Trigger | Behavior |
+|------|---------|----------|
+| `--delegate [auto\|files\|folders]` | >7 directories OR >50 files | Enable sub-agent parallel processing with intelligent routing |
+| `--concurrency [n]` | Resource optimization needs | Control max concurrent operations (range: 1-15) |
+| `--loop` | Improvement keywords (polish, refine, enhance) | Enable iterative improvement cycles with validation gates |
+| `--iterations [n]` | Specific improvement cycle requirements | Set improvement cycle count (range: 1-10) |
+| `--validate` | Risk score >0.7, resource usage >75% | Pre-execution risk assessment and validation gates |
+| `--safe-mode` | Resource usage >85%, production environment | Maximum validation, conservative execution |
+
+### Output Optimization Flags
+
+| Flag | Trigger | Behavior |
+|------|---------|----------|
+| `--uc` / `--ultracompressed` | Context pressure, efficiency requirements | Symbol communication system, 30-50% token reduction |
+| `--scope [file\|module\|project\|system]` | Analysis boundary needs | Define operational scope and analysis depth |
+| `--focus [performance\|security\|quality\|architecture\|accessibility\|testing]` | Domain-specific optimization | Target specific analysis domain and expertise application |
+
+### Flag Priority Rules
+
+- **Safety First**: `--safe-mode` > `--validate` > optimization flags
+- **Explicit Override**: User flags > auto-detection
+- **Depth Hierarchy**: `--ultrathink` > `--think-hard` > `--think`
+- **MCP Control**: `--no-mcp` overrides all individual MCP flags
+- **Scope Precedence**: system > project > module > file
+
+### Usage Examples
+
+```bash
+# Deep analysis with Context7 enabled
+/sc:analyze --think-hard --context7 src/
+
+# UI development with Magic and validation
+/sc:implement --magic --validate "Add user dashboard"
+
+# Token-efficient task management
+/sc:task --token-efficient --delegate auto "Refactor authentication system"
+
+# Safe production deployment
+/sc:build --safe-mode --validate --focus security
+```
+
 ## Boundaries
 
 **Will:**
 - Display comprehensive list of available SuperClaude commands
 - Provide clear descriptions of each command's functionality
 - Present information in readable tabular format
+- Show all available SuperClaude framework flags and their usage
+- Provide flag usage examples and priority rules
 
 **Will Not:**
 - Execute any commands or create any files
