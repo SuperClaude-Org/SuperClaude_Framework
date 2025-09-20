@@ -22,11 +22,13 @@ class MCPDocsComponent(Component):
         # Map server names to documentation files
         self.server_docs_map = {
             "context7": "MCP_Context7.md",
-            "sequential": "MCP_Sequential.md", 
+            "sequential": "MCP_Sequential.md",
+            "sequential-thinking": "MCP_Sequential.md",  # Handle both naming conventions
             "magic": "MCP_Magic.md",
             "playwright": "MCP_Playwright.md",
             "serena": "MCP_Serena.md",
-            "morphllm": "MCP_Morphllm.md"
+            "morphllm": "MCP_Morphllm.md",
+            "morphllm-fast-apply": "MCP_Morphllm.md"  # Handle both naming conventions
         }
         
         super().__init__(install_dir, Path(""))
