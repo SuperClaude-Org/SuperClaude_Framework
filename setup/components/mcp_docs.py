@@ -90,18 +90,110 @@ class MCPDocsComponent(Component):
                     files.append(self.server_docs_map[server_name])
         return files
     
+    def _detect_existing_mcp_servers_from_config(self) -> List[str]:
+        """Detect existing MCP servers from Claude Desktop config"""
+        detected_servers = []
+
+        try:
+            # Try to find Claude Desktop config file
+            config_paths = [
+                self.install_dir / "claude_desktop_config.json",
+                Path.home() / ".claude" / "claude_desktop_config.json",
+                Path.home() / ".claude.json",  # Claude CLI config
+                Path.home() / "AppData" / "Roaming" / "Claude" / "claude_desktop_config.json",  # Windows
+                Path.home() / "Library" / "Application Support" / "Claude" / "claude_desktop_config.json",  # macOS
+            ]
+
+            config_file = None
+            for path in config_paths:
+                if path.exists():
+                    config_file = path
+                    break
+
+            if not config_file:
+                self.logger.debug("No Claude Desktop config file found")
+                return detected_servers
+
+            import json
+            with open(config_file, 'r') as f:
+                config = json.load(f)
+
+            # Extract MCP server names from mcpServers section
+            mcp_servers = config.get("mcpServers", {})
+            for server_name in mcp_servers.keys():
+                # Map common name variations to our doc file names
+                normalized_name = self._normalize_server_name(server_name)
+                if normalized_name and normalized_name in self.server_docs_map:
+                    detected_servers.append(normalized_name)
+
+            if detected_servers:
+                self.logger.info(f"Detected existing MCP servers from config: {detected_servers}")
+
+        except Exception as e:
+            self.logger.warning(f"Could not read Claude Desktop config: {e}")
+
+        return detected_servers
+
+    def _normalize_server_name(self, server_name: str) -> Optional[str]:
+        """Normalize server name to match our documentation mapping"""
+        if not server_name:
+            return None
+
+        server_name = server_name.lower().strip()
+
+        # Map common variations to our server_docs_map keys
+        name_mappings = {
+            "context7": "context7",
+            "sequential-thinking": "sequential-thinking",
+            "sequential": "sequential-thinking",
+            "magic": "magic",
+            "playwright": "playwright",
+            "serena": "serena",
+            "morphllm": "morphllm",
+            "morphllm-fast-apply": "morphllm",
+            "morph": "morphllm"
+        }
+
+        return name_mappings.get(server_name)
+
     def _install(self, config: Dict[str, Any]) -> bool:
-        """Install MCP documentation component"""
+        """Install MCP documentation component with auto-detection"""
         self.logger.info("Installing MCP server documentation...")
-        
+
+        # Auto-detect existing servers
+        self.logger.info("Auto-detecting existing MCP servers for documentation...")
+        detected_servers = self._detect_existing_mcp_servers_from_config()
+
         # Get selected servers from config
         selected_servers = config.get("selected_mcp_servers", [])
-        self.set_selected_servers(selected_servers)
-        self.component_files = self._discover_component_files()
 
-        if not selected_servers:
-            self.logger.info("No MCP servers selected - skipping documentation installation")
-            return False
+        # Get previously documented servers from metadata
+        previous_servers = self.settings_manager.get_metadata_setting("components.mcp_docs.servers_documented", [])
+
+        # Merge all server lists
+        all_servers = list(set(detected_servers + selected_servers + previous_servers))
+
+        # Filter to only servers we have documentation for
+        valid_servers = [s for s in all_servers if s in self.server_docs_map]
+
+        if not valid_servers:
+            self.logger.info("No MCP servers detected or selected for documentation installation")
+            # Still proceed to update metadata
+            self.set_selected_servers([])
+            self.component_files = []
+            return self._post_install()
+
+        self.logger.info(f"Installing documentation for MCP servers: {', '.join(valid_servers)}")
+        if detected_servers:
+            self.logger.info(f"  - Detected from config: {detected_servers}")
+        if selected_servers:
+            self.logger.info(f"  - Newly selected: {selected_servers}")
+        if previous_servers:
+            self.logger.info(f"  - Previously documented: {previous_servers}")
+
+        # Set the servers for which we'll install documentation
+        self.set_selected_servers(valid_servers)
+        self.component_files = self._discover_component_files()
 
         # Validate installation
         success, errors = self.validate_prerequisites()
@@ -137,7 +229,7 @@ class MCPDocsComponent(Component):
 
         # Update component_files to only include successfully copied files
         self.component_files = successfully_copied_files
-        self.logger.success(f"MCP documentation installed successfully ({success_count} files for {len(selected_servers)} servers)")
+        self.logger.success(f"MCP documentation installed successfully ({success_count} files for {len(valid_servers)} servers)")
 
         return self._post_install()
 

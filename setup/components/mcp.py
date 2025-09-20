@@ -384,23 +384,147 @@ class MCPComponent(Component):
         """Check if MCP server is already installed"""
         try:
             result = self._run_command_cross_platform(
-                ["claude", "mcp", "list"], 
-                capture_output=True, 
-                text=True, 
+                ["claude", "mcp", "list"],
+                capture_output=True,
+                text=True,
                 timeout=60
             )
-            
+
             if result.returncode != 0:
                 self.logger.warning(f"Could not list MCP servers: {result.stderr}")
                 return False
-            
+
             # Parse output to check if server is installed
             output = result.stdout.lower()
             return server_name.lower() in output
-            
+
         except (subprocess.TimeoutExpired, subprocess.SubprocessError) as e:
             self.logger.warning(f"Error checking MCP server status: {e}")
             return False
+
+    def _detect_existing_mcp_servers_from_config(self) -> List[str]:
+        """Detect existing MCP servers from Claude Desktop config"""
+        detected_servers = []
+
+        try:
+            # Try to find Claude Desktop config file
+            config_paths = [
+                self.install_dir / "claude_desktop_config.json",
+                Path.home() / ".claude" / "claude_desktop_config.json",
+                Path.home() / ".claude.json",  # Claude CLI config
+                Path.home() / "AppData" / "Roaming" / "Claude" / "claude_desktop_config.json",  # Windows
+                Path.home() / "Library" / "Application Support" / "Claude" / "claude_desktop_config.json",  # macOS
+            ]
+
+            config_file = None
+            for path in config_paths:
+                if path.exists():
+                    config_file = path
+                    break
+
+            if not config_file:
+                self.logger.debug("No Claude Desktop config file found")
+                return detected_servers
+
+            import json
+            with open(config_file, 'r') as f:
+                config = json.load(f)
+
+            # Extract MCP server names from mcpServers section
+            mcp_servers = config.get("mcpServers", {})
+            for server_name in mcp_servers.keys():
+                # Map common name variations to our standard names
+                normalized_name = self._normalize_server_name(server_name)
+                if normalized_name and normalized_name in self.mcp_servers:
+                    detected_servers.append(normalized_name)
+
+            if detected_servers:
+                self.logger.info(f"Detected existing MCP servers from config: {detected_servers}")
+
+        except Exception as e:
+            self.logger.warning(f"Could not read Claude Desktop config: {e}")
+
+        return detected_servers
+
+    def _detect_existing_mcp_servers_from_cli(self) -> List[str]:
+        """Detect existing MCP servers from Claude CLI"""
+        detected_servers = []
+
+        try:
+            result = self._run_command_cross_platform(
+                ["claude", "mcp", "list"],
+                capture_output=True,
+                text=True,
+                timeout=60
+            )
+
+            if result.returncode != 0:
+                self.logger.debug(f"Could not list MCP servers: {result.stderr}")
+                return detected_servers
+
+            # Parse the output to extract server names
+            output_lines = result.stdout.strip().split('\n')
+            for line in output_lines:
+                line = line.strip().lower()
+                if line and not line.startswith('#') and not line.startswith('no'):
+                    # Extract server name (usually the first word or before first space/colon)
+                    server_name = line.split()[0] if line.split() else ""
+                    normalized_name = self._normalize_server_name(server_name)
+                    if normalized_name and normalized_name in self.mcp_servers:
+                        detected_servers.append(normalized_name)
+
+            if detected_servers:
+                self.logger.info(f"Detected existing MCP servers from CLI: {detected_servers}")
+
+        except Exception as e:
+            self.logger.warning(f"Could not detect existing MCP servers from CLI: {e}")
+
+        return detected_servers
+
+    def _normalize_server_name(self, server_name: str) -> Optional[str]:
+        """Normalize server name to match our internal naming"""
+        if not server_name:
+            return None
+
+        server_name = server_name.lower().strip()
+
+        # Map common variations to our standard names
+        name_mappings = {
+            "context7": "context7",
+            "sequential-thinking": "sequential-thinking",
+            "sequential": "sequential-thinking",
+            "magic": "magic",
+            "playwright": "playwright",
+            "serena": "serena",
+            "morphllm": "morphllm-fast-apply",
+            "morphllm-fast-apply": "morphllm-fast-apply",
+            "morph": "morphllm-fast-apply"
+        }
+
+        return name_mappings.get(server_name)
+
+    def _merge_server_lists(self, existing_servers: List[str], selected_servers: List[str], previous_servers: List[str]) -> List[str]:
+        """Merge existing, selected, and previously installed servers"""
+        all_servers = set()
+
+        # Add all detected servers
+        all_servers.update(existing_servers)
+        all_servers.update(selected_servers)
+        all_servers.update(previous_servers)
+
+        # Filter to only include servers we know how to install
+        valid_servers = [s for s in all_servers if s in self.mcp_servers]
+
+        if valid_servers:
+            self.logger.info(f"Total servers to manage: {valid_servers}")
+            if existing_servers:
+                self.logger.info(f"  - Existing: {existing_servers}")
+            if selected_servers:
+                self.logger.info(f"  - Newly selected: {selected_servers}")
+            if previous_servers:
+                self.logger.info(f"  - Previously installed: {previous_servers}")
+
+        return valid_servers
     
     def _install_mcp_server(self, server_info: Dict[str, Any], config: Dict[str, Any]) -> bool:
         """Install a single MCP server"""
@@ -506,7 +630,7 @@ class MCPComponent(Component):
             return False
     
     def _install(self, config: Dict[str, Any]) -> bool:
-        """Install MCP component"""
+        """Install MCP component with auto-detection of existing servers"""
         self.logger.info("Installing SuperClaude MCP servers...")
 
         # Validate prerequisites
@@ -516,35 +640,59 @@ class MCPComponent(Component):
                 self.logger.error(error)
             return False
 
+        # Auto-detect existing servers
+        self.logger.info("Auto-detecting existing MCP servers...")
+        existing_from_config = self._detect_existing_mcp_servers_from_config()
+        existing_from_cli = self._detect_existing_mcp_servers_from_cli()
+        existing_servers = list(set(existing_from_config + existing_from_cli))
+
         # Get selected servers from config
         selected_servers = config.get("selected_mcp_servers", [])
 
-        if not selected_servers:
-            self.logger.info("No MCP servers selected for installation.")
+        # Get previously installed servers from metadata
+        previous_servers = self.settings_manager.get_metadata_setting("mcp.servers", [])
+
+        # Merge all server lists
+        all_servers = self._merge_server_lists(existing_servers, selected_servers, previous_servers)
+
+        if not all_servers:
+            self.logger.info("No MCP servers detected or selected. Skipping MCP installation.")
+            # Still run post-install to update metadata
             return self._post_install()
 
-        self.logger.info(f"Installing selected MCP servers: {', '.join(selected_servers)}")
+        self.logger.info(f"Managing MCP servers: {', '.join(all_servers)}")
 
-        # Install each selected MCP server
+        # Install/verify each server
         installed_count = 0
         failed_servers = []
-        self.installed_servers_in_session = []
+        verified_servers = []
 
-        for server_name in selected_servers:
+        for server_name in all_servers:
             if server_name in self.mcp_servers:
                 server_info = self.mcp_servers[server_name]
-                if self._install_mcp_server(server_info, config):
-                    installed_count += 1
-                    self.installed_servers_in_session.append(server_name)
-                else:
-                    failed_servers.append(server_name)
 
-                    # Check if this is a required server
-                    if server_info.get("required", False):
-                        self.logger.error(f"Required MCP server {server_name} failed to install")
-                        return False
+                # Check if already installed and working
+                if self._check_mcp_server_installed(server_name):
+                    self.logger.info(f"MCP server {server_name} already installed and working")
+                    installed_count += 1
+                    verified_servers.append(server_name)
+                else:
+                    # Try to install
+                    if self._install_mcp_server(server_info, config):
+                        installed_count += 1
+                        verified_servers.append(server_name)
+                    else:
+                        failed_servers.append(server_name)
+
+                        # Check if this is a required server
+                        if server_info.get("required", False):
+                            self.logger.error(f"Required MCP server {server_name} failed to install")
+                            return False
             else:
-                self.logger.warning(f"Unknown MCP server '{server_name}' selected for installation.")
+                self.logger.warning(f"Unknown MCP server '{server_name}' cannot be managed by SuperClaude")
+
+        # Update the list of successfully managed servers
+        self.installed_servers_in_session = verified_servers
 
         # Verify installation
         if not config.get("dry_run", False):
@@ -556,7 +704,7 @@ class MCPComponent(Component):
                     text=True,
                     timeout=60
                 )
-                
+
                 if result.returncode == 0:
                     self.logger.debug("MCP servers list:")
                     for line in result.stdout.strip().split('\n'):
@@ -564,15 +712,15 @@ class MCPComponent(Component):
                             self.logger.debug(f"  {line.strip()}")
                 else:
                     self.logger.warning("Could not verify MCP server installation")
-                    
+
             except Exception as e:
                 self.logger.warning(f"Could not verify MCP installation: {e}")
 
         if failed_servers:
             self.logger.warning(f"Some MCP servers failed to install: {failed_servers}")
-            self.logger.success(f"MCP component partially installed ({installed_count} servers)")
+            self.logger.success(f"MCP component partially managed ({installed_count} servers)")
         else:
-            self.logger.success(f"MCP component installed successfully ({installed_count} servers)")
+            self.logger.success(f"MCP component successfully managing ({installed_count} servers)")
 
         return self._post_install()
 

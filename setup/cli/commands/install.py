@@ -144,12 +144,10 @@ def get_components_to_install(args: argparse.Namespace, registry: ComponentRegis
 
                 logger.info(f"Final components to install: {components}")
 
-            # If mcp_docs was explicitly requested but no servers selected, warn user
+            # If mcp_docs was explicitly requested but no servers selected, allow auto-detection
             elif not selected_servers and 'mcp_docs' in components:
-                logger.warning("mcp_docs component was requested but no MCP servers were selected")
-                logger.info("MCP documentation requires at least one MCP server to be selected")
-                # Remove mcp_docs since it can't be installed without servers
-                components.remove('mcp_docs')
+                logger.info("mcp_docs component will auto-detect existing MCP servers")
+                logger.info("Documentation will be installed for any detected servers")
 
         return components
     
