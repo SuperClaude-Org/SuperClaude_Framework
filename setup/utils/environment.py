@@ -467,3 +467,47 @@ def create_env_file(api_keys: Dict[str, str], env_file_path: Optional[Path] = No
         logger.error(f"Failed to create .env file: {e}")
         display_warning(f"Could not create .env file: {e}")
         return False
+
+
+def check_research_prerequisites() -> tuple[bool, list[str]]:
+    """
+    Check if deep research prerequisites are met
+    
+    Returns:
+        Tuple of (success: bool, warnings: List[str])
+    """
+    warnings = []
+    logger = get_logger()
+    
+    # Check Tavily API key
+    if not os.environ.get("TAVILY_API_KEY"):
+        warnings.append(
+            "TAVILY_API_KEY not set - Deep research web search will not work\n"
+            "Get your key from: https://app.tavily.com"
+        )
+        logger.warning("TAVILY_API_KEY not found in environment")
+    else:
+        logger.info("Found TAVILY_API_KEY in environment")
+    
+    # Check Node.js for MCP
+    import shutil
+    if not shutil.which("node"):
+        warnings.append(
+            "Node.js not found - Required for Tavily MCP\n"
+            "Install from: https://nodejs.org"
+        )
+        logger.warning("Node.js not found - required for Tavily MCP")
+    else:
+        logger.info("Node.js found")
+    
+    # Check npm
+    if not shutil.which("npm"):
+        warnings.append(
+            "npm not found - Required for MCP server installation\n"
+            "Usually installed with Node.js"
+        )
+        logger.warning("npm not found - required for MCP installation")
+    else:
+        logger.info("npm found")
+    
+    return len(warnings) == 0, warnings

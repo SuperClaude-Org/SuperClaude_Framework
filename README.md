@@ -14,7 +14,7 @@
 <a href="https://github.com/SuperClaude-Org/SuperQwen_Framework" target="_blank">
   <img src="https://img.shields.io/badge/Try-SuperQwen_Framework-orange" alt="Try SuperQwen Framework"/>
 </a>
-  <img src="https://img.shields.io/badge/version-4.1.4-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-4.2.0-blue" alt="Version">
   <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License">
   <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome">
 </p>
@@ -61,7 +61,7 @@
 
 | **Commands** | **Agents** | **Modes** | **MCP Servers** |
 |:------------:|:----------:|:---------:|:---------------:|
-| **24** | **14** | **6** | **6** |
+| **25** | **15** | **7** | **7** |
 | Slash Commands | Specialized AI | Behavioral | Integrations |
 
 Use the new `/sc:help` command to see a full list of all available commands.
@@ -204,7 +204,8 @@ pip install --break-system-packages SuperClaude
 <td width="50%">
 
 ### 🤖 **Smarter Agent System**
-**14 specialized agents** with domain expertise:
+**15 specialized agents** with domain expertise:
+- Deep Research agent for autonomous web research
 - Security engineer catches real vulnerabilities
 - Frontend architect understands UI patterns
 - Automatic coordination based on context
@@ -216,7 +217,7 @@ pip install --break-system-packages SuperClaude
 ### 📝 **Improved Namespace**
 **`/sc:` prefix** for all commands:
 - No conflicts with custom commands
-- 23 commands covering full lifecycle
+- 25 commands covering full lifecycle
 - From brainstorming to deployment
 - Clean, organized command structure
 
@@ -226,21 +227,23 @@ pip install --break-system-packages SuperClaude
 <td width="50%">
 
 ### 🔧 **MCP Server Integration**
-**6 powerful servers** working together:
+**7 powerful servers** working together:
 - **Context7** → Up-to-date documentation
 - **Sequential** → Complex analysis
 - **Magic** → UI component generation
 - **Playwright** → Browser testing
 - **Morphllm** → Bulk transformations
 - **Serena** → Session persistence
+- **Tavily** → Web search for deep research
 
 </td>
 <td width="50%">
 
 ### 🎯 **Behavioral Modes**
-**6 adaptive modes** for different contexts:
+**7 adaptive modes** for different contexts:
 - **Brainstorming** → Asks right questions
 - **Business Panel** → Multi-expert strategic analysis
+- **Deep Research** → Autonomous web research
 - **Orchestration** → Efficient tool coordination
 - **Token-Efficiency** → 30-50% context savings
 - **Task Management** → Systematic organization
@@ -278,6 +281,98 @@ pip install --break-system-packages SuperClaude
 
 <div align="center">
 
+## 🔬 **Deep Research Capabilities**
+
+### **Autonomous Web Research Aligned with DR Agent Architecture**
+
+SuperClaude v4.2 introduces comprehensive Deep Research capabilities, enabling autonomous, adaptive, and intelligent web research.
+
+<table>
+<tr>
+<td width="50%">
+
+### 🎯 **Adaptive Planning**
+**Three intelligent strategies:**
+- **Planning-Only**: Direct execution for clear queries
+- **Intent-Planning**: Clarification for ambiguous requests
+- **Unified**: Collaborative plan refinement (default)
+
+</td>
+<td width="50%">
+
+### 🔄 **Multi-Hop Reasoning**
+**Up to 5 iterative searches:**
+- Entity expansion (Paper → Authors → Works)
+- Concept deepening (Topic → Details → Examples)
+- Temporal progression (Current → Historical)
+- Causal chains (Effect → Cause → Prevention)
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 📊 **Quality Scoring**
+**Confidence-based validation:**
+- Source credibility assessment (0.0-1.0)
+- Coverage completeness tracking
+- Synthesis coherence evaluation
+- Minimum threshold: 0.6, Target: 0.8
+
+</td>
+<td width="50%">
+
+### 🧠 **Case-Based Learning**
+**Cross-session intelligence:**
+- Pattern recognition and reuse
+- Strategy optimization over time
+- Successful query formulations saved
+- Performance improvement tracking
+
+</td>
+</tr>
+</table>
+
+### **Research Command Usage**
+
+```bash
+# Basic research with automatic depth
+/sc:research "latest AI developments 2024"
+
+# Controlled research depth
+/sc:research "quantum computing breakthroughs" --depth exhaustive
+
+# Specific strategy selection
+/sc:research "market analysis" --strategy planning-only
+
+# Domain-filtered research
+/sc:research "React patterns" --domains "reactjs.org,github.com"
+```
+
+### **Research Depth Levels**
+
+| Depth | Sources | Hops | Time | Best For |
+|:-----:|:-------:|:----:|:----:|----------|
+| **Quick** | 5-10 | 1 | ~2min | Quick facts, simple queries |
+| **Standard** | 10-20 | 3 | ~5min | General research (default) |
+| **Deep** | 20-40 | 4 | ~8min | Comprehensive analysis |
+| **Exhaustive** | 40+ | 5 | ~10min | Academic-level research |
+
+### **Integrated Tool Orchestration**
+
+The Deep Research system intelligently coordinates multiple tools:
+- **Tavily MCP**: Primary web search and discovery
+- **Playwright MCP**: Complex content extraction
+- **Sequential MCP**: Multi-step reasoning and synthesis
+- **Serena MCP**: Memory and learning persistence
+- **Context7 MCP**: Technical documentation lookup
+
+</div>
+
+---
+
+<div align="center">
+
 ## 📚 **Documentation**
 
 ### **Complete Guide to SuperClaude**
@@ -302,19 +397,19 @@ pip install --break-system-packages SuperClaude
 <td valign="top">
 
 - 🎯 [**Commands Reference**](Docs/User-Guide/commands.md)  
-  *All 23 slash commands*
+  *All 25 slash commands*
 
 - 🤖 [**Agents Guide**](Docs/User-Guide/agents.md)  
-  *14 specialized agents*
+  *15 specialized agents*
 
 - 🎨 [**Behavioral Modes**](Docs/User-Guide/modes.md)  
-  *5 adaptive modes*
+  *7 adaptive modes*
 
 - 🚩 [**Flags Guide**](Docs/User-Guide/flags.md)  
   *Control behaviors*
 
 - 🔧 [**MCP Servers**](Docs/User-Guide/mcp-servers.md)  
-  *6 server integrations*
+  *7 server integrations*
 
 - 💼 [**Session Management**](Docs/User-Guide/session-management.md)  
   *Save & restore state*

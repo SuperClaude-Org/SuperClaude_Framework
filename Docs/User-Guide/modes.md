@@ -9,6 +9,7 @@ Test modes by using `/sc:` commands - they activate automatically based on task 
 |------|---------|---------------|---------------|---------------|
 | **🧠 Brainstorming** | Interactive discovery | "brainstorm", "maybe", vague requests | Socratic questions, requirement elicitation | New project planning, unclear requirements |
 | **🔍 Introspection** | Meta-cognitive analysis | Error recovery, "analyze reasoning" | Transparent thinking markers (🤔, 🎯, 💡) | Debugging, learning, optimization |
+| **🔬 Deep Research** | Systematic investigation mindset | `/sc:research`, investigation keywords | 6-phase workflow, evidence-based reasoning | Technical research, current events, market analysis |
 | **📋 Task Management** | Complex coordination | >3 steps, >2 directories | Phase breakdown, memory persistence | Multi-step operations, project management |
 | **🎯 Orchestration** | Intelligent tool selection | Multi-tool ops, high resource usage | Optimal tool routing, parallel execution | Complex analysis, performance optimization |
 | **⚡ Token Efficiency** | Compressed communication | High context usage, `--uc` flag | Symbol systems, estimated 30-50% token reduction | Resource constraints, large operations |
@@ -117,6 +118,60 @@ Introspective Approach:
 - **→ Task Management**: Provides transparent reasoning for complex phase decisions
 - **Any Mode**: Adds reasoning transparency layer to any other mode's operation
 - **Manual Override**: Use `--introspect` for learning sessions and debugging workflows
+
+---
+
+### 🔬 Deep Research Mode - Systematic Investigation Mindset
+
+**Purpose**: Research mindset for systematic investigation and evidence-based reasoning.
+
+**Auto-Activation Triggers:**
+- `/sc:research` command invocation
+- Research-related keywords: investigate, explore, discover, analyze
+- Questions requiring current information beyond knowledge cutoff
+- Complex research requirements
+- Manual flag: `--research`
+
+**Behavioral Modifications:**
+- **Thinking Style**: Systematic over casual, evidence over assumption, progressive depth exploration
+- **Communication**: Lead with confidence levels, provide inline citations, acknowledge uncertainties
+- **Priority Shifts**: Completeness over speed, accuracy over speculation, verification over assumption
+- **Process Adaptations**: Always create investigation plans, default to parallel operations, maintain evidence chains
+
+**6-Phase Research Workflow:**
+- 📋 **Understand** (5-10%): Assess query complexity and requirements
+- 📝 **Plan** (10-15%): Select strategy (planning/intent/unified) and identify parallelization
+- ✅ **TodoWrite** (5%): Create adaptive task hierarchy (3-15 tasks based on complexity)
+- 🔄 **Execute** (50-60%): Parallel-first searches and smart extraction routing
+- 📊 **Track** (Continuous): Monitor progress and update confidence scores
+- ✓ **Validate** (10-15%): Verify evidence chains and ensure completeness
+
+**Example Experience:**
+```
+Standard Mode: "Here are some search results about quantum computing..."
+Deep Research Mode: 
+"📊 Research Plan: Quantum computing breakthroughs
+ ✓ TodoWrite: Created 8 research tasks
+ 🔄 Executing parallel searches across domains
+ 📈 Confidence: 0.82 across 15 verified sources
+ 📝 Report saved: claudedocs/research_quantum_[timestamp].md"
+```
+
+#### Quality Standards
+- [ ] Minimum 2 sources per claim with inline citations
+- [ ] Confidence scoring (0.0-1.0) for all findings
+- [ ] Parallel execution by default for independent operations
+- [ ] Reports saved to claudedocs/ with proper structure
+- [ ] Clear methodology and evidence presentation
+
+**Verify:** `/sc:research "test topic"` should create TodoWrite and execute systematically  
+**Test:** All research should include confidence scores and citations  
+**Check:** Reports should be saved to claudedocs/ automatically
+
+**Works Best With:**
+- **→ Task Management**: Research planning with TodoWrite integration
+- **→ Orchestration**: Parallel Tavily/Playwright coordination
+- **Manual Override**: Use `--depth` and `--strategy` for fine control
 
 ---
 

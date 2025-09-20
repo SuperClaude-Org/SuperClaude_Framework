@@ -1,6 +1,6 @@
 # SuperClaude Agents Guide 🤖
 
-SuperClaude provides 14 domain specialist agents that Claude Code can invoke for specialized expertise.
+SuperClaude provides 15 domain specialist agents that Claude Code can invoke for specialized expertise.
 
 
 ## 🧪 Testing Agent Activation
@@ -242,6 +242,48 @@ Task Analysis →
 3. **Monitoring Stack**: Comprehensive observability with metrics, logs, traces, and alerting systems
 
 **Works Best With**: system-architect (infrastructure planning), security-engineer (compliance), performance-engineer (monitoring)
+
+---
+
+### deep-research-agent 🔬
+**Expertise**: Comprehensive research with adaptive strategies and multi-hop reasoning
+
+**Auto-Activation**:
+- Keywords: "research", "investigate", "discover", "explore", "find out", "search for", "latest", "current"
+- Commands: `/sc:research` automatically activates this agent
+- Context: Complex queries requiring thorough research, current information needs, fact-checking
+- Complexity: Questions spanning multiple domains or requiring iterative exploration
+
+**Capabilities**:
+- **Adaptive Planning Strategies**: Planning (direct), Intent (clarify first), Unified (collaborative)
+- **Multi-Hop Reasoning**: Up to 5 levels - entity expansion, temporal progression, conceptual deepening, causal chains
+- **Self-Reflective Mechanisms**: Progress assessment after each major step with replanning triggers
+- **Evidence Management**: Clear citations, relevance scoring, uncertainty acknowledgment
+- **Tool Orchestration**: Parallel-first execution with Tavily (search), Playwright (JavaScript content), Sequential (reasoning)
+- **Learning Integration**: Pattern recognition and strategy reuse via Serena memory
+
+**Research Depth Levels**:
+- **Quick**: Basic search, 1 hop, summary output
+- **Standard**: Extended search, 2-3 hops, structured report (default)
+- **Deep**: Comprehensive search, 3-4 hops, detailed analysis
+- **Exhaustive**: Maximum depth, 5 hops, complete investigation
+
+**Examples**:
+1. **Technical Research**: `/sc:research "latest React Server Components patterns"` → Comprehensive technical research with implementation examples
+2. **Market Analysis**: `/sc:research "AI coding assistants landscape 2024" --strategy unified` → Collaborative analysis with user input
+3. **Academic Investigation**: `/sc:research "quantum computing breakthroughs" --depth exhaustive` → Comprehensive literature review with evidence chains
+
+**Workflow Pattern** (6-Phase):
+1. **Understand** (5-10%): Assess query complexity
+2. **Plan** (10-15%): Select strategy and identify parallel opportunities  
+3. **TodoWrite** (5%): Create adaptive task hierarchy (3-15 tasks)
+4. **Execute** (50-60%): Parallel searches and extractions
+5. **Track** (Continuous): Monitor progress and confidence
+6. **Validate** (10-15%): Verify evidence chains
+
+**Output**: Reports saved to `claudedocs/research_[topic]_[timestamp].md`
+
+**Works Best With**: system-architect (technical research), learning-guide (educational research), requirements-analyst (market research)
 
 ### Quality & Analysis Agents 🔍
 
@@ -618,6 +660,7 @@ After applying agent fixes, test with:
 | **Documentation** | "documentation", "readme", "API docs" | technical-writer |
 | **Learning** | "explain", "tutorial", "beginner", "teaching" | learning-guide |
 | **Requirements** | "requirements", "PRD", "specification" | requirements-analyst |
+| **Research** | "research", "investigate", "latest", "current" | deep-research-agent |
 
 ### Command-Agent Mapping
 
@@ -631,6 +674,7 @@ After applying agent fixes, test with:
 | `/sc:design` | system-architect | Domain architects, requirements-analyst |
 | `/sc:test` | quality-engineer | security-engineer, performance-engineer |
 | `/sc:explain` | learning-guide | technical-writer, domain specialists |
+| `/sc:research` | deep-research-agent | Technical specialists, learning-guide |
 
 ### Effective Agent Combinations
 

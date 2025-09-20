@@ -8,7 +8,7 @@ from pathlib import Path
 try:
     __version__ = (Path(__file__).parent.parent / "VERSION").read_text().strip()
 except Exception:
-    __version__ = "4.1.4"  # Fallback
+    __version__ = "4.2.0"  # Fallback - Deep Research Integration
 
 __author__ = "NomenAK, Mithun Gowda B"
 

@@ -28,7 +28,8 @@ class MCPDocsComponent(Component):
             "playwright": "MCP_Playwright.md",
             "serena": "MCP_Serena.md",
             "morphllm": "MCP_Morphllm.md",
-            "morphllm-fast-apply": "MCP_Morphllm.md"  # Handle both naming conventions
+            "morphllm-fast-apply": "MCP_Morphllm.md",  # Handle both naming conventions
+            "tavily": "MCP_Tavily.md"
         }
         
         super().__init__(install_dir, Path(""))
