@@ -2,7 +2,7 @@
 
 ## Overview
 
-MCP (Model Context Protocol) servers extend Claude Code's capabilities through specialized tools. SuperClaude integrates 6 MCP servers and provides Claude with instructions on when to activate them based on your tasks.
+MCP (Model Context Protocol) servers extend Claude Code's capabilities through specialized tools. SuperClaude integrates 7 MCP servers and provides Claude with instructions on when to activate them based on your tasks.
 
 ### 🔍 Reality Check
 - **What MCP servers are**: External Node.js processes that provide additional tools
@@ -17,6 +17,7 @@ MCP (Model Context Protocol) servers extend Claude Code's capabilities through s
 - **playwright**: Browser automation and E2E testing
 - **morphllm-fast-apply**: Pattern-based code transformations
 - **serena**: Semantic code understanding and project memory
+- **tavily**: Web search and real-time information retrieval
 
 ## Quick Start
 
@@ -32,6 +33,7 @@ MCP (Model Context Protocol) servers extend Claude Code's capabilities through s
 | `test`, `e2e`, `browser` | **playwright** |
 | Multi-file edits, refactoring | **morphllm-fast-apply** |
 | Large projects, sessions | **serena** |
+| `/sc:research`, `latest`, `current` | **tavily** |
 
 ## Server Details
 
@@ -119,6 +121,36 @@ export MORPH_API_KEY="your_key_here"
 /sc:refactor "extract UserService" --serena
 ```
 
+### tavily 🔍
+**Purpose**: Web search and real-time information retrieval for research
+**Triggers**: `/sc:research` commands, "latest" information requests, current events, fact-checking
+**Requirements**: Node.js 16+, TAVILY_API_KEY (free tier available at https://app.tavily.com)
+
+```bash
+# Automatic activation
+/sc:research "latest AI developments 2024"
+# → Performs intelligent web research
+
+# Manual activation  
+/sc:analyze "market trends" --tavily
+
+# API key setup (get free key at https://app.tavily.com)
+export TAVILY_API_KEY="tvly-your_api_key_here"
+```
+
+**Capabilities:**
+- **Web Search**: Comprehensive searches with ranking and filtering
+- **News Search**: Time-filtered current events and updates
+- **Content Extraction**: Full-text extraction from search results  
+- **Domain Filtering**: Include/exclude specific domains
+- **Multi-Hop Research**: Iterative searches based on findings (up to 5 hops)
+
+**Research Depth Control:**
+- `--depth quick`: 5-10 sources, basic synthesis
+- `--depth standard`: 10-20 sources, structured report (default)
+- `--depth deep`: 20-40 sources, comprehensive analysis
+- `--depth exhaustive`: 40+ sources, academic-level research
+
 ## Configuration
 
 **MCP Configuration File (`~/.claude.json`):**
@@ -150,6 +182,11 @@ export MORPH_API_KEY="your_key_here"
     "serena": {
       "command": "uvx",
       "args": ["--from", "git+https://github.com/oraios/serena", "serena", "start-mcp-server", "--context", "ide-assistant"]
+    },
+    "tavily": {
+      "command": "npx",
+      "args": ["-y", "@tavily/mcp@latest"],
+      "env": {"TAVILY_API_KEY": "${TAVILY_API_KEY}"}
     }
   }
 }
@@ -211,16 +248,21 @@ export TWENTYFIRST_API_KEY="your_key_here"
 # For Morphllm server (required for bulk transformations)
 export MORPH_API_KEY="your_key_here"
 
+# For Tavily server (required for web search - free tier available)
+export TAVILY_API_KEY="tvly-your_key_here"
+
 # Add to shell profile for persistence
 echo 'export TWENTYFIRST_API_KEY="your_key"' >> ~/.bashrc
 echo 'export MORPH_API_KEY="your_key"' >> ~/.bashrc
+echo 'export TAVILY_API_KEY="your_key"' >> ~/.bashrc
 ```
 
 **Environment Variable Usage:**
 - ✅ `TWENTYFIRST_API_KEY` - Required for Magic MCP server functionality
 - ✅ `MORPH_API_KEY` - Required for Morphllm MCP server functionality  
+- ✅ `TAVILY_API_KEY` - Required for Tavily MCP server functionality (free tier available)
 - ❌ Other env vars in docs - Examples only, not used by framework
-- 📝 Both are paid service API keys, framework works without them
+- 📝 Magic and Morphllm are paid services, Tavily has free tier, framework works without them
 
 ## Server Combinations
 
@@ -238,6 +280,8 @@ echo 'export MORPH_API_KEY="your_key"' >> ~/.bashrc
 - **Web Development**: magic + context7 + playwright  
 - **Enterprise Refactoring**: serena + morphllm + sequential-thinking
 - **Complex Analysis**: sequential-thinking + context7 + serena
+- **Deep Research**: tavily + sequential-thinking + serena + playwright
+- **Current Events**: tavily + context7 + sequential-thinking
 
 ## Integration
 
@@ -245,11 +289,13 @@ echo 'export MORPH_API_KEY="your_key"' >> ~/.bashrc
 - Analysis commands automatically use Sequential + Serena
 - Implementation commands use Magic + Context7
 - Testing commands use Playwright + Sequential
+- Research commands use Tavily + Sequential + Playwright
 
 **With Behavioral Modes:**
 - Brainstorming Mode: Sequential for discovery
 - Task Management: Serena for persistence
 - Orchestration Mode: Optimal server selection
+- Deep Research Mode: Tavily + Sequential + Playwright coordination
 
 **Performance Control:**
 - Automatic resource management based on system load
