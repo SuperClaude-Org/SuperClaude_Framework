@@ -185,7 +185,7 @@ export TAVILY_API_KEY="tvly-your_api_key_here"
     },
     "tavily": {
       "command": "npx",
-      "args": ["-y", "@tavily/mcp@latest"],
+      "args": ["-y", "tavily-mcp@latest"],
       "env": {"TAVILY_API_KEY": "${TAVILY_API_KEY}"}
     }
   }
