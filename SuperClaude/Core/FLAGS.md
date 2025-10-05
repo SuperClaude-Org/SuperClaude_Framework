@@ -58,6 +58,10 @@ Behavioral flags for Claude Code to enable specific execution modes and tool sel
 - Trigger: Web search requests, real-time information needs, research queries, current events
 - Behavior: Enable Tavily for web search and real-time information gathering
 
+**--frontend-verify**
+- Trigger: UI testing requests, frontend debugging, layout validation, component verification
+- Behavior: Enable Playwright + Chrome DevTools + Serena for comprehensive frontend verification and debugging
+
 **--all-mcp**
 - Trigger: Maximum complexity scenarios, multi-domain problems
 - Behavior: Enable all MCP servers for comprehensive capability

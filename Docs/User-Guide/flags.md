@@ -167,6 +167,7 @@
 | `--iterations [n]` | Improvement cycles | 1-10 |
 | `--all-mcp` | Enable all MCP servers | Boolean |
 | `--no-mcp` | Native tools only | Boolean |
+| `--frontend-verify` | UI testing, frontend debugging, layout validation | Enable Playwright + Chrome DevTools + Serena |
 
 ### System Flags (SuperClaude Installation)
 | Flag | Purpose | Values |
