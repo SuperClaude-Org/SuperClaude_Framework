@@ -50,6 +50,18 @@ Behavioral flags for Claude Code to enable specific execution modes and tool sel
 - Trigger: Browser testing, E2E scenarios, visual validation, accessibility testing
 - Behavior: Enable Playwright for real browser automation and testing
 
+**--chrome / --devtools**
+- Trigger: Performance auditing, debugging, layout issues, network analysis, console errors
+- Behavior: Enable Chrome DevTools for real-time browser inspection and performance analysis
+
+**--tavily**
+- Trigger: Web search requests, real-time information needs, research queries, current events
+- Behavior: Enable Tavily for web search and real-time information gathering
+
+**--frontend-verify**
+- Trigger: UI testing requests, frontend debugging, layout validation, component verification
+- Behavior: Enable Playwright + Chrome DevTools + Serena for comprehensive frontend verification and debugging
+
 **--all-mcp**
 - Trigger: Maximum complexity scenarios, multi-domain problems
 - Behavior: Enable all MCP servers for comprehensive capability

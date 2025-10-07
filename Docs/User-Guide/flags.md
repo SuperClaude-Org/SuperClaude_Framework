@@ -18,6 +18,8 @@
 | `--seq` / `--sequential` | Sequential | Multi-step reasoning, debugging | Complex debugging, system design |
 | `--magic` | Magic | UI component generation | `/ui` commands, frontend keywords |
 | `--play` / `--playwright` | Playwright | Browser testing, E2E validation | Testing requests, visual validation |
+| `--chrome` / `--devtools` | Chrome DevTools | Performance analysis, debugging | Performance auditing, debugging, layout issues |
+| `--tavily` | Tavily | Web search, real-time info | Web search requests, research queries |
 | `--morph` / `--morphllm` | Morphllm | Bulk transformations, pattern edits | Bulk operations, style enforcement |
 | `--serena` | Serena | Project memory, symbol operations | Symbol operations, large codebases |
 
@@ -165,6 +167,7 @@
 | `--iterations [n]` | Improvement cycles | 1-10 |
 | `--all-mcp` | Enable all MCP servers | Boolean |
 | `--no-mcp` | Native tools only | Boolean |
+| `--frontend-verify` | UI testing, frontend debugging, layout validation | Enable Playwright + Chrome DevTools + Serena |
 
 ### System Flags (SuperClaude Installation)
 | Flag | Purpose | Values |
