@@ -25,6 +25,23 @@
 | Documentation | Context7 MCP | Web search |
 | Browser testing | Playwright MCP | Unit tests |
 | Multi-file edits | MultiEdit | Sequential Edits |
+| Infrastructure config | WebFetch (official docs) | Assumption-based (❌ forbidden) |
+
+## Infrastructure Configuration Validation
+
+**Critical Rule**: Infrastructure and technical configuration changes MUST consult official documentation before making recommendations.
+
+**Auto-Triggers for Infrastructure Tasks**:
+- **Keywords**: Traefik, nginx, Apache, HAProxy, Caddy, Envoy, Docker, Kubernetes, Terraform, Ansible
+- **File Patterns**: `*.toml`, `*.conf`, `traefik.yml`, `nginx.conf`, `*.tf`, `Dockerfile`
+- **Required Actions**:
+  1. **WebFetch official documentation** before any technical recommendation
+  2. Activate MODE_DeepResearch for infrastructure investigation
+  3. BLOCK assumption-based configuration changes
+
+**Rationale**: Infrastructure misconfiguration can cause production outages. Always verify against official documentation (e.g., Traefik docs for port configuration, nginx docs for proxy settings).
+
+**Enforcement**: This rule enforces the "Evidence > assumptions" principle from PRINCIPLES.md for infrastructure operations.
 
 ## Resource Management
 
