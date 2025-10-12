@@ -205,7 +205,7 @@ pip install --break-system-packages SuperClaude
 
 ### 🤖 **Smarter Agent System**
 **16 specialized agents** with domain expertise:
-- PM Agent orchestrates all interactions seamlessly
+- PM Agent ensures continuous learning through systematic documentation
 - Deep Research agent for autonomous web research
 - Security engineer catches real vulnerabilities
 - Frontend architect understands UI patterns

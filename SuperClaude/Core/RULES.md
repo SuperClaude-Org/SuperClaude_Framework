@@ -15,29 +15,33 @@ Actionable rules for enhanced Claude Code framework operation.
 4. **Context Matters**: Prototype vs Production requirements differ
 
 ## Agent Orchestration
-**Priority**: 🔴 **Triggers**: All user interactions
+**Priority**: 🔴 **Triggers**: Task execution and post-implementation
 
-- **PM Agent Default**: All user requests are first received by PM Agent for intelligent orchestration
-- **Request Analysis**: PM Agent analyzes intent, complexity, and domain requirements
-- **Auto-Delegation**: PM Agent selects and coordinates appropriate specialist agents automatically
-- **Manual Override**: `@agent-[name]` prefix bypasses PM Agent and routes directly to specified agent
-- **Transparent Reporting**: PM Agent reports delegation decisions and progress to user
-- **Multi-Agent Coordination**: PM Agent manages multiple specialists for complex cross-domain tasks
-- **Self-Improvement**: PM Agent documents all implementations, mistakes, and patterns automatically
-- **User Experience Priority**: Users interact only with PM Agent unless explicit override requested
+**Task Execution Layer** (Existing Auto-Activation):
+- **Auto-Selection**: Claude Code automatically selects appropriate specialist agents based on context
+- **Keywords**: Security, performance, frontend, backend, architecture keywords trigger specialist agents
+- **File Types**: `.py`, `.jsx`, `.ts`, etc. trigger language/framework specialists
+- **Complexity**: Simple to enterprise complexity levels inform agent selection
+- **Manual Override**: `@agent-[name]` prefix routes directly to specified agent
 
-**Agent Selection Priority**:
-1. Manual override (`@agent-[name]`) → Direct to specified agent
-2. Default behavior → PM Agent receives all requests
-3. PM Agent analyzes → Delegates to specialists based on:
-   - Keywords (security, performance, frontend, etc.)
-   - File types (.py, .jsx, .ts, etc.)
-   - Complexity (simple, moderate, complex, enterprise)
-   - Context (multi-domain, ambiguous, clear)
+**Self-Improvement Layer** (PM Agent Meta-Layer):
+- **Post-Implementation**: PM Agent activates after task completion to document learnings
+- **Mistake Detection**: PM Agent activates immediately when errors occur for root cause analysis
+- **Monthly Maintenance**: PM Agent performs systematic documentation health reviews
+- **Knowledge Capture**: Transforms experiences into reusable patterns and best practices
+- **Documentation Evolution**: Maintains fresh, minimal, high-signal documentation
 
-✅ **Right**: User request → PM Agent → Auto-delegate to backend-architect → Complete
-✅ **Right**: `@agent-security "review auth"` → Direct to security-engineer (bypass PM Agent)
-❌ **Wrong**: User interacts with multiple agents manually without PM Agent orchestration
+**Orchestration Flow**:
+1. **Task Execution**: User request → Auto-activation selects specialist agent → Implementation
+2. **Documentation** (PM Agent): Implementation complete → PM Agent documents patterns/decisions
+3. **Learning**: Mistakes detected → PM Agent analyzes root cause → Prevention checklist created
+4. **Maintenance**: Monthly → PM Agent prunes outdated docs → Updates knowledge base
+
+✅ **Right**: User request → backend-architect implements → PM Agent documents patterns
+✅ **Right**: Error detected → PM Agent stops work → Root cause analysis → Documentation updated
+✅ **Right**: `@agent-security "review auth"` → Direct to security-engineer (manual override)
+❌ **Wrong**: Skip documentation after implementation (no PM Agent activation)
+❌ **Wrong**: Continue implementing after mistake (no root cause analysis)
 
 ## Workflow Rules
 **Priority**: 🟡 **Triggers**: All development tasks
