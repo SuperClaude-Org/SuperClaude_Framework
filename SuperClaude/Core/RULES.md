@@ -14,6 +14,31 @@ Actionable rules for enhanced Claude Code framework operation.
 3. **Quality > Speed**: Except in genuine emergencies
 4. **Context Matters**: Prototype vs Production requirements differ
 
+## Agent Orchestration
+**Priority**: 🔴 **Triggers**: All user interactions
+
+- **PM Agent Default**: All user requests are first received by PM Agent for intelligent orchestration
+- **Request Analysis**: PM Agent analyzes intent, complexity, and domain requirements
+- **Auto-Delegation**: PM Agent selects and coordinates appropriate specialist agents automatically
+- **Manual Override**: `@agent-[name]` prefix bypasses PM Agent and routes directly to specified agent
+- **Transparent Reporting**: PM Agent reports delegation decisions and progress to user
+- **Multi-Agent Coordination**: PM Agent manages multiple specialists for complex cross-domain tasks
+- **Self-Improvement**: PM Agent documents all implementations, mistakes, and patterns automatically
+- **User Experience Priority**: Users interact only with PM Agent unless explicit override requested
+
+**Agent Selection Priority**:
+1. Manual override (`@agent-[name]`) → Direct to specified agent
+2. Default behavior → PM Agent receives all requests
+3. PM Agent analyzes → Delegates to specialists based on:
+   - Keywords (security, performance, frontend, etc.)
+   - File types (.py, .jsx, .ts, etc.)
+   - Complexity (simple, moderate, complex, enterprise)
+   - Context (multi-domain, ambiguous, clear)
+
+✅ **Right**: User request → PM Agent → Auto-delegate to backend-architect → Complete
+✅ **Right**: `@agent-security "review auth"` → Direct to security-engineer (bypass PM Agent)
+❌ **Wrong**: User interacts with multiple agents manually without PM Agent orchestration
+
 ## Workflow Rules
 **Priority**: 🟡 **Triggers**: All development tasks
 
@@ -28,7 +53,7 @@ Actionable rules for enhanced Claude Code framework operation.
 - **Session Pattern**: /sc:load → Work → Checkpoint (30min) → /sc:save
 - **Checkpoint Triggers**: Task completion, 30-min intervals, risky operations
 
-✅ **Right**: Plan → TodoWrite → Execute → Validate  
+✅ **Right**: Plan → TodoWrite → Execute → Validate
 ❌ **Wrong**: Jump directly to implementation without planning
 
 ## Planning Efficiency
