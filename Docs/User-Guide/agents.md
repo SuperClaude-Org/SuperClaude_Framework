@@ -1,6 +1,6 @@
 # SuperClaude Agents Guide 🤖
 
-SuperClaude provides 15 domain specialist agents that Claude Code can invoke for specialized expertise.
+SuperClaude provides 16 domain specialist agents that Claude Code can invoke for specialized expertise.
 
 
 ## 🧪 Testing Agent Activation
@@ -136,6 +136,73 @@ Task Analysis →
 ---
 
 ## The SuperClaude Agent Team 👥
+
+### Orchestration Agent 🎯
+
+### pm-agent 🎛️
+**Expertise**: Project orchestration that coordinates sub-agents, manages workflows, and provides seamless user interaction with automatic delegation
+
+**Auto-Activation**:
+- **Default Mode**: Activated for all user interactions unless explicit sub-agent specified
+- Keywords: "作りたい", "実装したい", "どうすれば" (Japanese), "want to build", "implement", "how to"
+- Context: Vague project requests, multi-domain tasks, ambiguous requirements
+- Complexity: Any task requiring cross-functional coordination or systematic planning
+
+**Capabilities**:
+- **Workflow Orchestration**: Goal analysis, agent selection, dependency mapping, progress monitoring
+- **Sub-Agent Coordination**: Auto-select optimal specialists based on domain expertise requirements
+- **Dynamic Tool Loading**: Zero-token baseline with on-demand MCP tool activation via Docker Gateway
+- **Self-Improvement**: Automatically document implementations, mistakes, and patterns in project docs
+- **Brainstorming Integration**: Activate Brainstorming Mode for ambiguous requirements discovery
+
+**How PM Agent Works**:
+1. **Request Analysis**: Parse user intent (feature, bug, refactor, research, design)
+2. **Strategy Selection**: Choose execution approach (Brainstorming, Direct, Multi-Agent, Wave)
+3. **Sub-Agent Delegation**: Auto-select appropriate specialists without manual routing
+4. **MCP Orchestration**: Dynamically load tools per phase, unload after completion
+5. **Progress Monitoring**: Track execution via TodoWrite, validate quality gates
+6. **Self-Improvement**: Document continuously (implementations, mistakes, patterns)
+
+**Orchestration Examples**:
+1. **Vague Feature Request**:
+   - User: "アプリに認証機能作りたい" (Want to add auth to app)
+   - PM Agent: Brainstorming Mode → requirements-analyst → system-architect → security-engineer → backend-architect → quality-engineer → technical-writer
+   - Output: Complete authentication system with comprehensive documentation
+
+2. **Clear Implementation Task**:
+   - User: "Fix the login form validation bug in LoginForm.tsx:45"
+   - PM Agent: Direct execution → refactoring-expert → quality-engineer
+   - Output: Fixed bug with tests and documentation
+
+3. **Multi-Domain Complex Project**:
+   - User: "Build a real-time chat feature with video calling"
+   - PM Agent: Wave Mode → requirements-analyst → system-architect → Parallel (backend-architect + frontend-architect + security-engineer) → quality-engineer → performance-engineer → technical-writer
+   - Output: Production-ready real-time chat with video
+
+**User Experience**:
+- **Default**: PM Agent handles everything (seamless experience, no manual routing)
+- **Optional Override**: Users can specify sub-agents explicitly (`/sc:implement --agent backend`)
+- **No Downside**: Both automatic and manual modes available simultaneously
+
+**Works Best With**: All agents (orchestrates entire agent ecosystem)
+
+**Docker Gateway Integration**:
+- **Zero-Token Baseline**: Start with no MCP tools loaded (gateway URL only)
+- **On-Demand Loading**: Dynamically load tools per execution phase
+- **Resource Efficiency**: Unload tools after phase completion
+- **Strategic Caching**: Maintain frequently-used tools for sequential phases
+
+**Self-Improvement Loop**:
+- **Implementation Documentation**: Auto-update docs/ with new patterns
+- **Mistake Recording**: Capture errors with prevention strategies
+- **Pattern Recognition**: Identify and codify successful patterns
+- **Monthly Maintenance**: Documentation pruning and optimization
+
+**Verify**: Default agent for all commands unless explicit override
+**Test**: Should auto-delegate to appropriate specialists based on task analysis
+**Check**: Should transparently report delegation decisions and progress
+
+---
 
 ### Architecture & System Design Agents 🏗️
 

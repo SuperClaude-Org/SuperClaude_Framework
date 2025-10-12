@@ -61,7 +61,7 @@
 
 | **Commands** | **Agents** | **Modes** | **MCP Servers** |
 |:------------:|:----------:|:---------:|:---------------:|
-| **25** | **15** | **7** | **8** |
+| **26** | **16** | **7** | **8** |
 | Slash Commands | Specialized AI | Behavioral | Integrations |
 
 Use the new `/sc:help` command to see a full list of all available commands.
@@ -204,7 +204,8 @@ pip install --break-system-packages SuperClaude
 <td width="50%">
 
 ### 🤖 **Smarter Agent System**
-**15 specialized agents** with domain expertise:
+**16 specialized agents** with domain expertise:
+- PM Agent orchestrates all interactions seamlessly
 - Deep Research agent for autonomous web research
 - Security engineer catches real vulnerabilities
 - Frontend architect understands UI patterns
