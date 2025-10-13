@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { run, detectPip, detectPipx, isSuperClaudeInstalledPipx, checkPythonEnvironment } = require("./checkEnv");
+const { run, detectPip, detectPipx, isSuperClaudeInstalledPipx, checkPythonEnvironment } = require("./check_env");
 
 console.log("🔄 Checking for SuperClaude updates...");
 

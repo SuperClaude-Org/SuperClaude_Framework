@@ -48,11 +48,11 @@
 - ✅ Agents/pm-agent.md updated
 
 ### Documentation
-- ✅ Docs/Development/ARCHITECTURE.md
-- ✅ Docs/Development/ROADMAP.md
-- ✅ Docs/Development/TASKS.md
-- ✅ Docs/Development/PROJECT_STATUS.md
-- ✅ Docs/pm-agent-implementation-status.md
+- ✅ docs/Development/ARCHITECTURE.md
+- ✅ docs/Development/ROADMAP.md
+- ✅ docs/Development/TASKS.md
+- ✅ docs/Development/PROJECT_STATUS.md
+- ✅ docs/pm-agent-implementation-status.md
 
 ---
 
@@ -66,9 +66,9 @@
 - [ ] pm-agent-integration.md
 
 ### Phase 2: PM Agent Mode (30%)
-- [ ] SuperClaude/Core/session_lifecycle.py
-- [ ] SuperClaude/Core/pdca_engine.py
-- [ ] SuperClaude/Core/memory_ops.py
+- [ ] superclaude/Core/session_lifecycle.py
+- [ ] superclaude/Core/pdca_engine.py
+- [ ] superclaude/Core/memory_ops.py
 - [ ] Unit tests
 - [ ] Integration tests
 
@@ -147,7 +147,7 @@
 ## 📝 Recent Changes
 
 ### 2025-10-14
-- Created Docs/Development/ structure
+- Created docs/Development/ structure
 - Wrote ARCHITECTURE.md (system overview)
 - Wrote ROADMAP.md (5-phase development plan)
 - Wrote TASKS.md (task tracking)

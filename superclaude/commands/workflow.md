@@ -58,7 +58,7 @@ Key behaviors:
 
 ### Systematic PRD Workflow
 ```
-/sc:workflow ClaudeDocs/PRD/feature-spec.md --strategy systematic --depth deep
+/sc:workflow Claudedocs/PRD/feature-spec.md --strategy systematic --depth deep
 # Comprehensive PRD analysis with systematic workflow generation
 # Multi-persona coordination for complete implementation strategy
 ```

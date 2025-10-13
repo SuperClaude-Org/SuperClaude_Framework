@@ -8,7 +8,7 @@
 ## 🔥 High Priority (This Week: 2025-10-14 ~ 2025-10-20)
 
 ### Phase 1: Documentation Structure
-- [x] Create Docs/Development/ directory
+- [x] Create docs/Development/ directory
 - [x] Write ARCHITECTURE.md
 - [x] Write ROADMAP.md
 - [ ] Write TASKS.md (this file)
@@ -29,9 +29,9 @@
 ## 📋 Medium Priority (This Month: October 2025)
 
 ### Phase 2: Core Implementation
-- [ ] Implement SuperClaude/Core/session_lifecycle.py
-- [ ] Implement SuperClaude/Core/pdca_engine.py
-- [ ] Implement SuperClaude/Core/memory_ops.py
+- [ ] Implement superclaude/Core/session_lifecycle.py
+- [ ] Implement superclaude/Core/pdca_engine.py
+- [ ] Implement superclaude/Core/memory_ops.py
 - [ ] Write unit tests for PM Agent core
 - [ ] Update User-Guide documentation
 
@@ -85,7 +85,7 @@
 - [x] Salvaged PM Agent mode changes from ~/.claude
 - [x] Cleaned up ~/.claude git repository
 - [x] Created pm-agent-implementation-status.md
-- [x] Created Docs/Development/ directory
+- [x] Created docs/Development/ directory
 - [x] Wrote ARCHITECTURE.md
 - [x] Wrote ROADMAP.md
 - [x] Wrote TASKS.md

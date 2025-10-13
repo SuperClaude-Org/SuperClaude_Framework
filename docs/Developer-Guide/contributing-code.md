@@ -57,14 +57,14 @@ SuperClaude is a **Context-Oriented Configuration Framework** - not executing so
 
 ```
 SuperClaude_Framework/
-├── SuperClaude/           # Framework components (the source of truth)
+├── superclaude/           # Framework components (the source of truth)
 │   ├── Core/             # PRINCIPLES.md, RULES.md, FLAGS.md
 │   ├── Agents/           # 15 specialized domain experts
 │   ├── Commands/         # 21 context trigger patterns (/sc: behavioral instructions)
 │   ├── Modes/            # 6 behavioral modification patterns
 │   └── MCP/              # 6 MCP server configurations
 ├── setup/                # Python installation system
-├── Docs/                 # Documentation (what you're reading)
+├── docs/                 # Documentation (what you're reading)
 └── tests/                # File validation scripts
 ```
 
@@ -82,7 +82,7 @@ User Input → Claude Code → Reads SuperClaude Context → Modified Behavior �
 ```
 
 1. User types `/sc:implement "auth system"` **in Claude Code conversation** (not terminal)
-2. Claude Code reads `SuperClaude/Commands/implement.md`
+2. Claude Code reads `superclaude/Commands/implement.md`
 3. Command activates security-engineer agent context
 4. Context7 MCP provides authentication patterns
 5. Claude generates complete, secure implementation
@@ -208,7 +208,7 @@ Brief description of context file changes
 
 **Agent Development Process:**
 1. Identify domain expertise gap
-2. Create agent file in `SuperClaude/Agents/`
+2. Create agent file in `superclaude/Agents/`
 3. Define triggers, behaviors, and boundaries
 4. Test with various Claude Code scenarios
 5. Document usage patterns and examples

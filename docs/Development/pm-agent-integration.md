@@ -49,7 +49,7 @@ See: [ARCHITECTURE.md](./ARCHITECTURE.md) for full system architecture
 ### File Structure
 
 ```
-SuperClaude/
+superclaude/
 ├── Commands/
 │   └── pm.md                           # ✅ Already updated
 ├── Agents/
@@ -77,7 +77,7 @@ Wrapper for Serena MCP memory operations with error handling and fallback.
 ### Key Functions
 
 ```python
-# SuperClaude/Core/memory_ops.py
+# superclaude/Core/memory_ops.py
 
 class MemoryOperations:
     """Serena MCP memory operations wrapper"""
@@ -116,7 +116,7 @@ Auto-activation at session start, context restoration, user report generation.
 ### Key Functions
 
 ```python
-# SuperClaude/Core/session_lifecycle.py
+# superclaude/Core/session_lifecycle.py
 
 class SessionLifecycle:
     """Session lifecycle management"""
@@ -168,7 +168,7 @@ Automate PDCA cycle execution with documentation generation.
 ### Key Functions
 
 ```python
-# SuperClaude/Core/pdca_engine.py
+# superclaude/Core/pdca_engine.py
 
 class PDCAEngine:
     """PDCA cycle automation"""
@@ -259,7 +259,7 @@ pytest tests/test_pdca_engine.py -v
 ### Prerequisites
 ```bash
 # Install Serena MCP server
-# See: Docs/troubleshooting/serena-installation.md
+# See: docs/troubleshooting/serena-installation.md
 ```
 
 ### Configuration
@@ -352,7 +352,7 @@ python scripts/migrate_to_mistakes.py
 Once research complete, implement auto-activation hooks:
 
 ```python
-# SuperClaude/Core/auto_activation.py (future)
+# superclaude/Core/auto_activation.py (future)
 
 def on_claude_code_start():
     """Auto-activate PM Agent at session start"""
@@ -467,8 +467,8 @@ tests/integration/
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture
 - [ROADMAP.md](./ROADMAP.md) - Development roadmap
 - [pm-agent-implementation-status.md](../pm-agent-implementation-status.md) - Status tracking
-- [Commands/pm.md](../../SuperClaude/Commands/pm.md) - PM Agent command
-- [Agents/pm-agent.md](../../SuperClaude/Agents/pm-agent.md) - PM Agent persona
+- [Commands/pm.md](../../superclaude/Commands/pm.md) - PM Agent command
+- [Agents/pm-agent.md](../../superclaude/Agents/pm-agent.md) - PM Agent persona
 
 ---
 

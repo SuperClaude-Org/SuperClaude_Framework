@@ -3,7 +3,4 @@
 from .validator import Validator
 from .registry import ComponentRegistry
 
-__all__ = [
-    'Validator',
-    'ComponentRegistry'
-]
+__all__ = ["Validator", "ComponentRegistry"]

@@ -18,7 +18,7 @@ Redesigned PM Agent from task orchestration system to self-improvement workflow 
 
 ## Changes
 
-### 1. PM Agent Agent File (`SuperClaude/Agents/pm-agent.md`)
+### 1. PM Agent Agent File (`superclaude/Agents/pm-agent.md`)
 **Status**: Complete rewrite
 
 **Before**:
@@ -45,7 +45,7 @@ Redesigned PM Agent from task orchestration system to self-improvement workflow 
 2. Immediate Mistake Analysis: Kong Gateway bypass detected → PM Agent stops, analyzes, documents prevention
 3. Monthly Documentation Maintenance: PM Agent prunes outdated docs, merges duplicates, updates versions
 
-### 2. Framework Rules (`SuperClaude/Core/RULES.md`)
+### 2. Framework Rules (`superclaude/Core/RULES.md`)
 **Status**: Agent Orchestration section updated (lines 17-44)
 
 **Changes**:
@@ -67,7 +67,7 @@ Redesigned PM Agent from task orchestration system to self-improvement workflow 
 
 **Impact**: Accurate representation of PM Agent's meta-layer role in main documentation
 
-### 4. Agents Guide (`Docs/User-Guide/agents.md`)
+### 4. Agents Guide (`docs/User-Guide/agents.md`)
 **Status**: PM Agent section completely rewritten (lines 140-208)
 
 **Changes**:

@@ -98,7 +98,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Technical
 - Added `setup/utils/updater.py` for PyPI update checking logic
 - Added `bin/checkUpdate.js` for NPM update checking logic
-- Integrated update checks into main entry points (SuperClaude/__main__.py and bin/cli.js)
+- Integrated update checks into main entry points (superclaude/__main__.py and bin/cli.js)
 - Non-blocking update checks with 2-second timeout to avoid delays
 
 ### Changed
@@ -107,7 +107,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Commands are now installed in `~/.claude/commands/sc/` subdirectory
 - All 21 commands updated: `/analyze` → `/sc:analyze`, `/build` → `/sc:build`, etc.
 - Automatic migration from old command locations to new `sc/` subdirectory
-- **BREAKING**: Documentation reorganization - Docs/ directory renamed to Guides/
+- **BREAKING**: Documentation reorganization - docs/ directory renamed to Guides/
 
 ### Added
 - **NEW AGENTS**: 14 specialized domain agents with enhanced capabilities
@@ -140,7 +140,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Migration preserves existing functionality while preventing naming conflicts
 - Installation process detects and migrates existing commands automatically
 - Tab completion support for `/sc:` prefix to discover all SuperClaude commands
-- Guides/ directory replaces Docs/ for improved organization
+- Guides/ directory replaces docs/ for improved organization
 
 ## [4.0.6] - 2025-08-23
 

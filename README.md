@@ -23,7 +23,7 @@
   <a href="https://superclaude.netlify.app/">
     <img src="https://img.shields.io/badge/🌐_Visit_Website-blue" alt="Website">
   </a>
-  <a href="https://pypi.org/project/SuperClaude/">
+  <a href="https://pypi.org/project/superclaude/">
     <img src="https://img.shields.io/pypi/v/SuperClaude.svg?" alt="PyPI">
   </a>
   <a href="https://pepy.tech/projects/superclaude">
@@ -392,51 +392,51 @@ The Deep Research system intelligently coordinates multiple tools:
 <tr>
 <td valign="top">
 
-- 📝 [**Quick Start Guide**](Docs/Getting-Started/quick-start.md)  
+- 📝 [**Quick Start Guide**](docs/Getting-Started/quick-start.md)  
   *Get up and running fast*
 
-- 💾 [**Installation Guide**](Docs/Getting-Started/installation.md)  
+- 💾 [**Installation Guide**](docs/Getting-Started/installation.md)  
   *Detailed setup instructions*
 
 </td>
 <td valign="top">
 
-- 🎯 [**Commands Reference**](Docs/User-Guide/commands.md)  
+- 🎯 [**Commands Reference**](docs/User-Guide/commands.md)  
   *All 25 slash commands*
 
-- 🤖 [**Agents Guide**](Docs/User-Guide/agents.md)  
+- 🤖 [**Agents Guide**](docs/User-Guide/agents.md)  
   *15 specialized agents*
 
-- 🎨 [**Behavioral Modes**](Docs/User-Guide/modes.md)  
+- 🎨 [**Behavioral Modes**](docs/User-Guide/modes.md)  
   *7 adaptive modes*
 
-- 🚩 [**Flags Guide**](Docs/User-Guide/flags.md)  
+- 🚩 [**Flags Guide**](docs/User-Guide/flags.md)  
   *Control behaviors*
 
-- 🔧 [**MCP Servers**](Docs/User-Guide/mcp-servers.md)  
+- 🔧 [**MCP Servers**](docs/User-Guide/mcp-servers.md)  
   *7 server integrations*
 
-- 💼 [**Session Management**](Docs/User-Guide/session-management.md)  
+- 💼 [**Session Management**](docs/User-Guide/session-management.md)  
   *Save & restore state*
 
 </td>
 <td valign="top">
 
-- 🏗️ [**Technical Architecture**](Docs/Developer-Guide/technical-architecture.md)  
+- 🏗️ [**Technical Architecture**](docs/Developer-Guide/technical-architecture.md)  
   *System design details*
 
-- 💻 [**Contributing Code**](Docs/Developer-Guide/contributing-code.md)  
+- 💻 [**Contributing Code**](docs/Developer-Guide/contributing-code.md)  
   *Development workflow*
 
-- 🧪 [**Testing & Debugging**](Docs/Developer-Guide/testing-debugging.md)  
+- 🧪 [**Testing & Debugging**](docs/Developer-Guide/testing-debugging.md)  
   *Quality assurance*
 
 </td>
 <td valign="top">
-- 📓 [**Examples Cookbook**](Docs/Reference/examples-cookbook.md)  
+- 📓 [**Examples Cookbook**](docs/Reference/examples-cookbook.md)  
   *Real-world recipes*
 
-- 🔍 [**Troubleshooting**](Docs/Reference/troubleshooting.md)  
+- 🔍 [**Troubleshooting**](docs/Reference/troubleshooting.md)  
   *Common issues & fixes*
 
 </td>

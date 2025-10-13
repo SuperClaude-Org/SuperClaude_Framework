@@ -10,9 +10,9 @@ from .update import UpdateOperation
 from .backup import BackupOperation
 
 __all__ = [
-    'OperationBase',
-    'InstallOperation',
-    'UninstallOperation', 
-    'UpdateOperation',
-    'BackupOperation'
+    "OperationBase",
+    "InstallOperation",
+    "UninstallOperation",
+    "UpdateOperation",
+    "BackupOperation",
 ]

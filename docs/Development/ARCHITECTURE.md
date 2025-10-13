@@ -236,7 +236,7 @@ Session End:
     "learned": ["Session Lifecycle pattern", "PDCA automation"]
   },
   "next_actions": [
-    "Create Docs/Development/ structure",
+    "Create docs/Development/ structure",
     "Write ARCHITECTURE.md",
     "Configure Serena MCP server"
   ]

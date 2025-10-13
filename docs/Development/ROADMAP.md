@@ -31,7 +31,7 @@ Transform SuperClaude into a self-improving development platform with PM Agent m
 
 ### Tasks
 
-- [x] Create `Docs/Development/` directory structure
+- [x] Create `docs/Development/` directory structure
 - [x] Write `ARCHITECTURE.md` - System overview with PM Agent position
 - [x] Write `ROADMAP.md` - Phase-based development plan with checkboxes
 - [ ] Write `TASKS.md` - Current task tracking system
@@ -40,11 +40,11 @@ Transform SuperClaude into a self-improving development platform with PM Agent m
 
 ### Deliverables
 
-- [x] **Docs/Development/ARCHITECTURE.md** - Complete system architecture
-- [x] **Docs/Development/ROADMAP.md** - This file (development roadmap)
-- [ ] **Docs/Development/TASKS.md** - Task management with checkboxes
-- [ ] **Docs/Development/PROJECT_STATUS.md** - Current status and metrics
-- [ ] **Docs/Development/pm-agent-integration.md** - Integration procedures
+- [x] **docs/Development/ARCHITECTURE.md** - Complete system architecture
+- [x] **docs/Development/ROADMAP.md** - This file (development roadmap)
+- [ ] **docs/Development/TASKS.md** - Task management with checkboxes
+- [ ] **docs/Development/PROJECT_STATUS.md** - Current status and metrics
+- [ ] **docs/Development/pm-agent-integration.md** - Integration procedures
 
 ### Success Criteria
 
@@ -67,24 +67,24 @@ Transform SuperClaude into a self-improving development platform with PM Agent m
 ### Tasks
 
 #### Documentation Updates
-- [x] Update `SuperClaude/Commands/pm.md` with Session Lifecycle
-- [x] Update `SuperClaude/Agents/pm-agent.md` with PDCA Cycle
-- [x] Create `Docs/pm-agent-implementation-status.md`
-- [ ] Update `Docs/User-Guide/agents.md` - Add PM Agent section
-- [ ] Update `Docs/User-Guide/commands.md` - Add /sc:pm command
+- [x] Update `superclaude/Commands/pm.md` with Session Lifecycle
+- [x] Update `superclaude/Agents/pm-agent.md` with PDCA Cycle
+- [x] Create `docs/pm-agent-implementation-status.md`
+- [ ] Update `docs/User-Guide/agents.md` - Add PM Agent section
+- [ ] Update `docs/User-Guide/commands.md` - Add /sc:pm command
 
 #### Core Implementation
-- [ ] Implement `SuperClaude/Core/session_lifecycle.py`
+- [ ] Implement `superclaude/Core/session_lifecycle.py`
   - [ ] Session start hooks
   - [ ] Context restoration logic
   - [ ] User report generation
   - [ ] Error handling and fallback
-- [ ] Implement `SuperClaude/Core/pdca_engine.py`
+- [ ] Implement `superclaude/Core/pdca_engine.py`
   - [ ] Plan phase automation
   - [ ] Do phase tracking
   - [ ] Check phase self-evaluation
   - [ ] Act phase documentation
-- [ ] Implement `SuperClaude/Core/memory_ops.py`
+- [ ] Implement `superclaude/Core/memory_ops.py`
   - [ ] Serena MCP wrapper
   - [ ] Memory operation abstractions
   - [ ] Checkpoint management
@@ -101,9 +101,9 @@ Transform SuperClaude into a self-improving development platform with PM Agent m
 
 - [x] **Updated pm.md and pm-agent.md** - Design documentation
 - [x] **pm-agent-implementation-status.md** - Status tracking
-- [ ] **SuperClaude/Core/session_lifecycle.py** - Session management
-- [ ] **SuperClaude/Core/pdca_engine.py** - PDCA automation
-- [ ] **SuperClaude/Core/memory_ops.py** - Memory operations
+- [ ] **superclaude/Core/session_lifecycle.py** - Session management
+- [ ] **superclaude/Core/pdca_engine.py** - PDCA automation
+- [ ] **superclaude/Core/memory_ops.py** - Memory operations
 - [ ] **tests/test_pm_agent.py** - Comprehensive test suite
 
 ### Success Criteria
@@ -156,9 +156,9 @@ Transform SuperClaude into a self-improving development platform with PM Agent m
 ### Deliverables
 
 - [ ] **Serena MCP Server** - Configured and operational
-- [ ] **SuperClaude/Core/serena_client.py** - Serena MCP client wrapper
-- [ ] **SuperClaude/Core/think_operations.py** - Think hooks implementation
-- [ ] **Docs/troubleshooting/serena-setup.md** - Setup guide
+- [ ] **superclaude/Core/serena_client.py** - Serena MCP client wrapper
+- [ ] **superclaude/Core/think_operations.py** - Think hooks implementation
+- [ ] **docs/troubleshooting/serena-setup.md** - Setup guide
 - [ ] **tests/test_serena_integration.py** - Integration test suite
 
 ### Success Criteria
@@ -212,8 +212,8 @@ Transform SuperClaude into a self-improving development platform with PM Agent m
 ### Deliverables
 
 - [ ] **docs/temp/**, **docs/patterns/**, **docs/mistakes/** - Directory templates
-- [ ] **SuperClaude/Core/doc_lifecycle.py** - Lifecycle automation
-- [ ] **SuperClaude/Core/knowledge_manager.py** - Knowledge extraction
+- [ ] **superclaude/Core/doc_lifecycle.py** - Lifecycle automation
+- [ ] **superclaude/Core/knowledge_manager.py** - Knowledge extraction
 - [ ] **scripts/migrate_docs.py** - Migration utilities
 - [ ] **tests/test_doc_lifecycle.py** - Lifecycle test suite
 
@@ -268,8 +268,8 @@ Transform SuperClaude into a self-improving development platform with PM Agent m
 
 ### Deliverables
 
-- [ ] **SuperClaude/Core/auto_activation.py** - Auto-activation system
-- [ ] **Docs/Developer-Guide/auto-activation.md** - Implementation guide
+- [ ] **superclaude/Core/auto_activation.py** - Auto-activation system
+- [ ] **docs/Developer-Guide/auto-activation.md** - Implementation guide
 - [ ] **tests/test_auto_activation.py** - Auto-activation tests
 - [ ] **Performance Report** - Startup time impact analysis
 

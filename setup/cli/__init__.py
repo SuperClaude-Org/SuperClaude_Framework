@@ -7,5 +7,5 @@ from .base import OperationBase
 from .commands import *
 
 __all__ = [
-    'OperationBase',
+    "OperationBase",
 ]

@@ -30,19 +30,19 @@ def get_home_directory() -> Path:
     # Fallback methods for edge cases and immutable distros
 
     # Method 1: Use $HOME environment variable
-    home_env = os.environ.get('HOME')
+    home_env = os.environ.get("HOME")
     if home_env:
         home_path = Path(home_env)
         if home_path.exists() and home_path.is_dir():
             return home_path
 
     # Method 2: Check for immutable distro patterns
-    username = os.environ.get('USER') or os.environ.get('USERNAME')
+    username = os.environ.get("USER") or os.environ.get("USERNAME")
     if username:
         # Check common immutable distro paths
         immutable_paths = [
-            Path(f'/var/home/{username}'),  # Fedora Silverblue/Universal Blue
-            Path(f'/home/{username}'),      # Standard Linux
+            Path(f"/var/home/{username}"),  # Fedora Silverblue/Universal Blue
+            Path(f"/home/{username}"),  # Standard Linux
         ]
 
         for path in immutable_paths:

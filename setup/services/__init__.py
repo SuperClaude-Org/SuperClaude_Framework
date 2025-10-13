@@ -8,9 +8,4 @@ from .config import ConfigService
 from .files import FileService
 from .settings import SettingsService
 
-__all__ = [
-    'CLAUDEMdService',
-    'ConfigService', 
-    'FileService',
-    'SettingsService'
-]
+__all__ = ["CLAUDEMdService", "ConfigService", "FileService", "SettingsService"]

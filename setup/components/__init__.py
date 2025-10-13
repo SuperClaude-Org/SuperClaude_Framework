@@ -8,10 +8,10 @@ from .modes import ModesComponent
 from .mcp_docs import MCPDocsComponent
 
 __all__ = [
-    'CoreComponent',
-    'CommandsComponent', 
-    'MCPComponent',
-    'AgentsComponent',
-    'ModesComponent',
-    'MCPDocsComponent'
+    "CoreComponent",
+    "CommandsComponent",
+    "MCPComponent",
+    "AgentsComponent",
+    "ModesComponent",
+    "MCPDocsComponent",
 ]

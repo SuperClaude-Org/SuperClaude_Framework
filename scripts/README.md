@@ -107,8 +107,8 @@ Set these in your GitHub repository settings → Secrets and variables → Actio
 
 Before publishing, ensure version consistency across:
 - `pyproject.toml`
-- `SuperClaude/__init__.py`
-- `SuperClaude/__main__.py`
+- `superclaude/__init__.py`
+- `superclaude/__main__.py`
 - `setup/__init__.py`
 
 The build script validates version consistency automatically.

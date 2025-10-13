@@ -19,57 +19,61 @@ def get_command_info():
         "install": {
             "name": "install",
             "description": "Install SuperClaude framework components",
-            "module": "setup.cli.commands.install"
+            "module": "setup.cli.commands.install",
         },
         "update": {
-            "name": "update", 
+            "name": "update",
             "description": "Update existing SuperClaude installation",
-            "module": "setup.cli.commands.update"
+            "module": "setup.cli.commands.update",
         },
         "uninstall": {
             "name": "uninstall",
-            "description": "Remove SuperClaude framework installation", 
-            "module": "setup.cli.commands.uninstall"
+            "description": "Remove SuperClaude framework installation",
+            "module": "setup.cli.commands.uninstall",
         },
         "backup": {
             "name": "backup",
             "description": "Backup and restore SuperClaude installations",
-            "module": "setup.cli.commands.backup"
-        }
+            "module": "setup.cli.commands.backup",
+        },
     }
 
 
 class OperationBase:
     """Base class for all operations providing common functionality"""
-    
+
     def __init__(self, operation_name: str):
         self.operation_name = operation_name
         self.logger = None
-    
+
     def setup_operation_logging(self, args):
         """Setup operation-specific logging"""
         from ..utils.logger import get_logger
+
         self.logger = get_logger()
         self.logger.info(f"Starting {self.operation_name} operation")
-    
+
     def validate_global_args(self, args):
         """Validate global arguments common to all operations"""
         errors = []
-        
+
         # Validate install directory
-        if hasattr(args, 'install_dir') and args.install_dir:
+        if hasattr(args, "install_dir") and args.install_dir:
             from ..utils.security import SecurityValidator
-            is_safe, validation_errors = SecurityValidator.validate_installation_target(args.install_dir)
+
+            is_safe, validation_errors = SecurityValidator.validate_installation_target(
+                args.install_dir
+            )
             if not is_safe:
                 errors.extend(validation_errors)
-        
+
         # Check for conflicting flags
-        if hasattr(args, 'verbose') and hasattr(args, 'quiet'):
+        if hasattr(args, "verbose") and hasattr(args, "quiet"):
             if args.verbose and args.quiet:
                 errors.append("Cannot specify both --verbose and --quiet")
-        
+
         return len(errors) == 0, errors
-    
+
     def handle_operation_error(self, operation: str, error: Exception):
         """Standard error handling for operations"""
         if self.logger:

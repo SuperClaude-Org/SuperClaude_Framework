@@ -18,25 +18,25 @@ from ..utils.ui import display_info, display_warning
 
 class MCPComponent(Component):
     """MCP servers integration component"""
-    
+
     def __init__(self, install_dir: Optional[Path] = None):
         """Initialize MCP component"""
         super().__init__(install_dir)
         self.installed_servers_in_session: List[str] = []
-        
+
         # Define MCP servers to install
         self.mcp_servers = {
             "sequential-thinking": {
                 "name": "sequential-thinking",
                 "description": "Multi-step problem solving and systematic analysis",
                 "npm_package": "@modelcontextprotocol/server-sequential-thinking",
-                "required": True
+                "required": True,
             },
             "context7": {
-                "name": "context7", 
+                "name": "context7",
                 "description": "Official library documentation and code examples",
                 "npm_package": "@upstash/context7-mcp",
-                "required": True
+                "required": True,
             },
             "magic": {
                 "name": "magic",
@@ -44,13 +44,13 @@ class MCPComponent(Component):
                 "npm_package": "@21st-dev/magic",
                 "required": False,
                 "api_key_env": "TWENTYFIRST_API_KEY",
-                "api_key_description": "21st.dev API key for UI component generation"
+                "api_key_description": "21st.dev API key for UI component generation",
             },
             "playwright": {
                 "name": "playwright",
                 "description": "Cross-browser E2E testing and automation",
                 "npm_package": "@playwright/mcp@latest",
-                "required": False
+                "required": False,
             },
             "serena": {
                 "name": "serena",
@@ -58,7 +58,7 @@ class MCPComponent(Component):
                 "install_method": "github",
                 "install_command": "uvx --from git+https://github.com/oraios/serena serena --help",
                 "run_command": "uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant --enable-web-dashboard false --enable-gui-log-window false",
-                "required": False
+                "required": False,
             },
             "morphllm-fast-apply": {
                 "name": "morphllm-fast-apply",
@@ -66,7 +66,7 @@ class MCPComponent(Component):
                 "npm_package": "@morph-llm/morph-fast-apply",
                 "required": False,
                 "api_key_env": "MORPH_API_KEY",
-                "api_key_description": "Morph API key for Fast Apply"
+                "api_key_description": "Morph API key for Fast Apply",
             },
             "tavily": {
                 "name": "tavily",
@@ -75,31 +75,33 @@ class MCPComponent(Component):
                 "install_command": "npx -y tavily-mcp@0.1.2",
                 "required": False,
                 "api_key_env": "TAVILY_API_KEY",
-                "api_key_description": "Tavily API key for web search (get from https://app.tavily.com)"
+                "api_key_description": "Tavily API key for web search (get from https://app.tavily.com)",
             },
             "chrome-devtools": {
                 "name": "chrome-devtools",
                 "description": "Chrome DevTools debugging and performance analysis",
                 "install_method": "npm",
                 "install_command": "npx -y chrome-devtools-mcp@latest",
-                "required": False
-            }
+                "required": False,
+            },
         }
-    
+
     def get_metadata(self) -> Dict[str, str]:
         """Get component metadata"""
         return {
             "name": "mcp",
             "version": __version__,
             "description": "MCP server integration (Context7, Sequential, Magic, Playwright)",
-            "category": "integration"
+            "category": "integration",
         }
 
     def is_reinstallable(self) -> bool:
         """This component manages sub-components (servers) and should be re-run."""
         return True
 
-    def _run_command_cross_platform(self, cmd: List[str], **kwargs) -> subprocess.CompletedProcess:
+    def _run_command_cross_platform(
+        self, cmd: List[str], **kwargs
+    ) -> subprocess.CompletedProcess:
         """
         Run a command with proper cross-platform shell handling.
 
@@ -119,20 +121,21 @@ class MCPComponent(Component):
             cmd_str = " ".join(shlex.quote(str(arg)) for arg in cmd)
 
             # Use the user's shell to execute the command, supporting aliases
-            user_shell = os.environ.get('SHELL', '/bin/bash')
-            return subprocess.run(cmd_str, shell=True, env=os.environ, executable=user_shell, **kwargs)
-    
-    def validate_prerequisites(self, installSubPath: Optional[Path] = None) -> Tuple[bool, List[str]]:
+            user_shell = os.environ.get("SHELL", "/bin/bash")
+            return subprocess.run(
+                cmd_str, shell=True, env=os.environ, executable=user_shell, **kwargs
+            )
+
+    def validate_prerequisites(
+        self, installSubPath: Optional[Path] = None
+    ) -> Tuple[bool, List[str]]:
         """Check prerequisites"""
         errors = []
 
         # Check if Node.js is available
         try:
             result = self._run_command_cross_platform(
-                ["node", "--version"],
-                capture_output=True,
-                text=True,
-                timeout=10
+                ["node", "--version"], capture_output=True, text=True, timeout=10
             )
             if result.returncode != 0:
                 errors.append("Node.js not found - required for MCP servers")
@@ -142,9 +145,11 @@ class MCPComponent(Component):
 
                 # Check version (require 18+)
                 try:
-                    version_num = int(version.lstrip('v').split('.')[0])
+                    version_num = int(version.lstrip("v").split(".")[0])
                     if version_num < 18:
-                        errors.append(f"Node.js version {version} found, but version 18+ required")
+                        errors.append(
+                            f"Node.js version {version} found, but version 18+ required"
+                        )
                 except:
                     self.logger.warning(f"Could not parse Node.js version: {version}")
         except (subprocess.TimeoutExpired, FileNotFoundError):
@@ -153,13 +158,12 @@ class MCPComponent(Component):
         # Check if Claude CLI is available
         try:
             result = self._run_command_cross_platform(
-                ["claude", "--version"],
-                capture_output=True,
-                text=True,
-                timeout=10
+                ["claude", "--version"], capture_output=True, text=True, timeout=10
             )
             if result.returncode != 0:
-                errors.append("Claude CLI not found - required for MCP server management")
+                errors.append(
+                    "Claude CLI not found - required for MCP server management"
+                )
             else:
                 version = result.stdout.strip()
                 self.logger.debug(f"Found Claude CLI {version}")
@@ -169,10 +173,7 @@ class MCPComponent(Component):
         # Check if npm is available
         try:
             result = self._run_command_cross_platform(
-                ["npm", "--version"],
-                capture_output=True,
-                text=True,
-                timeout=10
+                ["npm", "--version"], capture_output=True, text=True, timeout=10
             )
             if result.returncode != 0:
                 errors.append("npm not found - required for MCP server installation")
@@ -185,25 +186,26 @@ class MCPComponent(Component):
         # Check if uv is available (required for Serena)
         try:
             result = self._run_command_cross_platform(
-                ["uv", "--version"],
-                capture_output=True,
-                text=True,
-                timeout=10
+                ["uv", "--version"], capture_output=True, text=True, timeout=10
             )
             if result.returncode != 0:
-                self.logger.warning("uv not found - required for Serena MCP server installation")
+                self.logger.warning(
+                    "uv not found - required for Serena MCP server installation"
+                )
             else:
                 version = result.stdout.strip()
                 self.logger.debug(f"Found uv {version}")
         except (subprocess.TimeoutExpired, FileNotFoundError):
-            self.logger.warning("uv not found - required for Serena MCP server installation")
+            self.logger.warning(
+                "uv not found - required for Serena MCP server installation"
+            )
 
         return len(errors) == 0, errors
-    
+
     def get_files_to_install(self) -> List[Tuple[Path, Path]]:
         """Get files to install (none for MCP component)"""
         return []
-    
+
     def get_metadata_modifications(self) -> Dict[str, Any]:
         """Get metadata modifications for MCP component"""
         return {
@@ -211,24 +213,28 @@ class MCPComponent(Component):
                 "mcp": {
                     "version": __version__,
                     "installed": True,
-                    "servers_count": len(self.installed_servers_in_session)
+                    "servers_count": len(self.installed_servers_in_session),
                 }
             },
             "mcp": {
                 "enabled": True,
                 "servers": self.installed_servers_in_session,
-                "auto_update": False
-            }
+                "auto_update": False,
+            },
         }
-    
-    def _install_uv_mcp_server(self, server_info: Dict[str, Any], config: Dict[str, Any]) -> bool:
+
+    def _install_uv_mcp_server(
+        self, server_info: Dict[str, Any], config: Dict[str, Any]
+    ) -> bool:
         """Install a single MCP server using uv"""
         server_name = server_info["name"]
         install_command = server_info.get("install_command")
         run_command = server_info.get("run_command")
 
         if not install_command:
-            self.logger.error(f"No install_command found for uv-based server {server_name}")
+            self.logger.error(
+                f"No install_command found for uv-based server {server_name}"
+            )
             return False
         if not run_command:
             self.logger.error(f"No run_command found for uv-based server {server_name}")
@@ -244,85 +250,125 @@ class MCPComponent(Component):
             # Check if uv is available
             try:
                 uv_check = self._run_command_cross_platform(
-                    ["uv", "--version"],
-                    capture_output=True,
-                    text=True,
-                    timeout=10
+                    ["uv", "--version"], capture_output=True, text=True, timeout=10
                 )
                 if uv_check.returncode != 0:
-                    self.logger.error(f"uv not found - required for {server_name} installation")
+                    self.logger.error(
+                        f"uv not found - required for {server_name} installation"
+                    )
                     return False
             except (subprocess.TimeoutExpired, FileNotFoundError):
-                self.logger.error(f"uv not found - required for {server_name} installation")
+                self.logger.error(
+                    f"uv not found - required for {server_name} installation"
+                )
                 return False
 
             if config.get("dry_run"):
-                self.logger.info(f"Would install MCP server (user scope): {install_command}")
-                self.logger.info(f"Would register MCP server run command: {run_command}")
+                self.logger.info(
+                    f"Would install MCP server (user scope): {install_command}"
+                )
+                self.logger.info(
+                    f"Would register MCP server run command: {run_command}"
+                )
                 return True
 
             # Run install command
             self.logger.debug(f"Running: {install_command}")
             cmd_parts = shlex.split(install_command)
             result = self._run_command_cross_platform(
-                cmd_parts,
-                capture_output=True,
-                text=True,
-                timeout=900   # 15 minutes
+                cmd_parts, capture_output=True, text=True, timeout=900  # 15 minutes
             )
 
             if result.returncode == 0:
-                self.logger.success(f"Successfully installed MCP server (user scope): {server_name}")
+                self.logger.success(
+                    f"Successfully installed MCP server (user scope): {server_name}"
+                )
 
                 # For Serena, we need to handle the run command specially
                 if server_name == "serena":
                     # Serena needs project-specific registration, use current working directory
                     current_dir = os.getcwd()
-                    serena_run_cmd = f"{run_command} --project {shlex.quote(current_dir)}"
-                    self.logger.info(f"Registering {server_name} with Claude CLI for project: {current_dir}")
-                    reg_cmd = ["claude", "mcp", "add", "-s", "user", "--", server_name] + shlex.split(serena_run_cmd)
+                    serena_run_cmd = (
+                        f"{run_command} --project {shlex.quote(current_dir)}"
+                    )
+                    self.logger.info(
+                        f"Registering {server_name} with Claude CLI for project: {current_dir}"
+                    )
+                    reg_cmd = [
+                        "claude",
+                        "mcp",
+                        "add",
+                        "-s",
+                        "user",
+                        "--",
+                        server_name,
+                    ] + shlex.split(serena_run_cmd)
                 else:
-                    self.logger.info(f"Registering {server_name} with Claude CLI. Run command: {run_command}")
-                    reg_cmd = ["claude", "mcp", "add", "-s", "user", "--", server_name] + shlex.split(run_command)
+                    self.logger.info(
+                        f"Registering {server_name} with Claude CLI. Run command: {run_command}"
+                    )
+                    reg_cmd = [
+                        "claude",
+                        "mcp",
+                        "add",
+                        "-s",
+                        "user",
+                        "--",
+                        server_name,
+                    ] + shlex.split(run_command)
 
                 reg_result = self._run_command_cross_platform(
-                    reg_cmd,
-                    capture_output=True,
-                    text=True,
-                    timeout=120
+                    reg_cmd, capture_output=True, text=True, timeout=120
                 )
 
                 if reg_result.returncode == 0:
-                    self.logger.success(f"Successfully registered {server_name} with Claude CLI.")
+                    self.logger.success(
+                        f"Successfully registered {server_name} with Claude CLI."
+                    )
                     return True
                 else:
-                    error_msg = reg_result.stderr.strip() if reg_result.stderr else "Unknown error"
-                    self.logger.error(f"Failed to register MCP server {server_name} with Claude CLI: {error_msg}")
+                    error_msg = (
+                        reg_result.stderr.strip()
+                        if reg_result.stderr
+                        else "Unknown error"
+                    )
+                    self.logger.error(
+                        f"Failed to register MCP server {server_name} with Claude CLI: {error_msg}"
+                    )
                     return False
             else:
                 error_msg = result.stderr.strip() if result.stderr else "Unknown error"
-                self.logger.error(f"Failed to install MCP server {server_name} using uv: {error_msg}\n{result.stdout}")
+                self.logger.error(
+                    f"Failed to install MCP server {server_name} using uv: {error_msg}\n{result.stdout}"
+                )
                 return False
 
         except subprocess.TimeoutExpired:
             self.logger.error(f"Timeout installing MCP server {server_name} using uv")
             return False
         except Exception as e:
-            self.logger.error(f"Error installing MCP server {server_name} using uv: {e}")
+            self.logger.error(
+                f"Error installing MCP server {server_name} using uv: {e}"
+            )
             return False
-    
 
-    def _install_github_mcp_server(self, server_info: Dict[str, Any], config: Dict[str, Any]) -> bool:
+    def _install_github_mcp_server(
+        self, server_info: Dict[str, Any], config: Dict[str, Any]
+    ) -> bool:
         """Install a single MCP server from GitHub using uvx"""
         server_name = server_info["name"]
         install_command = server_info.get("install_command")
         run_command = server_info.get("run_command")
 
         if not install_command:
-            self.logger.error(f"No install_command found for GitHub-based server {server_name}")
+            self.logger.error(
+                f"No install_command found for GitHub-based server {server_name}"
+            )
             return False
         if not run_command:
-            self.logger.error(f"No run_command found for GitHub-based server {server_name}")
+            self.logger.error(
+                f"No run_command found for GitHub-based server {server_name}"
+            )
             return False
 
         try:
@@ -335,21 +381,26 @@ class MCPComponent(Component):
             # Check if uvx is available
             try:
                 uvx_check = self._run_command_cross_platform(
-                    ["uvx", "--version"],
-                    capture_output=True,
-                    text=True,
-                    timeout=10
+                    ["uvx", "--version"], capture_output=True, text=True, timeout=10
                 )
                 if uvx_check.returncode != 0:
-                    self.logger.error(f"uvx not found - required for {server_name} installation")
+                    self.logger.error(
+                        f"uvx not found - required for {server_name} installation"
+                    )
                     return False
             except (subprocess.TimeoutExpired, FileNotFoundError):
-                self.logger.error(f"uvx not found - required for {server_name} installation")
+                self.logger.error(
+                    f"uvx not found - required for {server_name} installation"
+                )
                 return False
 
             if config.get("dry_run"):
-                self.logger.info(f"Would install MCP server from GitHub: {install_command}")
-                self.logger.info(f"Would register MCP server run command: {run_command}")
+                self.logger.info(
+                    f"Would install MCP server from GitHub: {install_command}"
+                )
+                self.logger.info(
+                    f"Would register MCP server run command: {run_command}"
+                )
                 return True
 
             # Run install command to test the GitHub installation
@@ -359,50 +410,70 @@ class MCPComponent(Component):
                 cmd_parts,
                 capture_output=True,
                 text=True,
-                timeout=300   # 5 minutes for GitHub clone and build
+                timeout=300,  # 5 minutes for GitHub clone and build
             )
 
             if result.returncode == 0:
-                self.logger.success(f"Successfully tested GitHub MCP server: {server_name}")
+                self.logger.success(
+                    f"Successfully tested GitHub MCP server: {server_name}"
+                )
 
                 # Register with Claude CLI using the run command
-                self.logger.info(f"Registering {server_name} with Claude CLI. Run command: {run_command}")
-                reg_cmd = ["claude", "mcp", "add", "-s", "user", "--", server_name] + shlex.split(run_command)
+                self.logger.info(
+                    f"Registering {server_name} with Claude CLI. Run command: {run_command}"
+                )
+                reg_cmd = [
+                    "claude",
+                    "mcp",
+                    "add",
+                    "-s",
+                    "user",
+                    "--",
+                    server_name,
+                ] + shlex.split(run_command)
 
                 reg_result = self._run_command_cross_platform(
-                    reg_cmd,
-                    capture_output=True,
-                    text=True,
-                    timeout=120
+                    reg_cmd, capture_output=True, text=True, timeout=120
                 )
 
                 if reg_result.returncode == 0:
-                    self.logger.success(f"Successfully registered {server_name} with Claude CLI.")
+                    self.logger.success(
+                        f"Successfully registered {server_name} with Claude CLI."
+                    )
                     return True
                 else:
-                    error_msg = reg_result.stderr.strip() if reg_result.stderr else "Unknown error"
-                    self.logger.error(f"Failed to register MCP server {server_name} with Claude CLI: {error_msg}")
+                    error_msg = (
+                        reg_result.stderr.strip()
+                        if reg_result.stderr
+                        else "Unknown error"
+                    )
+                    self.logger.error(
+                        f"Failed to register MCP server {server_name} with Claude CLI: {error_msg}"
+                    )
                     return False
             else:
                 error_msg = result.stderr.strip() if result.stderr else "Unknown error"
-                self.logger.error(f"Failed to install MCP server {server_name} from GitHub: {error_msg}\n{result.stdout}")
+                self.logger.error(
+                    f"Failed to install MCP server {server_name} from GitHub: {error_msg}\n{result.stdout}"
+                )
                 return False
 
         except subprocess.TimeoutExpired:
-            self.logger.error(f"Timeout installing MCP server {server_name} from GitHub")
+            self.logger.error(
+                f"Timeout installing MCP server {server_name} from GitHub"
+            )
             return False
         except Exception as e:
-            self.logger.error(f"Error installing MCP server {server_name} from GitHub: {e}")
+            self.logger.error(
+                f"Error installing MCP server {server_name} from GitHub: {e}"
+            )
             return False
 
     def _check_mcp_server_installed(self, server_name: str) -> bool:
         """Check if MCP server is already installed"""
         try:
             result = self._run_command_cross_platform(
-                ["claude", "mcp", "list"],
-                capture_output=True,
-                text=True,
-                timeout=60
+                ["claude", "mcp", "list"], capture_output=True, text=True, timeout=60
             )
 
             if result.returncode != 0:
@@ -427,8 +498,16 @@ class MCPComponent(Component):
                 self.install_dir / "claude_desktop_config.json",
                 Path.home() / ".claude" / "claude_desktop_config.json",
                 Path.home() / ".claude.json",  # Claude CLI config
-                Path.home() / "AppData" / "Roaming" / "Claude" / "claude_desktop_config.json",  # Windows
-                Path.home() / "Library" / "Application Support" / "Claude" / "claude_desktop_config.json",  # macOS
+                Path.home()
+                / "AppData"
+                / "Roaming"
+                / "Claude"
+                / "claude_desktop_config.json",  # Windows
+                Path.home()
+                / "Library"
+                / "Application Support"
+                / "Claude"
+                / "claude_desktop_config.json",  # macOS
             ]
 
             config_file = None
@@ -442,7 +521,8 @@ class MCPComponent(Component):
                 return detected_servers
 
             import json
-            with open(config_file, 'r') as f:
+
+            with open(config_file, "r") as f:
                 config = json.load(f)
 
             # Extract MCP server names from mcpServers section
@@ -454,7 +534,9 @@ class MCPComponent(Component):
                     detected_servers.append(normalized_name)
 
             if detected_servers:
-                self.logger.info(f"Detected existing MCP servers from config: {detected_servers}")
+                self.logger.info(
+                    f"Detected existing MCP servers from config: {detected_servers}"
+                )
 
         except Exception as e:
             self.logger.warning(f"Could not read Claude Desktop config: {e}")
@@ -467,10 +549,7 @@ class MCPComponent(Component):
 
         try:
             result = self._run_command_cross_platform(
-                ["claude", "mcp", "list"],
-                capture_output=True,
-                text=True,
-                timeout=60
+                ["claude", "mcp", "list"], capture_output=True, text=True, timeout=60
             )
 
             if result.returncode != 0:
@@ -478,10 +557,10 @@ class MCPComponent(Component):
                 return detected_servers
 
             # Parse the output to extract server names
-            output_lines = result.stdout.strip().split('\n')
+            output_lines = result.stdout.strip().split("\n")
             for line in output_lines:
                 line = line.strip().lower()
-                if line and not line.startswith('#') and not line.startswith('no'):
+                if line and not line.startswith("#") and not line.startswith("no"):
                     # Extract server name (usually the first word or before first space/colon)
                     server_name = line.split()[0] if line.split() else ""
                     normalized_name = self._normalize_server_name(server_name)
@@ -489,7 +568,9 @@ class MCPComponent(Component):
                         detected_servers.append(normalized_name)
 
             if detected_servers:
-                self.logger.info(f"Detected existing MCP servers from CLI: {detected_servers}")
+                self.logger.info(
+                    f"Detected existing MCP servers from CLI: {detected_servers}"
+                )
 
         except Exception as e:
             self.logger.warning(f"Could not detect existing MCP servers from CLI: {e}")
@@ -513,12 +594,17 @@ class MCPComponent(Component):
             "serena": "serena",
             "morphllm": "morphllm-fast-apply",
             "morphllm-fast-apply": "morphllm-fast-apply",
-            "morph": "morphllm-fast-apply"
+            "morph": "morphllm-fast-apply",
         }
 
         return name_mappings.get(server_name)
 
-    def _merge_server_lists(self, existing_servers: List[str], selected_servers: List[str], previous_servers: List[str]) -> List[str]:
+    def _merge_server_lists(
+        self,
+        existing_servers: List[str],
+        selected_servers: List[str],
+        previous_servers: List[str],
+    ) -> List[str]:
         """Merge existing, selected, and previously installed servers"""
         all_servers = set()
 
@@ -540,8 +626,10 @@ class MCPComponent(Component):
                 self.logger.info(f"  - Previously installed: {previous_servers}")
 
         return valid_servers
-    
-    def _install_mcp_server(self, server_info: Dict[str, Any], config: Dict[str, Any]) -> bool:
+
+    def _install_mcp_server(
+        self, server_info: Dict[str, Any], config: Dict[str, Any]
+    ) -> bool:
         """Install a single MCP server"""
         if server_info.get("install_method") == "uv":
             return self._install_uv_mcp_server(server_info, config)
@@ -553,115 +641,154 @@ class MCPComponent(Component):
         install_command = server_info.get("install_command")
 
         if not npm_package and not install_command:
-            self.logger.error(f"No npm_package or install_command found for server {server_name}")
+            self.logger.error(
+                f"No npm_package or install_command found for server {server_name}"
+            )
             return False
-        
+
         command = "npx"
-        
+
         try:
             self.logger.info(f"Installing MCP server: {server_name}")
-            
+
             # Check if already installed
             if self._check_mcp_server_installed(server_name):
                 self.logger.info(f"MCP server {server_name} already installed")
                 return True
-            
+
             # Handle API key requirements
             if "api_key_env" in server_info:
                 api_key_env = server_info["api_key_env"]
-                api_key_desc = server_info.get("api_key_description", f"API key for {server_name}")
-                
+                api_key_desc = server_info.get(
+                    "api_key_description", f"API key for {server_name}"
+                )
+
                 if not config.get("dry_run", False):
                     display_info(f"MCP server '{server_name}' requires an API key")
                     display_info(f"Environment variable: {api_key_env}")
                     display_info(f"Description: {api_key_desc}")
-                    
+
                     # Check if API key is already set
                     import os
+
                     if not os.getenv(api_key_env):
-                        display_warning(f"API key {api_key_env} not found in environment")
-                        self.logger.warning(f"Proceeding without {api_key_env} - server may not function properly")
-            
+                        display_warning(
+                            f"API key {api_key_env} not found in environment"
+                        )
+                        self.logger.warning(
+                            f"Proceeding without {api_key_env} - server may not function properly"
+                        )
+
             # Install using Claude CLI
             if install_command:
                 # Use the full install command (e.g., for tavily-mcp@0.1.2)
                 install_args = install_command.split()
                 if config.get("dry_run"):
-                    self.logger.info(f"Would install MCP server (user scope): claude mcp add -s user {server_name} {' '.join(install_args)}")
+                    self.logger.info(
+                        f"Would install MCP server (user scope): claude mcp add -s user {server_name} {' '.join(install_args)}"
+                    )
                     return True
-                
-                self.logger.debug(f"Running: claude mcp add -s user {server_name} {' '.join(install_args)}")
-                
+
+                self.logger.debug(
+                    f"Running: claude mcp add -s user {server_name} {' '.join(install_args)}"
+                )
+
                 result = self._run_command_cross_platform(
-                    ["claude", "mcp", "add", "-s", "user", "--", server_name] + install_args,
+                    ["claude", "mcp", "add", "-s", "user", "--", server_name]
+                    + install_args,
                     capture_output=True,
                     text=True,
-                    timeout=120  # 2 minutes timeout for installation
+                    timeout=120,  # 2 minutes timeout for installation
                 )
             else:
                 # Use npm_package
                 if config.get("dry_run"):
-                    self.logger.info(f"Would install MCP server (user scope): claude mcp add -s user {server_name} {command} -y {npm_package}")
+                    self.logger.info(
+                        f"Would install MCP server (user scope): claude mcp add -s user {server_name} {command} -y {npm_package}"
+                    )
                     return True
-                
-                self.logger.debug(f"Running: claude mcp add -s user {server_name} {command} -y {npm_package}")
-                
+
+                self.logger.debug(
+                    f"Running: claude mcp add -s user {server_name} {command} -y {npm_package}"
+                )
+
                 result = self._run_command_cross_platform(
-                    ["claude", "mcp", "add", "-s", "user", "--", server_name, command, "-y", npm_package],
+                    [
+                        "claude",
+                        "mcp",
+                        "add",
+                        "-s",
+                        "user",
+                        "--",
+                        server_name,
+                        command,
+                        "-y",
+                        npm_package,
+                    ],
                     capture_output=True,
                     text=True,
-                    timeout=120  # 2 minutes timeout for installation
+                    timeout=120,  # 2 minutes timeout for installation
                 )
-            
+
             if result.returncode == 0:
-                self.logger.success(f"Successfully installed MCP server (user scope): {server_name}")
+                self.logger.success(
+                    f"Successfully installed MCP server (user scope): {server_name}"
+                )
                 return True
             else:
                 error_msg = result.stderr.strip() if result.stderr else "Unknown error"
-                self.logger.error(f"Failed to install MCP server {server_name}: {error_msg}")
+                self.logger.error(
+                    f"Failed to install MCP server {server_name}: {error_msg}"
+                )
                 return False
-                
+
         except subprocess.TimeoutExpired:
             self.logger.error(f"Timeout installing MCP server {server_name}")
             return False
         except Exception as e:
             self.logger.error(f"Error installing MCP server {server_name}: {e}")
             return False
-    
+
     def _uninstall_mcp_server(self, server_name: str) -> bool:
         """Uninstall a single MCP server"""
         try:
             self.logger.info(f"Uninstalling MCP server: {server_name}")
-            
+
             # Check if installed
             if not self._check_mcp_server_installed(server_name):
                 self.logger.info(f"MCP server {server_name} not installed")
                 return True
-            
-            self.logger.debug(f"Running: claude mcp remove {server_name} (auto-detect scope)")
-            
+
+            self.logger.debug(
+                f"Running: claude mcp remove {server_name} (auto-detect scope)"
+            )
+
             result = self._run_command_cross_platform(
                 ["claude", "mcp", "remove", server_name],
                 capture_output=True,
                 text=True,
-                timeout=60
+                timeout=60,
             )
-            
+
             if result.returncode == 0:
-                self.logger.success(f"Successfully uninstalled MCP server: {server_name}")
+                self.logger.success(
+                    f"Successfully uninstalled MCP server: {server_name}"
+                )
                 return True
             else:
                 error_msg = result.stderr.strip() if result.stderr else "Unknown error"
-                self.logger.error(f"Failed to uninstall MCP server {server_name}: {error_msg}")
+                self.logger.error(
+                    f"Failed to uninstall MCP server {server_name}: {error_msg}"
+                )
                 return False
-                
+
         except subprocess.TimeoutExpired:
             self.logger.error(f"Timeout uninstalling MCP server {server_name}")
             return False
         except Exception as e:
             self.logger.error(f"Error uninstalling MCP server {server_name}: {e}")
             return False
-    
+
     def _install(self, config: Dict[str, Any]) -> bool:
         """Install MCP component with auto-detection of existing servers"""
         self.logger.info("Installing SuperClaude MCP servers...")
@@ -686,10 +813,14 @@ class MCPComponent(Component):
         previous_servers = self.settings_manager.get_metadata_setting("mcp.servers", [])
 
         # Merge all server lists
-        all_servers = self._merge_server_lists(existing_servers, selected_servers, previous_servers)
+        all_servers = self._merge_server_lists(
+            existing_servers, selected_servers, previous_servers
+        )
 
         if not all_servers:
-            self.logger.info("No MCP servers detected or selected. Skipping MCP installation.")
+            self.logger.info(
+                "No MCP servers detected or selected. Skipping MCP installation."
+            )
             # Still run post-install to update metadata
             return self._post_install()
 
@@ -706,7 +837,9 @@ class MCPComponent(Component):
 
                 # Check if already installed and working
                 if self._check_mcp_server_installed(server_name):
-                    self.logger.info(f"MCP server {server_name} already installed and working")
+                    self.logger.info(
+                        f"MCP server {server_name} already installed and working"
+                    )
                     installed_count += 1
                     verified_servers.append(server_name)
                 else:
@@ -719,10 +852,14 @@ class MCPComponent(Component):
 
                         # Check if this is a required server
                         if server_info.get("required", False):
-                            self.logger.error(f"Required MCP server {server_name} failed to install")
+                            self.logger.error(
+                                f"Required MCP server {server_name} failed to install"
+                            )
                             return False
             else:
-                self.logger.warning(f"Unknown MCP server '{server_name}' cannot be managed by SuperClaude")
+                self.logger.warning(
+                    f"Unknown MCP server '{server_name}' cannot be managed by SuperClaude"
+                )
 
         # Update the list of successfully managed servers
         self.installed_servers_in_session = verified_servers
@@ -735,12 +872,12 @@ class MCPComponent(Component):
                     ["claude", "mcp", "list"],
                     capture_output=True,
                     text=True,
-                    timeout=60
+                    timeout=60,
                 )
 
                 if result.returncode == 0:
                     self.logger.debug("MCP servers list:")
-                    for line in result.stdout.strip().split('\n'):
+                    for line in result.stdout.strip().split("\n"):
                         if line.strip():
                             self.logger.debug(f"  {line.strip()}")
                 else:
@@ -751,9 +888,13 @@ class MCPComponent(Component):
 
         if failed_servers:
             self.logger.warning(f"Some MCP servers failed to install: {failed_servers}")
-            self.logger.success(f"MCP component partially managed ({installed_count} servers)")
+            self.logger.success(
+                f"MCP component partially managed ({installed_count} servers)"
+            )
         else:
-            self.logger.success(f"MCP component successfully managing ({installed_count} servers)")
+            self.logger.success(
+                f"MCP component successfully managing ({installed_count} servers)"
+            )
 
         return self._post_install()
 
@@ -765,31 +906,34 @@ class MCPComponent(Component):
             self.settings_manager.update_metadata(metadata_mods)
 
             # Add component registration to metadata
-            self.settings_manager.add_component_registration("mcp", {
-                "version": __version__,
-                "category": "integration",
-                "servers_count": len(self.installed_servers_in_session),
-                "installed_servers": self.installed_servers_in_session
-            })
+            self.settings_manager.add_component_registration(
+                "mcp",
+                {
+                    "version": __version__,
+                    "category": "integration",
+                    "servers_count": len(self.installed_servers_in_session),
+                    "installed_servers": self.installed_servers_in_session,
+                },
+            )
 
             self.logger.info("Updated metadata with MCP component registration")
             return True
         except Exception as e:
             self.logger.error(f"Failed to update metadata: {e}")
             return False
-    
+
     def uninstall(self) -> bool:
         """Uninstall MCP component"""
         try:
             self.logger.info("Uninstalling SuperClaude MCP servers...")
-            
+
             # Uninstall each MCP server
             uninstalled_count = 0
-            
+
             for server_name in self.mcp_servers.keys():
                 if self._uninstall_mcp_server(server_name):
                     uninstalled_count += 1
-            
+
             # Update metadata to remove MCP component
             try:
                 if self.settings_manager.is_component_installed("mcp"):
@@ -802,118 +946,133 @@ class MCPComponent(Component):
                     self.logger.info("Removed MCP component from metadata")
             except Exception as e:
                 self.logger.warning(f"Could not update metadata: {e}")
-            
-            self.logger.success(f"MCP component uninstalled ({uninstalled_count} servers removed)")
+
+            self.logger.success(
+                f"MCP component uninstalled ({uninstalled_count} servers removed)"
+            )
             return True
-            
+
         except Exception as e:
             self.logger.exception(f"Unexpected error during MCP uninstallation: {e}")
             return False
-    
+
     def get_dependencies(self) -> List[str]:
         """Get dependencies"""
         return ["core"]
-    
+
     def update(self, config: Dict[str, Any]) -> bool:
         """Update MCP component"""
         try:
             self.logger.info("Updating SuperClaude MCP servers...")
-            
+
             # Check current version
             current_version = self.settings_manager.get_component_version("mcp")
             target_version = self.get_metadata()["version"]
-            
+
             if current_version == target_version:
                 self.logger.info(f"MCP component already at version {target_version}")
                 return True
-            
-            self.logger.info(f"Updating MCP component from {current_version} to {target_version}")
-            
+
+            self.logger.info(
+                f"Updating MCP component from {current_version} to {target_version}"
+            )
+
             # For MCP servers, update means reinstall to get latest versions
             updated_count = 0
             failed_servers = []
-            
+
             for server_name, server_info in self.mcp_servers.items():
                 try:
                     # Uninstall old version
                     if self._check_mcp_server_installed(server_name):
                         self._uninstall_mcp_server(server_name)
-                    
+
                     # Install new version
                     if self._install_mcp_server(server_info, config):
                         updated_count += 1
                     else:
                         failed_servers.append(server_name)
-                        
+
                 except Exception as e:
                     self.logger.error(f"Error updating MCP server {server_name}: {e}")
                     failed_servers.append(server_name)
-            
+
             # Update metadata
             try:
                 # Update component version in metadata
                 metadata = self.settings_manager.load_metadata()
                 if "components" in metadata and "mcp" in metadata["components"]:
                     metadata["components"]["mcp"]["version"] = target_version
-                    metadata["components"]["mcp"]["servers_count"] = len(self.mcp_servers)
+                    metadata["components"]["mcp"]["servers_count"] = len(
+                        self.mcp_servers
+                    )
                 if "mcp" in metadata:
                     metadata["mcp"]["servers"] = list(self.mcp_servers.keys())
                 self.settings_manager.save_metadata(metadata)
             except Exception as e:
                 self.logger.warning(f"Could not update metadata: {e}")
-            
+
             if failed_servers:
-                self.logger.warning(f"Some MCP servers failed to update: {failed_servers}")
+                self.logger.warning(
+                    f"Some MCP servers failed to update: {failed_servers}"
+                )
                 return False
             else:
-                self.logger.success(f"MCP component updated to version {target_version}")
+                self.logger.success(
+                    f"MCP component updated to version {target_version}"
+                )
                 return True
-            
+
         except Exception as e:
             self.logger.exception(f"Unexpected error during MCP update: {e}")
             return False
-    
+
     def validate_installation(self) -> Tuple[bool, List[str]]:
         """Validate MCP component installation"""
         errors = []
-        
+
         # Check metadata registration
         if not self.settings_manager.is_component_installed("mcp"):
             errors.append("MCP component not registered in metadata")
             return False, errors
-        
+
         # Check version matches
         installed_version = self.settings_manager.get_component_version("mcp")
         expected_version = self.get_metadata()["version"]
         if installed_version != expected_version:
-            errors.append(f"Version mismatch: installed {installed_version}, expected {expected_version}")
-        
+            errors.append(
+                f"Version mismatch: installed {installed_version}, expected {expected_version}"
+            )
+
         # Check if Claude CLI is available and validate installed servers
         try:
             result = self._run_command_cross_platform(
-                ["claude", "mcp", "list"],
-                capture_output=True,
-                text=True,
-                timeout=60
+                ["claude", "mcp", "list"], capture_output=True, text=True, timeout=60
             )
 
             if result.returncode != 0:
-                errors.append("Could not communicate with Claude CLI for MCP server verification")
+                errors.append(
+                    "Could not communicate with Claude CLI for MCP server verification"
+                )
             else:
                 claude_mcp_output = result.stdout.lower()
 
                 # Get the list of servers that should be installed from metadata
-                installed_servers = self.settings_manager.get_metadata_setting("mcp.servers", [])
+                installed_servers = self.settings_manager.get_metadata_setting(
+                    "mcp.servers", []
+                )
 
                 for server_name in installed_servers:
                     if server_name.lower() not in claude_mcp_output:
-                        errors.append(f"Installed MCP server '{server_name}' not found in 'claude mcp list' output.")
+                        errors.append(
+                            f"Installed MCP server '{server_name}' not found in 'claude mcp list' output."
+                        )
 
         except Exception as e:
             errors.append(f"Could not verify MCP server installation: {e}")
-        
+
         return len(errors) == 0, errors
-    
+
     def _get_source_dir(self):
         """Get source directory for framework files"""
         return None
@@ -923,7 +1082,7 @@ class MCPComponent(Component):
         # MCP servers are installed via npm, estimate based on typical sizes
         base_size = 50 * 1024 * 1024  # ~50MB for all servers combined
         return base_size
-    
+
     def get_installation_summary(self) -> Dict[str, Any]:
         """Get installation summary"""
         return {
@@ -933,5 +1092,5 @@ class MCPComponent(Component):
             "mcp_servers": list(self.mcp_servers.keys()),
             "estimated_size": self.get_size_estimate(),
             "dependencies": self.get_dependencies(),
-            "required_tools": ["node", "npm", "claude"]
-            }
+            "required_tools": ["node", "npm", "claude"],
+        }

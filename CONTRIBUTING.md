@@ -12,7 +12,7 @@ SuperClaude Framework transforms Claude Code into a structured development platf
 **Before Reporting:**
 - Search existing issues to avoid duplicates
 - Test with latest SuperClaude version
-- Verify issue isn't covered in [Troubleshooting Guide](Docs/Reference/troubleshooting.md)
+- Verify issue isn't covered in [Troubleshooting Guide](docs/Reference/troubleshooting.md)
 
 **Required Information:**
 - SuperClaude version: `SuperClaude --version`
@@ -188,8 +188,8 @@ Reference/          # Best practices and troubleshooting
 - Security best practices for external integrations
 
 **Development Workflow:**
-1. Review [Technical Architecture](Docs/Developer-Guide/technical-architecture.md)
-2. Study [Contributing Code Guide](Docs/Developer-Guide/contributing-code.md)
+1. Review [Technical Architecture](docs/Developer-Guide/technical-architecture.md)
+2. Study [Contributing Code Guide](docs/Developer-Guide/contributing-code.md)
 3. Set up development environment
 4. Create feature branch from `master`
 5. Implement changes with tests
@@ -203,7 +203,7 @@ Reference/          # Best practices and troubleshooting
 - Documentation completeness and clarity
 - Test coverage and quality
 
-For detailed development guidelines, see [Contributing Code Guide](Docs/Developer-Guide/contributing-code.md).
+For detailed development guidelines, see [Contributing Code Guide](docs/Developer-Guide/contributing-code.md).
 
 ## 🤝 Community Guidelines
 
@@ -315,14 +315,14 @@ SuperClaude Framework enhances Claude Code for systematic software development w
 - Design discussions for major features
 
 **Documentation Resources**
-- [Troubleshooting Guide](Docs/Reference/troubleshooting.md) - Common issues and solutions
-- [Examples Cookbook](Docs/Reference/examples-cookbook.md) - Practical usage patterns
-- [Quick Start Practices](Docs/Reference/quick-start-practices.md) - Optimization strategies
-- [Technical Architecture](Docs/Developer-Guide/technical-architecture.md) - Framework design
+- [Troubleshooting Guide](docs/Reference/troubleshooting.md) - Common issues and solutions
+- [Examples Cookbook](docs/Reference/examples-cookbook.md) - Practical usage patterns
+- [Quick Start Practices](docs/Reference/quick-start-practices.md) - Optimization strategies
+- [Technical Architecture](docs/Developer-Guide/technical-architecture.md) - Framework design
 
 **Development Support**
-- [Contributing Code Guide](Docs/Developer-Guide/contributing-code.md) - Development setup
-- [Testing & Debugging](Docs/Developer-Guide/testing-debugging.md) - Quality procedures
+- [Contributing Code Guide](docs/Developer-Guide/contributing-code.md) - Development setup
+- [Testing & Debugging](docs/Developer-Guide/testing-debugging.md) - Quality procedures
 - Code review process through pull requests
 - Maintainer guidance on complex contributions
 
@@ -344,7 +344,7 @@ Before seeking support, please:
 **Development Environment Issues:**
 
 **Q: "SuperClaude install fails with permission errors"**
-A: Use `pip install --user SuperClaude` or create virtual environment. See [Installation Guide](Docs/Getting-Started/installation.md) for details.
+A: Use `pip install --user SuperClaude` or create virtual environment. See [Installation Guide](docs/Getting-Started/installation.md) for details.
 
 **Q: "Commands not recognized after installation"**
 A: Restart Claude Code session. Verify installation with `SuperClaude install --list-components`. Check ~/.claude directory exists.
@@ -358,7 +358,7 @@ A: Check Node.js installation for MCP servers. Verify ~/.claude/.claude.json con
 A: Follow agent patterns in setup/components/agents.py. Include trigger keywords, capabilities description, and integration tests.
 
 **Q: "Testing framework setup?"**
-A: See [Testing & Debugging Guide](Docs/Developer-Guide/testing-debugging.md). Use pytest for Python tests, include component validation.
+A: See [Testing & Debugging Guide](docs/Developer-Guide/testing-debugging.md). Use pytest for Python tests, include component validation.
 
 **Q: "Documentation structure?"**
 A: Follow existing patterns: Getting-Started → User-Guide → Developer-Guide → Reference. Include examples and progressive complexity.

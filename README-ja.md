@@ -14,7 +14,7 @@
   <a href="https://superclaude.netlify.app/">
     <img src="https://img.shields.io/badge/🌐_ウェブサイトを訪問-blue" alt="Website">
   </a>
-  <a href="https://pypi.org/project/SuperClaude/">
+  <a href="https://pypi.org/project/superclaude/">
     <img src="https://img.shields.io/pypi/v/SuperClaude.svg?" alt="PyPI">
   </a>
   <a href="https://www.npmjs.com/package/@bifrost_inc/superclaude">
@@ -275,55 +275,55 @@ pip install --break-system-packages SuperClaude
 <tr>
 <td valign="top">
 
-- 📝 [**クイックスタートガイド**](Docs/Getting-Started/quick-start.md)  
+- 📝 [**クイックスタートガイド**](docs/Getting-Started/quick-start.md)  
   *すぐに開始*
 
-- 💾 [**インストールガイド**](Docs/Getting-Started/installation.md)  
+- 💾 [**インストールガイド**](docs/Getting-Started/installation.md)  
   *詳細なセットアップ手順*
 
 </td>
 <td valign="top">
 
-- 🎯 [**コマンドリファレンス**](Docs/User-Guide-jp/commands.md)  
+- 🎯 [**コマンドリファレンス**](docs/User-Guide-jp/commands.md)  
   *全21のスラッシュコマンド*
 
-- 🤖 [**エージェントガイド**](Docs/User-Guide-jp/agents.md)  
+- 🤖 [**エージェントガイド**](docs/User-Guide-jp/agents.md)  
   *14の専門エージェント*
 
-- 🎨 [**動作モード**](Docs/User-Guide-jp/modes.md)  
+- 🎨 [**動作モード**](docs/User-Guide-jp/modes.md)  
   *5つの適応モード*
 
-- 🚩 [**フラグガイド**](Docs/User-Guide-jp/flags.md)  
+- 🚩 [**フラグガイド**](docs/User-Guide-jp/flags.md)  
   *動作制御パラメータ*
 
-- 🔧 [**MCPサーバー**](Docs/User-Guide-jp/mcp-servers.md)  
+- 🔧 [**MCPサーバー**](docs/User-Guide-jp/mcp-servers.md)  
   *6つのサーバー統合*
 
-- 💼 [**セッション管理**](Docs/User-Guide-jp/session-management.md)  
+- 💼 [**セッション管理**](docs/User-Guide-jp/session-management.md)  
   *状態の保存と復元*
 
 </td>
 <td valign="top">
 
-- 🏗️ [**技術アーキテクチャ**](Docs/Developer-Guide/technical-architecture.md)  
+- 🏗️ [**技術アーキテクチャ**](docs/Developer-Guide/technical-architecture.md)  
   *システム設計の詳細*
 
-- 💻 [**コード貢献**](Docs/Developer-Guide/contributing-code.md)  
+- 💻 [**コード貢献**](docs/Developer-Guide/contributing-code.md)  
   *開発ワークフロー*
 
-- 🧪 [**テスト＆デバッグ**](Docs/Developer-Guide/testing-debugging.md)  
+- 🧪 [**テスト＆デバッグ**](docs/Developer-Guide/testing-debugging.md)  
   *品質保証*
 
 </td>
 <td valign="top">
 
-- ✨ [**ベストプラクティス**](Docs/Reference/quick-start-practices.md)  
+- ✨ [**ベストプラクティス**](docs/Reference/quick-start-practices.md)  
   *プロのコツとパターン*
 
-- 📓 [**サンプル集**](Docs/Reference/examples-cookbook.md)  
+- 📓 [**サンプル集**](docs/Reference/examples-cookbook.md)  
   *実際の使用例*
 
-- 🔍 [**トラブルシューティング**](Docs/Reference/troubleshooting.md)  
+- 🔍 [**トラブルシューティング**](docs/Reference/troubleshooting.md)  
   *一般的な問題と修正*
 
 </td>

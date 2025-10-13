@@ -38,7 +38,7 @@ SuperClaude는 Claude Code가 읽어 전문화된 동작을 채택하는 행동 
 
 ### 컨텍스트 메커니즘:
 1. **사용자 입력**: `/sc:implement "인증 시스템"` 입력
-2. **컨텍스트 로딩**: Claude Code가 `~/.claude/SuperClaude/Commands/implement.md` 읽음
+2. **컨텍스트 로딩**: Claude Code가 `~/.claude/superclaude/Commands/implement.md` 읽음
 3. **동작 채택**: Claude가 도메인 전문 지식, 도구 선택, 검증 패턴 적용
 4. **향상된 출력**: 보안 고려사항 및 모범 사례를 갖춘 구조화된 구현
 

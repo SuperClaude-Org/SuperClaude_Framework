@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const { spawnSync } = require("child_process");
-const { detectPython, detectPip } = require("./checkEnv");
-const { checkAndNotify } = require("./checkUpdate");
+const { detectPython, detectPip } = require("./check_env");
+const { checkAndNotify } = require("./check_update");
 
 let pythonCmd = detectPython();
 if (!pythonCmd) {

@@ -1,12 +1,12 @@
 # SuperClaude コマンドガイド
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#superclaude-commands-guide)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#superclaude-commands-guide)
 
 `/sc:*`SuperClaude は、ワークフロー用コマンドと`@agent-*`スペシャリスト用コマンドの 21 個の Claude Code コマンドを提供します。
 
 ## コマンドの種類
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#command-types)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#command-types)
 
 |タイプ|使用場所|形式|例|
 |---|---|---|---|
@@ -16,7 +16,7 @@
 
 ## クイックテスト
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#quick-test)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#quick-test)
 
 ```shell
 # Terminal: Verify installation
@@ -32,11 +32,11 @@ python3 -m SuperClaude --version
 
 ## 🎯 SuperClaude コマンドの理解
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#-understanding-superclaude-commands)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#-understanding-superclaude-commands)
 
 ## SuperClaudeの仕組み
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#how-superclaude-works)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#how-superclaude-works)
 
 SuperClaude は、Claude Code が特殊な動作を実行するために読み込む動作コンテキストファイルを提供します。 と入力すると`/sc:implement`、Claude Code は`implement.md`コンテキストファイルを読み込み、その動作指示に従います。
 
@@ -44,7 +44,7 @@ SuperClaude は、Claude Code が特殊な動作を実行するために読み�
 
 ### コマンドの種類:
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#command-types-1)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#command-types-1)
 
 - **スラッシュコマンド**（`/sc:*`）：ワークフローパターンと動作​​モードをトリガーする
 - **エージェントの呼び出し**（`@agent-*`）：特定のドメインスペシャリストを手動で起動する
@@ -52,10 +52,10 @@ SuperClaude は、Claude Code が特殊な動作を実行するために読み�
 
 ### コンテキストメカニズム:
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#the-context-mechanism)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#the-context-mechanism)
 
 1. **ユーザー入力**: 入力する`/sc:implement "auth system"`
-2. **コンテキスト読み込み**: クロードコード読み取り`~/.claude/SuperClaude/Commands/implement.md`
+2. **コンテキスト読み込み**: クロードコード読み取り`~/.claude/superclaude/Commands/implement.md`
 3. **行動の採用**：クロードはドメインの専門知識、ツールの選択、検証パターンを適用します
 4. **強化された出力**: セキュリティ上の考慮事項とベストプラクティスを備えた構造化された実装
 
@@ -63,7 +63,7 @@ SuperClaude は、Claude Code が特殊な動作を実行するために読み�
 
 ### インストールコマンドと使用コマンド
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#installation-vs-usage-commands)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#installation-vs-usage-commands)
 
 **🖥️ ターミナルコマンド**（実際の CLI ソフトウェア）：
 
@@ -83,11 +83,11 @@ SuperClaude は、Claude Code が特殊な動作を実行するために読み�
 
 ## 🧪 セットアップのテスト
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#-testing-your-setup)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#-testing-your-setup)
 
 ### 🖥️ ターミナル検証（ターミナル/CMDで実行）
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#%EF%B8%8F-terminal-verification-run-in-terminalcmd)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#%EF%B8%8F-terminal-verification-run-in-terminalcmd)
 
 ```shell
 # Verify SuperClaude is working (primary method)
@@ -104,7 +104,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 
 ### 💬 クロードコードテスト（クロードコードチャットに入力）
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#-claude-code-testing-type-in-claude-code-chat)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#-claude-code-testing-type-in-claude-code-chat)
 
 ```
 # Test basic /sc: command
@@ -116,11 +116,11 @@ python3 -m SuperClaude install --list-components | grep mcp
 # Example behavior: List of available commands
 ```
 
-**テストが失敗した場合**:[インストールガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/Getting-Started/installation.md)または[トラブルシューティングを確認してください](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#troubleshooting)
+**テストが失敗した場合**:[インストールガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/Getting-Started/installation.md)または[トラブルシューティングを確認してください](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#troubleshooting)
 
 ### 📝 コマンドクイックリファレンス
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#-command-quick-reference)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#-command-quick-reference)
 
 |コマンドタイプ|走る場所|形式|目的|例|
 |---|---|---|---|---|
@@ -134,25 +134,25 @@ python3 -m SuperClaude install --list-components | grep mcp
 
 ## 目次
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#table-of-contents)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#table-of-contents)
 
-- [必須コマンド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#essential-commands)- ここから始めましょう（8つのコアコマンド）
-- [一般的なワークフロー](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#common-workflows)- 機能するコマンドの組み合わせ
-- [完全なコマンドリファレンス](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#full-command-reference)- カテゴリ別に整理された全21個のコマンド
-- [トラブルシューティング](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#troubleshooting)- よくある問題と解決策
-- [コマンドインデックス](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#command-index)- カテゴリ別にコマンドを検索
+- [必須コマンド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#essential-commands)- ここから始めましょう（8つのコアコマンド）
+- [一般的なワークフロー](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#common-workflows)- 機能するコマンドの組み合わせ
+- [完全なコマンドリファレンス](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#full-command-reference)- カテゴリ別に整理された全21個のコマンド
+- [トラブルシューティング](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#troubleshooting)- よくある問題と解決策
+- [コマンドインデックス](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#command-index)- カテゴリ別にコマンドを検索
 
 ---
 
 ## 必須コマンド
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#essential-commands)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#essential-commands)
 
 **即時の生産性向上のためのコアワークフロー コマンド:**
 
 ### `/sc:brainstorm`- プロジェクト発見
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#scbrainstorm---project-discovery)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#scbrainstorm---project-discovery)
 
 **目的**: 対話型の要件検出とプロジェクト計画  
 **構文**:`/sc:brainstorm "your idea"` `[--strategy systematic|creative]`
@@ -165,7 +165,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 
 ### `/sc:implement`- 機能開発
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#scimplement---feature-development)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#scimplement---feature-development)
 
 **目的**: インテリジェントなスペシャリストルーティングによるフルスタック機能の実装  
 **構文**:`/sc:implement "feature description"` `[--type frontend|backend|fullstack] [--focus security|performance]`
@@ -179,7 +179,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 
 ### `/sc:analyze`- コード評価
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#scanalyze---code-assessment)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#scanalyze---code-assessment)
 
 **目的**: 品質、セキュリティ、パフォーマンスにわたる包括的なコード分析  
 **構文**:`/sc:analyze [path]` `[--focus quality|security|performance|architecture]`
@@ -192,7 +192,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 
 ### `/sc:troubleshoot`- 問題診断
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#sctroubleshoot---problem-diagnosis)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#sctroubleshoot---problem-diagnosis)
 
 **目的**: 根本原因分析による体系的な問題診断  
 **構文**:`/sc:troubleshoot "issue description"` `[--type build|runtime|performance]`
@@ -205,7 +205,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 
 ### `/sc:test`- 品質保証
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#sctest---quality-assurance)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#sctest---quality-assurance)
 
 **目的**: カバレッジ分析による包括的なテスト  
 **構文**:`/sc:test` `[--type unit|integration|e2e] [--coverage] [--fix]`
@@ -218,7 +218,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 
 ### `/sc:improve`- コード強化
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#scimprove---code-enhancement)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#scimprove---code-enhancement)
 
 **目的**: 体系的なコードの改善と最適化を適用する  
 **構文**:`/sc:improve [path]` `[--type performance|quality|security] [--preview]`
@@ -231,7 +231,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 
 ### `/sc:document`- ドキュメント生成
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#scdocument---documentation-generation)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#scdocument---documentation-generation)
 
 **目的**: コードとAPIの包括的なドキュメントを生成する  
 **構文**:`/sc:document [path]` `[--type api|user-guide|technical] [--format markdown|html]`
@@ -244,7 +244,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 
 ### `/sc:workflow`- 実装計画
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#scworkflow---implementation-planning)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#scworkflow---implementation-planning)
 
 **目的**: 要件から構造化された実装計画を生成する  
 **構文**:`/sc:workflow "feature description"` `[--strategy agile|waterfall] [--format markdown]`
@@ -259,13 +259,13 @@ python3 -m SuperClaude install --list-components | grep mcp
 
 ## 一般的なワークフロー
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#common-workflows)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#common-workflows)
 
 **実証済みのコマンドの組み合わせ:**
 
 ### 新しいプロジェクトのセットアップ
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#new-project-setup)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#new-project-setup)
 
 ```shell
 /sc:brainstorm "project concept"      # Define requirements
@@ -275,7 +275,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 
 ### 機能開発
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#feature-development)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#feature-development)
 
 ```shell
 /sc:implement "feature name"          # Build the feature
@@ -285,7 +285,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 
 ### コード品質の改善
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#code-quality-improvement)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#code-quality-improvement)
 
 ```shell
 /sc:analyze --focus quality           # Assess current state
@@ -295,7 +295,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 
 ### バグ調査
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#bug-investigation)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#bug-investigation)
 
 ```shell
 /sc:troubleshoot "issue description"  # Diagnose the problem
@@ -305,11 +305,11 @@ python3 -m SuperClaude install --list-components | grep mcp
 
 ## 完全なコマンドリファレンス
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#full-command-reference)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#full-command-reference)
 
 ### 開発コマンド
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#development-commands)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#development-commands)
 
 |指示|目的|最適な用途|
 |---|---|---|
@@ -320,7 +320,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 
 ### 分析コマンド
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#analysis-commands)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#analysis-commands)
 
 |指示|目的|最適な用途|
 |---|---|---|
@@ -330,7 +330,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 
 ### 品質コマンド
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#quality-commands)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#quality-commands)
 
 |指示|目的|最適な用途|
 |---|---|---|
@@ -341,7 +341,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 
 ### プロジェクト管理
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#project-management)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#project-management)
 
 |指示|目的|最適な用途|
 |---|---|---|
@@ -351,7 +351,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 
 ### ユーティリティコマンド
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#utility-commands)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#utility-commands)
 
 |指示|目的|最適な用途|
 |---|---|---|
@@ -360,7 +360,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 
 ### セッションコマンド
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#session-commands)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#session-commands)
 
 |指示|目的|最適な用途|
 |---|---|---|
@@ -373,7 +373,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 
 ## コマンドインデックス
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#command-index)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#command-index)
 
 **機能別:**
 
@@ -392,7 +392,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 
 ## トラブルシューティング
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#troubleshooting)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#troubleshooting)
 
 **コマンドの問題:**
 
@@ -404,12 +404,12 @@ python3 -m SuperClaude install --list-components | grep mcp
 
 - セッションをリセット:`/sc:load`再初期化する
 - ステータスを確認:`SuperClaude install --list-components`
-- ヘルプ:[トラブルシューティングガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/Reference/troubleshooting.md)
+- ヘルプ:[トラブルシューティングガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/Reference/troubleshooting.md)
 
 ## 次のステップ
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md#next-steps)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#next-steps)
 
-- [フラグガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/flags.md)- コマンドの動作を制御する
-- [エージェントガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/agents.md)- スペシャリストのアクティベーション
-- [例のクックブック](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/Reference/examples-cookbook.md)- 実際の使用パターン
+- [フラグガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md)- コマンドの動作を制御する
+- [エージェントガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/agents.md)- スペシャリストのアクティベーション
+- [例のクックブック](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/Reference/examples-cookbook.md)- 実際の使用パターン

@@ -1,16 +1,16 @@
 # SuperClaude MCP サーバーガイド 🔌
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/mcp-servers.md#superclaude-mcp-servers-guide-)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/mcp-servers.md#superclaude-mcp-servers-guide-)
 
 ## 概要
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/mcp-servers.md#overview)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/mcp-servers.md#overview)
 
 MCP（モデルコンテキストプロトコル）サーバーは、専用ツールを通じてClaude Codeの機能を拡張します。SuperClaudeは6つのMCPサーバーを統合し、タスクに応じてサーバーをいつ起動するかをClaudeに指示します。
 
 ### 🔍 現実チェック
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/mcp-servers.md#-reality-check)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/mcp-servers.md#-reality-check)
 
 - **MCPサーバーとは**: 追加ツールを提供する外部Node.jsプロセス
 - **含まれていないもの**：SuperClaude 機能が組み込まれている
@@ -28,9 +28,9 @@ MCP（モデルコンテキストプロトコル）サーバーは、専用ツ�
 
 ## クイックスタート
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/mcp-servers.md#quick-start)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/mcp-servers.md#quick-start)
 
-**セットアップの確認**：MCPサーバーは自動的に起動します。インストールとトラブルシューティングについては、[「インストールガイド」](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/Getting-Started/installation.md)と[「トラブルシューティング」](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/Reference/troubleshooting.md)を参照してください。
+**セットアップの確認**：MCPサーバーは自動的に起動します。インストールとトラブルシューティングについては、[「インストールガイド」](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/Getting-Started/installation.md)と[「トラブルシューティング」](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/Reference/troubleshooting.md)を参照してください。
 
 **自動アクティベーションロジック:**
 
@@ -45,11 +45,11 @@ MCP（モデルコンテキストプロトコル）サーバーは、専用ツ�
 
 ## サーバーの詳細
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/mcp-servers.md#server-details)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/mcp-servers.md#server-details)
 
 ### コンテキスト7 📚
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/mcp-servers.md#context7-)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/mcp-servers.md#context7-)
 
 **目的**: 公式ライブラリドキュメントへのアクセス **トリガー**: インポートステートメント、フレームワークキーワード、ドキュメントリクエスト **要件**: Node.js 16+、APIキーなし
 
@@ -64,7 +64,7 @@ MCP（モデルコンテキストプロトコル）サーバーは、専用ツ�
 
 ### 連続思考 🧠
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/mcp-servers.md#sequential-thinking-)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/mcp-servers.md#sequential-thinking-)
 
 **目的**: 構造化された多段階の推論と体系的な分析 **トリガー**: 複雑なデバッグ、`--think`フラグ、アーキテクチャ分析 **要件**: Node.js 16+、APIキーなし
 
@@ -79,7 +79,7 @@ MCP（モデルコンテキストプロトコル）サーバーは、専用ツ�
 
 ### 魔法✨
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/mcp-servers.md#magic-)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/mcp-servers.md#magic-)
 
 **目的**: 21st.dev パターンからのモダン UI コンポーネント生成 **トリガー**: UI リクエスト、`/ui`コマンド、コンポーネント開発 **要件**: Node.js 16+、TWENTYFIRST_API_KEY()
 
@@ -94,7 +94,7 @@ export TWENTYFIRST_API_KEY="your_key_here"
 
 ### 劇作家🎭
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/mcp-servers.md#playwright-)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/mcp-servers.md#playwright-)
 
 **目的**: 実際のブラウザ自動化とE2Eテスト **トリガー**: ブラウザテスト、E2Eシナリオ、視覚的検証 **要件**: Node.js 16以上、APIキーなし
 
@@ -109,7 +109,7 @@ export TWENTYFIRST_API_KEY="your_key_here"
 
 ### morphllm-fast-apply 🔄
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/mcp-servers.md#morphllm-fast-apply-)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/mcp-servers.md#morphllm-fast-apply-)
 
 **目的**: 効率的なパターンベースのコード変換 **トリガー**: 複数ファイルの編集、リファクタリング、フレームワークの移行 **要件**: Node.js 16+、MORPH_API_KEY
 
@@ -124,7 +124,7 @@ export MORPH_API_KEY="your_key_here"
 
 ### セレナ🧭
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/mcp-servers.md#serena-)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/mcp-servers.md#serena-)
 
 **目的**: プロジェクトメモリを使用したセマンティックコード理解 **トリガー**: シンボル操作、大規模コードベース、セッション管理 **要件**: Python 3.9+、UV パッケージマネージャー、API キーなし
 
@@ -139,7 +139,7 @@ export MORPH_API_KEY="your_key_here"
 
 ## 構成
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/mcp-servers.md#configuration)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/mcp-servers.md#configuration)
 
 **MCP 構成ファイル ( `~/.claude.json`):**
 
@@ -178,7 +178,7 @@ export MORPH_API_KEY="your_key_here"
 
 ## 使用パターン
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/mcp-servers.md#usage-patterns)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/mcp-servers.md#usage-patterns)
 
 **サーバー制御:**
 
@@ -207,7 +207,7 @@ export MORPH_API_KEY="your_key_here"
 
 ## トラブルシューティング
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/mcp-servers.md#troubleshooting)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/mcp-servers.md#troubleshooting)
 
 **よくある問題:**
 
@@ -255,7 +255,7 @@ echo 'export MORPH_API_KEY="your_key"' >> ~/.bashrc
 
 ## サーバーの組み合わせ
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/mcp-servers.md#server-combinations)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/mcp-servers.md#server-combinations)
 
 **APIキーなし（無料）** :
 
@@ -278,7 +278,7 @@ echo 'export MORPH_API_KEY="your_key"' >> ~/.bashrc
 
 ## 統合
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/mcp-servers.md#integration)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/mcp-servers.md#integration)
 
 **SuperClaude コマンドを使用する場合:**
 
@@ -300,20 +300,20 @@ echo 'export MORPH_API_KEY="your_key"' >> ~/.bashrc
 
 ## 関連リソース
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/mcp-servers.md#related-resources)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/mcp-servers.md#related-resources)
 
 **必読:**
 
-- [コマンドガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/commands.md)- MCPサーバーをアクティブ化するコマンド
-- [クイックスタートガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/Getting-Started/quick-start.md)- MCP セットアップガイド
+- [コマンドガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md)- MCPサーバーをアクティブ化するコマンド
+- [クイックスタートガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/Getting-Started/quick-start.md)- MCP セットアップガイド
 
 **高度な使用法:**
 
-- [行動モード](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/modes.md)- モード-MCP調整
-- [エージェントガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/agents.md)- エージェントとMCPの統合
-- [セッション管理](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/User-Guide/session-management.md)- Serena ワークフロー
+- [行動モード](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md)- モード-MCP調整
+- [エージェントガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/agents.md)- エージェントとMCPの統合
+- [セッション管理](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/session-management.md)- Serena ワークフロー
 
 **技術リファレンス:**
 
-- [例のクックブック](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/Reference/examples-cookbook.md)- MCP ワークフローパターン
-- [技術アーキテクチャ](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/Docs/Developer-Guide/technical-architecture.md)- 統合の詳細
+- [例のクックブック](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/Reference/examples-cookbook.md)- MCP ワークフローパターン
+- [技術アーキテクチャ](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/Developer-Guide/technical-architecture.md)- 統合の詳細

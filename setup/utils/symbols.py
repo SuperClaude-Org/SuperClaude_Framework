@@ -21,14 +21,14 @@ def can_display_unicode() -> bool:
         try:
             # Test if we can encode common Unicode symbols
             test_symbols = "✓✗█░⠋═"
-            test_symbols.encode(sys.stdout.encoding or 'cp1252')
+            test_symbols.encode(sys.stdout.encoding or "cp1252")
             return True
         except (UnicodeEncodeError, LookupError):
             return False
 
     # Check if stdout encoding supports Unicode
-    encoding = getattr(sys.stdout, 'encoding', None)
-    if encoding and encoding.lower() in ['utf-8', 'utf8']:
+    encoding = getattr(sys.stdout, "encoding", None)
+    if encoding and encoding.lower() in ["utf-8", "utf8"]:
         return True
 
     # Conservative fallback for unknown systems
@@ -131,8 +131,8 @@ def safe_print(*args, **kwargs):
         for arg in args:
             if isinstance(arg, str):
                 # Replace problematic Unicode characters
-                safe_arg = (arg
-                    .replace("✓", "+")
+                safe_arg = (
+                    arg.replace("✓", "+")
                     .replace("✗", "x")
                     .replace("█", "#")
                     .replace("░", "-")
@@ -165,7 +165,7 @@ def safe_print(*args, **kwargs):
             final_args = []
             for arg in safe_args:
                 if isinstance(arg, str):
-                    final_args.append(arg.encode('ascii', 'replace').decode('ascii'))
+                    final_args.append(arg.encode("ascii", "replace").decode("ascii"))
                 else:
                     final_args.append(str(arg))
             print(*final_args, **kwargs)

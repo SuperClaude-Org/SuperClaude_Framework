@@ -38,7 +38,7 @@ SuperClaude provides behavioral context files that Claude Code reads to adopt sp
 
 ### The Context Mechanism:
 1. **User Input**: You type `/sc:implement "auth system"`
-2. **Context Loading**: Claude Code reads `~/.claude/SuperClaude/Commands/implement.md`
+2. **Context Loading**: Claude Code reads `~/.claude/superclaude/Commands/implement.md`
 3. **Behavior Adoption**: Claude applies domain expertise, tool selection, and validation patterns
 4. **Enhanced Output**: Structured implementation with security considerations and best practices
 

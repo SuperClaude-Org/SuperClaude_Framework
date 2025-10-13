@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "SuperClaude"
+name = "superclaude"
 version = "4.1.5"
 authors = [
     {name = "NomenAK", email = "anton.knoery@gmail.com"},
@@ -43,8 +43,8 @@ GitHub = "https://github.com/SuperClaude-Org/SuperClaude_Framework"
 "NomenAK" = "https://github.com/NomenAK"
 
 [project.scripts]
-SuperClaude = "SuperClaude.__main__:main"
-superclaude = "SuperClaude.__main__:main"
+SuperClaude = "superclaude.__main__:main"
+superclaude = "superclaude.__main__:main"
 
 [project.optional-dependencies]
 dev = [
@@ -64,12 +64,12 @@ include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["SuperClaude*", "setup*"]
+include = ["superclaude*", "setup*"]
 exclude = ["tests*", "*.tests*", "*.tests", ".git*", ".venv*", "*.egg-info*"]
 
 [tool.setuptools.package-data]
 "setup" = ["data/*.json", "data/*.yaml", "data/*.yml", "components/*.py", "**/*.py"]
-"SuperClaude" = ["*.md", "*.txt", "**/*.md", "**/*.txt", "**/*.json", "**/*.yaml", "**/*.yml"]
+"superclaude" = ["*.md", "*.txt", "**/*.md", "**/*.txt", "**/*.json", "**/*.yaml", "**/*.yml"]
 
 [tool.black]
 line-length = 88
@@ -115,7 +115,7 @@ markers = [
 ]
 
 [tool.coverage.run]
-source = ["SuperClaude", "setup"]
+source = ["superclaude", "setup"]
 omit = [
     "*/tests/*",
     "*/test_*",

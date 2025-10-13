@@ -35,7 +35,7 @@ Before using this guide, verify agent selection works:
 ## Core Concepts
 
 ### What are SuperClaude Agents?
-**Agents** are specialized AI domain experts implemented as context instructions that modify Claude Code's behavior. Each agent is a carefully crafted `.md` file in the `SuperClaude/Agents/` directory containing domain-specific expertise, behavioral patterns, and problem-solving approaches.
+**Agents** are specialized AI domain experts implemented as context instructions that modify Claude Code's behavior. Each agent is a carefully crafted `.md` file in the `superclaude/Agents/` directory containing domain-specific expertise, behavioral patterns, and problem-solving approaches.
 
 **Important**: Agents are NOT separate AI models or software - they are context configurations that Claude Code reads to adopt specialized behaviors.
 

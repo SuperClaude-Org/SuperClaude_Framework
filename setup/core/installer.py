@@ -14,23 +14,25 @@ from ..utils.logger import get_logger
 class Installer:
     """Main installer orchestrator"""
 
-    def __init__(self,
-                 install_dir: Optional[Path] = None,
-                 dry_run: bool = False):
+    def __init__(self, install_dir: Optional[Path] = None, dry_run: bool = False):
         """
         Initialize installer
-        
+
         Args:
             install_dir: Target installation directory
             dry_run: If True, only simulate installation
         """
         from .. import DEFAULT_INSTALL_DIR
+
         self.install_dir = install_dir or DEFAULT_INSTALL_DIR
         self.dry_run = dry_run
         self.components: Dict[str, Component] = {}
         from ..services.settings import SettingsService
+
         settings_manager = SettingsService(self.install_dir)
-        self.installed_components: Set[str] = set(settings_manager.get_installed_components().keys())
+        self.installed_components: Set[str] = set(
+            settings_manager.get_installed_components().keys()
+        )
         self.updated_components: Set[str] = set()
 
         self.failed_components: Set[str] = set()
@@ -41,17 +43,17 @@ class Installer:
     def register_component(self, component: Component) -> None:
         """
         Register a component for installation
-        
+
         Args:
             component: Component instance to register
         """
         metadata = component.get_metadata()
-        self.components[metadata['name']] = component
+        self.components[metadata["name"]] = component
 
     def register_components(self, components: List[Component]) -> None:
         """
         Register multiple components
-        
+
         Args:
             components: List of component instances
         """
@@ -61,13 +63,13 @@ class Installer:
     def resolve_dependencies(self, component_names: List[str]) -> List[str]:
         """
         Resolve component dependencies in correct installation order
-        
+
         Args:
             component_names: List of component names to install
-            
+
         Returns:
             Ordered list of component names including dependencies
-            
+
         Raises:
             ValueError: If circular dependencies detected or unknown component
         """
@@ -79,8 +81,7 @@ class Installer:
                 return
 
             if name in resolving:
-                raise ValueError(
-                    f"Circular dependency detected involving {name}")
+                raise ValueError(f"Circular dependency detected involving {name}")
 
             if name not in self.components:
                 raise ValueError(f"Unknown component: {name}")
@@ -103,7 +104,7 @@ class Installer:
     def validate_system_requirements(self) -> Tuple[bool, List[str]]:
         """
         Validate system requirements for all registered components
-        
+
         Returns:
             Tuple of (success: bool, error_messages: List[str])
         """
@@ -134,7 +135,7 @@ class Installer:
     def create_backup(self) -> Optional[Path]:
         """
         Create backup of existing installation
-        
+
         Returns:
             Path to backup archive or None if no existing installation
         """
@@ -174,7 +175,7 @@ class Installer:
 
             # Always create an archive, even if empty, to ensure it's a valid tarball
             base_path = backup_dir / backup_name
-            shutil.make_archive(str(base_path), 'gztar', temp_backup)
+            shutil.make_archive(str(base_path), "gztar", temp_backup)
 
             if not any(temp_backup.iterdir()):
                 self.logger.warning(
@@ -184,15 +185,14 @@ class Installer:
         self.backup_path = backup_path
         return backup_path
 
-    def install_component(self, component_name: str,
-                          config: Dict[str, Any]) -> bool:
+    def install_component(self, component_name: str, config: Dict[str, Any]) -> bool:
         """
         Install a single component
-        
+
         Args:
             component_name: Name of component to install
             config: Installation configuration
-            
+
         Returns:
             True if successful, False otherwise
         """
@@ -202,7 +202,11 @@ class Installer:
         component = self.components[component_name]
 
         # Skip if already installed and not in update mode, unless component is reinstallable
-        if not component.is_reinstallable() and component_name in self.installed_components and not config.get("update_mode"):
+        if (
+            not component.is_reinstallable()
+            and component_name in self.installed_components
+            and not config.get("update_mode")
+        ):
             self.skipped_components.add(component_name)
             self.logger.info(f"Skipping already installed component: {component_name}")
             return True
@@ -237,16 +241,16 @@ class Installer:
             self.failed_components.add(component_name)
             return False
 
-    def install_components(self,
-                           component_names: List[str],
-                           config: Optional[Dict[str, Any]] = None) -> bool:
+    def install_components(
+        self, component_names: List[str], config: Optional[Dict[str, Any]] = None
+    ) -> bool:
         """
         Install multiple components in dependency order
-        
+
         Args:
             component_names: List of component names to install
             config: Installation configuration
-            
+
         Returns:
             True if all successful, False if any failed
         """
@@ -296,7 +300,9 @@ class Installer:
         all_valid = True
         for name in self.updated_components:
             if name not in self.components:
-                self.logger.warning(f"Cannot validate component '{name}' as it was not part of this installation session.")
+                self.logger.warning(
+                    f"Cannot validate component '{name}' as it was not part of this installation session."
+                )
                 continue
 
             component = self.components[name]
@@ -315,11 +321,12 @@ class Installer:
         else:
             self.logger.error("Some components failed validation. Check errors above.")
 
-    def update_components(self, component_names: List[str], config: Dict[str, Any]) -> bool:
+    def update_components(
+        self, component_names: List[str], config: Dict[str, Any]
+    ) -> bool:
         """Alias for update operation (uses install logic)"""
         config["update_mode"] = True
         return self.install_components(component_names, config)
-
 
     def get_installation_summary(self) -> Dict[str, Any]:
         """
@@ -329,17 +336,17 @@ class Installer:
             Dict with installation statistics and results
         """
         return {
-            'installed': list(self.installed_components),
-            'failed': list(self.failed_components),
-            'skipped': list(self.skipped_components),
-            'backup_path': str(self.backup_path) if self.backup_path else None,
-            'install_dir': str(self.install_dir),
-            'dry_run': self.dry_run
+            "installed": list(self.installed_components),
+            "failed": list(self.failed_components),
+            "skipped": list(self.skipped_components),
+            "backup_path": str(self.backup_path) if self.backup_path else None,
+            "install_dir": str(self.install_dir),
+            "dry_run": self.dry_run,
         }
 
     def get_update_summary(self) -> Dict[str, Any]:
         return {
-            'updated': list(self.updated_components),
-            'failed': list(self.failed_components),
-            'backup_path': str(self.backup_path) if self.backup_path else None
+            "updated": list(self.updated_components),
+            "failed": list(self.failed_components),
+            "backup_path": str(self.backup_path) if self.backup_path else None,
         }

@@ -24,7 +24,7 @@ PM Agent has been redesigned as an **Always-Active Foundation Layer** that provi
   - `read_memory("next_actions")` → Planned next steps
 - **User Report**: Automatic status report (前回/進捗/今回/課題)
 
-**Implementation Details**: SuperClaude/Commands/pm.md:34-97
+**Implementation Details**: superclaude/Commands/pm.md:34-97
 
 #### During Work (PDCA Cycle)
 - **Plan Phase**: Hypothesis generation with `docs/temp/hypothesis-*.md`
@@ -32,14 +32,14 @@ PM Agent has been redesigned as an **Always-Active Foundation Layer** that provi
 - **Check Phase**: Self-evaluation with `docs/temp/lessons-*.md`
 - **Act Phase**: Success → `docs/patterns/` | Failure → `docs/mistakes/`
 
-**Implementation Details**: SuperClaude/Commands/pm.md:56-80, SuperClaude/Agents/pm-agent.md:48-98
+**Implementation Details**: superclaude/Commands/pm.md:56-80, superclaude/Agents/pm-agent.md:48-98
 
 #### Session End Protocol
 - **Final Checkpoint**: `think_about_whether_you_are_done()`
 - **State Preservation**: `write_memory("pm_context", complete_state)`
 - **Documentation Cleanup**: Temporary → Formal/Mistakes
 
-**Implementation Details**: SuperClaude/Commands/pm.md:82-97, SuperClaude/Agents/pm-agent.md:100-135
+**Implementation Details**: superclaude/Commands/pm.md:82-97, superclaude/Agents/pm-agent.md:100-135
 
 ---
 
@@ -67,7 +67,7 @@ PM Agent has been redesigned as an **Always-Active Foundation Layer** that provi
 - Failure → Root cause analysis → docs/mistakes/
 - Update CLAUDE.md if global pattern
 
-**Implementation Details**: SuperClaude/Agents/pm-agent.md:137-175
+**Implementation Details**: superclaude/Agents/pm-agent.md:137-175
 
 ---
 
@@ -98,7 +98,7 @@ PM Agent has been redesigned as an **Always-Active Foundation Layer** that provi
   - Prevention Checklist (防止策)
   - Lesson Learned (教訓)
 
-**Implementation Details**: SuperClaude/Agents/pm-agent.md:177-235
+**Implementation Details**: superclaude/Agents/pm-agent.md:177-235
 
 ---
 
@@ -112,7 +112,7 @@ PM Agent has been redesigned as an **Always-Active Foundation Layer** that provi
 - **Self-Evaluation**: `think_about_*` operations
 - **Session End**: `last_session`, `next_actions`, `pm_context`
 
-**Implementation Details**: SuperClaude/Agents/pm-agent.md:237-267
+**Implementation Details**: superclaude/Agents/pm-agent.md:237-267
 
 ---
 
@@ -236,10 +236,10 @@ PM Agent has been redesigned as an **Always-Active Foundation Layer** that provi
 ## 📖 Documentation Updates Needed
 
 ### SuperClaude Framework
-- [x] `SuperClaude/Commands/pm.md` - Updated with session lifecycle
-- [x] `SuperClaude/Agents/pm-agent.md` - Updated with PDCA and memory operations
-- [ ] `Docs/ARCHITECTURE.md` - Add PM Agent architecture section
-- [ ] `Docs/GETTING_STARTED.md` - Add PM Agent usage examples
+- [x] `superclaude/Commands/pm.md` - Updated with session lifecycle
+- [x] `superclaude/Agents/pm-agent.md` - Updated with PDCA and memory operations
+- [ ] `docs/ARCHITECTURE.md` - Add PM Agent architecture section
+- [ ] `docs/GETTING_STARTED.md` - Add PM Agent usage examples
 
 ### Global CLAUDE.md (Future)
 - [ ] Add PM Agent PDCA cycle to global rules
@@ -295,8 +295,8 @@ PM Agent has been redesigned as an **Always-Active Foundation Layer** that provi
 
 ## 📚 References
 
-- **PM Agent Command**: `SuperClaude/Commands/pm.md`
-- **PM Agent Persona**: `SuperClaude/Agents/pm-agent.md`
+- **PM Agent Command**: `superclaude/Commands/pm.md`
+- **PM Agent Persona**: `superclaude/Agents/pm-agent.md`
 - **Salvaged Changes**: `tmp/salvaged-pm-agent/`
 - **Original Patches**: `tmp/salvaged-pm-agent/*.patch`
 
@@ -322,8 +322,8 @@ cd ~/.claude && git reset --hard HEAD
 cd ~/.claude && rm -rf .git
 
 # Applied changes to SuperClaude_Framework
-cp tmp/salvaged-pm-agent/pm.md SuperClaude/Commands/pm.md
-cp tmp/salvaged-pm-agent/pm-agent.md SuperClaude/Agents/pm-agent.md
+cp tmp/salvaged-pm-agent/pm.md superclaude/Commands/pm.md
+cp tmp/salvaged-pm-agent/pm-agent.md superclaude/Agents/pm-agent.md
 ```
 
 ---

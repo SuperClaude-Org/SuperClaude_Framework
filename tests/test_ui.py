@@ -5,11 +5,13 @@ import io
 
 from setup.utils.ui import display_authors
 
-@patch('sys.stdout', new_callable=io.StringIO)
+
+@patch("sys.stdout", new_callable=io.StringIO)
 def test_display_header_with_authors(mock_stdout):
-    # Mock the author and email info from SuperClaude/__init__.py
-    with patch('SuperClaude.__author__', "Author One, Author Two"), \
-         patch('SuperClaude.__email__', "one@example.com, two@example.com"):
+    # Mock the author and email info from superclaude/__init__.py
+    with patch("superclaude.__author__", "Author One, Author Two"), patch(
+        "superclaude.__email__", "one@example.com, two@example.com"
+    ):
 
         display_header("Test Title", "Test Subtitle")
 
@@ -21,12 +23,13 @@ def test_display_header_with_authors(mock_stdout):
         assert "Author Two <two@example.com>" in output
         assert "Author One <one@example.com> | Author Two <two@example.com>" in output
 
-@patch('sys.stdout', new_callable=io.StringIO)
+
+@patch("sys.stdout", new_callable=io.StringIO)
 def test_display_authors(mock_stdout):
-    # Mock the author, email, and github info from SuperClaude/__init__.py
-    with patch('SuperClaude.__author__', "Author One, Author Two"), \
-         patch('SuperClaude.__email__', "one@example.com, two@example.com"), \
-         patch('SuperClaude.__github__', "user1, user2"):
+    # Mock the author, email, and github info from superclaude/__init__.py
+    with patch("superclaude.__author__", "Author One, Author Two"), patch(
+        "superclaude.__email__", "one@example.com, two@example.com"
+    ), patch("superclaude.__github__", "user1, user2"):
 
         display_authors()
 

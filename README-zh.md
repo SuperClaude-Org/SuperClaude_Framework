@@ -14,7 +14,7 @@
   <a href="https://superclaude.netlify.app/">
     <img src="https://img.shields.io/badge/🌐_访问网站-blue" alt="Website">
   </a>
-  <a href="https://pypi.org/project/SuperClaude/">
+  <a href="https://pypi.org/project/superclaude/">
     <img src="https://img.shields.io/pypi/v/SuperClaude.svg?" alt="PyPI">
   </a>
   <a href="https://www.npmjs.com/package/@bifrost_inc/superclaude">
@@ -275,55 +275,55 @@ pip install --break-system-packages SuperClaude
 <tr>
 <td valign="top">
 
-- 📝 [**快速开始指南**](Docs/Getting-Started/quick-start.md)  
+- 📝 [**快速开始指南**](docs/Getting-Started/quick-start.md)  
   *快速上手使用*
 
-- 💾 [**安装指南**](Docs/Getting-Started/installation.md)  
+- 💾 [**安装指南**](docs/Getting-Started/installation.md)  
   *详细的安装说明*
 
 </td>
 <td valign="top">
 
-- 🎯 [**命令参考**](Docs/User-Guide-zh/commands.md)  
+- 🎯 [**命令参考**](docs/User-Guide-zh/commands.md)  
   *全部21个斜杠命令*
 
-- 🤖 [**智能体指南**](Docs/User-Guide-zh/agents.md)  
+- 🤖 [**智能体指南**](docs/User-Guide-zh/agents.md)  
   *14个专业智能体*
 
-- 🎨 [**行为模式**](Docs/User-Guide-zh/modes.md)  
+- 🎨 [**行为模式**](docs/User-Guide-zh/modes.md)  
   *5种自适应模式*
 
-- 🚩 [**标志指南**](Docs/User-Guide-zh/flags.md)  
+- 🚩 [**标志指南**](docs/User-Guide-zh/flags.md)  
   *控制行为参数*
 
-- 🔧 [**MCP服务器**](Docs/User-Guide-zh/mcp-servers.md)  
+- 🔧 [**MCP服务器**](docs/User-Guide-zh/mcp-servers.md)  
   *6个服务器集成*
 
-- 💼 [**会话管理**](Docs/User-Guide-zh/session-management.md)  
+- 💼 [**会话管理**](docs/User-Guide-zh/session-management.md)  
   *保存和恢复状态*
 
 </td>
 <td valign="top">
 
-- 🏗️ [**技术架构**](Docs/Developer-Guide/technical-architecture.md)  
+- 🏗️ [**技术架构**](docs/Developer-Guide/technical-architecture.md)  
   *系统设计详情*
 
-- 💻 [**贡献代码**](Docs/Developer-Guide/contributing-code.md)  
+- 💻 [**贡献代码**](docs/Developer-Guide/contributing-code.md)  
   *开发工作流程*
 
-- 🧪 [**测试与调试**](Docs/Developer-Guide/testing-debugging.md)  
+- 🧪 [**测试与调试**](docs/Developer-Guide/testing-debugging.md)  
   *质量保证*
 
 </td>
 <td valign="top">
 
-- ✨ [**最佳实践**](Docs/Reference/quick-start-practices.md)  
+- ✨ [**最佳实践**](docs/Reference/quick-start-practices.md)  
   *专业技巧和模式*
 
-- 📓 [**示例手册**](Docs/Reference/examples-cookbook.md)  
+- 📓 [**示例手册**](docs/Reference/examples-cookbook.md)  
   *实际应用示例*
 
-- 🔍 [**故障排除**](Docs/Reference/troubleshooting.md)  
+- 🔍 [**故障排除**](docs/Reference/troubleshooting.md)  
   *常见问题和修复*
 
 </td>
