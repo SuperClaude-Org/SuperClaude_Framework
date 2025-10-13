@@ -84,6 +84,14 @@ class MCPComponent(Component):
                 "install_command": "npx -y chrome-devtools-mcp@latest",
                 "required": False,
             },
+            "airis-mcp-gateway": {
+                "name": "airis-mcp-gateway",
+                "description": "Dynamic MCP Gateway for zero-token baseline and on-demand tool loading",
+                "install_method": "github",
+                "install_command": "uvx --from git+https://github.com/oraios/airis-mcp-gateway airis-mcp-gateway --help",
+                "run_command": "uvx --from git+https://github.com/oraios/airis-mcp-gateway airis-mcp-gateway",
+                "required": False,
+            },
         }
 
     def get_metadata(self) -> Dict[str, str]:
