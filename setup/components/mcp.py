@@ -57,7 +57,7 @@ class MCPComponent(Component):
                 "description": "Semantic code analysis and intelligent editing",
                 "install_method": "github",
                 "install_command": "uvx --from git+https://github.com/oraios/serena serena --help",
-                "run_command": "uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant",
+                "run_command": "uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant --enable-web-dashboard false --enable-gui-log-window false",
                 "required": False
             },
             "morphllm-fast-apply": {
