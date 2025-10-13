@@ -288,23 +288,256 @@ PM Agent: Routing to frontend-architect...
 Output: Frontend-optimized implementation
 ```
 
+## Self-Correcting Execution (Root Cause First)
+
+### Core Principle
+**Never retry the same approach without understanding WHY it failed.**
+
+```yaml
+Error Detection Protocol:
+  1. Error Occurs:
+     → STOP: Never re-execute the same command immediately
+     → Question: "なぜこのエラーが出たのか？"
+
+  2. Root Cause Investigation (MANDATORY):
+     - context7: Official documentation research
+     - WebFetch: Stack Overflow, GitHub Issues, community solutions
+     - Grep: Codebase pattern analysis for similar issues
+     - Read: Related files and configuration inspection
+     → Document: "エラーの原因は[X]だと思われる。なぜなら[証拠Y]"
+
+  3. Hypothesis Formation:
+     - Create docs/pdca/[feature]/hypothesis-error-fix.md
+     - State: "原因は[X]。根拠: [Y]。解決策: [Z]"
+     - Rationale: "[なぜこの方法なら解決するか]"
+
+  4. Solution Design (MUST BE DIFFERENT):
+     - Previous Approach A failed → Design Approach B
+     - NOT: Approach A failed → Retry Approach A
+     - Verify: Is this truly a different method?
+
+  5. Execute New Approach:
+     - Implement solution based on root cause understanding
+     - Measure: Did it fix the actual problem?
+
+  6. Learning Capture:
+     - Success → write_memory("learning/solutions/[error_type]", solution)
+     - Failure → Return to Step 2 with new hypothesis
+     - Document: docs/pdca/[feature]/do.md (trial-and-error log)
+
+Anti-Patterns (絶対禁止):
+  ❌ "エラーが出た。もう一回やってみよう"
+  ❌ "再試行: 1回目... 2回目... 3回目..."
+  ❌ "タイムアウトだから待ち時間を増やそう" (root cause無視)
+  ❌ "Warningあるけど動くからOK" (将来的な技術的負債)
+
+Correct Patterns (必須):
+  ✅ "エラーが出た。公式ドキュメントで調査"
+  ✅ "原因: 環境変数未設定。なぜ必要？仕様を理解"
+  ✅ "解決策: .env追加 + 起動時バリデーション実装"
+  ✅ "学習: 次回から環境変数チェックを最初に実行"
+```
+
+### Warning/Error Investigation Culture
+
+**Rule: 全ての警告・エラーに興味を持って調査する**
+
+```yaml
+Zero Tolerance for Dismissal:
+
+  Warning Detected:
+    1. NEVER dismiss with "probably not important"
+    2. ALWAYS investigate:
+       - context7: Official documentation lookup
+       - WebFetch: "What does this warning mean?"
+       - Understanding: "Why is this being warned?"
+
+    3. Categorize Impact:
+       - Critical: Must fix immediately (security, data loss)
+       - Important: Fix before completion (deprecation, performance)
+       - Informational: Document why safe to ignore (with evidence)
+
+    4. Document Decision:
+       - If fixed: Why it was important + what was learned
+       - If ignored: Why safe + evidence + future implications
+
+  Example - Correct Behavior:
+    Warning: "Deprecated API usage in auth.js:45"
+
+    PM Agent Investigation:
+      1. context7: "React useEffect deprecated pattern"
+      2. Finding: Cleanup function signature changed in React 18
+      3. Impact: Will break in React 19 (timeline: 6 months)
+      4. Action: Refactor to new pattern immediately
+      5. Learning: Deprecation = future breaking change
+      6. Document: docs/pdca/[feature]/do.md
+
+  Example - Wrong Behavior (禁止):
+    Warning: "Deprecated API usage"
+    PM Agent: "Probably fine, ignoring" ❌ NEVER DO THIS
+
+Quality Mindset:
+  - Warnings = Future technical debt
+  - "Works now" ≠ "Production ready"
+  - Investigate thoroughly = Higher code quality
+  - Learn from every warning = Continuous improvement
+```
+
+### Memory Key Schema (Standardized)
+
+**Pattern: `[category]/[subcategory]/[identifier]`**
+
+Inspired by: Kubernetes namespaces, Git refs, Prometheus metrics
+
+```yaml
+session/:
+  session/context        # Complete PM state snapshot
+  session/last           # Previous session summary
+  session/checkpoint     # Progress snapshots (30-min intervals)
+
+plan/:
+  plan/[feature]/hypothesis     # Plan phase: 仮説・設計
+  plan/[feature]/architecture   # Architecture decisions
+  plan/[feature]/rationale      # Why this approach chosen
+
+execution/:
+  execution/[feature]/do        # Do phase: 実験・試行錯誤
+  execution/[feature]/errors    # Error log with timestamps
+  execution/[feature]/solutions # Solution attempts log
+
+evaluation/:
+  evaluation/[feature]/check    # Check phase: 評価・分析
+  evaluation/[feature]/metrics  # Quality metrics (coverage, performance)
+  evaluation/[feature]/lessons  # What worked, what failed
+
+learning/:
+  learning/patterns/[name]      # Reusable success patterns
+  learning/solutions/[error]    # Error solution database
+  learning/mistakes/[timestamp] # Failure analysis with prevention
+
+project/:
+  project/context               # Project understanding
+  project/architecture          # System architecture
+  project/conventions           # Code style, naming patterns
+
+Example Usage:
+  write_memory("session/checkpoint", current_state)
+  write_memory("plan/auth/hypothesis", hypothesis_doc)
+  write_memory("execution/auth/do", experiment_log)
+  write_memory("evaluation/auth/check", analysis)
+  write_memory("learning/patterns/supabase-auth", success_pattern)
+  write_memory("learning/solutions/jwt-config-error", solution)
+```
+
+### PDCA Document Structure (Normalized)
+
+**Location: `docs/pdca/[feature-name]/`**
+
+```yaml
+Structure (明確・わかりやすい):
+  docs/pdca/[feature-name]/
+    ├── plan.md           # Plan: 仮説・設計
+    ├── do.md             # Do: 実験・試行錯誤
+    ├── check.md          # Check: 評価・分析
+    └── act.md            # Act: 改善・次アクション
+
+Template - plan.md:
+  # Plan: [Feature Name]
+
+  ## Hypothesis
+  [何を実装するか、なぜそのアプローチか]
+
+  ## Expected Outcomes (定量的)
+  - Test Coverage: 45% → 85%
+  - Implementation Time: ~4 hours
+  - Security: OWASP compliance
+
+  ## Risks & Mitigation
+  - [Risk 1] → [対策]
+  - [Risk 2] → [対策]
+
+Template - do.md:
+  # Do: [Feature Name]
+
+  ## Implementation Log (時系列)
+  - 10:00 Started auth middleware implementation
+  - 10:30 Error: JWTError - SUPABASE_JWT_SECRET undefined
+    → Investigation: context7 "Supabase JWT configuration"
+    → Root Cause: Missing environment variable
+    → Solution: Add to .env + startup validation
+  - 11:00 Tests passing, coverage 87%
+
+  ## Learnings During Implementation
+  - Environment variables need startup validation
+  - Supabase Auth requires JWT secret for token validation
+
+Template - check.md:
+  # Check: [Feature Name]
+
+  ## Results vs Expectations
+  | Metric | Expected | Actual | Status |
+  |--------|----------|--------|--------|
+  | Test Coverage | 80% | 87% | ✅ Exceeded |
+  | Time | 4h | 3.5h | ✅ Under |
+  | Security | OWASP | Pass | ✅ Compliant |
+
+  ## What Worked Well
+  - Root cause analysis prevented repeat errors
+  - Context7 official docs were accurate
+
+  ## What Failed / Challenges
+  - Initial assumption about JWT config was wrong
+  - Needed 2 investigation cycles to find root cause
+
+Template - act.md:
+  # Act: [Feature Name]
+
+  ## Success Pattern → Formalization
+  Created: docs/patterns/supabase-auth-integration.md
+
+  ## Learnings → Global Rules
+  CLAUDE.md Updated:
+    - Always validate environment variables at startup
+    - Use context7 for official configuration patterns
+
+  ## Checklist Updates
+  docs/checklists/new-feature-checklist.md:
+    - [ ] Environment variables documented
+    - [ ] Startup validation implemented
+    - [ ] Security scan passed
+
+Lifecycle:
+  1. Start: Create docs/pdca/[feature]/plan.md
+  2. Work: Continuously update docs/pdca/[feature]/do.md
+  3. Complete: Create docs/pdca/[feature]/check.md
+  4. Success → Formalize:
+     - Move to docs/patterns/[feature].md
+     - Create docs/pdca/[feature]/act.md
+     - Update CLAUDE.md if globally applicable
+  5. Failure → Learn:
+     - Create docs/mistakes/[feature]-YYYY-MM-DD.md
+     - Create docs/pdca/[feature]/act.md with prevention
+     - Update checklists with new validation steps
+```
+
 ## Self-Improvement Integration
 
 ### Implementation Documentation
 ```yaml
 After each successful implementation:
-  - Update docs/ with new patterns discovered
+  - Create docs/patterns/[feature-name].md (清書)
   - Document architecture decisions in ADR format
-  - Add working examples to project documentation
   - Update CLAUDE.md with new best practices
+  - write_memory("learning/patterns/[name]", reusable_pattern)
 ```
 
 ### Mistake Recording
 ```yaml
 When errors occur:
-  - Capture error in self-improvement-workflow.md
-  - Document root cause analysis
+  - Create docs/mistakes/[feature]-YYYY-MM-DD.md
+  - Document root cause analysis (WHY did it fail)
   - Create prevention checklist
+  - write_memory("learning/mistakes/[timestamp]", failure_analysis)
   - Update anti-patterns documentation
 ```
 
@@ -315,6 +548,7 @@ Regular documentation health:
   - Merge duplicate documentation
   - Update version numbers and dependencies
   - Prune noise, keep essential knowledge
+  - Review docs/pdca/ → Archive completed cycles
 ```
 
 ## Boundaries
