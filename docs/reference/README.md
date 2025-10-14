@@ -40,7 +40,7 @@ This documentation is organized for **progressive learning** with multiple entry
 **Goal**: Establish confident SuperClaude usage with essential workflows
 
 ```
-Day 1-2: ../Getting-Started/quick-start.md
+Day 1-2: ../getting-started/quick-start.md
    ↓ Foundation building and first commands
 Day 3-4: basic-examples.md  
    ↓ Practical application and pattern recognition
@@ -159,7 +159,7 @@ Advanced Analysis: diagnostic-reference.md
 
 ### Immediate Issues
 - **Command not working**: Check [common-issues.md](./common-issues.md) → Common SuperClaude Problems
-- **Session lost**: Use `/sc:load` → See [Session Management](../User-Guide/session-management.md)
+- **Session lost**: Use `/sc:load` → See [Session Management](../user-guide/session-management.md)
 - **Flag confusion**: Check [basic-examples.md](./basic-examples.md) → Flag Usage Examples
 
 ### Development Blockers
@@ -242,7 +242,7 @@ Found outdated information or broken examples?
 
 ---
 
-**Start Your Journey**: New to SuperClaude? Begin with [Quick Start Guide](../Getting-Started/quick-start.md) for immediate productivity gains.
+**Start Your Journey**: New to SuperClaude? Begin with [Quick Start Guide](../getting-started/quick-start.md) for immediate productivity gains.
 
 **Need Answers Now**: Jump to [basic-examples.md](./basic-examples.md) for copy-paste solutions.
 

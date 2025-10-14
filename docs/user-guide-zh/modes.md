@@ -404,8 +404,8 @@ Standard Approach: Consistent, professional baseline for all tasks
 ## 故障排除
 
 有关故障排除帮助，请参阅：
-- [常见问题](../Reference/common-issues.md) - 频繁问题的快速修复
-- [故障排除指南](../Reference/troubleshooting.md) - 全面的问题解决方案
+- [常见问题](../reference/common-issues.md) - 频繁问题的快速修复
+- [故障排除指南](../reference/troubleshooting.md) - 全面的问题解决方案
 
 ### 常见问题
 - **模式未激活**：使用手动标志：`--brainstorm`、`--introspect`、`--uc`
@@ -493,7 +493,7 @@ Standard Approach: Consistent, professional baseline for all tasks
 /sc:reflect --type mode-status            # 检查当前模式状态
 # 检查请求复杂性和触发器
 ```
-- 有关模式安装问题，请参阅[常见问题指南](../Reference/common-issues.md)
+- 有关模式安装问题，请参阅[常见问题指南](../reference/common-issues.md)
 
 **级别 3：专家支持（30+ 分钟）**
 ```bash
@@ -502,7 +502,7 @@ SuperClaude install --diagnose
 # 检查模式激活模式
 # 检查行为触发器和阈值
 ```
-- 有关行为模式分析，请参阅[诊断参考指南](../Reference/diagnostic-reference.md)
+- 有关行为模式分析，请参阅[诊断参考指南](../reference/diagnostic-reference.md)
 
 **级别 4：社区支持**
 - 在 [GitHub Issues](https://github.com/SuperClaude-Org/SuperClaude_Framework/issues) 报告模式问题
@@ -578,26 +578,26 @@ SuperClaude 的 5 种行为模式创建了一个**智能适应系统**，自动�
 **学习进展：**
 
 **🌱 基础（第1周）**
-- [快速开始指南](../Getting-Started/quick-start.md) - 模式激活示例
+- [快速开始指南](../getting-started/quick-start.md) - 模式激活示例
 - [命令参考](commands.md) - 命令自动激活模式
-- [安装指南](../Getting-Started/installation.md) - 设置行为模式
+- [安装指南](../getting-started/installation.md) - 设置行为模式
 
 **🌿 中级（第2-3周）**
 - [智能体指南](agents.md) - 模式如何与专家协调
 - [标志指南](flags.md) - 手动模式控制和优化
-- [示例手册](../Reference/examples-cookbook.md) - 实践中的模式模式
+- [示例手册](../reference/examples-cookbook.md) - 实践中的模式模式
 
 **🌲 高级（第2+个月）**
 - [MCP 服务器](mcp-servers.md) - 模式与增强能力的集成
 - [会话管理](session-management.md) - 任务管理模式工作流
-- [入门指南](../Getting-Started/quick-start.md) - 模式使用模式
+- [入门指南](../getting-started/quick-start.md) - 模式使用模式
 
 **🔧 专家级**
-- [技术架构](../Developer-Guide/technical-architecture.md) - 模式实现细节
-- [代码贡献](../Developer-Guide/contributing-code.md) - 扩展模式能力
+- [技术架构](../developer-guide/technical-architecture.md) - 模式实现细节
+- [代码贡献](../developer-guide/contributing-code.md) - 扩展模式能力
 
 **特定模式指南：**
-- **头脑风暴**：[需求发现模式](../Reference/examples-cookbook.md#requirements)
+- **头脑风暴**：[需求发现模式](../reference/examples-cookbook.md#requirements)
 - **任务管理**：[会话管理指南](session-management.md)
 - **编排**：[MCP 服务器指南](mcp-servers.md)
 - **令牌效率**：[命令基础](commands.md#token-efficiency)

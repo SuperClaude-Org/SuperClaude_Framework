@@ -537,8 +537,8 @@ SuperClaude는 Claude Code가 전문 지식을 위해 호출할 수 있는 15개
 ## 문제 해결
 
 문제 해결 도움말은 다음을 참조하세요:
-- [일반적인 문제](../Reference/common-issues.md) - 자주 발생하는 문제에 대한 빠른 수정
-- [문제 해결 가이드](../Reference/troubleshooting.md) - 포괄적인 문제 해결
+- [일반적인 문제](../reference/common-issues.md) - 자주 발생하는 문제에 대한 빠른 수정
+- [문제 해결 가이드](../reference/troubleshooting.md) - 포괄적인 문제 해결
 
 ### 일반적인 문제
 - **에이전트 활성화 없음**: 도메인 키워드 사용: "security", "performance", "frontend"
@@ -599,12 +599,12 @@ SuperClaude는 Claude Code가 전문 지식을 위해 호출할 수 있는 15개
 - 혼란을 피하기 위해 단일 도메인에 집중
 
 **상세 도움말:**
-- 에이전트 설치 문제는 [일반적인 문제 가이드](../Reference/common-issues.md) 참조
+- 에이전트 설치 문제는 [일반적인 문제 가이드](../reference/common-issues.md) 참조
 - 대상 에이전트의 트리거 키워드 검토
 
 **전문가 지원:**
 - `SuperClaude install --diagnose` 사용
-- 조정 분석은 [진단 참조 가이드](../Reference/diagnostic-reference.md) 참조
+- 조정 분석은 [진단 참조 가이드](../reference/diagnostic-reference.md) 참조
 
 **커뮤니티 지원:**
 - [GitHub Issues](https://github.com/SuperClaude-Org/SuperClaude_Framework/issues)에서 문제 보고
@@ -838,12 +838,12 @@ SuperClaude는 Claude Code가 전문 지식을 위해 호출할 수 있는 15개
 
 ### 고급 사용
 - **[행동 모드](modes.md)** - 향상된 에이전트 조정을 위한 컨텍스트 최적화
-- **[시작하기](../Getting-Started/quick-start.md)** - 에이전트 최적화를 위한 전문가 기법
-- **[예제 모음](../Reference/examples-cookbook.md)** - 실제 에이전트 조정 패턴
+- **[시작하기](../getting-started/quick-start.md)** - 에이전트 최적화를 위한 전문가 기법
+- **[예제 모음](../reference/examples-cookbook.md)** - 실제 에이전트 조정 패턴
 
 ### 개발 리소스
-- **[기술 아키텍처](../Developer-Guide/technical-architecture.md)** - SuperClaude의 에이전트 시스템 설계 이해
-- **[기여하기](../Developer-Guide/contributing-code.md)** - 에이전트 기능 및 조정 패턴 확장
+- **[기술 아키텍처](../developer-guide/technical-architecture.md)** - SuperClaude의 에이전트 시스템 설계 이해
+- **[기여하기](../developer-guide/contributing-code.md)** - 에이전트 기능 및 조정 패턴 확장
 
 ---
 

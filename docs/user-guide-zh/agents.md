@@ -494,8 +494,8 @@ Task Analysis →
 ## 故障排除
 
 获取故障排除帮助，请参阅：
-- [常见问题](../Reference/common-issues.md) - 常见问题的快速修复
-- [故障排除指南](../Reference/troubleshooting.md) - 综合问题解决
+- [常见问题](../reference/common-issues.md) - 常见问题的快速修复
+- [故障排除指南](../reference/troubleshooting.md) - 综合问题解决
 
 ### 常见问题
 - **无智能体激活**: 使用领域关键词："security"、"performance"、"frontend"
@@ -556,12 +556,12 @@ Task Analysis →
 - 聚焦在单一领域以避免混淆
 
 **详细帮助：**
-- 查看[常见问题指南](../Reference/common-issues.md)了解智能体安装问题
+- 查看[常见问题指南](../reference/common-issues.md)了解智能体安装问题
 - 查看目标智能体的触发关键词
 
 **专家支持：**
 - 使用 `SuperClaude install --diagnose`
-- 查看[诊断参考指南](../Reference/diagnostic-reference.md)进行协调分析
+- 查看[诊断参考指南](../reference/diagnostic-reference.md)进行协调分析
 
 **社区支持：**
 - 在 [GitHub Issues](https://github.com/SuperClaude-Org/SuperClaude_Framework/issues) 报告问题
@@ -793,12 +793,12 @@ Task Analysis →
 
 ### 高级用法
 - **[行为模式](modes.md)** - 用于增强智能体协调的上下文优化
-- **[入门指南](../Getting-Started/quick-start.md)** - 智能体优化的专家技巧
-- **[示例食谱](../Reference/examples-cookbook.md)** - 实际的智能体协调模式
+- **[入门指南](../getting-started/quick-start.md)** - 智能体优化的专家技巧
+- **[示例食谱](../reference/examples-cookbook.md)** - 实际的智能体协调模式
 
 ### 开发资源
-- **[技术架构](../Developer-Guide/technical-architecture.md)** - 理解 SuperClaude 的智能体系统设计
-- **[贡献指南](../Developer-Guide/contributing-code.md)** - 扩展智能体能力和协调模式
+- **[技术架构](../developer-guide/technical-architecture.md)** - 理解 SuperClaude 的智能体系统设计
+- **[贡献指南](../developer-guide/contributing-code.md)** - 扩展智能体能力和协调模式
 
 ---
 

@@ -286,7 +286,7 @@ Read ~/.claude/commands/sc/pm.md
 ### Phase 3: 改善案作成
 ```bash
 # このプロジェクト内で（Git管理）
-Write docs/Development/hypothesis-pm-enhancement-2025-10-14.md
+Write docs/development/hypothesis-pm-enhancement-2025-10-14.md
 
 内容:
 - 現状の問題（ドキュメント寄りすぎ、PMO機能不足）

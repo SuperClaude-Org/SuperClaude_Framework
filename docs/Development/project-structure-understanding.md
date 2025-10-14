@@ -146,7 +146,7 @@ cat ~/.claude/commands/sc/pm.md      # 現在の仕様確認
 cd ~/github/SuperClaude_Framework
 
 # Git管理されているこのプロジェクト内で
-Write docs/Development/hypothesis-pm-improvement-YYYY-MM-DD.md
+Write docs/development/hypothesis-pm-improvement-YYYY-MM-DD.md
 
 # 内容例:
 # - 現状の問題
@@ -226,9 +226,9 @@ mv backup original
 ```
 
 ### Rule 3: ドキュメント駆動開発
-1. 理解 → docs/Development/ に記録
-2. 仮説 → docs/Development/hypothesis-*.md
-3. 実験 → docs/Development/experiment-*.md
+1. 理解 → docs/development/ に記録
+2. 仮説 → docs/development/hypothesis-*.md
+3. 実験 → docs/development/experiment-*.md
 4. 成功 → docs/patterns/
 5. 失敗 → docs/mistakes/
 
@@ -336,7 +336,7 @@ vim ~/.claude/commands/sc/pm.md
 ```bash
 # ✅ CORRECT
 1. setup/components/ でロジック理解
-2. docs/Development/ に改善案記録
+2. docs/development/ に改善案記録
 3. setup/ 側で変更・テスト
 4. Git コミット
 5. SuperClaude install --dev で動作確認
@@ -357,7 +357,7 @@ vim ~/.claude/commands/sc/pm.md
    - 現在の動作理解
 
 3. **改善提案作成**
-   - `docs/Development/hypothesis-*.md` 作成
+   - `docs/development/hypothesis-*.md` 作成
    - ユーザーレビュー
 
 4. **実装・テスト**

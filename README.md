@@ -392,51 +392,51 @@ The Deep Research system intelligently coordinates multiple tools:
 <tr>
 <td valign="top">
 
-- 📝 [**Quick Start Guide**](docs/Getting-Started/quick-start.md)  
+- 📝 [**Quick Start Guide**](docs/getting-started/quick-start.md)  
   *Get up and running fast*
 
-- 💾 [**Installation Guide**](docs/Getting-Started/installation.md)  
+- 💾 [**Installation Guide**](docs/getting-started/installation.md)  
   *Detailed setup instructions*
 
 </td>
 <td valign="top">
 
-- 🎯 [**Commands Reference**](docs/User-Guide/commands.md)  
+- 🎯 [**Commands Reference**](docs/user-guide/commands.md)  
   *All 25 slash commands*
 
-- 🤖 [**Agents Guide**](docs/User-Guide/agents.md)  
+- 🤖 [**Agents Guide**](docs/user-guide/agents.md)  
   *15 specialized agents*
 
-- 🎨 [**Behavioral Modes**](docs/User-Guide/modes.md)  
+- 🎨 [**Behavioral Modes**](docs/user-guide/modes.md)  
   *7 adaptive modes*
 
-- 🚩 [**Flags Guide**](docs/User-Guide/flags.md)  
+- 🚩 [**Flags Guide**](docs/user-guide/flags.md)  
   *Control behaviors*
 
-- 🔧 [**MCP Servers**](docs/User-Guide/mcp-servers.md)  
+- 🔧 [**MCP Servers**](docs/user-guide/mcp-servers.md)  
   *7 server integrations*
 
-- 💼 [**Session Management**](docs/User-Guide/session-management.md)  
+- 💼 [**Session Management**](docs/user-guide/session-management.md)  
   *Save & restore state*
 
 </td>
 <td valign="top">
 
-- 🏗️ [**Technical Architecture**](docs/Developer-Guide/technical-architecture.md)  
+- 🏗️ [**Technical Architecture**](docs/developer-guide/technical-architecture.md)  
   *System design details*
 
-- 💻 [**Contributing Code**](docs/Developer-Guide/contributing-code.md)  
+- 💻 [**Contributing Code**](docs/developer-guide/contributing-code.md)  
   *Development workflow*
 
-- 🧪 [**Testing & Debugging**](docs/Developer-Guide/testing-debugging.md)  
+- 🧪 [**Testing & Debugging**](docs/developer-guide/testing-debugging.md)  
   *Quality assurance*
 
 </td>
 <td valign="top">
-- 📓 [**Examples Cookbook**](docs/Reference/examples-cookbook.md)  
+- 📓 [**Examples Cookbook**](docs/reference/examples-cookbook.md)  
   *Real-world recipes*
 
-- 🔍 [**Troubleshooting**](docs/Reference/troubleshooting.md)  
+- 🔍 [**Troubleshooting**](docs/reference/troubleshooting.md)  
   *Common issues & fixes*
 
 </td>

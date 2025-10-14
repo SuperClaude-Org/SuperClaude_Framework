@@ -1,16 +1,16 @@
 # SuperClaude フラグガイド 🏁
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#superclaude-flags-guide-)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#superclaude-flags-guide-)
 
 **ほとんどのフラグは自動的にアクティブになります**。Claude Code は、リクエスト内のキーワードとパターンに基づいて適切なコンテキストを実行するための動作指示を読み取ります。
 
 ## 必須の自動アクティベーションフラグ（ユースケースの90%）
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#essential-auto-activation-flags-90-of-use-cases)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#essential-auto-activation-flags-90-of-use-cases)
 
 ### コア分析フラグ
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#core-analysis-flags)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#core-analysis-flags)
 
 |フラグ|起動時|何をするのか|
 |---|---|---|
@@ -20,7 +20,7 @@
 
 ### MCP サーバーフラグ
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#mcp-server-flags)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#mcp-server-flags)
 
 |フラグ|サーバ|目的|自動トリガー|
 |---|---|---|---|
@@ -33,7 +33,7 @@
 
 ### 動作モードフラグ
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#behavioral-mode-flags)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#behavioral-mode-flags)
 
 |フラグ|起動時|何をするのか|
 |---|---|---|
@@ -45,7 +45,7 @@
 
 ### 実行制御フラグ
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#execution-control-flags)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#execution-control-flags)
 
 |フラグ|起動時|何をするのか|
 |---|---|---|
@@ -56,11 +56,11 @@
 
 ## コマンド固有のフラグ
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#command-specific-flags)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#command-specific-flags)
 
 ### 分析コマンドフラグ（`/sc:analyze`）
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#analysis-command-flags-scanalyze)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#analysis-command-flags-scanalyze)
 
 |フラグ|目的|価値観|
 |---|---|---|
@@ -70,7 +70,7 @@
 
 ### ビルドコマンドフラグ（`/sc:build`）
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#build-command-flags-scbuild)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#build-command-flags-scbuild)
 
 |フラグ|目的|価値観|
 |---|---|---|
@@ -81,7 +81,7 @@
 
 ### 設計コマンドフラグ（`/sc:design`）
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#design-command-flags-scdesign)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#design-command-flags-scdesign)
 
 |フラグ|目的|価値観|
 |---|---|---|
@@ -90,7 +90,7 @@
 
 ### コマンドフラグの説明（`/sc:explain`）
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#explain-command-flags-scexplain)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#explain-command-flags-scexplain)
 
 |フラグ|目的|価値観|
 |---|---|---|
@@ -100,7 +100,7 @@
 
 ### コマンドフラグの改善（`/sc:improve`）
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#improve-command-flags-scimprove)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#improve-command-flags-scimprove)
 
 |フラグ|目的|価値観|
 |---|---|---|
@@ -111,7 +111,7 @@
 
 ### タスクコマンドフラグ（`/sc:task`）
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#task-command-flags-sctask)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#task-command-flags-sctask)
 
 |フラグ|目的|価値観|
 |---|---|---|
@@ -121,7 +121,7 @@
 
 ### ワークフローコマンドフラグ（`/sc:workflow`）
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#workflow-command-flags-scworkflow)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#workflow-command-flags-scworkflow)
 
 |フラグ|目的|価値観|
 |---|---|---|
@@ -131,7 +131,7 @@
 
 ### コマンドフラグのトラブルシューティング ( `/sc:troubleshoot`)
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#troubleshoot-command-flags-sctroubleshoot)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#troubleshoot-command-flags-sctroubleshoot)
 
 |フラグ|目的|価値観|
 |---|---|---|
@@ -141,7 +141,7 @@
 
 ### クリーンアップコマンドフラグ（`/sc:cleanup`）
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#cleanup-command-flags-sccleanup)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#cleanup-command-flags-sccleanup)
 
 |フラグ|目的|価値観|
 |---|---|---|
@@ -152,7 +152,7 @@
 
 ### コマンドフラグの推定（`/sc:estimate`）
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#estimate-command-flags-scestimate)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#estimate-command-flags-scestimate)
 
 |フラグ|目的|価値観|
 |---|---|---|
@@ -162,7 +162,7 @@
 
 ### インデックスコマンドフラグ（`/sc:index`）
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#index-command-flags-scindex)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#index-command-flags-scindex)
 
 |フラグ|目的|価値観|
 |---|---|---|
@@ -171,7 +171,7 @@
 
 ### コマンドフラグを反映する ( `/sc:reflect`)
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#reflect-command-flags-screflect)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#reflect-command-flags-screflect)
 
 |フラグ|目的|価値観|
 |---|---|---|
@@ -181,7 +181,7 @@
 
 ### スポーンコマンドフラグ（`/sc:spawn`）
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#spawn-command-flags-scspawn)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#spawn-command-flags-scspawn)
 
 |フラグ|目的|価値観|
 |---|---|---|
@@ -190,7 +190,7 @@
 
 ### Gitコマンドフラグ（`/sc:git`）
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#git-command-flags-scgit)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#git-command-flags-scgit)
 
 |フラグ|目的|価値観|
 |---|---|---|
@@ -199,7 +199,7 @@
 
 ### 選択ツールコマンドフラグ ( `/sc:select-tool`)
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#select-tool-command-flags-scselect-tool)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#select-tool-command-flags-scselect-tool)
 
 |フラグ|目的|価値観|
 |---|---|---|
@@ -208,7 +208,7 @@
 
 ### テストコマンドフラグ（`/sc:test`）
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#test-command-flags-sctest)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#test-command-flags-sctest)
 
 |フラグ|目的|価値観|
 |---|---|---|
@@ -218,11 +218,11 @@
 
 ## 高度な制御フラグ
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#advanced-control-flags)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#advanced-control-flags)
 
 ### 範囲と焦点
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#scope-and-focus)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#scope-and-focus)
 
 |フラグ|目的|価値観|
 |---|---|---|
@@ -231,7 +231,7 @@
 
 ### 実行制御
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#execution-control)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#execution-control)
 
 |フラグ|目的|価値観|
 |---|---|---|
@@ -242,7 +242,7 @@
 
 ### システムフラグ（SuperClaude インストール）
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#system-flags-superclaude-installation)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#system-flags-superclaude-installation)
 
 |フラグ|目的|価値観|
 |---|---|---|
@@ -258,11 +258,11 @@
 
 ## 一般的な使用パターン
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#common-usage-patterns)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#common-usage-patterns)
 
 ### フロントエンド開発
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#frontend-development)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#frontend-development)
 
 ```shell
 /sc:implement "responsive dashboard" --magic --c7
@@ -273,7 +273,7 @@
 
 ### バックエンド開発
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#backend-development)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#backend-development)
 
 ```shell
 /sc:analyze api/ --focus performance --seq --think
@@ -284,7 +284,7 @@
 
 ### 大規模プロジェクト
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#large-projects)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#large-projects)
 
 ```shell
 /sc:analyze . --ultrathink --all-mcp --safe-mode
@@ -295,7 +295,7 @@
 
 ### 品質とメンテナンス
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#quality--maintenance)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#quality--maintenance)
 
 ```shell
 /sc:improve src/ --type quality --safe --interactive
@@ -306,11 +306,11 @@
 
 ## フラグインタラクション
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#flag-interactions)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#flag-interactions)
 
 ### 互換性のある組み合わせ
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#compatible-combinations)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#compatible-combinations)
 
 - `--think`+ `--c7`: ドキュメント付き分析
 - `--magic`+ `--play`: テスト付きのUI生成
@@ -320,7 +320,7 @@
 
 ### 競合するフラグ
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#conflicting-flags)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#conflicting-flags)
 
 - `--all-mcp`個別のMCPフラグと比較（どちらか一方を使用）
 - `--no-mcp`任意のMCPフラグと比較（--no-mcpが優先）
@@ -329,7 +329,7 @@
 
 ### 関係の自動有効化
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#auto-enabling-relationships)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#auto-enabling-relationships)
 
 - `--safe-mode`自動的`--uc`に有効になり、`--validate`
 - `--ultrathink`すべてのMCPサーバーを自動的に有効にする
@@ -338,11 +338,11 @@
 
 ## トラブルシューティングフラグ
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#troubleshooting-flags)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#troubleshooting-flags)
 
 ### よくある問題
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#common-issues)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#common-issues)
 
 - **ツールが多すぎる**:`--no-mcp`ネイティブツールのみでテストする
 - **操作が遅すぎます**:`--uc`出力を圧縮するために追加します
@@ -351,7 +351,7 @@
 
 ### デバッグフラグ
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#debug-flags)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#debug-flags)
 
 ```shell
 /sc:analyze . --verbose                      # Shows decision logic and flag activation
@@ -361,7 +361,7 @@
 
 ### クイックフィックス
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#quick-fixes)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#quick-fixes)
 
 ```shell
 /sc:analyze . --help                         # Shows available flags for command
@@ -371,7 +371,7 @@
 
 ## フラグの優先ルール
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#flag-priority-rules)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#flag-priority-rules)
 
 1. **安全第一**: `--safe-mode`> `--validate`> 最適化フラグ
 2. **明示的なオーバーライド**: ユーザーフラグ > 自動検出
@@ -381,8 +381,8 @@
 
 ## 関連リソース
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md#related-resources)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md#related-resources)
 
-- [コマンドガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md)- これらのフラグを使用するコマンド
-- [MCP サーバーガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/mcp-servers.md)- MCP フラグのアクティブ化について
-- [セッション管理](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/session-management.md)- 永続セッションでのフラグの使用
+- [コマンドガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/commands.md)- これらのフラグを使用するコマンド
+- [MCP サーバーガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/mcp-servers.md)- MCP フラグのアクティブ化について
+- [セッション管理](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/session-management.md)- 永続セッションでのフラグの使用

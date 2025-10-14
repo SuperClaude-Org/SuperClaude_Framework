@@ -87,7 +87,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 # 예상 동작: 사용 가능한 명령어 목록
 ```
 
-**테스트가 실패하면**: [설치 가이드](../Getting-Started/installation.md) 또는 [문제 해결](#troubleshooting) 확인
+**테스트가 실패하면**: [설치 가이드](../getting-started/installation.md) 또는 [문제 해결](#troubleshooting) 확인
 
 ### 📝 명령어 빠른 참조
 
@@ -357,11 +357,11 @@ python3 -m SuperClaude install --list-components | grep mcp
 **빠른 수정:**
 - 세션 재설정: `/sc:load`로 다시 초기화
 - 상태 확인: `SuperClaude install --list-components`
-- 도움말 받기: [문제 해결 가이드](../Reference/troubleshooting.md)
+- 도움말 받기: [문제 해결 가이드](../reference/troubleshooting.md)
 
 ## 다음 단계
 
 - [플래그 가이드](flags.md) - 명령어 동작 제어
 - [에이전트 가이드](agents.md) - 전문가 활성화
-- [예제 모음](../Reference/examples-cookbook.md) - 실제 사용 패턴
+- [예제 모음](../reference/examples-cookbook.md) - 실제 사용 패턴
 

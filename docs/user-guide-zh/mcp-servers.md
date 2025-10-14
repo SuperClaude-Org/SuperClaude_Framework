@@ -20,7 +20,7 @@ MCP（模型上下文协议）服务器通过专业工具扩展 Claude Code 的�
 
 ## 快速开始
 
-**设置验证**：MCP 服务器会自动激活。有关安装和故障排除，请参阅 [安装指南](../Getting-Started/installation.md) 和 [故障排除](../Reference/troubleshooting.md)。
+**设置验证**：MCP 服务器会自动激活。有关安装和故障排除，请参阅 [安装指南](../getting-started/installation.md) 和 [故障排除](../reference/troubleshooting.md)。
 
 **自动激活逻辑：**
 
@@ -260,7 +260,7 @@ echo 'export MORPH_API_KEY="your_key"' >> ~/.bashrc
 
 **必读资料：**
 - [命令指南](commands.md) - 激活 MCP 服务器的命令
-- [快速开始指南](../Getting-Started/quick-start.md) - MCP 设置指南
+- [快速开始指南](../getting-started/quick-start.md) - MCP 设置指南
 
 **高级使用：**
 - [行为模式](modes.md) - 模式-MCP 协调
@@ -268,5 +268,5 @@ echo 'export MORPH_API_KEY="your_key"' >> ~/.bashrc
 - [会话管理](session-management.md) - Serena 工作流
 
 **技术参考：**
-- [示例手册](../Reference/examples-cookbook.md) - MCP 工作流模式
-- [技术架构](../Developer-Guide/technical-architecture.md) - 集成详情
+- [示例手册](../reference/examples-cookbook.md) - MCP 工作流模式
+- [技术架构](../developer-guide/technical-architecture.md) - 集成详情

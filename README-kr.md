@@ -278,55 +278,55 @@ pip install --break-system-packages SuperClaude
 <tr>
 <td valign="top">
 
-- 📝 [**빠른 시작 가이드**](docs/Getting-Started/quick-start.md)  
+- 📝 [**빠른 시작 가이드**](docs/getting-started/quick-start.md)  
   *즉시 시작하기*
 
-- 💾 [**설치 가이드**](docs/Getting-Started/installation.md)  
+- 💾 [**설치 가이드**](docs/getting-started/installation.md)  
   *상세한 설정 단계*
 
 </td>
 <td valign="top">
 
-- 🎯 [**명령어 레퍼런스**](docs/User-Guide/commands.md)  
+- 🎯 [**명령어 레퍼런스**](docs/user-guide/commands.md)  
   *전체 21개 슬래시 명령어*
 
-- 🤖 [**에이전트 가이드**](docs/User-Guide/agents.md)  
+- 🤖 [**에이전트 가이드**](docs/user-guide/agents.md)  
   *14개 전문 에이전트*
 
-- 🎨 [**작동 모드**](docs/User-Guide/modes.md)  
+- 🎨 [**작동 모드**](docs/user-guide/modes.md)  
   *5가지 적응형 모드*
 
-- 🚩 [**플래그 가이드**](docs/User-Guide/flags.md)  
+- 🚩 [**플래그 가이드**](docs/user-guide/flags.md)  
   *동작 제어 매개변수*
 
-- 🔧 [**MCP 서버**](docs/User-Guide/mcp-servers.md)  
+- 🔧 [**MCP 서버**](docs/user-guide/mcp-servers.md)  
   *6개 서버 통합*
 
-- 💼 [**세션 관리**](docs/User-Guide/session-management.md)  
+- 💼 [**세션 관리**](docs/user-guide/session-management.md)  
   *상태 저장 및 복원*
 
 </td>
 <td valign="top">
 
-- 🏗️ [**기술 아키텍처**](docs/Developer-Guide/technical-architecture.md)  
+- 🏗️ [**기술 아키텍처**](docs/developer-guide/technical-architecture.md)  
   *시스템 설계 세부사항*
 
-- 💻 [**코드 기여**](docs/Developer-Guide/contributing-code.md)  
+- 💻 [**코드 기여**](docs/developer-guide/contributing-code.md)  
   *개발 워크플로우*
 
-- 🧪 [**테스트 및 디버깅**](docs/Developer-Guide/testing-debugging.md)  
+- 🧪 [**테스트 및 디버깅**](docs/developer-guide/testing-debugging.md)  
   *품질 보증*
 
 </td>
 <td valign="top">
 
-- ✨ [**모범 사례**](docs/Reference/quick-start-practices.md)  
+- ✨ [**모범 사례**](docs/reference/quick-start-practices.md)  
   *전문가 팁과 패턴*
 
-- 📓 [**예제 모음**](docs/Reference/examples-cookbook.md)  
+- 📓 [**예제 모음**](docs/reference/examples-cookbook.md)  
   *실제 사용 예제*
 
-- 🔍 [**문제 해결**](docs/Reference/troubleshooting.md)  
+- 🔍 [**문제 해결**](docs/reference/troubleshooting.md)  
   *일반적인 문제와 수정*
 
 </td>

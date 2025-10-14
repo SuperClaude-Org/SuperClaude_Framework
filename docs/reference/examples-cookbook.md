@@ -95,7 +95,7 @@
 ## Learning Progression Roadmap
 
 ### Phase 1: Foundation (Week 1-2)
-1. **Setup**: Complete [Installation Guide](../Getting-Started/installation.md)
+1. **Setup**: Complete [Installation Guide](../getting-started/installation.md)
 2. **Basics**: Practice [Basic Examples](./basic-examples.md#essential-one-liner-commands)
 3. **Patterns**: Learn [Basic Usage Patterns](./basic-examples.md#basic-usage-patterns)
 4. **Success**: Can execute common development tasks independently
@@ -151,9 +151,9 @@
 ## Support Resources
 
 **Documentation**:
-- [Commands Reference](../User-Guide/commands.md) - Complete command documentation
-- [Agents Guide](../User-Guide/agents.md) - Multi-agent coordination
-- [MCP Servers](../User-Guide/mcp-servers.md) - Enhanced capabilities
+- [Commands Reference](../user-guide/commands.md) - Complete command documentation
+- [Agents Guide](../user-guide/agents.md) - Multi-agent coordination
+- [MCP Servers](../user-guide/mcp-servers.md) - Enhanced capabilities
 - [Advanced Workflows](./advanced-workflows.md) - Complex coordination patterns
 
 **Community**:
@@ -162,7 +162,7 @@
 - [Contributing Guide](../CONTRIBUTING.md) - Framework contribution
 
 **Advanced**:
-- [Technical Architecture](../Developer-Guide/technical-architecture.md) - Deep system understanding
+- [Technical Architecture](../developer-guide/technical-architecture.md) - Deep system understanding
 - [Troubleshooting Guide](./troubleshooting.md) - Common issues and solutions
 
 ---

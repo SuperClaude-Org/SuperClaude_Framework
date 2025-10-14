@@ -275,55 +275,55 @@ pip install --break-system-packages SuperClaude
 <tr>
 <td valign="top">
 
-- 📝 [**クイックスタートガイド**](docs/Getting-Started/quick-start.md)  
+- 📝 [**クイックスタートガイド**](docs/getting-started/quick-start.md)  
   *すぐに開始*
 
-- 💾 [**インストールガイド**](docs/Getting-Started/installation.md)  
+- 💾 [**インストールガイド**](docs/getting-started/installation.md)  
   *詳細なセットアップ手順*
 
 </td>
 <td valign="top">
 
-- 🎯 [**コマンドリファレンス**](docs/User-Guide-jp/commands.md)  
+- 🎯 [**コマンドリファレンス**](docs/user-guide-jp/commands.md)  
   *全21のスラッシュコマンド*
 
-- 🤖 [**エージェントガイド**](docs/User-Guide-jp/agents.md)  
+- 🤖 [**エージェントガイド**](docs/user-guide-jp/agents.md)  
   *14の専門エージェント*
 
-- 🎨 [**動作モード**](docs/User-Guide-jp/modes.md)  
+- 🎨 [**動作モード**](docs/user-guide-jp/modes.md)  
   *5つの適応モード*
 
-- 🚩 [**フラグガイド**](docs/User-Guide-jp/flags.md)  
+- 🚩 [**フラグガイド**](docs/user-guide-jp/flags.md)  
   *動作制御パラメータ*
 
-- 🔧 [**MCPサーバー**](docs/User-Guide-jp/mcp-servers.md)  
+- 🔧 [**MCPサーバー**](docs/user-guide-jp/mcp-servers.md)  
   *6つのサーバー統合*
 
-- 💼 [**セッション管理**](docs/User-Guide-jp/session-management.md)  
+- 💼 [**セッション管理**](docs/user-guide-jp/session-management.md)  
   *状態の保存と復元*
 
 </td>
 <td valign="top">
 
-- 🏗️ [**技術アーキテクチャ**](docs/Developer-Guide/technical-architecture.md)  
+- 🏗️ [**技術アーキテクチャ**](docs/developer-guide/technical-architecture.md)  
   *システム設計の詳細*
 
-- 💻 [**コード貢献**](docs/Developer-Guide/contributing-code.md)  
+- 💻 [**コード貢献**](docs/developer-guide/contributing-code.md)  
   *開発ワークフロー*
 
-- 🧪 [**テスト＆デバッグ**](docs/Developer-Guide/testing-debugging.md)  
+- 🧪 [**テスト＆デバッグ**](docs/developer-guide/testing-debugging.md)  
   *品質保証*
 
 </td>
 <td valign="top">
 
-- ✨ [**ベストプラクティス**](docs/Reference/quick-start-practices.md)  
+- ✨ [**ベストプラクティス**](docs/reference/quick-start-practices.md)  
   *プロのコツとパターン*
 
-- 📓 [**サンプル集**](docs/Reference/examples-cookbook.md)  
+- 📓 [**サンプル集**](docs/reference/examples-cookbook.md)  
   *実際の使用例*
 
-- 🔍 [**トラブルシューティング**](docs/Reference/troubleshooting.md)  
+- 🔍 [**トラブルシューティング**](docs/reference/troubleshooting.md)  
   *一般的な問題と修正*
 
 </td>

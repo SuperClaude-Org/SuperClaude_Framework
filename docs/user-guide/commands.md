@@ -88,7 +88,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 # Example behavior: List of available commands
 ```
 
-**If tests fail**: Check [Installation Guide](../Getting-Started/installation.md) or [Troubleshooting](#troubleshooting)
+**If tests fail**: Check [Installation Guide](../getting-started/installation.md) or [Troubleshooting](#troubleshooting)
 
 ### 📝 Command Quick Reference
 
@@ -358,10 +358,10 @@ python3 -m SuperClaude install --list-components | grep mcp
 **Quick Fixes:**
 - Reset session: `/sc:load` to reinitialize
 - Check status: `SuperClaude install --list-components`
-- Get help: [Troubleshooting Guide](../Reference/troubleshooting.md)
+- Get help: [Troubleshooting Guide](../reference/troubleshooting.md)
 
 ## Next Steps
 
 - [Flags Guide](flags.md) - Control command behavior
 - [Agents Guide](agents.md) - Specialist activation
-- [Examples Cookbook](../Reference/examples-cookbook.md) - Real usage patterns
+- [Examples Cookbook](../reference/examples-cookbook.md) - Real usage patterns

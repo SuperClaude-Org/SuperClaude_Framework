@@ -48,10 +48,10 @@
 - ✅ Agents/pm-agent.md updated
 
 ### Documentation
-- ✅ docs/Development/ARCHITECTURE.md
-- ✅ docs/Development/ROADMAP.md
-- ✅ docs/Development/TASKS.md
-- ✅ docs/Development/PROJECT_STATUS.md
+- ✅ docs/development/ARCHITECTURE.md
+- ✅ docs/development/ROADMAP.md
+- ✅ docs/development/TASKS.md
+- ✅ docs/development/PROJECT_STATUS.md
 - ✅ docs/pm-agent-implementation-status.md
 
 ---
@@ -135,7 +135,7 @@
 ### Week 2-3
 - [ ] Implement PM Agent Core (session_lifecycle, pdca_engine, memory_ops)
 - [ ] Write unit tests
-- [ ] Update User-Guide documentation
+- [ ] Update user-guide documentation
 
 ### Week 4-5
 - [ ] Configure Serena MCP server
@@ -147,7 +147,7 @@
 ## 📝 Recent Changes
 
 ### 2025-10-14
-- Created docs/Development/ structure
+- Created docs/development/ structure
 - Wrote ARCHITECTURE.md (system overview)
 - Wrote ROADMAP.md (5-phase development plan)
 - Wrote TASKS.md (task tracking)

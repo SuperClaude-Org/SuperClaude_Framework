@@ -22,7 +22,7 @@ MCP (Model Context Protocol) servers extend Claude Code's capabilities through s
 
 ## Quick Start
 
-**Setup Verification**: MCP servers activate automatically. For installation and troubleshooting, see [Installation Guide](../Getting-Started/installation.md) and [Troubleshooting](../Reference/troubleshooting.md).
+**Setup Verification**: MCP servers activate automatically. For installation and troubleshooting, see [Installation Guide](../getting-started/installation.md) and [Troubleshooting](../reference/troubleshooting.md).
 
 **Auto-Activation Logic:**
 
@@ -327,7 +327,7 @@ echo 'export TAVILY_API_KEY="your_key"' >> ~/.bashrc
 
 **Essential Reading:**
 - [Commands Guide](commands.md) - Commands that activate MCP servers
-- [Quick Start Guide](../Getting-Started/quick-start.md) - MCP setup guide
+- [Quick Start Guide](../getting-started/quick-start.md) - MCP setup guide
 
 **Advanced Usage:**
 - [Behavioral Modes](modes.md) - Mode-MCP coordination
@@ -335,5 +335,5 @@ echo 'export TAVILY_API_KEY="your_key"' >> ~/.bashrc
 - [Session Management](session-management.md) - Serena workflows
 
 **Technical References:**
-- [Examples Cookbook](../Reference/examples-cookbook.md) - MCP workflow patterns
-- [Technical Architecture](../Developer-Guide/technical-architecture.md) - Integration details
+- [Examples Cookbook](../reference/examples-cookbook.md) - MCP workflow patterns
+- [Technical Architecture](../developer-guide/technical-architecture.md) - Integration details

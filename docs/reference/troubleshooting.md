@@ -116,8 +116,8 @@ SuperClaude install --fresh
 ## Get Help
 
 **Documentation:**
-- [Installation Guide](../Getting-Started/installation.md) - Setup issues
-- [Commands Guide](../User-Guide/commands.md) - Usage issues
+- [Installation Guide](../getting-started/installation.md) - Setup issues
+- [Commands Guide](../user-guide/commands.md) - Usage issues
 
 **Community:**
 - [GitHub Issues](https://github.com/SuperClaude-Org/SuperClaude_Framework/issues)

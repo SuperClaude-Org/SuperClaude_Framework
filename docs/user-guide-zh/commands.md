@@ -88,7 +88,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 # 示例行为：显示可用命令列表
 ```
 
-**如果测试失败**：检查 [安装指南](../Getting-Started/installation.md) 或 [故障排除](#troubleshooting)
+**如果测试失败**：检查 [安装指南](../getting-started/installation.md) 或 [故障排除](#troubleshooting)
 
 ### 📝 Command Quick Reference
 
@@ -296,10 +296,10 @@ python3 -m SuperClaude install --list-components | grep mcp
 **快速修复：**
 - 重置会话: `/sc:load` 重新初始化
 - 检查状态: `SuperClaude install --list-components`
-- 获取帮助: [故障排除指南](../Reference/troubleshooting.md)
+- 获取帮助: [故障排除指南](../reference/troubleshooting.md)
 
 ## 下一步
 
 - [标志指南](flags.md) - 控制命令行为
 - [智能体指南](agents.md) - 专家激活
-- [示例手册](../Reference/examples-cookbook.md) - 真实使用模式
+- [示例手册](../reference/examples-cookbook.md) - 真实使用模式

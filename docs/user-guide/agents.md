@@ -609,8 +609,8 @@ Task Flow:
 ## Troubleshooting
 
 For troubleshooting help, see:
-- [Common Issues](../Reference/common-issues.md) - Quick fixes for frequent problems
-- [Troubleshooting Guide](../Reference/troubleshooting.md) - Comprehensive problem resolution
+- [Common Issues](../reference/common-issues.md) - Quick fixes for frequent problems
+- [Troubleshooting Guide](../reference/troubleshooting.md) - Comprehensive problem resolution
 
 ### Common Issues
 - **No agent activation**: Use domain keywords: "security", "performance", "frontend"
@@ -671,12 +671,12 @@ For troubleshooting help, see:
 - Focus on single domain to avoid confusion
 
 **Detailed Help:**
-- See [Common Issues Guide](../Reference/common-issues.md) for agent installation problems
+- See [Common Issues Guide](../reference/common-issues.md) for agent installation problems
 - Review trigger keywords for target agents
 
 **Expert Support:**  
 - Use `SuperClaude install --diagnose`
-- See [Diagnostic Reference Guide](../Reference/diagnostic-reference.md) for coordination analysis
+- See [Diagnostic Reference Guide](../reference/diagnostic-reference.md) for coordination analysis
 
 **Community Support:**
 - Report issues at [GitHub Issues](https://github.com/SuperClaude-Org/SuperClaude_Framework/issues)
@@ -910,12 +910,12 @@ Add "documented", "explained", or "tutorial" to requests for automatic technical
 
 ### Advanced Usage  
 - **[Behavioral Modes](modes.md)** - Context optimization for enhanced agent coordination
-- **[Getting Started](../Getting-Started/quick-start.md)** - Expert techniques for agent optimization
-- **[Examples Cookbook](../Reference/examples-cookbook.md)** - Real-world agent coordination patterns
+- **[Getting Started](../getting-started/quick-start.md)** - Expert techniques for agent optimization
+- **[Examples Cookbook](../reference/examples-cookbook.md)** - Real-world agent coordination patterns
 
 ### Development Resources
-- **[Technical Architecture](../Developer-Guide/technical-architecture.md)** - Understanding SuperClaude's agent system design
-- **[Contributing](../Developer-Guide/contributing-code.md)** - Extending agent capabilities and coordination patterns
+- **[Technical Architecture](../developer-guide/technical-architecture.md)** - Understanding SuperClaude's agent system design
+- **[Contributing](../developer-guide/contributing-code.md)** - Extending agent capabilities and coordination patterns
 
 ---
 

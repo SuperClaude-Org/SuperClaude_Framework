@@ -460,8 +460,8 @@ Standard Approach: Consistent, professional baseline for all tasks
 ## Troubleshooting
 
 For troubleshooting help, see:
-- [Common Issues](../Reference/common-issues.md) - Quick fixes for frequent problems
-- [Troubleshooting Guide](../Reference/troubleshooting.md) - Comprehensive problem resolution
+- [Common Issues](../reference/common-issues.md) - Quick fixes for frequent problems
+- [Troubleshooting Guide](../reference/troubleshooting.md) - Comprehensive problem resolution
 
 ### Common Issues
 - **Mode not activating**: Use manual flags: `--brainstorm`, `--introspect`, `--uc`
@@ -549,7 +549,7 @@ For troubleshooting help, see:
 /sc:reflect --type mode-status            # Check current mode state
 # Review request complexity and triggers
 ```
-- See [Common Issues Guide](../Reference/common-issues.md) for mode installation problems
+- See [Common Issues Guide](../reference/common-issues.md) for mode installation problems
 
 **Level 3: Expert Support (30+ min)**
 ```bash
@@ -558,7 +558,7 @@ SuperClaude install --diagnose
 # Check mode activation patterns
 # Review behavioral triggers and thresholds
 ```
-- See [Diagnostic Reference Guide](../Reference/diagnostic-reference.md) for behavioral mode analysis
+- See [Diagnostic Reference Guide](../reference/diagnostic-reference.md) for behavioral mode analysis
 
 **Level 4: Community Support**
 - Report mode issues at [GitHub Issues](https://github.com/SuperClaude-Org/SuperClaude_Framework/issues)
@@ -634,26 +634,26 @@ SuperClaude's 5 behavioral modes create an **intelligent adaptation system** tha
 **Learning Progression:**
 
 **🌱 Essential (Week 1)**
-- [Quick Start Guide](../Getting-Started/quick-start.md) - Mode activation examples
+- [Quick Start Guide](../getting-started/quick-start.md) - Mode activation examples
 - [Commands Reference](commands.md) - Commands automatically activate modes
-- [Installation Guide](../Getting-Started/installation.md) - Set up behavioral modes
+- [Installation Guide](../getting-started/installation.md) - Set up behavioral modes
 
 **🌿 Intermediate (Week 2-3)**  
 - [Agents Guide](agents.md) - How modes coordinate with specialists
 - [Flags Guide](flags.md) - Manual mode control and optimization
-- [Examples Cookbook](../Reference/examples-cookbook.md) - Mode patterns in practice
+- [Examples Cookbook](../reference/examples-cookbook.md) - Mode patterns in practice
 
 **🌲 Advanced (Month 2+)**
 - [MCP Servers](mcp-servers.md) - Mode integration with enhanced capabilities
 - [Session Management](session-management.md) - Task Management mode workflows  
-- [Getting Started](../Getting-Started/quick-start.md) - Mode usage patterns
+- [Getting Started](../getting-started/quick-start.md) - Mode usage patterns
 
 **🔧 Expert**
-- [Technical Architecture](../Developer-Guide/technical-architecture.md) - Mode implementation details
-- [Contributing Code](../Developer-Guide/contributing-code.md) - Extend mode capabilities
+- [Technical Architecture](../developer-guide/technical-architecture.md) - Mode implementation details
+- [Contributing Code](../developer-guide/contributing-code.md) - Extend mode capabilities
 
 **Mode-Specific Guides:**
-- **Brainstorming**: [Requirements Discovery Patterns](../Reference/examples-cookbook.md#requirements)
+- **Brainstorming**: [Requirements Discovery Patterns](../reference/examples-cookbook.md#requirements)
 - **Task Management**: [Session Management Guide](session-management.md)
 - **Orchestration**: [MCP Servers Guide](mcp-servers.md)
 - **Token Efficiency**: [Command Fundamentals](commands.md#token-efficiency)

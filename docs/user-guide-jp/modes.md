@@ -1,16 +1,16 @@
 # SuperClaude 行動モードガイド 🧠
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#superclaude-behavioral-modes-guide-)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#superclaude-behavioral-modes-guide-)
 
 ## ✅ クイック検証
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#-quick-verification)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#-quick-verification)
 
-コマンドを使用してモードをテストします`/sc:`。モードはタスクの複雑さに基づいて自動的にアクティブになります。コマンドの完全なリファレンスについては、[コマンドガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md)をご覧ください。
+コマンドを使用してモードをテストします`/sc:`。モードはタスクの複雑さに基づいて自動的にアクティブになります。コマンドの完全なリファレンスについては、[コマンドガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/commands.md)をご覧ください。
 
 ## クイックリファレンステーブル
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#quick-reference-table)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#quick-reference-table)
 
 |モード|目的|自動トリガー|重要な行動|最適な用途|
 |---|---|---|---|---|
@@ -24,7 +24,7 @@
 
 ## はじめに（2分の概要）
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#getting-started-2-minute-overview)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#getting-started-2-minute-overview)
 
 **モードは動作指示を通じてアクティブ化されます**- Claude Code はコンテキスト ファイルを読み取り、タスクのパターンと複雑さに基づいてどのモード動作を採用するかを決定します。
 
@@ -47,11 +47,11 @@
 
 ## モードの詳細
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#mode-details)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#mode-details)
 
 ### 🧠 ブレインストーミングモード - インタラクティブな発見
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#-brainstorming-mode---interactive-discovery)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#-brainstorming-mode---interactive-discovery)
 
 **目的**: 共同作業による発見を通じて、漠然としたアイデアを構造化された要件に変換します。
 
@@ -85,7 +85,7 @@ Brainstorming Approach:
 
 #### 成功基準
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#success-criteria)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#success-criteria)
 
 - [ ] すぐに解決策を提示するのではなく、質問で応答する
 - [ ] 質問はユーザーのニーズ、技術的制約、ビジネス目標を探ります
@@ -106,7 +106,7 @@ Brainstorming Approach:
 
 ### 🔍 内省モード - メタ認知分析
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#-introspection-mode---meta-cognitive-analysis)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#-introspection-mode---meta-cognitive-analysis)
 
 **目的**: 学習の最適化と透明な意思決定のための推論プロセスを公開します。
 
@@ -149,7 +149,7 @@ Introspective Approach:
 
 ### 📋 タスク管理モード - 複雑な調整
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#-task-management-mode---complex-coordination)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#-task-management-mode---complex-coordination)
 
 **目的**: 複数ステップの操作のためのセッション永続性を備えた階層的なタスク構成。
 
@@ -193,7 +193,7 @@ Task Management Approach:
 
 ### 🎯 オーケストレーションモード - インテリジェントなツール選択
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#-orchestration-mode---intelligent-tool-selection)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#-orchestration-mode---intelligent-tool-selection)
 
 **目的**: インテリジェントなツールルーティングと並列調整を通じてタスクの実行を最適化します。
 
@@ -235,7 +235,7 @@ Orchestration Approach:
 
 ### ⚡ トークン効率モード - 圧縮通信
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#-token-efficiency-mode---compressed-communication)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#-token-efficiency-mode---compressed-communication)
 
 **目的**: 情報の品質を維持しながら、シンボル システムを通じて推定 30 ～ 50% のトークン削減を実現します。
 
@@ -276,7 +276,7 @@ Token Efficient Approach:
 
 ### 🎨 標準モード - バランスのとれたデフォルト
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#-standard-mode---balanced-default)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#-standard-mode---balanced-default)
 
 **目的**: 簡単な開発タスクに対して明確でプロフェッショナルなコミュニケーションを提供します。
 
@@ -319,11 +319,11 @@ Standard Approach: Consistent, professional baseline for all tasks
 
 ## 高度な使用法
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#advanced-usage)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#advanced-usage)
 
 ### モードの組み合わせ
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#mode-combinations)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#mode-combinations)
 
 **マルチモードワークフロー:**
 
@@ -341,7 +341,7 @@ Standard Approach: Consistent, professional baseline for all tasks
 
 ### 手動モード制御
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#manual-mode-control)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#manual-mode-control)
 
 **特定の動作を強制する:**
 
@@ -366,7 +366,7 @@ Standard Approach: Consistent, professional baseline for all tasks
 
 ### モードの境界と優先順位
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#mode-boundaries-and-priority)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#mode-boundaries-and-priority)
 
 **モードがアクティブになると:**
 
@@ -387,11 +387,11 @@ Standard Approach: Consistent, professional baseline for all tasks
 
 ## 実世界の例
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#real-world-examples)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#real-world-examples)
 
 ### 完全なワークフローの例
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#complete-workflow-examples)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#complete-workflow-examples)
 
 **新規プロジェクト開発:**
 
@@ -430,7 +430,7 @@ Standard Approach: Consistent, professional baseline for all tasks
 
 ### モードの組み合わせパターン
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#mode-combination-patterns)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#mode-combination-patterns)
 
 **非常に複雑なシナリオ:**
 
@@ -447,11 +447,11 @@ Standard Approach: Consistent, professional baseline for all tasks
 
 ## クイックリファレンス
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#quick-reference)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#quick-reference)
 
 ### モード起動パターン
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#mode-activation-patterns)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#mode-activation-patterns)
 
 |トリガータイプ|入力例|モードが有効|主要な動作|
 |---|---|---|---|
@@ -464,7 +464,7 @@ Standard Approach: Consistent, professional baseline for all tasks
 
 ### 手動オーバーライドコマンド
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#manual-override-commands)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#manual-override-commands)
 
 ```shell
 # Force specific mode behaviors
@@ -483,26 +483,26 @@ Standard Approach: Consistent, professional baseline for all tasks
 
 ## トラブルシューティング
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#troubleshooting)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#troubleshooting)
 
 トラブルシューティングのヘルプについては、以下を参照してください。
 
-- [よくある問題](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/Reference/common-issues.md)- よくある問題に対するクイック修正
-- [トラブルシューティングガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/Reference/troubleshooting.md)- 包括的な問題解決
+- [よくある問題](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/reference/common-issues.md)- よくある問題に対するクイック修正
+- [トラブルシューティングガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/reference/troubleshooting.md)- 包括的な問題解決
 
 ### よくある問題
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#common-issues)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#common-issues)
 
 - **モードがアクティブ化されていません**: 手動フラグを使用してください: `--brainstorm`、、`--introspect``--uc`
 - **間違ったモードがアクティブです**: リクエスト内の複雑なトリガーとキーワードを確認してください
 - **予期しないモード切り替え**：タスクの進行に基づく通常の動作
 - **実行への影響**: モードはツールの使用を最適化するものであり、実行には影響しないはずです。
-- **モードの競合**:[フラグガイドでフラグの優先順位ルールを確認してください](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md)
+- **モードの競合**:[フラグガイドでフラグの優先順位ルールを確認してください](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md)
 
 ### 即時修正
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#immediate-fixes)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#immediate-fixes)
 
 - **特定のモードを強制**:`--brainstorm`またはのような明示的なフラグを使用する`--task-manage`
 - **リセットモードの動作**: モード状態をリセットするには、Claude Code セッションを再起動します。
@@ -511,7 +511,7 @@ Standard Approach: Consistent, professional baseline for all tasks
 
 ### モード固有のトラブルシューティング
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#mode-specific-troubleshooting)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#mode-specific-troubleshooting)
 
 **ブレインストーミングモードの問題:**
 
@@ -564,7 +564,7 @@ Standard Approach: Consistent, professional baseline for all tasks
 
 ### エラーコードリファレンス
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#error-code-reference)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#error-code-reference)
 
 |モードエラー|意味|クイックフィックス|
 |---|---|---|
@@ -579,7 +579,7 @@ Standard Approach: Consistent, professional baseline for all tasks
 
 ### プログレッシブサポートレベル
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#progressive-support-levels)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#progressive-support-levels)
 
 **レベル 1: クイックフィックス (< 2 分)**
 
@@ -596,7 +596,7 @@ Standard Approach: Consistent, professional baseline for all tasks
 # Review request complexity and triggers
 ```
 
-- モードのインストールに関する問題については、[一般的な問題ガイドを](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/Reference/common-issues.md)参照してください。
+- モードのインストールに関する問題については、[一般的な問題ガイドを](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/reference/common-issues.md)参照してください。
 
 **レベル3: 専門家によるサポート（30分以上）**
 
@@ -607,7 +607,7 @@ SuperClaude install --diagnose
 # Review behavioral triggers and thresholds
 ```
 
-- 行動モード分析については[診断リファレンスガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/Reference/diagnostic-reference.md)を参照してください
+- 行動モード分析については[診断リファレンスガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/reference/diagnostic-reference.md)を参照してください
 
 **レベル4: コミュニティサポート**
 
@@ -617,7 +617,7 @@ SuperClaude install --diagnose
 
 ### 成功の検証
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#success-validation)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#success-validation)
 
 モード修正を適用した後、次のようにテストします。
 
@@ -629,17 +629,17 @@ SuperClaude install --diagnose
 
 ## クイックトラブルシューティング（レガシー）
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#quick-troubleshooting-legacy)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#quick-troubleshooting-legacy)
 
 - **モードがアクティブ化されない**→手動フラグを使用: `--brainstorm`、、`--introspect``--uc`
 - **間違ったモードがアクティブです**→ リクエスト内の複雑なトリガーとキーワードを確認してください
 - **予期せぬモード切り替え**→ タスクの進行に基づく通常の動作
 - **実行への影響**→ モードはツールの使用を最適化するものであり、実行には影響しないはずです
-- **モードの競合→**[フラグガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md)でフラグの優先順位ルールを確認してください[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md)
+- **モードの競合→**[フラグガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md)でフラグの優先順位ルールを確認してください[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md)
 
 ## よくある質問
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#frequently-asked-questions)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#frequently-asked-questions)
 
 **Q: どのモードがアクティブになっているかはどうすればわかりますか?** A: 通信パターンで次のインジケーターを確認してください。
 
@@ -674,7 +674,7 @@ SuperClaude install --diagnose
 
 ## まとめ
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#summary)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#summary)
 
 SuperClaude の 5 つの行動モードは、ユーザーのニーズに自動的に適合する**インテリジェントな適応システムを作成します。**
 
@@ -691,36 +691,36 @@ SuperClaude の 5 つの行動モードは、ユーザーのニーズに自動�
 
 ## 関連ガイド
 
-[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/modes.md#related-guides)
+[](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/modes.md#related-guides)
 
 **学習の進捗:**
 
 **🌱 エッセンシャル（第1週）**
 
-- [クイックスタートガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/Getting-Started/quick-start.md)- モードの有効化例
-- [コマンドリファレンス](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md)- コマンドは自動的にモードをアクティブ化します
-- [インストールガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/Getting-Started/installation.md)- 動作モードの設定
+- [クイックスタートガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/getting-started/quick-start.md)- モードの有効化例
+- [コマンドリファレンス](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/commands.md)- コマンドは自動的にモードをアクティブ化します
+- [インストールガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/getting-started/installation.md)- 動作モードの設定
 
 **🌿中級（第2～3週）**
 
-- [エージェントガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/agents.md)- モードとスペシャリストの連携方法
-- [フラグガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/flags.md)- 手動モードの制御と最適化
-- [例文集](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/Reference/examples-cookbook.md)- モードパターンの実践
+- [エージェントガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/agents.md)- モードとスペシャリストの連携方法
+- [フラグガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/flags.md)- 手動モードの制御と最適化
+- [例文集](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/reference/examples-cookbook.md)- モードパターンの実践
 
 **🌲 上級（2ヶ月目以降）**
 
-- [MCP サーバー](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/mcp-servers.md)- 拡張機能を備えたモード統合
-- [セッション管理](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/session-management.md)- タスク管理モードのワークフロー
-- [はじめに](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/Getting-Started/quick-start.md)- モードの使用パターン
+- [MCP サーバー](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/mcp-servers.md)- 拡張機能を備えたモード統合
+- [セッション管理](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/session-management.md)- タスク管理モードのワークフロー
+- [はじめに](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/getting-started/quick-start.md)- モードの使用パターン
 
 **🔧 エキスパート**
 
-- [技術アーキテクチャ](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/Developer-Guide/technical-architecture.md)- モード実装の詳細
-- [コードの貢献](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/Developer-Guide/contributing-code.md)- モードの機能を拡張する
+- [技術アーキテクチャ](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/developer-guide/technical-architecture.md)- モード実装の詳細
+- [コードの貢献](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/developer-guide/contributing-code.md)- モードの機能を拡張する
 
 **モード固有のガイド:**
 
-- **ブレインストーミング**：[要件発見パターン](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/Reference/examples-cookbook.md#requirements)
-- **タスク管理**：[セッション管理ガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/session-management.md)
-- **オーケストレーション**: [MCP サーバー ガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/mcp-servers.md)
-- **トークン効率**：[コマンドの基礎](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/User-Guide/commands.md#token-efficiency)
+- **ブレインストーミング**：[要件発見パターン](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/reference/examples-cookbook.md#requirements)
+- **タスク管理**：[セッション管理ガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/session-management.md)
+- **オーケストレーション**: [MCP サーバー ガイド](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/mcp-servers.md)
+- **トークン効率**：[コマンドの基礎](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/commands.md#token-efficiency)

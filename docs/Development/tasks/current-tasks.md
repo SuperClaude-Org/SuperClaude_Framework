@@ -20,22 +20,22 @@
 
 ### Phase 1: ドキュメント基盤整備
 - [x] **PM Agent理想ワークフローをドキュメント化**
-  - File: `docs/Development/pm-agent-ideal-workflow.md`
+  - File: `docs/development/pm-agent-ideal-workflow.md`
   - Content: 完璧なワークフロー（7フェーズ）
   - Purpose: 次回セッションで同じ説明を繰り返さない
 
 - [x] **プロジェクト構造理解をドキュメント化**
-  - File: `docs/Development/project-structure-understanding.md`
+  - File: `docs/development/project-structure-understanding.md`
   - Content: Git管理とインストール後環境の区別
   - Purpose: 何百回も説明した内容を外部化
 
 - [x] **インストールフロー理解をドキュメント化**
-  - File: `docs/Development/installation-flow-understanding.md`
+  - File: `docs/development/installation-flow-understanding.md`
   - Content: CommandsComponent動作の完全理解
   - Source: `superclaude/commands/*.md` → `~/.claude/commands/sc/*.md`
 
 - [x] **ディレクトリ構造作成**
-  - `docs/Development/tasks/` - タスク管理
+  - `docs/development/tasks/` - タスク管理
   - `docs/patterns/` - 成功パターン記録
   - `docs/mistakes/` - 失敗記録と防止策
 
@@ -58,7 +58,7 @@
 - [ ] **改善提案ドキュメント作成**
   - Status: Pending
   - Action: 仮説ドキュメント作成
-  - File: `docs/Development/hypothesis-pm-enhancement-2025-10-14.md`
+  - File: `docs/development/hypothesis-pm-enhancement-2025-10-14.md`
   - Content:
     - 現状の問題点（ドキュメント寄り、PMO機能不足）
     - 改善案（自律的PDCA、自己評価）
@@ -130,7 +130,7 @@
   - テスト時のバックアップ・復元必須
 
 - **ドキュメント駆動開発**
-  - 理解 → docs/Development/ に記録
+  - 理解 → docs/development/ に記録
   - 仮説 → hypothesis-*.md
   - 実験 → experiment-*.md
   - 成功 → docs/patterns/

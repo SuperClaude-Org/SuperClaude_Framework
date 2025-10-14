@@ -732,7 +732,7 @@ echo "Test MCP servers in Claude Code after restart"
 ## Related Resources
 
 ### MCP-Specific Documentation
-- **Core SuperClaude Guide**: [../User-Guide/mcp-servers.md](../User-Guide/mcp-servers.md) - MCP server overview and usage
+- **Core SuperClaude Guide**: [../user-guide/mcp-servers.md](../user-guide/mcp-servers.md) - MCP server overview and usage
 - **Common Issues**: [common-issues.md](./common-issues.md) - General troubleshooting procedures
 - **Diagnostic Reference**: [diagnostic-reference.md](./diagnostic-reference.md) - Advanced diagnostic procedures
 

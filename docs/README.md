@@ -12,7 +12,7 @@
 
 ## 🚀 Quick Start (5 Minutes)
 
-**New Users**: [Quick Start Guide →](Getting-Started/quick-start.md)
+**New Users**: [Quick Start Guide →](getting-started/quick-start.md)
 ```bash
 # Recommended for Linux/macOS
 pipx install SuperClaude && SuperClaude install
@@ -23,37 +23,37 @@ pip install SuperClaude && SuperClaude install
 # Then try: /sc:brainstorm "web app idea" in Claude Code
 ```
 
-**Having Issues**: [Quick Fixes →](Reference/common-issues.md) | [Troubleshooting →](Reference/troubleshooting.md)
+**Having Issues**: [Quick Fixes →](reference/common-issues.md) | [Troubleshooting →](reference/troubleshooting.md)
 
 ## 📚 Documentation Structure
 
 ### 🌱 Start Here (New Users)
 | Guide | Purpose |
 |-------|---------|
-| **[Quick Start](Getting-Started/quick-start.md)** | Setup and first commands |
-| **[Installation](Getting-Started/installation.md)** | Detailed setup instructions |
-| **[Commands Guide](User-Guide/commands.md)** | All 21 `/sc:` commands |
+| **[Quick Start](getting-started/quick-start.md)** | Setup and first commands |
+| **[Installation](getting-started/installation.md)** | Detailed setup instructions |
+| **[Commands Guide](user-guide/commands.md)** | All 21 `/sc:` commands |
 
 ### 🌿 Daily Usage (Regular Users)
 | Guide | Purpose | Use For |
 |-------|---------|---------|
-| **[Commands Guide](User-Guide/commands.md)** | Master all `/sc:` commands | Daily development |
-| **[Agents Guide](User-Guide/agents.md)** | 14 domain specialists (`@agent-*`) | Expert assistance |
-| **[Flags Guide](User-Guide/flags.md)** | Command behavior modification | Optimization |
-| **[Modes Guide](User-Guide/modes.md)** | 5 behavioral modes | Workflow optimization |
+| **[Commands Guide](user-guide/commands.md)** | Master all `/sc:` commands | Daily development |
+| **[Agents Guide](user-guide/agents.md)** | 14 domain specialists (`@agent-*`) | Expert assistance |
+| **[Flags Guide](user-guide/flags.md)** | Command behavior modification | Optimization |
+| **[Modes Guide](user-guide/modes.md)** | 5 behavioral modes | Workflow optimization |
 
 ### 🌲 Reference & Advanced (Power Users)
 | Guide | Purpose | Use For |
 |-------|---------|---------|
-| **[Troubleshooting](Reference/troubleshooting.md)** | Problem resolution | When things break |
-| **[Examples Cookbook](Reference/examples-cookbook.md)** | Practical usage patterns | Learning workflows |
-| **[MCP Servers](User-Guide/mcp-servers.md)** | 6 enhanced capabilities | Advanced features |
+| **[Troubleshooting](reference/troubleshooting.md)** | Problem resolution | When things break |
+| **[Examples Cookbook](reference/examples-cookbook.md)** | Practical usage patterns | Learning workflows |
+| **[MCP Servers](user-guide/mcp-servers.md)** | 6 enhanced capabilities | Advanced features |
 
 ### 🔧 Development & Contributing
 | Guide | Purpose | Audience |
 |-------|---------|----------|
-| **[Technical Architecture](Developer-Guide/technical-architecture.md)** | System design | Contributors |
-| **[Contributing](Developer-Guide/contributing-code.md)** | Development workflow | Developers |
+| **[Technical Architecture](developer-guide/technical-architecture.md)** | System design | Contributors |
+| **[Contributing](developer-guide/contributing-code.md)** | Development workflow | Developers |
 
 ## 🔑 Key Concepts
 
@@ -112,10 +112,10 @@ User Input → Claude Code → Reads SuperClaude Context → Modified Behavior �
 
 ## 🆘 Getting Help
 
-**Quick Issues** (< 2 min): [Common Issues →](Reference/common-issues.md)  
-**Complex Problems**: [Full Troubleshooting Guide →](Reference/troubleshooting.md)  
-**Installation Issues**: [Installation Guide →](Getting-Started/installation.md)  
-**Command Help**: [Commands Guide →](User-Guide/commands.md)  
+**Quick Issues** (< 2 min): [Common Issues →](reference/common-issues.md)  
+**Complex Problems**: [Full Troubleshooting Guide →](reference/troubleshooting.md)  
+**Installation Issues**: [Installation Guide →](getting-started/installation.md)  
+**Command Help**: [Commands Guide →](user-guide/commands.md)  
 **Community Support**: [GitHub Discussions](https://github.com/SuperClaude-Org/SuperClaude_Framework/discussions)
 
 ## 🤔 Common Misconceptions Clarified

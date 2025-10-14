@@ -31,7 +31,7 @@ Transform SuperClaude into a self-improving development platform with PM Agent m
 
 ### Tasks
 
-- [x] Create `docs/Development/` directory structure
+- [x] Create `docs/development/` directory structure
 - [x] Write `ARCHITECTURE.md` - System overview with PM Agent position
 - [x] Write `ROADMAP.md` - Phase-based development plan with checkboxes
 - [ ] Write `TASKS.md` - Current task tracking system
@@ -40,11 +40,11 @@ Transform SuperClaude into a self-improving development platform with PM Agent m
 
 ### Deliverables
 
-- [x] **docs/Development/ARCHITECTURE.md** - Complete system architecture
-- [x] **docs/Development/ROADMAP.md** - This file (development roadmap)
-- [ ] **docs/Development/TASKS.md** - Task management with checkboxes
-- [ ] **docs/Development/PROJECT_STATUS.md** - Current status and metrics
-- [ ] **docs/Development/pm-agent-integration.md** - Integration procedures
+- [x] **docs/development/ARCHITECTURE.md** - Complete system architecture
+- [x] **docs/development/ROADMAP.md** - This file (development roadmap)
+- [ ] **docs/development/TASKS.md** - Task management with checkboxes
+- [ ] **docs/development/PROJECT_STATUS.md** - Current status and metrics
+- [ ] **docs/development/pm-agent-integration.md** - Integration procedures
 
 ### Success Criteria
 
@@ -70,8 +70,8 @@ Transform SuperClaude into a self-improving development platform with PM Agent m
 - [x] Update `superclaude/Commands/pm.md` with Session Lifecycle
 - [x] Update `superclaude/Agents/pm-agent.md` with PDCA Cycle
 - [x] Create `docs/pm-agent-implementation-status.md`
-- [ ] Update `docs/User-Guide/agents.md` - Add PM Agent section
-- [ ] Update `docs/User-Guide/commands.md` - Add /sc:pm command
+- [ ] Update `docs/user-guide/agents.md` - Add PM Agent section
+- [ ] Update `docs/user-guide/commands.md` - Add /sc:pm command
 
 #### Core Implementation
 - [ ] Implement `superclaude/Core/session_lifecycle.py`
@@ -269,7 +269,7 @@ Transform SuperClaude into a self-improving development platform with PM Agent m
 ### Deliverables
 
 - [ ] **superclaude/Core/auto_activation.py** - Auto-activation system
-- [ ] **docs/Developer-Guide/auto-activation.md** - Implementation guide
+- [ ] **docs/developer-guide/auto-activation.md** - Implementation guide
 - [ ] **tests/test_auto_activation.py** - Auto-activation tests
 - [ ] **Performance Report** - Startup time impact analysis
 

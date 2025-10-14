@@ -435,8 +435,8 @@ Start simple with basic commands. Complexity emerges naturally as needed.
 
 **First Week:**
 - [Installation Guide](installation.md)
-- [Commands Reference](../User-Guide/commands.md)
-- [Examples Cookbook](../Reference/examples-cookbook.md)
+- [Commands Reference](../user-guide/commands.md)
+- [Examples Cookbook](../reference/examples-cookbook.md)
 
 Start with `/sc:brainstorm`
 
@@ -444,9 +444,9 @@ Start with `/sc:brainstorm`
 <td valign="top">
 
 **Growing Skills:**
-- [Behavioral Modes](../User-Guide/modes.md)
-- [Agents Guide](../User-Guide/agents.md)
-- [Session Management](../User-Guide/session-management.md)
+- [Behavioral Modes](../user-guide/modes.md)
+- [Agents Guide](../user-guide/agents.md)
+- [Session Management](../user-guide/session-management.md)
 
 Explore mode combinations
 
@@ -454,9 +454,9 @@ Explore mode combinations
 <td valign="top">
 
 **Expert Usage:**
-- [MCP Servers](../User-Guide/mcp-servers.md)
-- [Technical Architecture](../Developer-Guide/technical-architecture.md)
-- [Contributing](../Developer-Guide/contributing-code.md)
+- [MCP Servers](../user-guide/mcp-servers.md)
+- [Technical Architecture](../developer-guide/technical-architecture.md)
+- [Contributing](../developer-guide/contributing-code.md)
 
 Create custom workflows
 
@@ -465,10 +465,10 @@ Create custom workflows
 </table>
 
 <p align="center">
-  <a href="../User-Guide/commands.md">
+  <a href="../user-guide/commands.md">
     <img src="https://img.shields.io/badge/📚_Explore-All_21_Commands-blue?style=for-the-badge" alt="Commands">
   </a>
-  <a href="../Reference/examples-cookbook.md">
+  <a href="../reference/examples-cookbook.md">
     <img src="https://img.shields.io/badge/🍳_Try-Real_Examples-green?style=for-the-badge" alt="Examples">
   </a>
 </p>

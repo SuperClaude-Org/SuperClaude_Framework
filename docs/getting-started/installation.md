@@ -470,24 +470,24 @@ brew install python3
 
 **First Week:**
 - [Quick Start Guide](quick-start.md)
-- [Commands Reference](../User-Guide/commands.md)
+- [Commands Reference](../user-guide/commands.md)
 - Try `/sc:brainstorm`
 
 </td>
 <td valign="top">
 
 **Week 2-3:**
-- [Behavioral Modes](../User-Guide/modes.md)
-- [Agents Guide](../User-Guide/agents.md)
-- [Examples Cookbook](../Reference/examples-cookbook.md)
+- [Behavioral Modes](../user-guide/modes.md)
+- [Agents Guide](../user-guide/agents.md)
+- [Examples Cookbook](../reference/examples-cookbook.md)
 
 </td>
 <td valign="top">
 
 **Advanced:**
-- [MCP Servers](../User-Guide/mcp-servers.md)
-- [Technical Architecture](../Developer-Guide/technical-architecture.md)
-- [Contributing Code](../Developer-Guide/contributing-code.md)
+- [MCP Servers](../user-guide/mcp-servers.md)
+- [Technical Architecture](../developer-guide/technical-architecture.md)
+- [Contributing Code](../developer-guide/contributing-code.md)
 
 </td>
 </tr>

@@ -23,12 +23,12 @@
 1. ドキュメント読み込み:
    優先順位:
      1. タスク管理ドキュメント → 進捗確認
-        - docs/Development/tasks/current-tasks.md
+        - docs/development/tasks/current-tasks.md
         - 前回どこまでやったか
         - 次に何をすべきか
 
      2. アーキテクチャドキュメント → 仕組み理解
-        - docs/Development/architecture-*.md
+        - docs/development/architecture-*.md
         - このプロジェクトの構造
         - インストールフロー
         - コンポーネント連携
@@ -36,7 +36,7 @@
      3. 禁止事項・ルール → 制約確認
         - CLAUDE.md（グローバル）
         - PROJECT/CLAUDE.md（プロジェクト固有）
-        - docs/Development/constraints.md
+        - docs/development/constraints.md
 
      4. 過去の学び → 同じミスを防ぐ
         - docs/mistakes/ （失敗記録）
@@ -88,7 +88,7 @@
 ```yaml
 1. 改善仮説作成:
    # このプロジェクト内で（Git管理）
-   File: docs/Development/hypothesis-YYYY-MM-DD.md
+   File: docs/development/hypothesis-YYYY-MM-DD.md
 
    内容:
    - 現状の問題点
@@ -127,7 +127,7 @@
    - quality-engineer: テスト設計
 
 2. 実装記録:
-   File: docs/Development/experiment-YYYY-MM-DD.md
+   File: docs/development/experiment-YYYY-MM-DD.md
 
    内容:
    - 試行錯誤の記録
@@ -194,7 +194,7 @@
    - チェックリスト
 
 3. タスク更新:
-   File: docs/Development/tasks/current-tasks.md
+   File: docs/development/tasks/current-tasks.md
 
    内容:
    - 完了したタスク
@@ -292,7 +292,7 @@ docs/
 │   └── experiment-*.md  # 実験記録
 ├── patterns/            # 成功パターン（清書後）
 ├── mistakes/            # 失敗記録と防止策
-└── (既存のUser-Guide等)
+└── (既存のuser-guide等)
 ```
 
 ---
@@ -335,7 +335,7 @@ docs/
 
 このドキュメント作成後:
 1. 既存のインストールロジック理解（setup/components/）
-2. タスク管理ドキュメント作成（docs/Development/tasks/）
+2. タスク管理ドキュメント作成（docs/development/tasks/）
 3. PM Agent実装修正（このワークフローを実際に実装）
 
 このドキュメント自体が**PM Agentの憲法**となる。

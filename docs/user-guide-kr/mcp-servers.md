@@ -22,7 +22,7 @@ MCP (Model Context Protocol) 서버는 전문 도구를 통해 Claude Code의 �
 
 ## 빠른 시작
 
-**설정 확인**: MCP 서버는 자동으로 활성화됩니다. 설치 및 문제 해결은 [설치 가이드](../Getting-Started/installation.md) 및 [문제 해결](../Reference/troubleshooting.md)을 참조하세요.
+**설정 확인**: MCP 서버는 자동으로 활성화됩니다. 설치 및 문제 해결은 [설치 가이드](../getting-started/installation.md) 및 [문제 해결](../reference/troubleshooting.md)을 참조하세요.
 
 **자동 활성화 로직:**
 
@@ -327,7 +327,7 @@ echo 'export TAVILY_API_KEY="your_key"' >> ~/.bashrc
 
 **필수 읽기:**
 - [명령어 가이드](commands.md) - MCP 서버를 활성화하는 명령어
-- [빠른 시작 가이드](../Getting-Started/quick-start.md) - MCP 설정 가이드
+- [빠른 시작 가이드](../getting-started/quick-start.md) - MCP 설정 가이드
 
 **고급 사용:**
 - [행동 모드](modes.md) - 모드-MCP 조정
@@ -335,6 +335,6 @@ echo 'export TAVILY_API_KEY="your_key"' >> ~/.bashrc
 - [세션 관리](session-management.md) - Serena 워크플로우
 
 **기술 참조:**
-- [예제 모음](../Reference/examples-cookbook.md) - MCP 워크플로우 패턴
-- [기술 아키텍처](../Developer-Guide/technical-architecture.md) - 통합 세부사항
+- [예제 모음](../reference/examples-cookbook.md) - MCP 워크플로우 패턴
+- [기술 아키텍처](../developer-guide/technical-architecture.md) - 통합 세부사항
 
