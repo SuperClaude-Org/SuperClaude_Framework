@@ -33,7 +33,7 @@
 | **🐍 pipx** | `pipx install SuperClaude && SuperClaude install` | Linux/macOS | **✅ Recommended** - Isolated environment |
 | **📦 pip** | `pip install SuperClaude && SuperClaude install` | All | Traditional Python setups |
 | **🌐 npm** | `npm install -g @bifrost_inc/superclaude && superclaude install` | All | Node.js developers |
-| **🔧 Dev** | `git clone ... && pip install -e ".[dev]"` | All | Contributors & developers |
+| **🔧 Dev** | `git clone ... && uv pip install -e ".[dev]"` | All | Contributors & developers |
 
 </div>
 
@@ -209,8 +209,11 @@ superclaude install
 git clone https://github.com/SuperClaude-Org/SuperClaude_Framework.git
 cd SuperClaude_Framework
 
+# Install uv if not present
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
 # Install in development mode
-pip install -e ".[dev]"
+uv pip install -e ".[dev]"
 
 # Test installation
 SuperClaude install --dry-run
@@ -223,6 +226,7 @@ SuperClaude install --dry-run
 - Latest features
 - Contribute to project
 - Full source access
+- Fast installation (uv)
 
 **📍 Best for:**
 - Contributors
