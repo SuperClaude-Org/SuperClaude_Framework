@@ -69,7 +69,7 @@ Transform SuperClaude into a self-improving development platform with PM Agent m
 #### Documentation Updates
 - [x] Update `superclaude/Commands/pm.md` with Session Lifecycle
 - [x] Update `superclaude/Agents/pm-agent.md` with PDCA Cycle
-- [x] Create `docs/pm-agent-implementation-status.md`
+- [x] Create `docs/PM_AGENT.md`
 - [ ] Update `docs/user-guide/agents.md` - Add PM Agent section
 - [ ] Update `docs/user-guide/commands.md` - Add /sc:pm command
 
@@ -100,7 +100,7 @@ Transform SuperClaude into a self-improving development platform with PM Agent m
 ### Deliverables
 
 - [x] **Updated pm.md and pm-agent.md** - Design documentation
-- [x] **pm-agent-implementation-status.md** - Status tracking
+- [x] **PM_AGENT.md** - Status tracking
 - [ ] **superclaude/Core/session_lifecycle.py** - Session management
 - [ ] **superclaude/Core/pdca_engine.py** - PDCA automation
 - [ ] **superclaude/Core/memory_ops.py** - Memory operations

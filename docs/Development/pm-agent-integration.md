@@ -466,7 +466,7 @@ tests/integration/
 
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture
 - [ROADMAP.md](./ROADMAP.md) - Development roadmap
-- [pm-agent-implementation-status.md](../pm-agent-implementation-status.md) - Status tracking
+- [PM_AGENT.md](../PM_AGENT.md) - Status tracking
 - [Commands/pm.md](../../superclaude/Commands/pm.md) - PM Agent command
 - [Agents/pm-agent.md](../../superclaude/Agents/pm-agent.md) - PM Agent persona
 

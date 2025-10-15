@@ -21,7 +21,7 @@
 - [x] Design PDCA Cycle
 - [x] Update Commands/pm.md
 - [x] Update Agents/pm-agent.md
-- [x] Create pm-agent-implementation-status.md
+- [x] Create PM_AGENT.md
 - [ ] Commit PM Agent Mode changes
 
 ---
@@ -84,7 +84,7 @@
 ### 2025-10-14
 - [x] Salvaged PM Agent mode changes from ~/.claude
 - [x] Cleaned up ~/.claude git repository
-- [x] Created pm-agent-implementation-status.md
+- [x] Created PM_AGENT.md
 - [x] Created docs/development/ directory
 - [x] Wrote ARCHITECTURE.md
 - [x] Wrote ROADMAP.md

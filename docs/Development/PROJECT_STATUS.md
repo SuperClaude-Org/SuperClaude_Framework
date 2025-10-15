@@ -52,7 +52,7 @@
 - ✅ docs/development/ROADMAP.md
 - ✅ docs/development/TASKS.md
 - ✅ docs/development/PROJECT_STATUS.md
-- ✅ docs/pm-agent-implementation-status.md
+- ✅ docs/PM_AGENT.md
 
 ---
 
