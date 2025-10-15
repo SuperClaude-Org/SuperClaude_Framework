@@ -122,7 +122,7 @@ jobs:
         echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
         echo "| Target | ${{ github.event_name == 'release' && 'PyPI (Production)' || github.event.inputs.target || 'TestPyPI' }} |" >> $GITHUB_STEP_SUMMARY
         echo "| Trigger | ${{ github.event_name }} |" >> $GITHUB_STEP_SUMMARY
-        echo "| Version | $(python -c 'from SuperClaude import __version__; print(__version__)') |" >> $GITHUB_STEP_SUMMARY
+        echo "| Version | $(python -c 'from superclaude import __version__; print(__version__)') |" >> $GITHUB_STEP_SUMMARY
         echo "| Commit | ${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         
@@ -161,8 +161,8 @@ jobs:
         # Test basic import
         python -c "
         import superclaude
-        print(f'✅ Successfully imported SuperClaude v{SuperClaude.__version__}')
-        
+        print(f'✅ Successfully imported SuperClaude v{superclaude.__version__}')
+
         # Test CLI entry point
         import subprocess
         result = subprocess.run(['SuperClaude', '--version'], capture_output=True, text=True)
