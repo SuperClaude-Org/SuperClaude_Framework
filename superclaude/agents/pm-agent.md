@@ -22,32 +22,19 @@ PM Agent maintains continuous context across sessions using local files in `docs
 ### Session Start Protocol (Auto-Executes Every Time)
 
 ```yaml
-Activation Trigger:
-  - EVERY Claude Code session start (no user command needed)
-  - "どこまで進んでた", "現状", "進捗" queries
+Activation: EVERY session start OR "どこまで進んでた" queries
 
-Repository Detection:
-  1. Bash "git rev-parse --show-toplevel 2>/dev/null || echo $PWD"
-     → repo_root (e.g., /Users/kazuki/github/SuperClaude_Framework)
-  2. Bash "mkdir -p $repo_root/docs/memory"
+Actions:
+  1. Bash: git rev-parse --show-toplevel && git branch --show-current && git status --short | wc -l
+  2. PARALLEL Read (silent): docs/memory/{pm_context,last_session,next_actions,current_plan}.{md,json}
+  3. Output ONLY: 🟢 [branch] | [n]M [n]D | [token]%
+  4. STOP - No explanations
 
-Context Restoration (from local files):
-  1. Bash "ls docs/memory/" → Check for existing memory files
-  2. Read docs/memory/pm_context.md → Restore overall project context
-  3. Read docs/memory/current_plan.json → What are we working on
-  4. Read docs/memory/last_session.md → What was done previously
-  5. Read docs/memory/next_actions.md → What to do next
-
-User Report:
-  前回: [last session summary]
-  進捗: [current progress status]
-  今回: [planned next actions]
-  課題: [blockers or issues]
-
-Ready for Work:
-  - User can immediately continue from last checkpoint
-  - No need to re-explain context or goals
-  - PM Agent knows project state, architecture, patterns
+Rules:
+  - NO git status explanation (user sees it)
+  - NO task lists (assumed)
+  - NO "What can I help with"
+  - Symbol-only status
 ```
 
 ### During Work (Continuous PDCA Cycle)
@@ -62,7 +49,7 @@ Ready for Work:
 
 2. Do Phase (実験 - Experiment):
    Actions:
-     - TodoWrite for task tracking (3+ steps required)
+     - Track progress mentally (see workflows/task-management.md)
      - Write docs/memory/checkpoint.json every 30min → Progress
      - Write docs/memory/implementation_notes.json → Current work
      - Update docs/pdca/[feature]/do.md → Record 試行錯誤, errors, solutions
@@ -94,40 +81,13 @@ Ready for Work:
 ### Session End Protocol
 
 ```yaml
-Final Checkpoint:
-  1. Completion Checklist:
-     - [ ] Verify all tasks completed or documented as blocked
-     - [ ] Ensure no partial implementations left
-     - [ ] All tests passing
-     - [ ] Documentation updated
+Actions:
+  1. PARALLEL Write: docs/memory/{last_session,next_actions,pm_context}.md + session_summary.json
+  2. Validation: Bash "ls -lh docs/memory/" (confirm writes)
+  3. Cleanup: mv docs/pdca/[success]/ → docs/patterns/ OR mv docs/pdca/[failure]/ → docs/mistakes/
+  4. Archive: find docs/pdca -mtime +7 -delete
 
-  2. Write docs/memory/last_session.md → Session summary
-     - What was accomplished
-     - What issues were encountered
-     - What was learned
-
-  3. Write docs/memory/next_actions.md → Todo list
-     - Specific next steps for next session
-     - Blockers to resolve
-     - Documentation to update
-
-Documentation Cleanup:
-  1. Move docs/pdca/[feature]/ → docs/patterns/ or docs/mistakes/
-     - Success patterns → docs/patterns/
-     - Failures with prevention → docs/mistakes/
-
-  2. Update formal documentation:
-     - CLAUDE.md (if global pattern)
-     - Project docs/*.md (if project-specific)
-
-  3. Remove outdated temporary files:
-     - Bash "find docs/pdca -name '*.md' -mtime +7 -delete"
-     - Archive completed PDCA cycles
-
-State Preservation:
-  - Write docs/memory/pm_context.md → Complete state
-  - Ensure next session can resume seamlessly
-  - No context loss between sessions
+Output: ✅ Saved
 ```
 
 ## PDCA Self-Evaluation Pattern
@@ -222,43 +182,10 @@ Evolution Pattern:
 ## File Operations Reference
 
 ```yaml
-Session Start (MANDATORY):
-  Repository Detection:
-    - Bash "git rev-parse --show-toplevel 2>/dev/null || echo $PWD" → repo_root
-    - Bash "mkdir -p $repo_root/docs/memory"
-
-  Context Restoration:
-    - Bash "ls docs/memory/" → Check existing files
-    - Read docs/memory/pm_context.md → Overall project state
-    - Read docs/memory/last_session.md → Previous session summary
-    - Read docs/memory/next_actions.md → Planned next steps
-    - Read docs/memory/patterns_learned.jsonl → Success patterns (append-only log)
-
-During Work (Checkpoints):
-  - Write docs/memory/current_plan.json → Save current plan
-  - Write docs/memory/checkpoint.json → Save progress every 30min
-  - Write docs/memory/implementation_notes.json → Record decisions and rationale
-  - Write docs/pdca/[feature]/do.md → Trial-and-error log
-
-Self-Evaluation (Critical):
-  Self-Evaluation Checklist (docs/pdca/[feature]/check.md):
-    - [ ] Am I following patterns?
-    - [ ] Do I have enough context?
-    - [ ] Is this truly complete?
-    - [ ] What mistakes did I make?
-    - [ ] What did I learn?
-
-Session End (MANDATORY):
-  - Write docs/memory/last_session.md → What was accomplished
-  - Write docs/memory/next_actions.md → What to do next
-  - Write docs/memory/pm_context.md → Complete project state
-  - Write docs/memory/session_summary.json → Session outcomes
-
-Monthly Maintenance:
-  - Bash "find docs/pdca -name '*.md' -mtime +30" → Find old files
-  - Review all files → Prune outdated
-  - Update documentation → Merge duplicates
-  - Quality check → Verify freshness
+Session Start: PARALLEL Read docs/memory/{pm_context,last_session,next_actions,current_plan}.{md,json}
+During Work: Write docs/memory/checkpoint.json every 30min
+Session End: PARALLEL Write docs/memory/{last_session,next_actions,pm_context}.md + session_summary.json
+Monthly: find docs/pdca -mtime +30 -delete
 ```
 
 ## Key Actions
@@ -342,86 +269,14 @@ Continuous Evolution:
     - Practical (copy-paste ready)
 ```
 
-## Self-Improvement Workflow Integration
+## Self-Improvement Workflow
 
-### BEFORE Phase (Context Gathering)
 ```yaml
-Pre-Implementation:
-  - Verify specialist agents have read CLAUDE.md
-  - Ensure docs/*.md were consulted
-  - Confirm existing implementations were searched
-  - Validate public documentation was checked
-```
-
-### DURING Phase (Monitoring)
-```yaml
-During Implementation:
-  - Monitor for decision points requiring documentation
-  - Track why certain approaches were chosen
-  - Note edge cases as they're discovered
-  - Observe patterns emerging in implementation
-```
-
-### AFTER Phase (Documentation)
-```yaml
-Post-Implementation (PM Agent Primary Responsibility):
-  Immediate Documentation:
-    - Record new patterns discovered
-    - Document architectural decisions
-    - Update relevant docs/*.md files
-    - Add concrete examples
-
-  Evidence Collection:
-    - Test results and coverage
-    - Screenshots or logs
-    - Performance metrics
-    - Integration validation
-
-  Knowledge Update:
-    - Update CLAUDE.md if global pattern
-    - Create new doc if significant pattern
-    - Refine existing docs with learnings
-```
-
-### MISTAKE RECOVERY Phase (Immediate Response)
-```yaml
-On Mistake Detection:
-  Stop Implementation:
-    - Halt further work immediately
-    - Do not compound the mistake
-
-  Root Cause Analysis:
-    - Why did this mistake occur?
-    - What documentation was missed?
-    - What checks were skipped?
-    - What pattern violation occurred?
-
-  Immediate Documentation:
-    - Document in docs/self-improvement-workflow.md
-    - Add to mistake case studies
-    - Create prevention checklist
-    - Update CLAUDE.md if needed
-```
-
-### MAINTENANCE Phase (Monthly)
-```yaml
-Monthly Review Process:
-  Documentation Health Check:
-    - Identify unused docs (>6 months no reference)
-    - Find duplicate content
-    - Detect outdated information
-
-  Optimization:
-    - Delete or archive unused docs
-    - Merge duplicate content
-    - Update version numbers and dates
-    - Reduce verbosity and noise
-
-  Quality Validation:
-    - Ensure all docs have Last Verified dates
-    - Verify examples are current
-    - Check links are not broken
-    - Confirm docs are copy-paste ready
+BEFORE: Check CLAUDE.md + docs/*.md + existing implementations
+DURING: Note decisions, edge cases, patterns
+AFTER: Write docs/patterns/ OR docs/mistakes/ + Update CLAUDE.md if global
+MISTAKE: STOP → Root cause → docs/mistakes/[feature]-[date].md → Prevention checklist
+MONTHLY: find docs -mtime +180 -delete + Merge duplicates + Update dates
 ```
 
 ---

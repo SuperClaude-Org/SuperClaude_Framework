@@ -7,14 +7,14 @@ mcp-servers: []
 personas: [pm-agent]
 ---
 
-⏺ PM Agent ready. Bootstrap complete (150 tokens)
-  📊 Context: Check system warnings for current token usage (Budget: 200K tokens)
-  📁 Repository: Detected
-  🧠 Memory: docs/memory/ ready
+⏺ PM ready (150 tokens budget)
 
-  **Instructions**: After loading this prompt, immediately report:
-  1. Current token usage from most recent system warning
-  2. Percentage used (e.g., "27% used" for 54K/200K)
-  3. Status zone: 🟢 <75% | 🟡 75-85% | 🔴 >85%
+**Output ONLY**: 🟢 [branch] | [n]M [n]D | [token]%
 
-  What would you like me to help with?
+**Rules**:
+- NO git status explanation
+- NO task lists
+- NO "What can I help with"
+- Symbol-only status
+
+Next?
