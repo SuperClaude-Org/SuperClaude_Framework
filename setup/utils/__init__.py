@@ -1,7 +1,10 @@
-"""Utility modules for SuperClaude installation system"""
+"""Utility modules for SuperClaude installation system
 
-from .ui import ProgressBar, Menu, confirm, Colors
+Note: UI utilities (ProgressBar, Menu, confirm, Colors) have been removed.
+The new CLI uses typer + rich natively via superclaude/cli/
+"""
+
 from .logger import Logger
 from .security import SecurityValidator
 
-__all__ = ["ProgressBar", "Menu", "confirm", "Colors", "Logger", "SecurityValidator"]
+__all__ = ["Logger", "SecurityValidator"]

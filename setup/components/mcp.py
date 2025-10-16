@@ -13,7 +13,6 @@ from typing import Any, Dict, List, Optional, Tuple
 from setup import __version__
 
 from ..core.base import Component
-from ..utils.ui import display_info, display_warning
 
 
 class MCPComponent(Component):
@@ -672,15 +671,15 @@ class MCPComponent(Component):
                 )
 
                 if not config.get("dry_run", False):
-                    display_info(f"MCP server '{server_name}' requires an API key")
-                    display_info(f"Environment variable: {api_key_env}")
-                    display_info(f"Description: {api_key_desc}")
+                    self.logger.info(f"MCP server '{server_name}' requires an API key")
+                    self.logger.info(f"Environment variable: {api_key_env}")
+                    self.logger.info(f"Description: {api_key_desc}")
 
                     # Check if API key is already set
                     import os
 
                     if not os.getenv(api_key_env):
-                        display_warning(
+                        self.logger.warning(
                             f"API key {api_key_env} not found in environment"
                         )
                         self.logger.warning(

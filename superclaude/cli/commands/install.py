@@ -11,7 +11,61 @@ from rich.progress import Progress, SpinnerColumn, TextColumn
 from superclaude.cli._console import console
 
 # Create install command group
-app = typer.Typer(name="install", help="Install SuperClaude framework components")
+app = typer.Typer(
+    name="install",
+    help="Install SuperClaude framework components",
+    no_args_is_help=False,  # Allow running without subcommand
+)
+
+
+@app.callback(invoke_without_command=True)
+def install_callback(
+    ctx: typer.Context,
+    non_interactive: bool = typer.Option(
+        False,
+        "--non-interactive",
+        "-y",
+        help="Non-interactive installation with default configuration",
+    ),
+    profile: Optional[str] = typer.Option(
+        None,
+        "--profile",
+        help="Installation profile: api (with API keys), noapi (without), or custom",
+    ),
+    install_dir: Path = typer.Option(
+        Path.home() / ".claude",
+        "--install-dir",
+        help="Installation directory",
+    ),
+    force: bool = typer.Option(
+        False,
+        "--force",
+        help="Force reinstallation of existing components",
+    ),
+    dry_run: bool = typer.Option(
+        False,
+        "--dry-run",
+        help="Simulate installation without making changes",
+    ),
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        "-v",
+        help="Verbose output with detailed logging",
+    ),
+):
+    """
+    Install SuperClaude with all recommended components (default behavior)
+
+    Running `superclaude install` without a subcommand installs all components.
+    Use `superclaude install components` for selective installation.
+    """
+    # If a subcommand was invoked, don't run this
+    if ctx.invoked_subcommand is not None:
+        return
+
+    # Otherwise, run the full installation
+    _run_installation(non_interactive, profile, install_dir, force, dry_run, verbose)
 
 
 @app.command("all")
@@ -50,7 +104,7 @@ def install_all(
     ),
 ):
     """
-    Install SuperClaude with all recommended components
+    Install SuperClaude with all recommended components (explicit command)
 
     This command installs the complete SuperClaude framework including:
     - Core framework files and documentation
@@ -59,6 +113,18 @@ def install_all(
     - Specialized agents (17 agents)
     - MCP server integrations (optional)
     """
+    _run_installation(non_interactive, profile, install_dir, force, dry_run, verbose)
+
+
+def _run_installation(
+    non_interactive: bool,
+    profile: Optional[str],
+    install_dir: Path,
+    force: bool,
+    dry_run: bool,
+    verbose: bool,
+):
+    """Shared installation logic"""
     # Display installation header
     console.print(
         Panel.fit(

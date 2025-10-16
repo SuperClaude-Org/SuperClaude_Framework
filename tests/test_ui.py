@@ -1,44 +1,52 @@
+"""
+Tests for rich-based UI (modern typer + rich implementation)
+
+Note: Custom UI utilities (setup/utils/ui.py) have been removed.
+The new CLI uses typer + rich natively via superclaude/cli/
+"""
+
 import pytest
-from unittest.mock import patch, MagicMock
-from setup.utils.ui import display_header
-import io
-
-from setup.utils.ui import display_authors
+from unittest.mock import patch
+from rich.console import Console
+from io import StringIO
 
 
-@patch("sys.stdout", new_callable=io.StringIO)
-def test_display_header_with_authors(mock_stdout):
-    # Mock the author and email info from superclaude/__init__.py
-    with patch("superclaude.__author__", "Author One, Author Two"), patch(
-        "superclaude.__email__", "one@example.com, two@example.com"
-    ):
-
-        display_header("Test Title", "Test Subtitle")
-
-        output = mock_stdout.getvalue()
-
-        assert "Test Title" in output
-        assert "Test Subtitle" in output
-        assert "Author One <one@example.com>" in output
-        assert "Author Two <two@example.com>" in output
-        assert "Author One <one@example.com> | Author Two <two@example.com>" in output
+def test_rich_console_available():
+    """Test that rich console is available and functional"""
+    console = Console(file=StringIO())
+    console.print("[green]Success[/green]")
+    # No assertion needed - just verify no errors
 
 
-@patch("sys.stdout", new_callable=io.StringIO)
-def test_display_authors(mock_stdout):
-    # Mock the author, email, and github info from superclaude/__init__.py
-    with patch("superclaude.__author__", "Author One, Author Two"), patch(
-        "superclaude.__email__", "one@example.com, two@example.com"
-    ), patch("superclaude.__github__", "user1, user2"):
+def test_typer_cli_imports():
+    """Test that new typer CLI can be imported"""
+    from superclaude.cli.app import app, cli_main
 
-        display_authors()
+    assert app is not None
+    assert callable(cli_main)
 
-        output = mock_stdout.getvalue()
 
-        assert "SuperClaude Authors" in output
-        assert "Author One" in output
-        assert "one@example.com" in output
-        assert "https://github.com/user1" in output
-        assert "Author Two" in output
-        assert "two@example.com" in output
-        assert "https://github.com/user2" in output
+@pytest.mark.integration
+def test_cli_help_command():
+    """Test CLI help command works"""
+    from typer.testing import CliRunner
+    from superclaude.cli.app import app
+
+    runner = CliRunner()
+    result = runner.invoke(app, ["--help"])
+
+    assert result.exit_code == 0
+    assert "SuperClaude Framework CLI" in result.output
+
+
+@pytest.mark.integration
+def test_cli_version_command():
+    """Test CLI version command"""
+    from typer.testing import CliRunner
+    from superclaude.cli.app import app
+
+    runner = CliRunner()
+    result = runner.invoke(app, ["--version"])
+
+    assert result.exit_code == 0
+    assert "SuperClaude" in result.output

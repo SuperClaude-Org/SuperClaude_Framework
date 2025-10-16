@@ -27,7 +27,7 @@ app.add_typer(config.app, name="config", help="Manage configuration")
 def version_callback(value: bool):
     """Show version and exit"""
     if value:
-        from setup.cli.base import __version__
+        from superclaude import __version__
         console.print(f"[bold cyan]SuperClaude[/bold cyan] version [green]{__version__}[/green]")
         raise typer.Exit()
 

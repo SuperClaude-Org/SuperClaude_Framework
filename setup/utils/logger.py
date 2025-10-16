@@ -9,9 +9,12 @@ from pathlib import Path
 from typing import Optional, Dict, Any
 from enum import Enum
 
-from .ui import Colors
+from rich.console import Console
 from .symbols import symbols
 from .paths import get_home_directory
+
+# Rich console for colored output
+console = Console()
 
 
 class LogLevel(Enum):
@@ -69,37 +72,23 @@ class Logger:
         }
 
     def _setup_console_handler(self) -> None:
-        """Setup colorized console handler"""
-        handler = logging.StreamHandler(sys.stdout)
+        """Setup colorized console handler using rich"""
+        from rich.logging import RichHandler
+
+        handler = RichHandler(
+            console=console,
+            show_time=False,
+            show_path=False,
+            markup=True,
+            rich_tracebacks=True,
+            tracebacks_show_locals=False,
+        )
         handler.setLevel(self.console_level.value)
 
-        # Custom formatter with colors
-        class ColorFormatter(logging.Formatter):
-            def format(self, record):
-                # Color mapping
-                colors = {
-                    "DEBUG": Colors.WHITE,
-                    "INFO": Colors.BLUE,
-                    "WARNING": Colors.YELLOW,
-                    "ERROR": Colors.RED,
-                    "CRITICAL": Colors.RED + Colors.BRIGHT,
-                }
+        # Simple formatter (rich handles coloring)
+        formatter = logging.Formatter("%(message)s")
+        handler.setFormatter(formatter)
 
-                # Prefix mapping
-                prefixes = {
-                    "DEBUG": "[DEBUG]",
-                    "INFO": "[INFO]",
-                    "WARNING": "[!]",
-                    "ERROR": f"[{symbols.crossmark}]",
-                    "CRITICAL": "[CRITICAL]",
-                }
-
-                color = colors.get(record.levelname, Colors.WHITE)
-                prefix = prefixes.get(record.levelname, "[LOG]")
-
-                return f"{color}{prefix} {record.getMessage()}{Colors.RESET}"
-
-        handler.setFormatter(ColorFormatter())
         self.logger.addHandler(handler)
 
     def _setup_file_handler(self) -> None:
@@ -130,7 +119,7 @@ class Logger:
 
         except Exception as e:
             # If file logging fails, continue with console only
-            print(f"{Colors.YELLOW}[!] Could not setup file logging: {e}{Colors.RESET}")
+            console.print(f"[yellow][!] Could not setup file logging: {e}[/yellow]")
             self.log_file = None
 
     def _cleanup_old_logs(self, keep_count: int = 10) -> None:
@@ -179,23 +168,9 @@ class Logger:
 
     def success(self, message: str, **kwargs) -> None:
         """Log success message (info level with special formatting)"""
-        # Use a custom success formatter for console
-        if self.logger.handlers:
-            console_handler = self.logger.handlers[0]
-            if hasattr(console_handler, "formatter"):
-                original_format = console_handler.formatter.format
-
-                def success_format(record):
-                    return f"{Colors.GREEN}[{symbols.checkmark}] {record.getMessage()}{Colors.RESET}"
-
-                console_handler.formatter.format = success_format
-                self.logger.info(message, **kwargs)
-                console_handler.formatter.format = original_format
-            else:
-                self.logger.info(f"SUCCESS: {message}", **kwargs)
-        else:
-            self.logger.info(f"SUCCESS: {message}", **kwargs)
-
+        # Use rich markup for success messages
+        success_msg = f"[green]{symbols.checkmark} {message}[/green]"
+        self.logger.info(success_msg, **kwargs)
         self.log_counts["info"] += 1
 
     def step(self, step: int, total: int, message: str, **kwargs) -> None:
