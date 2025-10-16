@@ -134,16 +134,6 @@ def _run_installation(
         )
     )
 
-    # Confirm installation if interactive
-    if not non_interactive and not dry_run:
-        proceed = Confirm.ask(
-            "\n[bold]Install SuperClaude with recommended configuration?[/bold]",
-            default=True,
-        )
-        if not proceed:
-            console.print("[yellow]Installation cancelled by user[/yellow]")
-            raise typer.Exit(0)
-
     # Import and run existing installer logic
     # This bridges to the existing setup/cli/commands/install.py implementation
     try:
@@ -157,8 +147,8 @@ def _run_installation(
             dry_run=dry_run,
             verbose=verbose,
             quiet=False,
-            yes=non_interactive,
-            components=["core", "modes", "commands", "agents", "mcp_docs"],  # Full install
+            yes=True,  # Always non-interactive
+            components=["framework_docs", "modes", "commands", "agents", "mcp_docs"],  # Full install
             no_backup=False,
             list_components=False,
             diagnose=False,

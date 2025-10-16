@@ -24,7 +24,20 @@ class MCPComponent(Component):
         self.installed_servers_in_session: List[str] = []
 
         # Define MCP servers to install
-        self.mcp_servers = {
+        # Default: airis-mcp-gateway (unified gateway with all tools)
+        # Legacy mode (--legacy flag): individual official servers
+        self.mcp_servers_default = {
+            "airis-mcp-gateway": {
+                "name": "airis-mcp-gateway",
+                "description": "Unified MCP Gateway with all tools (sequential-thinking, context7, magic, playwright, serena, morphllm, tavily, chrome-devtools, git, puppeteer)",
+                "install_method": "github",
+                "install_command": "uvx --from git+https://github.com/oraios/airis-mcp-gateway airis-mcp-gateway --help",
+                "run_command": "uvx --from git+https://github.com/oraios/airis-mcp-gateway airis-mcp-gateway",
+                "required": True,
+            },
+        }
+
+        self.mcp_servers_legacy = {
             "sequential-thinking": {
                 "name": "sequential-thinking",
                 "description": "Multi-step problem solving and systematic analysis",
@@ -51,54 +64,17 @@ class MCPComponent(Component):
                 "npm_package": "@playwright/mcp@latest",
                 "required": False,
             },
-            "serena": {
-                "name": "serena",
-                "description": "Semantic code analysis and intelligent editing",
-                "install_method": "github",
-                "install_command": "uvx --from git+https://github.com/oraios/serena serena --help",
-                "run_command": "uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant --enable-web-dashboard false --enable-gui-log-window false",
-                "required": False,
-            },
-            "morphllm-fast-apply": {
-                "name": "morphllm-fast-apply",
-                "description": "Fast Apply capability for context-aware code modifications",
-                "npm_package": "@morph-llm/morph-fast-apply",
-                "required": False,
-                "api_key_env": "MORPH_API_KEY",
-                "api_key_description": "Morph API key for Fast Apply",
-            },
-            "tavily": {
-                "name": "tavily",
-                "description": "Web search and real-time information retrieval for deep research",
-                "install_method": "npm",
-                "install_command": "npx -y tavily-mcp@0.1.2",
-                "required": False,
-                "api_key_env": "TAVILY_API_KEY",
-                "api_key_description": "Tavily API key for web search (get from https://app.tavily.com)",
-            },
-            "chrome-devtools": {
-                "name": "chrome-devtools",
-                "description": "Chrome DevTools debugging and performance analysis",
-                "install_method": "npm",
-                "install_command": "npx -y chrome-devtools-mcp@latest",
-                "required": False,
-            },
-            "airis-mcp-gateway": {
-                "name": "airis-mcp-gateway",
-                "description": "Dynamic MCP Gateway for zero-token baseline and on-demand tool loading",
-                "install_method": "github",
-                "install_command": "uvx --from git+https://github.com/oraios/airis-mcp-gateway airis-mcp-gateway --help",
-                "run_command": "uvx --from git+https://github.com/oraios/airis-mcp-gateway airis-mcp-gateway",
-                "required": False,
-            },
         }
+
+        # Default to unified gateway
+        self.mcp_servers = self.mcp_servers_default
 
     def get_metadata(self) -> Dict[str, str]:
         """Get component metadata"""
         return {
             "name": "mcp",
             "version": __version__,
-            "description": "MCP server integration (Context7, Sequential, Magic, Playwright)",
+            "description": "Unified MCP Gateway (airis-mcp-gateway) with all integrated tools",
             "category": "integration",
         }
 
@@ -136,33 +112,13 @@ class MCPComponent(Component):
     def validate_prerequisites(
         self, installSubPath: Optional[Path] = None
     ) -> Tuple[bool, List[str]]:
-        """Check prerequisites"""
+        """Check prerequisites (varies based on legacy mode)"""
         errors = []
 
-        # Check if Node.js is available
-        try:
-            result = self._run_command_cross_platform(
-                ["node", "--version"], capture_output=True, text=True, timeout=10
-            )
-            if result.returncode != 0:
-                errors.append("Node.js not found - required for MCP servers")
-            else:
-                version = result.stdout.strip()
-                self.logger.debug(f"Found Node.js {version}")
+        # Check which server set we're using
+        is_legacy = self.mcp_servers == self.mcp_servers_legacy
 
-                # Check version (require 18+)
-                try:
-                    version_num = int(version.lstrip("v").split(".")[0])
-                    if version_num < 18:
-                        errors.append(
-                            f"Node.js version {version} found, but version 18+ required"
-                        )
-                except:
-                    self.logger.warning(f"Could not parse Node.js version: {version}")
-        except (subprocess.TimeoutExpired, FileNotFoundError):
-            errors.append("Node.js not found - required for MCP servers")
-
-        # Check if Claude CLI is available
+        # Check if Claude CLI is available (always required)
         try:
             result = self._run_command_cross_platform(
                 ["claude", "--version"], capture_output=True, text=True, timeout=10
@@ -177,35 +133,53 @@ class MCPComponent(Component):
         except (subprocess.TimeoutExpired, FileNotFoundError):
             errors.append("Claude CLI not found - required for MCP server management")
 
-        # Check if npm is available
-        try:
-            result = self._run_command_cross_platform(
-                ["npm", "--version"], capture_output=True, text=True, timeout=10
-            )
-            if result.returncode != 0:
-                errors.append("npm not found - required for MCP server installation")
-            else:
-                version = result.stdout.strip()
-                self.logger.debug(f"Found npm {version}")
-        except (subprocess.TimeoutExpired, FileNotFoundError):
-            errors.append("npm not found - required for MCP server installation")
-
-        # Check if uv is available (required for Serena)
-        try:
-            result = self._run_command_cross_platform(
-                ["uv", "--version"], capture_output=True, text=True, timeout=10
-            )
-            if result.returncode != 0:
-                self.logger.warning(
-                    "uv not found - required for Serena MCP server installation"
+        if is_legacy:
+            # Legacy mode: requires Node.js and npm for official servers
+            try:
+                result = self._run_command_cross_platform(
+                    ["node", "--version"], capture_output=True, text=True, timeout=10
                 )
-            else:
-                version = result.stdout.strip()
-                self.logger.debug(f"Found uv {version}")
-        except (subprocess.TimeoutExpired, FileNotFoundError):
-            self.logger.warning(
-                "uv not found - required for Serena MCP server installation"
-            )
+                if result.returncode != 0:
+                    errors.append("Node.js not found - required for legacy MCP servers")
+                else:
+                    version = result.stdout.strip()
+                    self.logger.debug(f"Found Node.js {version}")
+                    # Check version (require 18+)
+                    try:
+                        version_num = int(version.lstrip("v").split(".")[0])
+                        if version_num < 18:
+                            errors.append(
+                                f"Node.js version {version} found, but version 18+ required"
+                            )
+                    except:
+                        self.logger.warning(f"Could not parse Node.js version: {version}")
+            except (subprocess.TimeoutExpired, FileNotFoundError):
+                errors.append("Node.js not found - required for legacy MCP servers")
+
+            try:
+                result = self._run_command_cross_platform(
+                    ["npm", "--version"], capture_output=True, text=True, timeout=10
+                )
+                if result.returncode != 0:
+                    errors.append("npm not found - required for legacy MCP server installation")
+                else:
+                    version = result.stdout.strip()
+                    self.logger.debug(f"Found npm {version}")
+            except (subprocess.TimeoutExpired, FileNotFoundError):
+                errors.append("npm not found - required for legacy MCP server installation")
+        else:
+            # Default mode: requires uv for airis-mcp-gateway
+            try:
+                result = self._run_command_cross_platform(
+                    ["uv", "--version"], capture_output=True, text=True, timeout=10
+                )
+                if result.returncode != 0:
+                    errors.append("uv not found - required for airis-mcp-gateway installation")
+                else:
+                    version = result.stdout.strip()
+                    self.logger.debug(f"Found uv {version}")
+            except (subprocess.TimeoutExpired, FileNotFoundError):
+                errors.append("uv not found - required for airis-mcp-gateway installation")
 
         return len(errors) == 0, errors
 
@@ -593,15 +567,9 @@ class MCPComponent(Component):
 
         # Map common variations to our standard names
         name_mappings = {
-            "context7": "context7",
-            "sequential-thinking": "sequential-thinking",
-            "sequential": "sequential-thinking",
-            "magic": "magic",
-            "playwright": "playwright",
-            "serena": "serena",
-            "morphllm": "morphllm-fast-apply",
-            "morphllm-fast-apply": "morphllm-fast-apply",
-            "morph": "morphllm-fast-apply",
+            "airis-mcp-gateway": "airis-mcp-gateway",
+            "airis": "airis-mcp-gateway",
+            "gateway": "airis-mcp-gateway",
         }
 
         return name_mappings.get(server_name)
@@ -798,7 +766,15 @@ class MCPComponent(Component):
 
     def _install(self, config: Dict[str, Any]) -> bool:
         """Install MCP component with auto-detection of existing servers"""
-        self.logger.info("Installing SuperClaude MCP servers...")
+        # Check for legacy mode flag
+        use_legacy = config.get("legacy_mode", False) or config.get("official_servers", False)
+
+        if use_legacy:
+            self.logger.info("Installing individual official MCP servers (legacy mode)...")
+            self.mcp_servers = self.mcp_servers_legacy
+        else:
+            self.logger.info("Installing unified MCP gateway (airis-mcp-gateway)...")
+            self.mcp_servers = self.mcp_servers_default
 
         # Validate prerequisites
         success, errors = self.validate_prerequisites()
@@ -965,7 +941,7 @@ class MCPComponent(Component):
 
     def get_dependencies(self) -> List[str]:
         """Get dependencies"""
-        return ["core"]
+        return ["framework_docs"]
 
     def update(self, config: Dict[str, Any]) -> bool:
         """Update MCP component"""
@@ -1095,9 +1071,21 @@ class MCPComponent(Component):
         return {
             "component": self.get_metadata()["name"],
             "version": self.get_metadata()["version"],
-            "servers_count": len(self.mcp_servers),
-            "mcp_servers": list(self.mcp_servers.keys()),
+            "servers_count": 1,  # Only airis-mcp-gateway
+            "mcp_servers": ["airis-mcp-gateway"],
+            "included_tools": [
+                "sequential-thinking",
+                "context7",
+                "magic",
+                "playwright",
+                "serena",
+                "morphllm",
+                "tavily",
+                "chrome-devtools",
+                "git",
+                "puppeteer",
+            ],
             "estimated_size": self.get_size_estimate(),
             "dependencies": self.get_dependencies(),
-            "required_tools": ["node", "npm", "claude"],
+            "required_tools": ["uv", "claude"],
         }

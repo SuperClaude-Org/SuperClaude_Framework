@@ -80,6 +80,12 @@ Examples:
         help="Run system diagnostics and show installation help",
     )
 
+    parser.add_argument(
+        "--legacy",
+        action="store_true",
+        help="Use legacy mode: install individual official MCP servers instead of unified gateway",
+    )
+
     return parser
 
 
@@ -132,12 +138,12 @@ def get_components_to_install(
     # Explicit components specified
     if args.components:
         if "all" in args.components:
-            components = ["core", "commands", "agents", "modes", "mcp", "mcp_docs"]
+            components = ["framework_docs", "commands", "agents", "modes", "mcp", "mcp_docs"]
         else:
             components = args.components
 
-        # If mcp or mcp_docs is specified non-interactively, we should still ask which servers to install.
-        if "mcp" in components or "mcp_docs" in components:
+        # If mcp or mcp_docs is specified, handle MCP server selection
+        if ("mcp" in components or "mcp_docs" in components) and not args.yes:
             selected_servers = select_mcp_servers(registry)
             if not hasattr(config_manager, "_installation_context"):
                 config_manager._installation_context = {}
@@ -306,7 +312,7 @@ def select_framework_components(
 
     try:
         # Framework components (excluding MCP-related ones)
-        framework_components = ["core", "modes", "commands", "agents"]
+        framework_components = ["framework_docs", "modes", "commands", "agents"]
 
         # Create component menu
         component_options = []
@@ -347,9 +353,9 @@ def select_framework_components(
         selections = menu.display()
 
         if not selections:
-            # Default to core if nothing selected
-            logger.info("No components selected, defaulting to core")
-            selected_components = ["core"]
+            # Default to framework_docs if nothing selected
+            logger.info("No components selected, defaulting to framework_docs")
+            selected_components = ["framework_docs"]
         else:
             selected_components = []
             all_components = framework_components + ["mcp_docs"]
@@ -376,7 +382,7 @@ def select_framework_components(
 
     except Exception as e:
         logger.error(f"Error in framework component selection: {e}")
-        return ["core"]  # Fallback to core
+        return ["framework_docs"]  # Fallback to framework_docs
 
 
 def interactive_component_selection(
@@ -564,6 +570,7 @@ def perform_installation(
             "force": args.force,
             "backup": not args.no_backup,
             "dry_run": args.dry_run,
+            "legacy_mode": getattr(args, "legacy", False),
             "selected_mcp_servers": getattr(
                 config_manager, "_installation_context", {}
             ).get("selected_mcp_servers", []),
