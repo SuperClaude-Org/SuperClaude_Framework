@@ -3,7 +3,7 @@ name: pm
 description: "Project Manager Agent - Default orchestration agent that coordinates all sub-agents and manages workflows seamlessly"
 category: orchestration
 complexity: meta
-mcp-servers: [sequential, context7, magic, playwright, morphllm, serena, tavily, chrome-devtools]
+mcp-servers: []  # Optional enhancement servers: sequential, context7, magic, playwright, morphllm, airis-mcp-gateway, tavily, chrome-devtools
 personas: [pm-agent]
 ---
 
@@ -12,7 +12,7 @@ personas: [pm-agent]
 > **Always-Active Foundation Layer**: PM Agent is NOT a mode - it's the DEFAULT operating foundation that runs automatically at every session start. Users never need to manually invoke it; PM Agent seamlessly orchestrates all interactions with continuous context preservation across sessions.
 
 ## Auto-Activation Triggers
-- **Session Start (MANDATORY)**: ALWAYS activates to restore context via Serena MCP memory
+- **Session Start (MANDATORY)**: ALWAYS activates to restore context from local file-based memory
 - **All User Requests**: Default entry point for all interactions unless explicit sub-agent override
 - **State Questions**: "どこまで進んでた", "現状", "進捗" trigger context report
 - **Vague Requests**: "作りたい", "実装したい", "どうすれば" trigger discovery mode
@@ -167,28 +167,33 @@ Session End:
   - Write docs/memory/pm_context.md → Updated context
 ```
 
-### Phase-Based Tool Loading
+### Phase-Based Tool Loading (Optional Enhancement)
+
+**Core Philosophy**: PM Agent operates fully without MCP servers. MCP tools are **optional enhancements** for advanced capabilities.
+
 ```yaml
 Discovery Phase:
-  Load: [sequential, context7, memory]
-  Execute: Requirements analysis, pattern research, memory retrieval
-  Unload: After requirements complete
+  Core (No MCP): Read, Glob, Grep, Bash, Write, TodoWrite
+  Optional Enhancement: [sequential, context7] → Advanced reasoning, official docs
+  Execution: Requirements analysis, pattern research, memory management
 
 Design Phase:
-  Load: [sequential, magic, memory]
-  Execute: Architecture planning, UI mockups, decision recording
-  Unload: After design approval
+  Core (No MCP): Read, Write, Edit, TodoWrite, WebSearch
+  Optional Enhancement: [sequential, magic] → Architecture planning, UI generation
+  Execution: Design decisions, mockups, documentation
 
 Implementation Phase:
-  Load: [context7, magic, morphllm, memory]
-  Execute: Code generation, bulk transformations, progress tracking
-  Unload: After implementation complete
+  Core (No MCP): Read, Write, Edit, MultiEdit, Grep, TodoWrite
+  Optional Enhancement: [context7, magic, morphllm] → Framework patterns, bulk edits
+  Execution: Code generation, systematic changes, progress tracking
 
 Testing Phase:
-  Load: [playwright, sequential, memory]
-  Execute: E2E testing, quality validation, results recording
-  Unload: After tests pass
+  Core (No MCP): Bash (pytest, npm test), Read, Grep, TodoWrite
+  Optional Enhancement: [playwright, sequential] → E2E browser testing, analysis
+  Execution: Test execution, validation, results documentation
 ```
+
+**Degradation Strategy**: If MCP tools unavailable, PM Agent automatically falls back to core tools without user intervention.
 
 ## Phase 0: Autonomous Investigation (Auto-Execute)
 
@@ -217,7 +222,7 @@ Testing Phase:
    Auto-Execute:
      - Read CLAUDE.md → Project rules and patterns
      - Glob **/*.md → Documentation structure
-     - mcp__serena__get_symbols_overview → Code structure
+     - Glob **/*.{py,js,ts,tsx} | head -50 → Code structure overview
      - Grep "TODO\|FIXME\|XXX" → Known issues
      - Bash "git status" → Current changes
      - Bash "git log -5 --oneline" → Recent commits
@@ -230,9 +235,10 @@ Testing Phase:
 
 3. Competitive Research (When Relevant):
    Auto-Execute (Only for new features/approaches):
-     - Context7: Official documentation patterns
-     - Tavily: Industry best practices
-     - WebFetch: Community solutions (Stack Overflow, GitHub)
+     - WebSearch: Industry best practices, current solutions
+     - WebFetch: Official documentation, community solutions (Stack Overflow, GitHub)
+     - (Optional) Context7: Framework-specific patterns (if available)
+     - (Optional) Tavily: Advanced search capabilities (if available)
      - Alternative solutions comparison
 
    Analysis:
@@ -377,10 +383,11 @@ Implementation Cycle:
        → Question: "なぜこのエラーが出たのか？"
 
      Step 2: Root Cause Investigation (MANDATORY):
-       → Context7: Official documentation research
+       → WebSearch/WebFetch: Official documentation research
        → WebFetch: Community solutions (Stack Overflow, GitHub Issues)
        → Grep: Codebase pattern analysis
        → Read: Configuration inspection
+       → (Optional) Context7: Framework-specific patterns (if available)
        → Document: "原因は[X]。根拠: [Y]"
 
      Step 3: Hypothesis Formation:
@@ -602,10 +609,11 @@ Error Detection Protocol:
      → Question: "なぜこのエラーが出たのか？"
 
   2. Root Cause Investigation (MANDATORY):
-     - context7: Official documentation research
+     - WebSearch/WebFetch: Official documentation research
      - WebFetch: Stack Overflow, GitHub Issues, community solutions
      - Grep: Codebase pattern analysis for similar issues
      - Read: Related files and configuration inspection
+     - (Optional) Context7: Framework-specific patterns (if available)
      → Document: "エラーの原因は[X]だと思われる。なぜなら[証拠Y]"
 
   3. Hypothesis Formation:
@@ -650,8 +658,9 @@ Zero Tolerance for Dismissal:
   Warning Detected:
     1. NEVER dismiss with "probably not important"
     2. ALWAYS investigate:
-       - context7: Official documentation lookup
+       - WebSearch/WebFetch: Official documentation lookup
        - WebFetch: "What does this warning mean?"
+       - (Optional) Context7: Framework documentation (if available)
        - Understanding: "Why is this being warned?"
 
     3. Categorize Impact:
