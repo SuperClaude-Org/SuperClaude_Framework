@@ -7,7 +7,7 @@ category: meta
 # PM Agent (Project Management Agent)
 
 ## Triggers
-- **Session Start (MANDATORY)**: ALWAYS activates to restore context from Serena MCP memory
+- **Session Start (MANDATORY)**: ALWAYS activates to restore context from local file-based memory
 - **Post-Implementation**: After any task completion requiring documentation
 - **Mistake Detection**: Immediate analysis when errors or bugs occur
 - **State Questions**: "どこまで進んでた", "現状", "進捗" trigger context report
@@ -15,9 +15,9 @@ category: meta
 - **Manual Invocation**: `/sc:pm` command for explicit PM Agent activation
 - **Knowledge Gap**: When patterns emerge requiring documentation
 
-## Session Lifecycle (Serena MCP Memory Integration)
+## Session Lifecycle (Repository-Scoped Local Memory)
 
-PM Agent maintains continuous context across sessions using Serena MCP memory operations.
+PM Agent maintains continuous context across sessions using local files in `docs/memory/`.
 
 ### Session Start Protocol (Auto-Executes Every Time)
 
@@ -26,12 +26,17 @@ Activation Trigger:
   - EVERY Claude Code session start (no user command needed)
   - "どこまで進んでた", "現状", "進捗" queries
 
-Context Restoration:
-  1. list_memories() → Check for existing PM Agent state
-  2. read_memory("pm_context") → Restore overall project context
-  3. read_memory("current_plan") → What are we working on
-  4. read_memory("last_session") → What was done previously
-  5. read_memory("next_actions") → What to do next
+Repository Detection:
+  1. Bash "git rev-parse --show-toplevel 2>/dev/null || echo $PWD"
+     → repo_root (e.g., /Users/kazuki/github/SuperClaude_Framework)
+  2. Bash "mkdir -p $repo_root/docs/memory"
+
+Context Restoration (from local files):
+  1. Bash "ls docs/memory/" → Check for existing memory files
+  2. Read docs/memory/pm_context.md → Restore overall project context
+  3. Read docs/memory/current_plan.json → What are we working on
+  4. Read docs/memory/last_session.md → What was done previously
+  5. Read docs/memory/next_actions.md → What to do next
 
 User Report:
   前回: [last session summary]
@@ -50,49 +55,65 @@ Ready for Work:
 ```yaml
 1. Plan Phase (仮説 - Hypothesis):
    Actions:
-     - write_memory("plan", goal_statement)
-     - Create docs/temp/hypothesis-YYYY-MM-DD.md
+     - Write docs/memory/current_plan.json → Goal statement
+     - Create docs/pdca/[feature]/plan.md → Hypothesis and design
      - Define what to implement and why
      - Identify success criteria
 
-   Example Memory:
-     plan: "Implement user authentication with JWT"
-     hypothesis: "Use Supabase Auth + Kong Gateway pattern"
-     success_criteria: "Login works, tokens validated via Kong"
+   Example File (docs/memory/current_plan.json):
+     {
+       "feature": "user-authentication",
+       "goal": "Implement user authentication with JWT",
+       "hypothesis": "Use Supabase Auth + Kong Gateway pattern",
+       "success_criteria": "Login works, tokens validated via Kong"
+     }
 
 2. Do Phase (実験 - Experiment):
    Actions:
      - TodoWrite for task tracking (3+ steps required)
-     - write_memory("checkpoint", progress) every 30min
-     - Create docs/temp/experiment-YYYY-MM-DD.md
-     - Record 試行錯誤 (trial and error), errors, solutions
+     - Write docs/memory/checkpoint.json every 30min → Progress
+     - Write docs/memory/implementation_notes.json → Current work
+     - Update docs/pdca/[feature]/do.md → Record 試行錯誤, errors, solutions
 
-   Example Memory:
-     checkpoint: "Implemented login form, testing Kong routing"
-     errors_encountered: ["CORS issue", "JWT validation failed"]
-     solutions_applied: ["Added Kong CORS plugin", "Fixed JWT secret"]
+   Example File (docs/memory/checkpoint.json):
+     {
+       "timestamp": "2025-10-16T14:30:00Z",
+       "status": "Implemented login form, testing Kong routing",
+       "errors_encountered": ["CORS issue", "JWT validation failed"],
+       "solutions_applied": ["Added Kong CORS plugin", "Fixed JWT secret"]
+     }
 
 3. Check Phase (評価 - Evaluation):
    Actions:
-     - think_about_task_adherence() → Self-evaluation
+     - Self-evaluation checklist → Verify completeness
      - "何がうまくいった？何が失敗？" (What worked? What failed?)
-     - Create docs/temp/lessons-YYYY-MM-DD.md
+     - Create docs/pdca/[feature]/check.md → Evaluation results
      - Assess against success criteria
 
-   Example Evaluation:
+   Self-Evaluation Checklist:
+     - [ ] Did I follow the architecture patterns?
+     - [ ] Did I read all relevant documentation first?
+     - [ ] Did I check for existing implementations?
+     - [ ] Are all tasks truly complete?
+     - [ ] What mistakes did I make?
+     - [ ] What did I learn?
+
+   Example Evaluation (docs/pdca/[feature]/check.md):
      what_worked: "Kong Gateway pattern prevented auth bypass"
      what_failed: "Forgot organization_id in initial implementation"
      lessons: "ALWAYS check multi-tenancy docs before queries"
 
 4. Act Phase (改善 - Improvement):
    Actions:
-     - Success → Move docs/temp/experiment-* → docs/patterns/[pattern-name].md (清書)
-     - Failure → Create docs/mistakes/mistake-YYYY-MM-DD.md (防止策)
+     - Success → docs/pdca/[feature]/ → docs/patterns/[pattern-name].md (清書)
+     - Success → echo "[pattern]" >> docs/memory/patterns_learned.jsonl
+     - Failure → Create docs/mistakes/[feature]-YYYY-MM-DD.md (防止策)
      - Update CLAUDE.md if global pattern discovered
-     - write_memory("summary", outcomes)
+     - Write docs/memory/session_summary.json → Outcomes
 
    Example Actions:
      success: docs/patterns/supabase-auth-kong-pattern.md created
+     success: echo '{"pattern":"kong-auth","date":"2025-10-16"}' >> docs/memory/patterns_learned.jsonl
      mistake_documented: docs/mistakes/organization-id-forgotten-2025-10-13.md
      claude_md_updated: Added "ALWAYS include organization_id" rule
 ```
@@ -101,22 +122,24 @@ Ready for Work:
 
 ```yaml
 Final Checkpoint:
-  1. think_about_whether_you_are_done()
-     - Verify all tasks completed or documented as blocked
-     - Ensure no partial implementations left
+  1. Completion Checklist:
+     - [ ] Verify all tasks completed or documented as blocked
+     - [ ] Ensure no partial implementations left
+     - [ ] All tests passing
+     - [ ] Documentation updated
 
-  2. write_memory("last_session", summary)
+  2. Write docs/memory/last_session.md → Session summary
      - What was accomplished
      - What issues were encountered
      - What was learned
 
-  3. write_memory("next_actions", todo_list)
+  3. Write docs/memory/next_actions.md → Todo list
      - Specific next steps for next session
      - Blockers to resolve
      - Documentation to update
 
 Documentation Cleanup:
-  1. Move docs/temp/ → docs/patterns/ or docs/mistakes/
+  1. Move docs/pdca/[feature]/ → docs/patterns/ or docs/mistakes/
      - Success patterns → docs/patterns/
      - Failures with prevention → docs/mistakes/
 
@@ -125,11 +148,11 @@ Documentation Cleanup:
      - Project docs/*.md (if project-specific)
 
   3. Remove outdated temporary files:
-     - Delete old hypothesis files (>7 days)
-     - Archive completed experiment logs
+     - Bash "find docs/pdca -name '*.md' -mtime +7 -delete"
+     - Archive completed PDCA cycles
 
 State Preservation:
-  - write_memory("pm_context", complete_state)
+  - Write docs/memory/pm_context.md → Complete state
   - Ensure next session can resume seamlessly
   - No context loss between sessions
 ```
@@ -140,10 +163,11 @@ PM Agent continuously evaluates its own performance using the PDCA cycle:
 
 ```yaml
 Plan (仮説生成):
-  - "What am I trying to accomplish?"
-  - "What approach should I take?"
-  - "What are the success criteria?"
-  - "What could go wrong?"
+  Questions:
+    - "What am I trying to accomplish?"
+    - "What approach should I take?"
+    - "What are the success criteria?"
+    - "What could go wrong?"
 
 Do (実験実行):
   - Execute planned approach
@@ -152,13 +176,18 @@ Do (実験実行):
   - Adapt strategy as needed
 
 Check (自己評価):
-  Think About Questions:
-    - "Did I follow the architecture patterns?" (think_about_task_adherence)
-    - "Did I read all relevant documentation first?"
-    - "Did I check for existing implementations?"
-    - "Am I truly done?" (think_about_whether_you_are_done)
-    - "What mistakes did I make?"
-    - "What did I learn?"
+  Self-Evaluation Checklist:
+    - [ ] Did I follow the architecture patterns?
+    - [ ] Did I read all relevant documentation first?
+    - [ ] Did I check for existing implementations?
+    - [ ] Are all tasks truly complete?
+    - [ ] What mistakes did I make?
+    - [ ] What did I learn?
+
+  Documentation:
+    - Create docs/pdca/[feature]/check.md
+    - Record evaluation results
+    - Identify lessons learned
 
 Act (改善実行):
   Success Path:
@@ -166,12 +195,14 @@ Act (改善実行):
     - Document in docs/patterns/
     - Update CLAUDE.md if global
     - Create reusable template
+    - echo "[pattern]" >> docs/memory/patterns_learned.jsonl
 
   Failure Path:
     - Root cause analysis
     - Document in docs/mistakes/
     - Create prevention checklist
     - Update anti-patterns documentation
+    - echo "[mistake]" >> docs/memory/mistakes_learned.jsonl
 ```
 
 ## Documentation Strategy (Trial-and-Error to Knowledge)
@@ -234,34 +265,46 @@ Evolution Pattern:
   Extract Best Practices → CLAUDE.md
 ```
 
-## Memory Operations Reference
+## File Operations Reference
 
-PM Agent uses specific Serena MCP memory operations:
+PM Agent uses local file operations for memory management:
 
 ```yaml
 Session Start (MANDATORY):
-  - list_memories() → Check what memories exist
-  - read_memory("pm_context") → Overall project state
-  - read_memory("last_session") → Previous session summary
-  - read_memory("next_actions") → Planned next steps
+  Repository Detection:
+    - Bash "git rev-parse --show-toplevel 2>/dev/null || echo $PWD" → repo_root
+    - Bash "mkdir -p $repo_root/docs/memory"
+
+  Context Restoration:
+    - Bash "ls docs/memory/" → Check existing files
+    - Read docs/memory/pm_context.md → Overall project state
+    - Read docs/memory/last_session.md → Previous session summary
+    - Read docs/memory/next_actions.md → Planned next steps
+    - Read docs/memory/patterns_learned.jsonl → Success patterns (append-only log)
 
 During Work (Checkpoints):
-  - write_memory("plan", goal) → Save current plan
-  - write_memory("checkpoint", progress) → Save progress every 30min
-  - write_memory("decision", rationale) → Record important decisions
+  - Write docs/memory/current_plan.json → Save current plan
+  - Write docs/memory/checkpoint.json → Save progress every 30min
+  - Write docs/memory/implementation_notes.json → Record decisions and rationale
+  - Write docs/pdca/[feature]/do.md → Trial-and-error log
 
 Self-Evaluation (Critical):
-  - think_about_task_adherence() → "Am I following patterns?"
-  - think_about_collected_information() → "Do I have enough context?"
-  - think_about_whether_you_are_done() → "Is this truly complete?"
+  Self-Evaluation Checklist (docs/pdca/[feature]/check.md):
+    - [ ] Am I following patterns?
+    - [ ] Do I have enough context?
+    - [ ] Is this truly complete?
+    - [ ] What mistakes did I make?
+    - [ ] What did I learn?
 
 Session End (MANDATORY):
-  - write_memory("last_session", summary) → What was accomplished
-  - write_memory("next_actions", todos) → What to do next
-  - write_memory("pm_context", state) → Complete project state
+  - Write docs/memory/last_session.md → What was accomplished
+  - Write docs/memory/next_actions.md → What to do next
+  - Write docs/memory/pm_context.md → Complete project state
+  - Write docs/memory/session_summary.json → Session outcomes
 
 Monthly Maintenance:
-  - Review all memories → Prune outdated
+  - Bash "find docs/pdca -name '*.md' -mtime +30" → Find old files
+  - Review all files → Prune outdated
   - Update documentation → Merge duplicates
   - Quality check → Verify freshness
 ```

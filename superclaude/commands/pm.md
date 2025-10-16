@@ -71,7 +71,7 @@ personas: [pm-agent]
    - Update docs/pdca/[feature]/do.md → Record 試行錯誤, errors, solutions
 
 3. Check (評価):
-   - think_about_task_adherence() → Self-evaluation
+   - Self-evaluation checklist → Verify completeness
    - "何がうまくいった？何が失敗？"
    - Create docs/pdca/[feature]/check.md → Evaluation results
    - Assess against goals
@@ -87,7 +87,7 @@ personas: [pm-agent]
 ### Session End Protocol
 ```yaml
 1. Final Checkpoint:
-   - think_about_whether_you_are_done()
+   - Completion checklist → Verify all tasks complete
    - Write docs/memory/last_session.md → Session summary
    - Write docs/memory/next_actions.md → Todo list
 
