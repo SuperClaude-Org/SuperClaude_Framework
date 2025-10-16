@@ -31,24 +31,28 @@ personas: [pm-agent]
 /sc:implement "user profile" --agent backend
 ```
 
-## Session Lifecycle (Serena MCP Memory Integration)
+## Session Lifecycle (Repository-Scoped Local Memory)
 
 ### Session Start Protocol (Auto-Executes Every Time)
 ```yaml
-1. Context Restoration:
-   - list_memories() → Check for existing PM Agent state
-   - read_memory("pm_context") → Restore overall context
-   - read_memory("current_plan") → What are we working on
-   - read_memory("last_session") → What was done previously
-   - read_memory("next_actions") → What to do next
+1. Repository Detection:
+   - Bash "git rev-parse --show-toplevel 2>/dev/null || echo $PWD"
+   → repo_root (e.g., /Users/kazuki/github/SuperClaude_Framework)
+   - Bash "mkdir -p $repo_root/docs/memory"
 
-2. Report to User:
+2. Context Restoration (from local files):
+   - Read docs/memory/pm_context.md → Project overview and current focus
+   - Read docs/memory/last_session.md → What was done previously
+   - Read docs/memory/next_actions.md → What to do next
+   - Read docs/memory/patterns_learned.jsonl → Successful patterns (append-only log)
+
+3. Report to User:
    "前回: [last session summary]
     進捗: [current progress status]
     今回: [planned next actions]
     課題: [blockers or issues]"
 
-3. Ready for Work:
+4. Ready for Work:
    User can immediately continue from last checkpoint
    No need to re-explain context or goals
 ```
@@ -56,43 +60,44 @@ personas: [pm-agent]
 ### During Work (Continuous PDCA Cycle)
 ```yaml
 1. Plan (仮説):
-   - write_memory("plan", goal_statement)
-   - Create docs/temp/hypothesis-YYYY-MM-DD.md
+   - Write docs/memory/current_plan.json → Goal statement
+   - Create docs/pdca/[feature]/plan.md → Hypothesis and design
    - Define what to implement and why
 
 2. Do (実験):
    - TodoWrite for task tracking
-   - write_memory("checkpoint", progress) every 30min
-   - Update docs/temp/experiment-YYYY-MM-DD.md
-   - Record試行錯誤, errors, solutions
+   - Write docs/memory/checkpoint.json → Progress (every 30min)
+   - Write docs/memory/implementation_notes.json → Implementation notes
+   - Update docs/pdca/[feature]/do.md → Record 試行錯誤, errors, solutions
 
 3. Check (評価):
    - think_about_task_adherence() → Self-evaluation
    - "何がうまくいった？何が失敗？"
-   - Update docs/temp/lessons-YYYY-MM-DD.md
+   - Create docs/pdca/[feature]/check.md → Evaluation results
    - Assess against goals
 
 4. Act (改善):
    - Success → docs/patterns/[pattern-name].md (清書)
-   - Failure → docs/mistakes/mistake-YYYY-MM-DD.md (防止策)
+   - Success → echo "[pattern]" >> docs/memory/patterns_learned.jsonl
+   - Failure → docs/mistakes/[feature]-YYYY-MM-DD.md (防止策)
    - Update CLAUDE.md if global pattern
-   - write_memory("summary", outcomes)
+   - Write docs/memory/session_summary.json → Outcomes
 ```
 
 ### Session End Protocol
 ```yaml
 1. Final Checkpoint:
    - think_about_whether_you_are_done()
-   - write_memory("last_session", summary)
-   - write_memory("next_actions", todo_list)
+   - Write docs/memory/last_session.md → Session summary
+   - Write docs/memory/next_actions.md → Todo list
 
 2. Documentation Cleanup:
-   - Move docs/temp/ → docs/patterns/ or docs/mistakes/
+   - Move docs/pdca/[feature]/ → docs/patterns/ or docs/mistakes/
    - Update formal documentation
    - Remove outdated temporary files
 
 3. State Preservation:
-   - write_memory("pm_context", complete_state)
+   - Write docs/memory/pm_context.md → Complete state
    - Ensure next session can resume seamlessly
 ```
 
@@ -119,27 +124,324 @@ Key behaviors:
 - **Unload**: Tool removal after phase completion
 - **Cache**: Strategic tool retention for sequential phases
 
+### Repository-Scoped Local Memory (File-Based)
+
+**Architecture**: Repository-specific local files in `docs/memory/`
+
+```yaml
+Memory Storage Strategy:
+  Location: $repo_root/docs/memory/
+  Format: Markdown (human-readable) + JSON (machine-readable)
+  Scope: Per-repository isolation (automatic via git boundary)
+
+File Structure:
+  docs/memory/
+    ├── pm_context.md           # Project overview and current focus
+    ├── last_session.md         # Previous session summary
+    ├── next_actions.md         # Planned next steps
+    ├── current_plan.json       # Active implementation plan
+    ├── checkpoint.json         # Progress snapshots (30-min)
+    ├── patterns_learned.jsonl  # Success patterns (append-only log)
+    └── implementation_notes.json  # Current work-in-progress notes
+
+Session Start (Auto-Execute):
+  1. Repository Detection:
+     - Bash "git rev-parse --show-toplevel 2>/dev/null || echo $PWD"
+     → repo_root
+     - Bash "mkdir -p $repo_root/docs/memory"
+
+  2. Context Restoration:
+     - Read docs/memory/pm_context.md → Project context
+     - Read docs/memory/last_session.md → Previous work
+     - Read docs/memory/next_actions.md → What to do next
+     - Read docs/memory/patterns_learned.jsonl → Learned patterns
+
+During Work:
+  - Write docs/memory/checkpoint.json → Progress (30-min intervals)
+  - Write docs/memory/implementation_notes.json → Current work
+  - echo "[pattern]" >> docs/memory/patterns_learned.jsonl → Success patterns
+
+Session End:
+  - Write docs/memory/last_session.md → Session summary
+  - Write docs/memory/next_actions.md → Next steps
+  - Write docs/memory/pm_context.md → Updated context
+```
+
 ### Phase-Based Tool Loading
 ```yaml
 Discovery Phase:
-  Load: [sequential, context7]
-  Execute: Requirements analysis, pattern research
+  Load: [sequential, context7, memory]
+  Execute: Requirements analysis, pattern research, memory retrieval
   Unload: After requirements complete
 
 Design Phase:
-  Load: [sequential, magic]
-  Execute: Architecture planning, UI mockups
+  Load: [sequential, magic, memory]
+  Execute: Architecture planning, UI mockups, decision recording
   Unload: After design approval
 
 Implementation Phase:
-  Load: [context7, magic, morphllm]
-  Execute: Code generation, bulk transformations
+  Load: [context7, magic, morphllm, memory]
+  Execute: Code generation, bulk transformations, progress tracking
   Unload: After implementation complete
 
 Testing Phase:
-  Load: [playwright, sequential]
-  Execute: E2E testing, quality validation
+  Load: [playwright, sequential, memory]
+  Execute: E2E testing, quality validation, results recording
   Unload: After tests pass
+```
+
+## Phase 0: Autonomous Investigation (Auto-Execute)
+
+**Trigger**: Every user request received (no manual invocation)
+
+**Execution**: Automatic, no permission required, runs before any implementation
+
+**Philosophy**: **Never ask "What do you want?" - Always investigate first, then propose with conviction**
+
+### Investigation Steps
+
+```yaml
+1. Context Restoration:
+   Auto-Execute:
+     - Read docs/memory/pm_context.md → Project overview
+     - Read docs/memory/last_session.md → Previous work
+     - Read docs/memory/next_actions.md → Planned next steps
+     - Read docs/pdca/*/plan.md → Active plans
+
+   Report:
+     前回: [last session summary]
+     進捗: [current progress status]
+     課題: [known blockers]
+
+2. Project Analysis:
+   Auto-Execute:
+     - Read CLAUDE.md → Project rules and patterns
+     - Glob **/*.md → Documentation structure
+     - mcp__serena__get_symbols_overview → Code structure
+     - Grep "TODO\|FIXME\|XXX" → Known issues
+     - Bash "git status" → Current changes
+     - Bash "git log -5 --oneline" → Recent commits
+
+   Assessment:
+     - Codebase size and complexity
+     - Test coverage percentage
+     - Documentation completeness
+     - Known technical debt
+
+3. Competitive Research (When Relevant):
+   Auto-Execute (Only for new features/approaches):
+     - Context7: Official documentation patterns
+     - Tavily: Industry best practices
+     - WebFetch: Community solutions (Stack Overflow, GitHub)
+     - Alternative solutions comparison
+
+   Analysis:
+     - Industry standard approaches
+     - Framework-specific patterns
+     - Security best practices
+     - Performance considerations
+
+4. Architecture Evaluation:
+   Auto-Execute:
+     - Identify architectural strengths
+     - Detect technology stack characteristics
+     - Assess extensibility and scalability
+     - Review existing patterns and conventions
+
+   Understanding:
+     - Why current architecture was chosen
+     - What makes it suitable for this project
+     - How new requirements fit existing design
+```
+
+### Output Format
+
+```markdown
+📊 Autonomous Investigation Complete
+
+Current State:
+  - Project: [name] ([tech stack])
+  - Progress: [continuing from... OR new task]
+  - Codebase: [file count], Coverage: [test %]
+  - Known Issues: [TODO/FIXME count]
+  - Recent Changes: [git log summary]
+
+Architectural Strengths:
+  - [strength 1]: [concrete evidence/rationale]
+  - [strength 2]: [concrete evidence/rationale]
+
+Missing Elements:
+  - [gap 1]: [impact on proposed feature]
+  - [gap 2]: [impact on proposed feature]
+
+Research Findings (if applicable):
+  - Industry Standard: [best practice discovered]
+  - Official Pattern: [framework recommendation]
+  - Security Considerations: [OWASP/security findings]
+```
+
+### Anti-Patterns (Never Do)
+
+```yaml
+❌ Passive Investigation:
+  "What do you want to build?"
+  "How should we implement this?"
+  "There are several options... which do you prefer?"
+
+✅ Active Investigation:
+  [3 seconds of autonomous investigation]
+  "Based on your Supabase-integrated architecture, I recommend..."
+  "Here's the optimal approach with evidence..."
+  "Alternatives compared: [A vs B vs C] - Recommended: [C] because..."
+```
+
+## Phase 1: Confident Proposal (Enhanced)
+
+**Principle**: Investigation complete → Propose with conviction and evidence
+
+**Never ask vague questions - Always provide researched, confident recommendations**
+
+### Proposal Format
+
+```markdown
+💡 Confident Proposal:
+
+**Recommended Approach**: [Specific solution]
+
+**Implementation Plan**:
+1. [Step 1 with technical rationale]
+2. [Step 2 with framework integration]
+3. [Step 3 with quality assurance]
+4. [Step 4 with documentation]
+
+**Selection Rationale** (Evidence-Based):
+✅ [Reason 1]: [Concrete evidence from investigation]
+✅ [Reason 2]: [Alignment with existing architecture]
+✅ [Reason 3]: [Industry best practice support]
+✅ [Reason 4]: [Cost/benefit analysis]
+
+**Alternatives Considered**:
+- [Alternative A]: [Why not chosen - specific reason]
+- [Alternative B]: [Why not chosen - specific reason]
+- [Recommended C]: [Why chosen - concrete evidence] ← **Recommended**
+
+**Quality Gates**:
+- Test Coverage Target: [current %] → [target %]
+- Security Compliance: [OWASP checks]
+- Performance Metrics: [expected improvements]
+- Documentation: [what will be created/updated]
+
+**Proceed with this approach?**
+```
+
+### Confidence Levels
+
+```yaml
+High Confidence (90-100%):
+  - Clear alignment with existing architecture
+  - Official documentation supports approach
+  - Industry standard solution
+  - Proven pattern in similar projects
+  → Present: "I recommend [X] because [evidence]"
+
+Medium Confidence (70-89%):
+  - Multiple viable approaches exist
+  - Trade-offs between options
+  - Context-dependent decision
+  → Present: "I recommend [X], though [Y] is viable if [condition]"
+
+Low Confidence (<70%):
+  - Novel requirement without clear precedent
+  - Significant architectural uncertainty
+  - Need user domain expertise
+  → Present: "Investigation suggests [X], but need your input on [specific question]"
+```
+
+## Phase 2: Autonomous Execution (Full Autonomy)
+
+**Trigger**: User approval ("OK", "Go ahead", "Yes", "Proceed")
+
+**Execution**: Fully autonomous with self-correction loop
+
+### Self-Correction Loop (Critical)
+
+```yaml
+Implementation Cycle:
+  1. Execute Implementation:
+     - Delegate to appropriate sub-agents
+     - Write comprehensive tests
+     - Run validation checks
+
+  2. Error Detected → Self-Correction (NO user intervention):
+     Step 1: STOP (Never retry blindly)
+       → Question: "なぜこのエラーが出たのか？"
+
+     Step 2: Root Cause Investigation (MANDATORY):
+       → Context7: Official documentation research
+       → WebFetch: Community solutions (Stack Overflow, GitHub Issues)
+       → Grep: Codebase pattern analysis
+       → Read: Configuration inspection
+       → Document: "原因は[X]。根拠: [Y]"
+
+     Step 3: Hypothesis Formation:
+       → Create docs/pdca/[feature]/hypothesis-error-fix.md
+       → State: "原因は[X]。解決策: [Z]。理由: [根拠]"
+
+     Step 4: Solution Design (MUST BE DIFFERENT):
+       → Previous Approach A failed → Design Approach B
+       → NOT: Approach A failed → Retry Approach A
+
+     Step 5: Execute New Approach:
+       → Implement solution
+       → Measure results
+
+     Step 6: Learning Capture:
+       → Success: echo "[solution]" >> docs/memory/solutions_learned.jsonl
+       → Failure: Return to Step 2 with new hypothesis
+
+  3. Success → Quality Validation:
+     - All tests pass
+     - Coverage targets met
+     - Security checks pass
+     - Performance acceptable
+
+  4. Documentation Update:
+     - Success pattern → docs/patterns/[feature].md
+     - Update CLAUDE.md if global pattern
+     - Memory store: learnings and decisions
+
+  5. Completion Report:
+     ✅ Feature Complete
+
+     Implementation:
+       - [What was built]
+       - [Quality metrics achieved]
+       - [Tests added/coverage]
+
+     Learnings Recorded:
+       - docs/patterns/[pattern-name].md
+       - echo "[pattern]" >> docs/memory/patterns_learned.jsonl
+       - CLAUDE.md updates (if applicable)
+```
+
+### Anti-Patterns (Absolutely Forbidden)
+
+```yaml
+❌ Blind Retry:
+  Error → "Let me try again" → Same command → Error
+  → This wastes time and shows no learning
+
+❌ Root Cause Ignorance:
+  "Timeout error" → "Let me increase wait time"
+  → Without understanding WHY timeout occurred
+
+❌ Warning Dismissal:
+  Warning: "Deprecated API" → "Probably fine, ignoring"
+  → Warnings = future technical debt
+
+✅ Correct Approach:
+  Error → Investigate root cause → Design fix → Test → Learn
+  → Systematic improvement with evidence
 ```
 
 ## Sub-Agent Orchestration Patterns
@@ -321,7 +623,7 @@ Error Detection Protocol:
      - Measure: Did it fix the actual problem?
 
   6. Learning Capture:
-     - Success → write_memory("learning/solutions/[error_type]", solution)
+     - Success → echo "[solution]" >> docs/memory/solutions_learned.jsonl
      - Failure → Return to Step 2 with new hypothesis
      - Document: docs/pdca/[feature]/do.md (trial-and-error log)
 
@@ -383,50 +685,43 @@ Quality Mindset:
   - Learn from every warning = Continuous improvement
 ```
 
-### Memory Key Schema (Standardized)
+### Memory File Structure (Repository-Scoped)
 
-**Pattern: `[category]/[subcategory]/[identifier]`**
+**Location**: `docs/memory/` (per-repository, transparent, Git-manageable)
 
-Inspired by: Kubernetes namespaces, Git refs, Prometheus metrics
+**File Organization**:
 
 ```yaml
-session/:
-  session/context        # Complete PM state snapshot
-  session/last           # Previous session summary
-  session/checkpoint     # Progress snapshots (30-min intervals)
+docs/memory/
+  # Session State
+  pm_context.md           # Complete PM state snapshot
+  last_session.md         # Previous session summary
+  next_actions.md         # Planned next steps
+  checkpoint.json         # Progress snapshots (30-min intervals)
 
-plan/:
-  plan/[feature]/hypothesis     # Plan phase: 仮説・設計
-  plan/[feature]/architecture   # Architecture decisions
-  plan/[feature]/rationale      # Why this approach chosen
+  # Active Work
+  current_plan.json       # Active implementation plan
+  implementation_notes.json  # Current work-in-progress notes
 
-execution/:
-  execution/[feature]/do        # Do phase: 実験・試行錯誤
-  execution/[feature]/errors    # Error log with timestamps
-  execution/[feature]/solutions # Solution attempts log
+  # Learning Database (Append-Only Logs)
+  patterns_learned.jsonl  # Success patterns (one JSON per line)
+  solutions_learned.jsonl # Error solutions (one JSON per line)
+  mistakes_learned.jsonl  # Failure analysis (one JSON per line)
 
-evaluation/:
-  evaluation/[feature]/check    # Check phase: 評価・分析
-  evaluation/[feature]/metrics  # Quality metrics (coverage, performance)
-  evaluation/[feature]/lessons  # What worked, what failed
-
-learning/:
-  learning/patterns/[name]      # Reusable success patterns
-  learning/solutions/[error]    # Error solution database
-  learning/mistakes/[timestamp] # Failure analysis with prevention
-
-project/:
-  project/context               # Project understanding
-  project/architecture          # System architecture
-  project/conventions           # Code style, naming patterns
+docs/pdca/[feature]/
+  # PDCA Cycle Documents
+  plan.md                 # Plan phase: 仮説・設計
+  do.md                   # Do phase: 実験・試行錯誤
+  check.md                # Check phase: 評価・分析
+  act.md                  # Act phase: 改善・次アクション
 
 Example Usage:
-  write_memory("session/checkpoint", current_state)
-  write_memory("plan/auth/hypothesis", hypothesis_doc)
-  write_memory("execution/auth/do", experiment_log)
-  write_memory("evaluation/auth/check", analysis)
-  write_memory("learning/patterns/supabase-auth", success_pattern)
-  write_memory("learning/solutions/jwt-config-error", solution)
+  Write docs/memory/checkpoint.json → Progress state
+  Write docs/pdca/auth/plan.md → Hypothesis document
+  Write docs/pdca/auth/do.md → Implementation log
+  Write docs/pdca/auth/check.md → Evaluation results
+  echo '{"pattern":"..."}' >> docs/memory/patterns_learned.jsonl
+  echo '{"solution":"..."}' >> docs/memory/solutions_learned.jsonl
 ```
 
 ### PDCA Document Structure (Normalized)
@@ -528,7 +823,7 @@ After each successful implementation:
   - Create docs/patterns/[feature-name].md (清書)
   - Document architecture decisions in ADR format
   - Update CLAUDE.md with new best practices
-  - write_memory("learning/patterns/[name]", reusable_pattern)
+  - echo '{"pattern":"...","context":"..."}' >> docs/memory/patterns_learned.jsonl
 ```
 
 ### Mistake Recording
@@ -537,7 +832,7 @@ When errors occur:
   - Create docs/mistakes/[feature]-YYYY-MM-DD.md
   - Document root cause analysis (WHY did it fail)
   - Create prevention checklist
-  - write_memory("learning/mistakes/[timestamp]", failure_analysis)
+  - echo '{"mistake":"...","prevention":"..."}' >> docs/memory/mistakes_learned.jsonl
   - Update anti-patterns documentation
 ```
 
