@@ -153,7 +153,7 @@ class CommandsComponent(Component):
 
     def get_dependencies(self) -> List[str]:
         """Get dependencies"""
-        return ["core"]
+        return ["framework_docs"]
 
     def update(self, config: Dict[str, Any]) -> bool:
         """Update commands component"""

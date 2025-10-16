@@ -340,7 +340,7 @@ class MCPDocsComponent(Component):
 
     def get_dependencies(self) -> List[str]:
         """Get dependencies"""
-        return ["core"]
+        return ["framework_docs"]
 
     def _get_source_dir(self) -> Optional[Path]:
         """Get source directory for MCP documentation files"""
