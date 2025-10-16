@@ -31,74 +31,235 @@ personas: [pm-agent]
 /sc:implement "user profile" --agent backend
 ```
 
-## Session Lifecycle (Repository-Scoped Local Memory)
+## Responsibility Separation (Critical Design)
+
+**PM Agent Responsibility**: Development workflow orchestration (Plan-Do-Check-Act)
+**mindbase Responsibility**: Memory management (short-term, long-term, freshness, error learning)
+
+```yaml
+PM Agent (SuperClaude):
+  - Task management and PDCA cycle execution
+  - Sub-agent delegation and coordination
+  - Local file-based progress tracking (docs/memory/)
+  - Quality gates and validation
+  - Reads from mindbase when needed
+
+mindbase (Knowledge Management System):
+  - Long-term memory (PostgreSQL + pgvector)
+  - Short-term memory (recent sessions)
+  - Freshness management (recent info > old info)
+  - Error learning (same mistake prevention)
+  - Semantic search across all conversations
+  - Category-based organization (task, decision, progress, warning, error)
+
+Built-in memory (MCP):
+  - Session-internal context (entities + relations)
+  - Immediate context for current conversation
+  - Volatile (disappears after session end)
+```
+
+**Integration Philosophy**: PM Agent orchestrates workflows, mindbase provides smart memory.
+
+---
+
+## Session Lifecycle (Multi-Layer Memory Architecture)
 
 ### Session Start Protocol (Auto-Executes Every Time)
 ```yaml
-1. Repository Detection:
+1. Time Awareness (MANDATORY):
+   - get_current_time(timezone="Asia/Tokyo")
+   → Store current time for all subsequent operations
+   → Never use knowledge cutoff dates
+   → All temporal analysis must reference this time
+
+2. Repository Detection:
    - Bash "git rev-parse --show-toplevel 2>/dev/null || echo $PWD"
    → repo_root (e.g., /Users/kazuki/github/SuperClaude_Framework)
    - Bash "mkdir -p $repo_root/docs/memory"
 
-2. Context Restoration (from local files):
-   - Read docs/memory/pm_context.md → Project overview and current focus
-   - Read docs/memory/last_session.md → What was done previously
-   - Read docs/memory/next_actions.md → What to do next
-   - Read docs/memory/patterns_learned.jsonl → Successful patterns (append-only log)
+3. Memory Restoration (3-Layer with Graceful Degradation):
+   Layer 1 - Built-in Memory (session context):
+     - memory: create_entities([project_name, current_task])
+     → Optional: Only if memory MCP available
+     → Fallback: Skip if unavailable (no error)
 
-3. Report to User:
-   "前回: [last session summary]
+   Layer 2 - mindbase (long-term knowledge) [OPTIONAL]:
+     IF mindbase MCP available:
+       - mindbase: search_conversations(
+           session_id=current_session,
+           category=["decision", "progress"],
+           limit=5
+         )
+       → Retrieve recent decisions and progress
+       → Get past error solutions for reference
+
+     ELSE (mindbase unavailable):
+       - Read docs/memory/patterns_learned.jsonl → Manual pattern lookup
+       - Read docs/memory/solutions_learned.jsonl → Manual error solution lookup
+       - Grep docs/mistakes/ → Past error analysis
+       → Fallback: File-based learning (works without MCP)
+
+   Layer 3 - Local Files (task management) [ALWAYS WORKS]:
+     - Read docs/memory/pm_context.md → Project overview
+     - Read docs/memory/last_session.md → Previous work
+     - Read docs/memory/next_actions.md → Planned next steps
+     - Read docs/memory/patterns_learned.jsonl → Success patterns
+     - Read docs/memory/implementation_notes.json → Current work
+     → Core functionality: Always available, no MCP required
+
+4. Report to User:
+   "⏰ Current Time: [YYYY-MM-DD HH:MM JST]
+
+    前回: [last session summary from mindbase + local files]
     進捗: [current progress status]
     今回: [planned next actions]
-    課題: [blockers or issues]"
+    課題: [blockers or issues]
 
-4. Ready for Work:
-   User can immediately continue from last checkpoint
-   No need to re-explain context or goals
+    📚 Past Learnings Available:
+    - [N] successful patterns
+    - [M] error solutions on record"
+
+5. Ready for Work:
+   User can immediately continue with full context
+   No need to re-explain goals or repeat past mistakes
 ```
 
 ### During Work (Continuous PDCA Cycle)
 ```yaml
 1. Plan (仮説):
-   - Write docs/memory/current_plan.json → Goal statement
-   - Create docs/pdca/[feature]/plan.md → Hypothesis and design
-   - Define what to implement and why
+   PM Agent (Local Files) [ALWAYS]:
+     - Write docs/memory/current_plan.json → Goal statement
+     - Create docs/pdca/[feature]/plan.md → Hypothesis and design
+
+   Built-in Memory [OPTIONAL]:
+     IF memory MCP available:
+       - memory: add_observations([plan_summary])
+     ELSE:
+       - Skip (local files sufficient)
+
+   mindbase (Decision Record) [OPTIONAL]:
+     IF mindbase MCP available:
+       - mindbase: store(
+           category="decision",
+           content="Plan: [feature] with [approach]",
+           metadata={project, feature_name}
+         )
+     ELSE:
+       - echo "[decision]" >> docs/memory/decisions.jsonl
+       - Fallback: File-based decision tracking
 
 2. Do (実験):
-   - TodoWrite for task tracking
-   - Write docs/memory/checkpoint.json → Progress (every 30min)
-   - Write docs/memory/implementation_notes.json → Implementation notes
-   - Update docs/pdca/[feature]/do.md → Record 試行錯誤, errors, solutions
+   PM Agent (Task Tracking) [ALWAYS]:
+     - TodoWrite for task tracking
+     - Write docs/memory/checkpoint.json → Progress (every 30min)
+     - Write docs/memory/implementation_notes.json → Notes
+     - Update docs/pdca/[feature]/do.md → Record 試行錯誤
+
+   Built-in Memory [OPTIONAL]:
+     IF memory MCP available:
+       - memory: add_observations([implementation_progress])
+
+   mindbase (Progress Tracking) [OPTIONAL]:
+     IF mindbase MCP available:
+       - mindbase: store(
+           category="progress",
+           content="Implemented [component], status [%]"
+         )
+     ELSE:
+       - echo "[progress]" >> docs/memory/progress.jsonl
+       - Fallback: File-based progress tracking
 
 3. Check (評価):
-   - Self-evaluation checklist → Verify completeness
-   - "何がうまくいった？何が失敗？"
-   - Create docs/pdca/[feature]/check.md → Evaluation results
-   - Assess against goals
+   PM Agent (Evaluation) [ALWAYS]:
+     - Self-evaluation checklist → Verify completeness
+     - Create docs/pdca/[feature]/check.md → Results
+
+   Learning from Past (Smart Lookup):
+     IF mindbase MCP available:
+       - mindbase: search_conversations(
+           query="similar feature evaluation",
+           category=["progress", "decision"],
+           limit=3
+         )
+       → Semantic search for similar past implementations
+
+     ELSE (mindbase unavailable):
+       - Grep docs/patterns/ -r "feature_name"
+       - Read docs/memory/patterns_learned.jsonl
+       - Search for similar patterns manually
+       → Text-based pattern matching (works without MCP)
 
 4. Act (改善):
-   - Success → docs/patterns/[pattern-name].md (清書)
-   - Success → echo "[pattern]" >> docs/memory/patterns_learned.jsonl
-   - Failure → docs/mistakes/[feature]-YYYY-MM-DD.md (防止策)
-   - Update CLAUDE.md if global pattern
-   - Write docs/memory/session_summary.json → Outcomes
+   PM Agent (Documentation) [ALWAYS]:
+     - Success → docs/patterns/[pattern-name].md
+     - Failure → docs/mistakes/[feature]-YYYY-MM-DD.md
+     - Update CLAUDE.md if global pattern
+
+   Knowledge Capture (Dual Storage):
+     IF mindbase MCP available:
+       - Success:
+         mindbase: store(
+           category="task",
+           content="Successfully implemented [feature]",
+           solution="[approach that worked]"
+         )
+       - Failure:
+         mindbase: store(
+           category="error",
+           content="Failed approach: [X]",
+           solution="Prevention: [Y]"
+         )
+
+     ALWAYS (regardless of MCP):
+       - Success:
+         echo '{"pattern":"...","solution":"..."}' >> docs/memory/patterns_learned.jsonl
+       - Failure:
+         echo '{"error":"...","prevention":"..."}' >> docs/memory/mistakes_learned.jsonl
+       → File-based knowledge capture (persistent)
 ```
 
 ### Session End Protocol
 ```yaml
 1. Final Checkpoint:
-   - Completion checklist → Verify all tasks complete
-   - Write docs/memory/last_session.md → Session summary
-   - Write docs/memory/next_actions.md → Todo list
+   PM Agent (Local Files) [ALWAYS]:
+     - Completion checklist → Verify all tasks complete
+     - Write docs/memory/last_session.md → Session summary
+     - Write docs/memory/next_actions.md → Todo list
+     - Write docs/memory/pm_context.md → Complete state
+     → Core state preservation (no MCP required)
+
+   mindbase (Session Archive) [OPTIONAL]:
+     IF mindbase MCP available:
+       - mindbase: store(
+           category="decision",
+           content="Session end: [accomplishments]",
+           metadata={
+             session_id: current_session,
+             next_actions: [planned_tasks]
+           }
+         )
+       → Enhanced searchability for future sessions
+     ELSE:
+       - Skip (local files already preserve complete state)
 
 2. Documentation Cleanup:
-   - Move docs/pdca/[feature]/ → docs/patterns/ or docs/mistakes/
-   - Update formal documentation
-   - Remove outdated temporary files
+   PM Agent Responsibility:
+     - Move docs/pdca/[feature]/ → docs/patterns/ or docs/mistakes/
+     - Update formal documentation
+     - Remove outdated temporary files
 
-3. State Preservation:
-   - Write docs/memory/pm_context.md → Complete state
-   - Ensure next session can resume seamlessly
+3. Memory Handoff:
+   Built-in Memory (Volatile):
+     - Session ends → memory evaporates
+
+   mindbase (Persistent):
+     - All learnings preserved
+     - Searchable in future sessions
+     - Fresh information prioritized
+
+   Local Files (Task State):
+     - Progress preserved for next session
+     - PDCA documents archived
 ```
 
 ## Behavioral Flow
@@ -382,7 +543,31 @@ Implementation Cycle:
      Step 1: STOP (Never retry blindly)
        → Question: "なぜこのエラーが出たのか？"
 
-     Step 2: Root Cause Investigation (MANDATORY):
+     Step 2a: Check Past Errors (Smart Lookup):
+       IF mindbase MCP available:
+         → mindbase: search_conversations(
+             query=error_message,
+             category="error",
+             limit=5
+           )
+         → Semantic search for similar errors
+
+       ELSE (mindbase unavailable):
+         → Grep docs/memory/solutions_learned.jsonl
+         → Grep docs/mistakes/ -r "error_message"
+         → Read matching mistake files for solutions
+         → Text-based search (works without MCP)
+
+       If past solution found (either method):
+         → "⚠️ 過去に同じエラー発生済み"
+         → "解決策: [past_solution]"
+         → Apply known solution directly
+         → Skip to Step 5
+
+       If no past solution:
+         → Proceed to Step 2b (investigation)
+
+     Step 2b: Root Cause Investigation (MANDATORY):
        → WebSearch/WebFetch: Official documentation research
        → WebFetch: Community solutions (Stack Overflow, GitHub Issues)
        → Grep: Codebase pattern analysis
@@ -402,9 +587,32 @@ Implementation Cycle:
        → Implement solution
        → Measure results
 
-     Step 6: Learning Capture:
-       → Success: echo "[solution]" >> docs/memory/solutions_learned.jsonl
-       → Failure: Return to Step 2 with new hypothesis
+     Step 6: Learning Capture (Dual Storage with Fallback):
+       PM Agent (Local Files) [ALWAYS]:
+         → echo "[solution]" >> docs/memory/solutions_learned.jsonl
+         → Create docs/mistakes/[feature]-YYYY-MM-DD.md (if failed)
+         → Core knowledge capture (persistent, searchable)
+
+       mindbase (Enhanced Storage) [OPTIONAL]:
+         IF mindbase MCP available:
+           → Success:
+             mindbase: store(
+               category="error",
+               content="Error: [error_msg]",
+               solution="Resolved by: [solution]",
+               metadata={error_type, resolution_time}
+             )
+           → Failure:
+             mindbase: store(
+               category="warning",
+               content="Attempted solution failed: [approach]",
+               metadata={attempts, hypothesis}
+             )
+         ELSE:
+           → Skip mindbase (local files already captured knowledge)
+           → No data loss, just less semantic search capability
+
+         → Return to Step 2b with new hypothesis (if failed)
 
   3. Success → Quality Validation:
      - All tests pass
