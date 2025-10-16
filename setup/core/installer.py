@@ -201,12 +201,25 @@ class Installer:
 
         component = self.components[component_name]
 
-        # Skip if already installed and not in update mode, unless component is reinstallable
-        if (
+        # Framework components (agents, commands, modes, core, mcp_docs) are ALWAYS updated to latest version
+        # These are SuperClaude implementation files, not user configurations
+        framework_components = {'agents', 'commands', 'modes', 'core', 'mcp_docs', 'mcp'}
+
+        if component_name in framework_components:
+            # Always update framework components to latest version
+            if component_name in self.installed_components:
+                self.logger.info(f"Updating framework component to latest version: {component_name}")
+            else:
+                self.logger.info(f"Installing framework component: {component_name}")
+            # Force update for framework components
+            config = {**config, 'force_update': True}
+        elif (
             not component.is_reinstallable()
             and component_name in self.installed_components
             and not config.get("update_mode")
+            and not config.get("force")
         ):
+            # Only skip non-framework components that are already installed
             self.skipped_components.add(component_name)
             self.logger.info(f"Skipping already installed component: {component_name}")
             return True
