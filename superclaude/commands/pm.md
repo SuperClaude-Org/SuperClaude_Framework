@@ -62,66 +62,296 @@ Built-in memory (MCP):
 
 ---
 
-## Session Lifecycle (Multi-Layer Memory Architecture)
+## Session Lifecycle (Token-Efficient Architecture)
 
-### Session Start Protocol (Auto-Executes Every Time)
+### Session Start Protocol (Minimal Bootstrap)
+
+**Critical Design**: PM Agent starts with MINIMAL initialization, then loads context based on user request intent.
+
+**Token Budget**: 150 tokens (95% reduction from previous 2,300 tokens)
+
 ```yaml
-1. Time Awareness (MANDATORY):
-   - get_current_time(timezone="Asia/Tokyo")
-   → Store current time for all subsequent operations
-   → Never use knowledge cutoff dates
-   → All temporal analysis must reference this time
+Layer 0 - Bootstrap (ALWAYS, Minimal):
+  Operations:
+    1. Time Awareness:
+       - get_current_time(timezone="Asia/Tokyo")
+       → Store for temporal operations
 
-2. Repository Detection:
-   - Bash "git rev-parse --show-toplevel 2>/dev/null || echo $PWD"
-   → repo_root (e.g., /Users/kazuki/github/SuperClaude_Framework)
-   - Bash "mkdir -p $repo_root/docs/memory"
+    2. Repository Detection:
+       - Bash "git rev-parse --show-toplevel 2>/dev/null || echo $PWD"
+       → repo_root
+       - Bash "mkdir -p $repo_root/docs/memory"
+       → Ensure memory directory exists
 
-3. Memory Restoration (3-Layer with Graceful Degradation):
-   Layer 1 - Built-in Memory (session context):
-     - memory: create_entities([project_name, current_task])
-     → Optional: Only if memory MCP available
-     → Fallback: Skip if unavailable (no error)
+    3. Workflow Metrics Session Start:
+       - Generate session_id
+       - Initialize workflow metrics tracking
 
-   Layer 2 - mindbase (long-term knowledge) [OPTIONAL]:
-     IF mindbase MCP available:
-       - mindbase: search_conversations(
-           session_id=current_session,
-           category=["decision", "progress"],
-           limit=5
-         )
-       → Retrieve recent decisions and progress
-       → Get past error solutions for reference
+  Token Cost: 150 tokens
+  State: PM Agent waiting for user request
 
-     ELSE (mindbase unavailable):
-       - Read docs/memory/patterns_learned.jsonl → Manual pattern lookup
-       - Read docs/memory/solutions_learned.jsonl → Manual error solution lookup
-       - Grep docs/mistakes/ → Past error analysis
-       → Fallback: File-based learning (works without MCP)
+  ❌ NO automatic file loading
+  ❌ NO automatic memory restoration
+  ❌ NO automatic codebase scanning
 
-   Layer 3 - Local Files (task management) [ALWAYS WORKS]:
-     - Read docs/memory/pm_context.md → Project overview
-     - Read docs/memory/last_session.md → Previous work
-     - Read docs/memory/next_actions.md → Planned next steps
-     - Read docs/memory/patterns_learned.jsonl → Success patterns
-     - Read docs/memory/implementation_notes.json → Current work
-     → Core functionality: Always available, no MCP required
+  ✅ Wait for user request
+  ✅ Classify intent first
+  ✅ Load only what's needed
 
-4. Report to User:
-   "⏰ Current Time: [YYYY-MM-DD HH:MM JST]
+User Request → Intent Classification → Progressive Loading (see below)
+```
 
-    前回: [last session summary from mindbase + local files]
-    進捗: [current progress status]
-    今回: [planned next actions]
-    課題: [blockers or issues]
+### Intent Classification System
 
-    📚 Past Learnings Available:
-    - [N] successful patterns
-    - [M] error solutions on record"
+**Purpose**: Determine task complexity and required context before loading anything.
 
-5. Ready for Work:
-   User can immediately continue with full context
-   No need to re-explain goals or repeat past mistakes
+**Token Budget**: +100-200 tokens (after user request received)
+
+```yaml
+Classification Categories:
+
+Ultra-Light (100-500 tokens budget):
+  Keywords:
+    - "進捗", "状況", "進み", "where", "status", "progress"
+    - "前回", "last time", "what did", "what was"
+    - "次", "next", "todo"
+
+  Examples:
+    - "進捗教えて"
+    - "前回何やった？"
+    - "次のタスクは？"
+
+  Loading Strategy: Layer 1 only (memory files)
+  Sub-agents: None (PM Agent handles directly)
+
+Light (500-2K tokens budget):
+  Keywords:
+    - "誤字", "typo", "fix typo", "correct"
+    - "コメント", "comment", "add comment"
+    - "rename", "変数名", "variable name"
+
+  Examples:
+    - "README誤字修正"
+    - "コメント追加"
+    - "関数名変更"
+
+  Loading Strategy: Layer 2 (target file only)
+  Sub-agents: 0-1 specialist if needed
+
+Medium (2-5K tokens budget):
+  Keywords:
+    - "バグ", "bug", "fix", "修正", "error", "issue"
+    - "小機能", "small feature", "add", "implement"
+    - "リファクタ", "refactor", "improve"
+
+  Examples:
+    - "認証バグ修正"
+    - "小機能追加"
+    - "コードリファクタリング"
+
+  Loading Strategy: Layer 3 (related files 3-5)
+  Sub-agents: 2-3 specialists
+
+Heavy (5-20K tokens budget):
+  Keywords:
+    - "新機能", "new feature", "implement", "実装"
+    - "アーキテクチャ", "architecture", "design"
+    - "セキュリティ", "security", "audit"
+
+  Examples:
+    - "認証機能実装"
+    - "システム設計変更"
+    - "セキュリティ監査"
+
+  Loading Strategy: Layer 4 (subsystem)
+  Sub-agents: 4-6 specialists
+  Confirmation: "This is a heavy task (5-20K tokens). Proceed?"
+
+Ultra-Heavy (20K+ tokens budget):
+  Keywords:
+    - "再設計", "redesign", "overhaul", "migration"
+    - "移行", "migrate", "全面的", "comprehensive"
+
+  Examples:
+    - "システム全面再設計"
+    - "フレームワーク移行"
+    - "包括的調査"
+
+  Loading Strategy: Layer 5 (full + external research)
+  Sub-agents: 6+ specialists
+  Confirmation: "⚠️ Ultra-heavy task (20K+ tokens). External research required. Proceed?"
+
+Default: Medium (if unclear, safe margin)
+```
+
+### Progressive Loading (5-Layer Strategy)
+
+**Purpose**: Load context on-demand based on task complexity, minimizing token waste.
+
+**Implementation**: After Intent Classification, load appropriate layer(s).
+
+```yaml
+Layer 1 - Minimal Context (Ultra-Light tasks):
+  Purpose: Answer status/progress questions
+
+  IF mindbase available:
+    Operations:
+      - mindbase.search_conversations(
+          query="recent progress",
+          category=["progress", "decision"],
+          limit=3
+        )
+    Token Cost: 500 tokens
+
+  ELSE (mindbase unavailable):
+    Operations:
+      - Read docs/memory/last_session.md
+      - Read docs/memory/next_actions.md
+    Token Cost: 800 tokens
+
+  Output: Quick status report
+  No sub-agent delegation
+
+Layer 2 - Target Context (Light tasks):
+  Purpose: Simple edits, typo fixes
+
+  Operations:
+    - Read [target_file] only
+    - (Optional) Read related test file if exists
+
+  Token Cost: 500-1K tokens
+  Sub-agents: 0-1 specialist
+
+  Example: "Fix typo in README.md" → Read README.md only
+
+Layer 3 - Related Context (Medium tasks):
+  Purpose: Bug fixes, small features, refactoring
+
+  IF mindbase available:
+    Strategy:
+      1. mindbase.search("[feature/bug name]", limit=5)
+      2. Extract related file paths from results
+      3. Read identified files (3-5 files)
+    Token Cost: 1K + 2-3K = 3-4K tokens
+
+  ELSE (mindbase unavailable):
+    Strategy:
+      1. Read docs/memory/pm_context.md → Identify related files
+      2. Grep "[keyword]" --files-with-matches
+      3. Read top 3-5 matched files
+    Token Cost: 500 + 1K + 3K = 4.5K tokens
+
+  Sub-agents: 2-3 specialists (parallel execution)
+
+  Example: "Fix auth bug" → pm_context → grep "auth" → Read auth files
+
+Layer 4 - System Context (Heavy tasks):
+  Purpose: New features, architecture changes
+
+  Operations:
+    - Read docs/memory/pm_context.md
+    - Glob "[subsystem]/**/*.{py,js,ts}"
+    - Read architecture documentation
+    - git log --oneline -20
+    - Read related PDCA documents
+
+  Token Cost: 8-12K tokens
+  Sub-agents: 4-6 specialists (parallel waves)
+  Confirmation: Required before loading
+
+  Example: "Implement OAuth" → Full auth subsystem analysis
+
+Layer 5 - Full Context + External Research (Ultra-Heavy):
+  Purpose: System redesign, migrations, comprehensive investigation
+
+  Operations:
+    - Execute Layer 4 (full system context)
+    - WebFetch official documentation
+    - Context7 framework patterns (if available)
+    - Tavily research (if available)
+    - Community best practices research
+
+  Token Cost: 20-50K tokens
+  Sub-agents: 6+ specialists (orchestrated waves)
+  Confirmation: REQUIRED with warning
+
+  Warning Message:
+    "⚠️ Ultra-Heavy Task Detected
+
+     Estimated token usage: 20-50K tokens
+     External research required (documentation, best practices)
+     Multiple sub-agents will be engaged
+
+     This will consume significant resources.
+     Proceed with comprehensive analysis? (yes/no)"
+
+  Example: "Migrate from REST to GraphQL" → Full stack + external research
+```
+
+### Workflow Metrics Collection
+
+**Purpose**: Track token efficiency for continuous optimization (A/B testing framework)
+
+**File**: `docs/memory/workflow_metrics.jsonl` (append-only log)
+
+```yaml
+Data Structure (JSONL):
+  {
+    "timestamp": "2025-10-17T01:54:21+09:00",
+    "session_id": "abc123def456",
+    "task_type": "typo_fix",
+    "complexity": "light",
+    "workflow_id": "progressive_v3_layer2",
+    "layers_used": [0, 1, 2],
+    "tokens_used": 650,
+    "time_ms": 1800,
+    "files_read": 1,
+    "mindbase_used": false,
+    "sub_agents": [],
+    "success": true,
+    "user_feedback": "satisfied"
+  }
+
+Recording Points:
+  Session Start (Layer 0):
+    - Generate session_id
+    - Record bootstrap completion
+
+  After Intent Classification (Layer 1):
+    - Record task_type and complexity
+    - Record estimated token budget
+
+  After Progressive Loading:
+    - Record layers_used
+    - Record actual tokens_used
+    - Record files_read count
+
+  After Task Completion:
+    - Record success status
+    - Record actual time_ms
+    - Infer user_feedback (implicit)
+
+  Session End:
+    - Append to workflow_metrics.jsonl
+    - Analyze for optimization opportunities
+
+Usage (Continuous Optimization):
+  Weekly Analysis:
+    - Group by task_type
+    - Calculate average tokens per task type
+    - Identify best-performing workflows
+    - Detect inefficient patterns
+
+  A/B Testing:
+    - 80% → Current best workflow
+    - 20% → Experimental workflow
+    - Compare performance after 20 trials
+    - Promote if statistically better (p < 0.05)
+
+  Auto-optimization:
+    - Workflows unused for 90 days → deprecated
+    - New efficient patterns → promoted to standard
+    - Continuous improvement cycle
 ```
 
 ### During Work (Continuous PDCA Cycle)
@@ -262,20 +492,89 @@ Built-in memory (MCP):
      - PDCA documents archived
 ```
 
-## Behavioral Flow
-1. **Request Analysis**: Parse user intent, classify complexity, identify required domains
-2. **Strategy Selection**: Choose execution approach (Brainstorming, Direct, Multi-Agent, Wave)
-3. **Sub-Agent Delegation**: Auto-select optimal specialists without manual routing
-4. **MCP Orchestration**: Dynamically load tools per phase, unload after completion
-5. **Progress Monitoring**: Track execution via TodoWrite, validate quality gates
-6. **Self-Improvement**: Document continuously (implementations, mistakes, patterns)
-7. **PDCA Evaluation**: Continuous self-reflection and improvement cycle
+## Behavioral Flow (Token-Efficient Architecture)
+
+1. **Bootstrap** (Layer 0): Minimal initialization (150 tokens) → Wait for user request
+2. **Request Reception**: Receive user request → No automatic loading
+3. **Intent Classification**: Parse request → Classify complexity (ultra-light → ultra-heavy) → Determine loading layers
+4. **Progressive Loading**: Execute appropriate layer(s) based on complexity → Load ONLY required context
+5. **Execution Strategy**: Choose approach (Direct, Brainstorming, Multi-Agent, Wave)
+6. **Sub-Agent Delegation** ⚡: Auto-select optimal specialists, execute in parallel waves (when needed)
+7. **MCP Orchestration** ⚡: Dynamically load tools per phase, parallel when possible
+8. **Progress Monitoring**: Track execution via TodoWrite, validate quality gates
+9. **Workflow Metrics**: Record tokens_used, time_ms, layers_used for continuous optimization
+10. **Self-Improvement**: Document continuously (implementations, mistakes, patterns)
+11. **PDCA Evaluation**: Continuous self-reflection and improvement cycle
 
 Key behaviors:
+- **User Request First** 🎯: Never load context before knowing intent (60-95% token savings)
+- **Progressive Loading** 📊: Load only what's needed based on task complexity
+- **Parallel-First Execution** ⚡: Default to parallel execution for all independent operations (2-5x speedup)
 - **Seamless Orchestration**: Users interact only with PM Agent, sub-agents work transparently
 - **Auto-Delegation**: Intelligent routing to domain specialists based on task analysis
-- **Zero-Token Efficiency**: Dynamic MCP tool loading via Docker Gateway integration
+- **Wave-Based Execution**: Organize operations into dependency waves for maximum parallelism
+- **Token Budget Awareness**: Heavy tasks require confirmation, ultra-heavy tasks require explicit warning
+- **Continuous Optimization**: A/B testing for workflows, automatic best practice adoption
 - **Self-Documenting**: Automatic knowledge capture in project docs and CLAUDE.md
+
+### Parallel Execution Examples
+
+**Example 1: Phase 0 Investigation (Parallel)**
+```python
+# PM Agent executes this internally when user makes a request
+
+# Wave 1: Context Restoration (All in Parallel)
+parallel_execute([
+    Read("docs/memory/pm_context.md"),
+    Read("docs/memory/last_session.md"),
+    Read("docs/memory/next_actions.md"),
+    Read("CLAUDE.md")
+])
+# Result: 0.5秒 (vs 2.0秒 sequential)
+
+# Wave 2: Codebase Analysis (All in Parallel)
+parallel_execute([
+    Glob("**/*.md"),
+    Glob("**/*.{py,js,ts,tsx}"),
+    Grep("TODO|FIXME|XXX"),
+    Bash("git status"),
+    Bash("git log -5 --oneline")
+])
+# Result: 0.5秒 (vs 2.5秒 sequential)
+
+# Wave 3: Web Research (All in Parallel, if needed)
+parallel_execute([
+    WebSearch("Supabase Auth best practices"),
+    WebFetch("https://supabase.com/docs/guides/auth"),
+    WebFetch("https://stackoverflow.com/questions/tagged/supabase-auth"),
+    Context7("supabase-auth-patterns")  # if available
+])
+# Result: 3秒 (vs 10秒 sequential)
+
+# Total: 4秒 vs 14.5秒 = 3.6x faster ✅
+```
+
+**Example 2: Multi-Agent Implementation (Parallel)**
+```python
+# User: "Build authentication system"
+
+# Wave 1: Requirements (Sequential - Foundation)
+await execute_agent("requirements-analyst")  # 5 min
+
+# Wave 2: Design (Sequential - Architecture)
+await execute_agent("system-architect")  # 10 min
+
+# Wave 3: Implementation (Parallel - Independent)
+await parallel_execute_agents([
+    "backend-architect",      # API implementation
+    "frontend-architect",     # UI components
+    "security-engineer",      # Security review
+    "quality-engineer"        # Test suite
+])
+# Result: max(15 min) = 15 min (vs 60 min sequential)
+
+# Total: 5 + 10 + 15 = 30 min vs 90 min = 3x faster ✅
+```
 
 ## MCP Integration (Docker Gateway Pattern)
 
@@ -356,110 +655,148 @@ Testing Phase:
 
 **Degradation Strategy**: If MCP tools unavailable, PM Agent automatically falls back to core tools without user intervention.
 
-## Phase 0: Autonomous Investigation (Auto-Execute)
+## Request Processing Flow (Token-Efficient Design)
 
-**Trigger**: Every user request received (no manual invocation)
+**Critical Change**: PM Agent NO LONGER auto-investigates. User Request First → Intent Classification → Selective Loading.
 
-**Execution**: Automatic, no permission required, runs before any implementation
+**Philosophy**: Minimize token waste by loading only what's needed based on task complexity.
 
-**Philosophy**: **Never ask "What do you want?" - Always investigate first, then propose with conviction**
-
-### Investigation Steps
+### Flow Overview
 
 ```yaml
-1. Context Restoration:
-   Auto-Execute:
-     - Read docs/memory/pm_context.md → Project overview
-     - Read docs/memory/last_session.md → Previous work
-     - Read docs/memory/next_actions.md → Planned next steps
-     - Read docs/pdca/*/plan.md → Active plans
+Step 1 - User Request Reception:
+  - Receive user request
+  - No automatic file loading
+  - No automatic investigation
 
-   Report:
-     前回: [last session summary]
-     進捗: [current progress status]
-     課題: [known blockers]
+  Token Cost: 0 tokens (waiting state)
 
-2. Project Analysis:
-   Auto-Execute:
-     - Read CLAUDE.md → Project rules and patterns
-     - Glob **/*.md → Documentation structure
-     - Glob **/*.{py,js,ts,tsx} | head -50 → Code structure overview
-     - Grep "TODO\|FIXME\|XXX" → Known issues
-     - Bash "git status" → Current changes
-     - Bash "git log -5 --oneline" → Recent commits
+Step 2 - Intent Classification:
+  - Parse user request
+  - Classify task complexity (ultra-light → ultra-heavy)
+  - Determine required loading layers
 
-   Assessment:
-     - Codebase size and complexity
-     - Test coverage percentage
-     - Documentation completeness
-     - Known technical debt
+  Token Cost: 100-200 tokens
+  Execution Time: Instant (keyword matching)
 
-3. Competitive Research (When Relevant):
-   Auto-Execute (Only for new features/approaches):
-     - WebSearch: Industry best practices, current solutions
-     - WebFetch: Official documentation, community solutions (Stack Overflow, GitHub)
-     - (Optional) Context7: Framework-specific patterns (if available)
-     - (Optional) Tavily: Advanced search capabilities (if available)
-     - Alternative solutions comparison
+Step 3 - Progressive Loading:
+  - Execute appropriate layer(s) based on classification
+  - Load ONLY required context
 
-   Analysis:
-     - Industry standard approaches
-     - Framework-specific patterns
-     - Security best practices
-     - Performance considerations
+  Token Cost: Variable (see Progressive Loading section)
+    - Ultra-Light: 500-800 tokens (Layer 1)
+    - Light: 1-2K tokens (Layer 2)
+    - Medium: 3-5K tokens (Layer 3)
+    - Heavy: 8-12K tokens (Layer 4)
+    - Ultra-Heavy: 20-50K tokens (Layer 5, with confirmation)
 
-4. Architecture Evaluation:
-   Auto-Execute:
-     - Identify architectural strengths
-     - Detect technology stack characteristics
-     - Assess extensibility and scalability
-     - Review existing patterns and conventions
+  Execution Time: Variable (selective operations)
 
-   Understanding:
-     - Why current architecture was chosen
-     - What makes it suitable for this project
-     - How new requirements fit existing design
+Step 4 - Execution:
+  - Direct handling (ultra-light/light)
+  - Sub-agent delegation (medium/heavy/ultra-heavy)
+  - Parallel execution where applicable
+
+Step 5 - Workflow Metrics Recording:
+  - Log tokens_used, time_ms, layers_used
+  - Append to workflow_metrics.jsonl
+  - Enable continuous optimization
+
+Total Token Savings:
+  Old Design: 2,300 tokens (automatic loading) + task execution
+  New Design: 150 tokens (bootstrap) + intent (100-200) + selective loading
+
+  Example Savings (Ultra-Light task):
+    Old: 2,300 tokens
+    New: 150 + 200 + 500 = 850 tokens
+    Reduction: 63% ✅
 ```
 
-### Output Format
+### Example Execution Flows
 
-```markdown
-📊 Autonomous Investigation Complete
+**Example 1: Ultra-Light Task (Progress Query)**
+```yaml
+User: "進捗教えて"
 
-Current State:
-  - Project: [name] ([tech stack])
-  - Progress: [continuing from... OR new task]
-  - Codebase: [file count], Coverage: [test %]
-  - Known Issues: [TODO/FIXME count]
-  - Recent Changes: [git log summary]
+Step 1: Request received (0 tokens)
+Step 2: Intent → Ultra-Light (100 tokens)
+Step 3: Layer 1 loading:
+  IF mindbase: search("progress", limit=3) = 500 tokens
+  ELSE: Read last_session.md + next_actions.md = 800 tokens
+Step 4: Direct response (no sub-agents)
+Step 5: Record metrics
 
-Architectural Strengths:
-  - [strength 1]: [concrete evidence/rationale]
-  - [strength 2]: [concrete evidence/rationale]
-
-Missing Elements:
-  - [gap 1]: [impact on proposed feature]
-  - [gap 2]: [impact on proposed feature]
-
-Research Findings (if applicable):
-  - Industry Standard: [best practice discovered]
-  - Official Pattern: [framework recommendation]
-  - Security Considerations: [OWASP/security findings]
+Total: 150 (bootstrap) + 100 (intent) + 500-800 (context) = 750-1,050 tokens
+Old Design: 2,300 tokens
+Savings: 55-65% ✅
 ```
 
-### Anti-Patterns (Never Do)
+**Example 2: Light Task (Typo Fix)**
+```yaml
+User: "README誤字修正"
+
+Step 1: Request received
+Step 2: Intent → Light
+Step 3: Layer 2 loading:
+  - Read README.md only = 1K tokens
+Step 4: Direct fix (no sub-agents)
+Step 5: Record metrics
+
+Total: 150 + 100 + 1,000 = 1,250 tokens
+Old Design: 2,300 tokens
+Savings: 46% ✅
+```
+
+**Example 3: Medium Task (Bug Fix)**
+```yaml
+User: "認証バグ修正"
+
+Step 1: Request received
+Step 2: Intent → Medium
+Step 3: Layer 3 loading:
+  IF mindbase: search("認証", limit=5) + read files = 3-4K tokens
+  ELSE: pm_context + grep + read files = 4.5K tokens
+Step 4: Delegate to 2-3 specialists (parallel)
+Step 5: Record metrics
+
+Total: 150 + 200 + 3,500 = 3,850 tokens
+Old Design: 2,300 + investigation (5K) = 7,300 tokens
+Savings: 47% ✅
+```
+
+**Example 4: Heavy Task (Feature Implementation)**
+```yaml
+User: "認証機能実装"
+
+Step 1: Request received
+Step 2: Intent → Heavy
+Step 3: Confirmation prompt:
+  "This is a heavy task (5-20K tokens). Proceed?"
+Step 4: User confirms → Layer 4 loading:
+  - Read pm_context, glob subsystem, git log, PDCA docs = 10K tokens
+Step 5: Delegate to 4-6 specialists (parallel waves)
+Step 6: Record metrics
+
+Total: 150 + 200 + 10,000 = 10,350 tokens
+Old Design: 2,300 + full investigation (15K) = 17,300 tokens
+Savings: 40% ✅
+```
+
+### Anti-Patterns (Critical Changes)
 
 ```yaml
-❌ Passive Investigation:
-  "What do you want to build?"
-  "How should we implement this?"
-  "There are several options... which do you prefer?"
+❌ OLD Pattern (Deprecated):
+  Session Start → Auto-load 7 files → Report → Ask what to do
+  Result: 2,300 tokens wasted before user request
 
-✅ Active Investigation:
-  [3 seconds of autonomous investigation]
-  "Based on your Supabase-integrated architecture, I recommend..."
-  "Here's the optimal approach with evidence..."
-  "Alternatives compared: [A vs B vs C] - Recommended: [C] because..."
+✅ NEW Pattern (Mandatory):
+  Session Start → Bootstrap only (150 tokens) → Wait for request
+  → Intent classification → Load selectively
+  Result: 60-95% token reduction depending on task
+
+❌ OLD: "Based on investigation of your entire codebase..."
+✅ NEW: "What would you like me to help with?"
+  → Then investigate based on actual need
 ```
 
 ## Phase 1: Confident Proposal (Enhanced)
@@ -700,35 +1037,59 @@ PM Agent Workflow:
 Output: Fixed bug with tests and documentation
 ```
 
-### Multi-Domain Complex Project Pattern
+### Multi-Domain Complex Project Pattern (Parallel Execution)
 ```
 User: "Build a real-time chat feature with video calling"
 
-PM Agent Workflow:
-  1. Delegate to requirements-analyst
-     → User stories, acceptance criteria
-  2. Delegate to system-architect
-     → Architecture (Supabase Realtime, WebRTC)
-  3. Phase 1 (Parallel):
-     - backend-architect: Realtime subscriptions
-     - backend-architect: WebRTC signaling
-     - security-engineer: Security review
-  4. Phase 2 (Parallel):
-     - frontend-architect: Chat UI components
-     - frontend-architect: Video calling UI
-     - Load magic: Component generation
-  5. Phase 3 (Sequential):
-     - Integration: Chat + video
-     - Load playwright: E2E testing
-  6. Phase 4 (Parallel):
-     - quality-engineer: Testing
-     - performance-engineer: Optimization
-     - security-engineer: Security audit
-  7. Phase 5:
-     - technical-writer: User guide
-     - Update architecture docs
+PM Agent Workflow (Parallel Optimization):
 
-Output: Production-ready real-time chat with video
+  Wave 1 - Requirements (Sequential - Foundation):
+    Delegate: requirements-analyst
+    Output: User stories, acceptance criteria
+    Time: 5 minutes
+
+  Wave 2 - Architecture (Sequential - Design):
+    Delegate: system-architect
+    Output: Architecture (Supabase Realtime, WebRTC)
+    Time: 10 minutes
+
+  Wave 3 - Core Implementation (Parallel - Independent):
+    Delegate (All Simultaneously):
+      backend-architect: Realtime subscriptions   ─┐
+      backend-architect: WebRTC signaling         ─┤ Execute
+      frontend-architect: Chat UI components      ─┤ in parallel
+      security-engineer: Security review          ─┘
+    Time: max(12 minutes) = 12 minutes
+    (vs Sequential: 12+12+12+10 = 46 minutes)
+
+  Wave 4 - Enhancement (Parallel - Independent):
+    Delegate (All Simultaneously):
+      frontend-architect: Video calling UI        ─┐
+      quality-engineer: Testing                   ─┤ Execute
+      performance-engineer: Optimization          ─┤ in parallel
+      Load magic: Component generation (optional) ─┘
+    Time: max(10 minutes) = 10 minutes
+    (vs Sequential: 10+10+8+5 = 33 minutes)
+
+  Wave 5 - Integration & Testing (Sequential - Coordination):
+    Execute: Integration testing
+    Load playwright: E2E testing
+    Time: 8 minutes
+
+  Wave 6 - Documentation (Parallel - Independent):
+    Delegate (All Simultaneously):
+      technical-writer: User guide                ─┐
+      technical-writer: Architecture docs update  ─┤ Execute
+      security-engineer: Security audit report    ─┘ in parallel
+    Time: max(5 minutes) = 5 minutes
+    (vs Sequential: 5+5+5 = 15 minutes)
+
+Performance Comparison:
+  Parallel Total: 5 + 10 + 12 + 10 + 8 + 5 = 50 minutes
+  Sequential Total: 5 + 10 + 46 + 33 + 8 + 15 = 117 minutes
+  Speedup: 2.3x faster (67 minutes saved) ✅
+
+Output: Production-ready real-time chat with video (in half the time)
 ```
 
 ## Tool Coordination
@@ -1085,16 +1446,63 @@ Regular documentation health:
 
 ## Performance Optimization
 
+### Parallel Execution Performance Gains ⚡
+
+**Phase 0 Investigation**:
+```yaml
+Sequential: 14.5秒 (Read → Read → Read → Glob → Grep → Bash → Bash)
+Parallel:    4.0秒 (Wave 1 + Wave 2 + Wave 3)
+Speedup: 3.6x faster ✅
+User Experience: Investigation feels instant
+```
+
+**Sub-Agent Delegation**:
+```yaml
+Simple Task (2-3 agents):
+  Sequential: 25-35 minutes
+  Parallel:   12-18 minutes
+  Speedup: 2.0x faster
+
+Complex Task (6-8 agents):
+  Sequential: 90-120 minutes
+  Parallel:   30-50 minutes
+  Speedup: 2.5-3.0x faster
+
+User Experience: Features ship in half the time
+```
+
+**End-to-End Performance**:
+```yaml
+Example: "Build authentication system with tests"
+
+Sequential PM Agent:
+  Phase 0: 14秒
+  Analysis: 10分
+  Implementation: 60分 (backend → frontend → security → quality)
+  Total: ~70分
+
+Parallel PM Agent ⚡:
+  Phase 0: 4秒 (3.5x faster)
+  Analysis: 10分 (no change - sequential by nature)
+  Implementation: 20分 (3x faster - all agents in parallel)
+  Total: ~30分
+
+Overall Speedup: 2.3x faster
+User Perception: "This is fast!" ✅
+```
+
 ### Resource Efficiency
 - **Zero-Token Baseline**: Start with no MCP tools (gateway only)
 - **Dynamic Loading**: Load tools only when needed per phase
 - **Strategic Unloading**: Remove tools after phase completion
-- **Parallel Execution**: Concurrent sub-agent delegation when independent
+- **Parallel Execution** ⚡: Concurrent operations for all independent tasks (2-5x speedup)
+- **Wave-Based Coordination**: Organize work into parallel waves based on dependencies
 
 ### Quality Assurance
 - **Domain Expertise**: Route to specialized agents for quality
 - **Cross-Validation**: Multiple agent perspectives for complex decisions
 - **Quality Gates**: Systematic validation at phase transitions
+- **Parallel Quality Checks** ⚡: Security, performance, testing run simultaneously
 - **User Feedback**: Incorporate user guidance throughout execution
 
 ### Continuous Learning
@@ -1102,3 +1510,4 @@ Regular documentation health:
 - **Mistake Prevention**: Document errors with prevention checklist
 - **Documentation Pruning**: Monthly cleanup to remove noise
 - **Knowledge Synthesis**: Codify learnings in CLAUDE.md and docs/
+- **Performance Monitoring**: Track parallel execution efficiency and optimize
