@@ -20,5 +20,5 @@ DATA_DIR = SETUP_DIR / "data"
 # Import home directory detection for immutable distros
 from .utils.paths import get_home_directory
 
-# Installation target
-DEFAULT_INSTALL_DIR = get_home_directory() / ".claude"
+# Installation target - SuperClaude components installed in subdirectory
+DEFAULT_INSTALL_DIR = get_home_directory() / ".claude" / "superclaude"

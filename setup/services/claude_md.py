@@ -16,10 +16,11 @@ class CLAUDEMdService:
         Initialize CLAUDEMdService
 
         Args:
-            install_dir: Installation directory (typically ~/.claude)
+            install_dir: Installation directory (typically ~/.claude/superclaude)
         """
         self.install_dir = install_dir
-        self.claude_md_path = install_dir / "CLAUDE.md"
+        # CLAUDE.md is always in parent directory (~/.claude/)
+        self.claude_md_path = install_dir.parent / "CLAUDE.md"
         self.logger = get_logger()
 
     def read_existing_imports(self) -> Set[str]:
@@ -39,7 +40,8 @@ class CLAUDEMdService:
                 content = f.read()
 
             # Find all @import statements using regex
-            import_pattern = r"^@([^\s\n]+\.md)\s*$"
+            # Supports both @superclaude/file.md and @file.md (legacy)
+            import_pattern = r"^@(?:superclaude/)?([^\s\n]+\.md)\s*$"
             matches = re.findall(import_pattern, content, re.MULTILINE)
             existing_imports.update(matches)
 
@@ -116,7 +118,8 @@ class CLAUDEMdService:
             if files:
                 sections.append(f"# {category}")
                 for file in sorted(files):
-                    sections.append(f"@{file}")
+                    # Add superclaude/ prefix for all imports
+                    sections.append(f"@superclaude/{file}")
                 sections.append("")
 
         return "\n".join(sections)
@@ -133,8 +136,10 @@ class CLAUDEMdService:
             True if successful, False otherwise
         """
         try:
-            # Ensure CLAUDE.md exists
-            self.ensure_claude_md_exists()
+            # Check if CLAUDE.md exists (DO NOT create it)
+            if not self.ensure_claude_md_exists():
+                self.logger.info("Skipping CLAUDE.md update (file does not exist)")
+                return False
 
             # Read existing content and imports
             existing_content = self.read_existing_content()
@@ -235,39 +240,36 @@ class CLAUDEMdService:
             # Import line (starts with @)
             elif line.startswith("@") and current_category:
                 import_file = line[1:].strip()  # Remove "@"
+                # Remove superclaude/ prefix if present (normalize to filename only)
+                if import_file.startswith("superclaude/"):
+                    import_file = import_file[len("superclaude/"):]
                 if import_file not in imports_by_category[current_category]:
                     imports_by_category[current_category].append(import_file)
 
         return imports_by_category
 
-    def ensure_claude_md_exists(self) -> None:
+    def ensure_claude_md_exists(self) -> bool:
         """
-        Create CLAUDE.md with default content if it doesn't exist
+        Check if CLAUDE.md exists (DO NOT create it - Claude Code pure file)
+
+        Returns:
+            True if CLAUDE.md exists, False otherwise
         """
         if self.claude_md_path.exists():
-            return
+            return True
 
-        try:
-            # Create directory if it doesn't exist
-            self.claude_md_path.parent.mkdir(parents=True, exist_ok=True)
-
-            # Default CLAUDE.md content
-            default_content = """# SuperClaude Entry Point
-
-This file serves as the entry point for the SuperClaude framework.
-You can add your own custom instructions and configurations here.
-
-The SuperClaude framework components will be automatically imported below.
-"""
-
-            with open(self.claude_md_path, "w", encoding="utf-8") as f:
-                f.write(default_content)
-
-            self.logger.info("Created CLAUDE.md with default content")
-
-        except Exception as e:
-            self.logger.error(f"Failed to create CLAUDE.md: {e}")
-            raise
+        # CLAUDE.md is a Claude Code pure file - NEVER create or modify it
+        self.logger.warning(
+            f"⚠️  CLAUDE.md not found at {self.claude_md_path}\n"
+            f"   SuperClaude will NOT create this file automatically.\n"
+            f"   Please manually add the following to your CLAUDE.md:\n\n"
+            f"   # SuperClaude Framework Components\n"
+            f"   @superclaude/FLAGS.md\n"
+            f"   @superclaude/PRINCIPLES.md\n"
+            f"   @superclaude/RULES.md\n"
+            f"   (and other SuperClaude components)\n"
+        )
+        return False
 
     def remove_imports(self, files: List[str]) -> bool:
         """
