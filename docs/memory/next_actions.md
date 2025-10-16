@@ -1,28 +1,54 @@
 # Next Actions
 
-## Immediate Tasks
+**Updated**: 2025-10-17
+**Priority**: Testing & Validation
 
-1. **Test PM Agent without Serena**:
-   - Start new session
-   - Verify PM Agent auto-activation
-   - Check memory restoration from `docs/memory/` files
-   - Validate self-evaluation checklists work
+---
 
-2. **Document the Change**:
-   - Create `docs/patterns/local-file-memory-pattern.md`
-   - Update main README if necessary
-   - Add to changelog
+## 🎯 Immediate Actions (This Week)
 
-## Future Enhancements
+### 1. Testing Implementation (High Priority)
 
-3. **Optimize Memory File Structure**:
-   - Consider `.jsonl` format for append-only logs
-   - Add timestamp rotation for checkpoints
+**Purpose**: Validate autonomous reflection system functionality
 
-4. **Continue airis-mcp-gateway Optimization**:
-   - Implement lazy loading for tool descriptions
-   - Reduce initial token load from 47 tools
+**Estimated Time**: 2-3 days
+**Dependencies**: None
+**Owner**: Quality Engineer + PM Agent
 
-## Blockers
+---
 
-None currently.
+### 2. Metrics Collection Activation (High Priority)
+
+**Purpose**: Enable continuous optimization through data collection
+
+**Estimated Time**: 1 day  
+**Dependencies**: None
+**Owner**: PM Agent + DevOps Architect
+
+---
+
+### 3. Documentation Updates (Medium Priority)
+
+**Estimated Time**: 1-2 days
+**Dependencies**: Testing complete
+**Owner**: Technical Writer + PM Agent
+
+---
+
+## 🚀 Short-term Actions (Next Sprint)
+
+### 4. A/B Testing Framework (Week 2-3)
+### 5. Performance Tuning (Week 3-4)
+
+---
+
+## 🔮 Long-term Actions (Future Sprints)
+
+### 6. Advanced Features (Month 2-3)
+### 7. Integration Enhancements (Month 3-4)
+
+---
+
+**Next Session Priority**: Testing & Metrics Activation
+
+**Status**: Ready to proceed ✅

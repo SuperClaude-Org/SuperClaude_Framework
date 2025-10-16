@@ -353,7 +353,7 @@ Task Flow:
 5. **Track** (Continuous): Monitor progress and confidence
 6. **Validate** (10-15%): Verify evidence chains
 
-**Output**: Reports saved to `claudedocs/research_[topic]_[timestamp].md`
+**Output**: Reports saved to `docs/research/[topic]_[timestamp].md`
 
 **Works Best With**: system-architect (technical research), learning-guide (educational research), requirements-analyst (market research)
 

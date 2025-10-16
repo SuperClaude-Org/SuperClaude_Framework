@@ -110,7 +110,6 @@ CLAUDE.md
 
 # Project specific
 Tests/
-ClaudeDocs/
 temp/
 tmp/
 .cache/

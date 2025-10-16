@@ -154,19 +154,19 @@ Deep Research Mode:
  ✓ TodoWrite: Created 8 research tasks
  🔄 Executing parallel searches across domains
  📈 Confidence: 0.82 across 15 verified sources
- 📝 Report saved: claudedocs/research_quantum_[timestamp].md"
+ 📝 Report saved: docs/research/research_quantum_[timestamp].md"
 ```
 
 #### Quality Standards
 - [ ] Minimum 2 sources per claim with inline citations
 - [ ] Confidence scoring (0.0-1.0) for all findings
 - [ ] Parallel execution by default for independent operations
-- [ ] Reports saved to claudedocs/ with proper structure
+- [ ] Reports saved to docs/research/ with proper structure
 - [ ] Clear methodology and evidence presentation
 
-**Verify:** `/sc:research "test topic"` should create TodoWrite and execute systematically  
-**Test:** All research should include confidence scores and citations  
-**Check:** Reports should be saved to claudedocs/ automatically
+**Verify:** `/sc:research "test topic"` should create TodoWrite and execute systematically
+**Test:** All research should include confidence scores and citations
+**Check:** Reports should be saved to docs/research/ automatically
 
 **Works Best With:**
 - **→ Task Management**: Research planning with TodoWrite integration

@@ -148,7 +148,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 - **계획 전략**: Planning(직접), Intent(먼저 명확화), Unified(협업)
 - **병렬 실행**: 기본 병렬 검색 및 추출
 - **증거 관리**: 관련성 점수가 있는 명확한 인용
-- **출력 표준**: 보고서가 `claudedocs/research_[주제]_[타임스탬프].md`에 저장됨
+- **출력 표준**: 보고서가 `docs/research/[주제]_[타임스탬프].md`에 저장됨
 
 ### `/sc:implement` - 기능 개발
 **목적**: 지능형 전문가 라우팅을 통한 풀스택 기능 구현

@@ -281,7 +281,7 @@ SuperClaude는 Claude Code가 전문 지식을 위해 호출할 수 있는 15개
 5. **추적** (지속적): 진행 상황 및 신뢰도 모니터링
 6. **검증** (10-15%): 증거 체인 확인
 
-**출력**: 보고서는 `claudedocs/research_[topic]_[timestamp].md`에 저장됨
+**출력**: 보고서는 `docs/research/[topic]_[timestamp].md`에 저장됨
 
 **최적의 협업 대상**: system-architect(기술 연구), learning-guide(교육 연구), requirements-analyst(시장 연구)
 

@@ -149,7 +149,7 @@ python3 -m SuperClaude install --list-components | grep mcp
 - **Planning Strategies**: Planning (direct), Intent (clarify first), Unified (collaborative)
 - **Parallel Execution**: Default parallel searches and extractions
 - **Evidence Management**: Clear citations with relevance scoring
-- **Output Standards**: Reports saved to `claudedocs/research_[topic]_[timestamp].md`
+- **Output Standards**: Reports saved to `docs/research/[topic]_[timestamp].md`
 
 ### `/sc:implement` - Feature Development  
 **Purpose**: Full-stack feature implementation with intelligent specialist routing  
