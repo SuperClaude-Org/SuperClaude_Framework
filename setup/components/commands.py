@@ -14,6 +14,15 @@ class CommandsComponent(Component):
 
     def __init__(self, install_dir: Optional[Path] = None):
         """Initialize commands component"""
+        if install_dir is None:
+            install_dir = Path.home() / ".claude"
+
+        # Commands are installed directly to ~/.claude/commands/sc/
+        # not under superclaude/ subdirectory (Claude Code official location)
+        if "superclaude" in str(install_dir):
+            # ~/.claude/superclaude -> ~/.claude
+            install_dir = install_dir.parent
+
         super().__init__(install_dir, Path("commands/sc"))
 
     def get_metadata(self) -> Dict[str, str]:
@@ -24,6 +33,13 @@ class CommandsComponent(Component):
             "description": "SuperClaude slash command definitions",
             "category": "commands",
         }
+
+    def is_reinstallable(self) -> bool:
+        """
+        Commands should always be synced to latest version.
+        SuperClaude command files always overwrite existing files.
+        """
+        return True
 
     def get_metadata_modifications(self) -> Dict[str, Any]:
         """Get metadata modifications for commands component"""
@@ -54,19 +70,30 @@ class CommandsComponent(Component):
             self.settings_manager.update_metadata(metadata_mods)
             self.logger.info("Updated metadata with commands configuration")
 
-            # Add component registration to metadata
+            # Add component registration to metadata (with file list for sync)
             self.settings_manager.add_component_registration(
                 "commands",
                 {
                     "version": __version__,
                     "category": "commands",
                     "files_count": len(self.component_files),
+                    "files": list(self.component_files),  # Track for sync/deletion
                 },
             )
             self.logger.info("Updated metadata with commands component registration")
         except Exception as e:
             self.logger.error(f"Failed to update metadata: {e}")
             return False
+
+        # Clean up old commands directory in superclaude/ (from previous versions)
+        try:
+            old_superclaude_commands = Path.home() / ".claude" / "superclaude" / "commands"
+            if old_superclaude_commands.exists():
+                import shutil
+                shutil.rmtree(old_superclaude_commands)
+                self.logger.info("Removed old commands directory from superclaude/")
+        except Exception as e:
+            self.logger.debug(f"Could not remove old commands directory: {e}")
 
         return True
 
@@ -156,66 +183,63 @@ class CommandsComponent(Component):
         return ["framework_docs"]
 
     def update(self, config: Dict[str, Any]) -> bool:
-        """Update commands component"""
+        """
+        Sync commands component (overwrite + delete obsolete files).
+        No backup needed - SuperClaude source files are always authoritative.
+        """
         try:
-            self.logger.info("Updating SuperClaude commands component...")
+            self.logger.info("Syncing SuperClaude commands component...")
 
-            # Check current version
-            current_version = self.settings_manager.get_component_version("commands")
-            target_version = self.get_metadata()["version"]
-
-            if current_version == target_version:
-                self.logger.info(
-                    f"Commands component already at version {target_version}"
-                )
-                return True
-
-            self.logger.info(
-                f"Updating commands component from {current_version} to {target_version}"
+            # Get previously installed files from metadata
+            metadata = self.settings_manager.load_metadata()
+            previous_files = set(
+                metadata.get("components", {}).get("commands", {}).get("files", [])
             )
 
-            # Create backup of existing command files
+            # Get current files from source
+            current_files = set(self.component_files)
+
+            # Files to delete (were installed before, but no longer in source)
+            files_to_delete = previous_files - current_files
+
+            # Delete obsolete files
+            deleted_count = 0
             commands_dir = self.install_dir / "commands" / "sc"
-            backup_files = []
+            for filename in files_to_delete:
+                file_path = commands_dir / filename
+                if file_path.exists():
+                    try:
+                        file_path.unlink()
+                        deleted_count += 1
+                        self.logger.info(f"Deleted obsolete command: {filename}")
+                    except Exception as e:
+                        self.logger.warning(f"Could not delete {filename}: {e}")
 
-            if commands_dir.exists():
-                for filename in self.component_files:
-                    file_path = commands_dir / filename
-                    if file_path.exists():
-                        backup_path = self.file_manager.backup_file(file_path)
-                        if backup_path:
-                            backup_files.append(backup_path)
-                            self.logger.debug(f"Backed up {filename}")
-
-            # Perform installation (overwrites existing files)
+            # Install/overwrite current files (no backup)
             success = self.install(config)
 
             if success:
-                # Remove backup files on successful update
-                for backup_path in backup_files:
-                    try:
-                        backup_path.unlink()
-                    except Exception:
-                        pass  # Ignore cleanup errors
+                # Update metadata with current file list
+                self.settings_manager.add_component_registration(
+                    "commands",
+                    {
+                        "version": __version__,
+                        "category": "commands",
+                        "files_count": len(current_files),
+                        "files": list(current_files),  # Track installed files
+                    },
+                )
 
                 self.logger.success(
-                    f"Commands component updated to version {target_version}"
+                    f"Commands synced: {len(current_files)} files, {deleted_count} obsolete files removed"
                 )
             else:
-                # Restore from backup on failure
-                self.logger.warning("Update failed, restoring from backup...")
-                for backup_path in backup_files:
-                    try:
-                        original_path = backup_path.with_suffix("")
-                        backup_path.rename(original_path)
-                        self.logger.debug(f"Restored {original_path.name}")
-                    except Exception as e:
-                        self.logger.error(f"Could not restore {backup_path}: {e}")
+                self.logger.error("Commands sync failed")
 
             return success
 
         except Exception as e:
-            self.logger.exception(f"Unexpected error during commands update: {e}")
+            self.logger.exception(f"Unexpected error during commands sync: {e}")
             return False
 
     def validate_installation(self) -> Tuple[bool, List[str]]:

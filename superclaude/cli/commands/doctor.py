@@ -90,7 +90,6 @@ def run_diagnostics() -> dict:
     if install_dir.exists():
         components = {
             "CLAUDE.md": "Core framework entry point",
-            "MCP_*.md": "MCP documentation files",
             "MODE_*.md": "Behavioral mode files",
         }
 
@@ -98,13 +97,6 @@ def run_diagnostics() -> dict:
         results["Core Framework"] = {
             "status": claude_md.exists(),
             "message": "Installed" if claude_md.exists() else "Not installed",
-        }
-
-        # Count MCP docs
-        mcp_docs = list(install_dir.glob("MCP_*.md"))
-        results["MCP Documentation"] = {
-            "status": len(mcp_docs) > 0,
-            "message": f"{len(mcp_docs)} servers documented" if mcp_docs else "None installed",
         }
 
         # Count modes

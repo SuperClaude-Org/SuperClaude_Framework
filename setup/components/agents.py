@@ -25,6 +25,13 @@ class AgentsComponent(Component):
             "category": "agents",
         }
 
+    def is_reinstallable(self) -> bool:
+        """
+        Agents should always be synced to latest version.
+        SuperClaude agent files always overwrite existing files.
+        """
+        return True
+
     def get_metadata_modifications(self) -> Dict[str, Any]:
         """Get metadata modifications for agents"""
         return {
@@ -64,14 +71,14 @@ class AgentsComponent(Component):
             self.settings_manager.update_metadata(metadata_mods)
             self.logger.info("Updated metadata with agents configuration")
 
-            # Add component registration
+            # Add component registration (with file list for sync)
             self.settings_manager.add_component_registration(
                 "agents",
                 {
                     "version": __version__,
                     "category": "agents",
                     "agents_count": len(self.component_files),
-                    "agents_list": self.component_files,
+                    "files": list(self.component_files),  # Track for sync/deletion
                 },
             )
 
@@ -129,57 +136,51 @@ class AgentsComponent(Component):
         return ["framework_docs"]
 
     def update(self, config: Dict[str, Any]) -> bool:
-        """Update agents component"""
+        """
+        Sync agents component (overwrite + delete obsolete files).
+        No backup needed - SuperClaude source files are always authoritative.
+        """
         try:
-            self.logger.info("Updating SuperClaude agents component...")
+            self.logger.info("Syncing SuperClaude agents component...")
 
-            # Check current version
-            current_version = self.settings_manager.get_component_version("agents")
-            target_version = self.get_metadata()["version"]
-
-            if current_version == target_version:
-                self.logger.info(
-                    f"Agents component already at version {target_version}"
-                )
-                return True
-
-            self.logger.info(
-                f"Updating agents component from {current_version} to {target_version}"
+            # Get previously installed files from metadata
+            metadata = self.settings_manager.load_metadata()
+            previous_files = set(
+                metadata.get("components", {}).get("agents", {}).get("files", [])
             )
 
-            # Create backup of existing agents
-            backup_files = []
-            for filename in self.component_files:
+            # Get current files from source
+            current_files = set(self.component_files)
+
+            # Files to delete (were installed before, but no longer in source)
+            files_to_delete = previous_files - current_files
+
+            # Delete obsolete files
+            deleted_count = 0
+            for filename in files_to_delete:
                 file_path = self.install_component_subdir / filename
                 if file_path.exists():
-                    backup_path = self.file_manager.backup_file(file_path)
-                    if backup_path:
-                        backup_files.append(backup_path)
-                        self.logger.debug(f"Backed up agent: {filename}")
-
-            # Perform installation (will overwrite existing files)
-            if self._install(config):
-                self.logger.success(
-                    f"Agents component updated to version {target_version}"
-                )
-                return True
-            else:
-                # Restore backups on failure
-                self.logger.error("Agents update failed, restoring backups...")
-                for backup_path in backup_files:
                     try:
-                        original_path = (
-                            self.install_component_subdir
-                            / backup_path.name.replace(".backup", "")
-                        )
-                        self.file_manager.copy_file(backup_path, original_path)
-                        self.logger.debug(f"Restored {original_path.name}")
+                        file_path.unlink()
+                        deleted_count += 1
+                        self.logger.info(f"Deleted obsolete agent: {filename}")
                     except Exception as e:
-                        self.logger.warning(f"Could not restore {backup_path}: {e}")
-                return False
+                        self.logger.warning(f"Could not delete {filename}: {e}")
+
+            # Install/overwrite current files (no backup)
+            success = self._install(config)
+
+            if success:
+                self.logger.success(
+                    f"Agents synced: {len(current_files)} files, {deleted_count} obsolete files removed"
+                )
+            else:
+                self.logger.error("Agents sync failed")
+
+            return success
 
         except Exception as e:
-            self.logger.exception(f"Unexpected error during agents update: {e}")
+            self.logger.exception(f"Unexpected error during agents sync: {e}")
             return False
 
     def _get_source_dir(self) -> Path:

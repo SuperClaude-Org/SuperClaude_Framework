@@ -389,9 +389,6 @@ def perform_update(
             if summary.get("updated"):
                 logger.info(f"Updated components: {', '.join(summary['updated'])}")
 
-            if summary.get("backup_path"):
-                logger.info(f"Backup created: {summary['backup_path']}")
-
         else:
             logger.error(f"Update completed with errors in {duration:.1f} seconds")
 

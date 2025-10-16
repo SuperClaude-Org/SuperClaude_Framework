@@ -37,7 +37,6 @@ class Installer:
 
         self.failed_components: Set[str] = set()
         self.skipped_components: Set[str] = set()
-        self.backup_path: Optional[Path] = None
         self.logger = get_logger()
 
     def register_component(self, component: Component) -> None:
@@ -132,59 +131,6 @@ class Installer:
 
         return len(errors) == 0, errors
 
-    def create_backup(self) -> Optional[Path]:
-        """
-        Create backup of existing installation
-
-        Returns:
-            Path to backup archive or None if no existing installation
-        """
-        if not self.install_dir.exists():
-            return None
-
-        if self.dry_run:
-            return self.install_dir / "backup_dryrun.tar.gz"
-
-        # Create backup directory
-        backup_dir = self.install_dir / "backups"
-        backup_dir.mkdir(exist_ok=True)
-
-        # Create timestamped backup
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        backup_name = f"superclaude_backup_{timestamp}"
-        backup_path = backup_dir / f"{backup_name}.tar.gz"
-
-        # Create temporary directory for backup
-        with tempfile.TemporaryDirectory() as temp_dir:
-            temp_backup = Path(temp_dir) / backup_name
-
-            # Ensure temp backup directory exists
-            temp_backup.mkdir(parents=True, exist_ok=True)
-
-            # Copy all files except backups and local directories
-            for item in self.install_dir.iterdir():
-                if item.name not in ["backups", "local"]:
-                    try:
-                        if item.is_file():
-                            shutil.copy2(item, temp_backup / item.name)
-                        elif item.is_dir():
-                            shutil.copytree(item, temp_backup / item.name)
-                    except Exception as e:
-                        # Log warning but continue backup process
-                        self.logger.warning(f"Could not backup {item.name}: {e}")
-
-            # Always create an archive, even if empty, to ensure it's a valid tarball
-            base_path = backup_dir / backup_name
-            shutil.make_archive(str(base_path), "gztar", temp_backup)
-
-            if not any(temp_backup.iterdir()):
-                self.logger.warning(
-                    f"No files to backup, created empty backup archive: {backup_path.name}"
-                )
-
-        self.backup_path = backup_path
-        return backup_path
-
     def install_component(self, component_name: str, config: Dict[str, Any]) -> bool:
         """
         Install a single component
@@ -201,9 +147,9 @@ class Installer:
 
         component = self.components[component_name]
 
-        # Framework components (agents, commands, modes, core, mcp_docs) are ALWAYS updated to latest version
+        # Framework components are ALWAYS updated to latest version
         # These are SuperClaude implementation files, not user configurations
-        framework_components = {'agents', 'commands', 'modes', 'core', 'mcp_docs', 'mcp'}
+        framework_components = {'framework_docs', 'agents', 'commands', 'modes', 'core', 'mcp'}
 
         if component_name in framework_components:
             # Always update framework components to latest version
@@ -233,13 +179,17 @@ class Installer:
             self.failed_components.add(component_name)
             return False
 
-        # Perform installation
+        # Perform installation or update
         try:
             if self.dry_run:
                 self.logger.info(f"[DRY RUN] Would install {component_name}")
                 success = True
             else:
-                success = component.install(config)
+                # If component is already installed and this is a framework component, call update() instead of install()
+                if component_name in self.installed_components and component_name in framework_components:
+                    success = component.update(config)
+                else:
+                    success = component.install(config)
 
             if success:
                 self.installed_components.add(component_name)
@@ -283,15 +233,6 @@ class Installer:
             for error in errors:
                 self.logger.error(f"  - {error}")
             return False
-
-        # Create backup if updating
-        if self.install_dir.exists() and not self.dry_run:
-            self.logger.info("Creating backup of existing installation...")
-            try:
-                self.create_backup()
-            except Exception as e:
-                self.logger.error(f"Failed to create backup: {e}")
-                return False
 
         # Install each component
         all_success = True
@@ -352,7 +293,6 @@ class Installer:
             "installed": list(self.installed_components),
             "failed": list(self.failed_components),
             "skipped": list(self.skipped_components),
-            "backup_path": str(self.backup_path) if self.backup_path else None,
             "install_dir": str(self.install_dir),
             "dry_run": self.dry_run,
         }
@@ -361,5 +301,4 @@ class Installer:
         return {
             "updated": list(self.updated_components),
             "failed": list(self.failed_components),
-            "backup_path": str(self.backup_path) if self.backup_path else None,
         }

@@ -79,14 +79,6 @@ def verify_superclaude_file(file_path: Path, component: str) -> bool:
                 "MODE_Task_Management.md",
                 "MODE_Token_Efficiency.md",
             ],
-            "mcp_docs": [
-                "MCP_Context7.md",
-                "MCP_Sequential.md",
-                "MCP_Magic.md",
-                "MCP_Playwright.md",
-                "MCP_Morphllm.md",
-                "MCP_Serena.md",
-            ],
         }
 
         # For commands component, verify it's in the sc/ subdirectory
@@ -427,8 +419,7 @@ def _custom_component_selection(
         "core": "Core Framework Files (CLAUDE.md, FLAGS.md, PRINCIPLES.md, etc.)",
         "commands": "superclaude Commands (commands/sc/*.md)",
         "agents": "Specialized Agents (agents/*.md)",
-        "mcp": "MCP Server Configurations",
-        "mcp_docs": "MCP Documentation",
+        "mcp": "MCP Server Configurations (airis-mcp-gateway)",
         "modes": "superclaude Modes",
     }
 
@@ -568,9 +559,8 @@ def display_component_details(component: str, info: Dict[str, Any]) -> Dict[str,
         },
         "mcp": {
             "files": "MCP server configurations in .claude.json",
-            "description": "MCP server configurations",
+            "description": "MCP server configurations (airis-mcp-gateway)",
         },
-        "mcp_docs": {"files": "MCP/*.md", "description": "MCP documentation files"},
         "modes": {"files": "MODE_*.md", "description": "superclaude operational modes"},
     }
 

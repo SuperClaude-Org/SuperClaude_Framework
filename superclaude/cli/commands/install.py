@@ -9,6 +9,7 @@ from rich.panel import Panel
 from rich.prompt import Confirm
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from superclaude.cli._console import console
+from setup import DEFAULT_INSTALL_DIR
 
 # Create install command group
 app = typer.Typer(
@@ -33,7 +34,7 @@ def install_callback(
         help="Installation profile: api (with API keys), noapi (without), or custom",
     ),
     install_dir: Path = typer.Option(
-        Path.home() / ".claude",
+        DEFAULT_INSTALL_DIR,
         "--install-dir",
         help="Installation directory",
     ),
@@ -82,7 +83,7 @@ def install_all(
         help="Installation profile: api (with API keys), noapi (without), or custom",
     ),
     install_dir: Path = typer.Option(
-        Path.home() / ".claude",
+        DEFAULT_INSTALL_DIR,
         "--install-dir",
         help="Installation directory",
     ),
@@ -148,7 +149,7 @@ def _run_installation(
             verbose=verbose,
             quiet=False,
             yes=True,  # Always non-interactive
-            components=["framework_docs", "modes", "commands", "agents", "mcp_docs"],  # Full install
+            components=["framework_docs", "modes", "commands", "agents"],  # Full install (mcp integrated into airis-mcp-gateway)
             no_backup=False,
             list_components=False,
             diagnose=False,
@@ -197,7 +198,7 @@ def install_components(
         help="Component names to install (e.g., core modes commands agents)",
     ),
     install_dir: Path = typer.Option(
-        Path.home() / ".claude",
+        DEFAULT_INSTALL_DIR,
         "--install-dir",
         help="Installation directory",
     ),
@@ -221,7 +222,7 @@ def install_components(
     - commands: Slash commands (26 commands)
     - agents: Specialized agents (17 agents)
     - mcp: MCP server integrations
-    - mcp_docs: MCP documentation
+    - mcp: MCP server configurations (airis-mcp-gateway)
     """
     console.print(
         Panel.fit(
