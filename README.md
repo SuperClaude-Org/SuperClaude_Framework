@@ -82,8 +82,21 @@ SuperClaude is a **meta-programming configuration framework** that transforms Cl
 
 ## Disclaimer
 
-This project is not affiliated with or endorsed by Anthropic.  
+This project is not affiliated with or endorsed by Anthropic.
 Claude Code is a product built and maintained by [Anthropic](https://www.anthropic.com/).
+
+## 📖 **For Developers & Contributors**
+
+**Essential documentation for working with SuperClaude Framework:**
+
+| Document | Purpose | When to Read |
+|----------|---------|--------------|
+| **[PLANNING.md](PLANNING.md)** | Architecture, design principles, absolute rules | Session start, before implementation |
+| **[TASK.md](TASK.md)** | Current tasks, priorities, backlog | Daily, before starting work |
+| **[KNOWLEDGE.md](KNOWLEDGE.md)** | Accumulated insights, best practices, troubleshooting | When encountering issues, learning patterns |
+| **[CONTRIBUTING.md](CONTRIBUTING.md)** | Contribution guidelines, workflow | Before submitting PRs |
+
+> **💡 Pro Tip**: Claude Code reads these files at session start to ensure consistent, high-quality development aligned with project standards.
 
 ## ⚡ **Quick Installation**
 
