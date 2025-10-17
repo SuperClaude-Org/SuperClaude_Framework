@@ -149,7 +149,7 @@ class Installer:
 
         # Framework components are ALWAYS updated to latest version
         # These are SuperClaude implementation files, not user configurations
-        framework_components = {'framework_docs', 'agents', 'commands', 'modes', 'core', 'mcp'}
+        framework_components = {'knowledge_base', 'agents', 'commands', 'modes', 'core', 'mcp'}
 
         if component_name in framework_components:
             # Always update framework components to latest version

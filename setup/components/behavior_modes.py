@@ -1,4 +1,4 @@
-"""
+"""\nBehavior Modes Component\n\nResponsibility: Defines and manages execution modes for Claude behavior.\nControls how Claude responds to different contexts and user intent.\n"""\n\n"""
 Modes component for SuperClaude behavioral modes
 """
 
@@ -10,7 +10,7 @@ from setup import __version__
 from ..services.claude_md import CLAUDEMdService
 
 
-class ModesComponent(Component):
+class BehaviorModesComponent(Component):
     """SuperClaude behavioral modes component"""
 
     def __init__(self, install_dir: Optional[Path] = None):
