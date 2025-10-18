@@ -31,8 +31,8 @@ class MCPComponent(Component):
                 "name": "airis-mcp-gateway",
                 "description": "Unified MCP Gateway with all tools (sequential-thinking, context7, magic, playwright, serena, morphllm, tavily, chrome-devtools, git, puppeteer)",
                 "install_method": "github",
-                "install_command": "uvx --from git+https://github.com/oraios/airis-mcp-gateway airis-mcp-gateway --help",
-                "run_command": "uvx --from git+https://github.com/oraios/airis-mcp-gateway airis-mcp-gateway",
+                "install_command": "uvx --from git+https://github.com/agiletec-inc/airis-mcp-gateway airis-mcp-gateway --help",
+                "run_command": "uvx --from git+https://github.com/agiletec-inc/airis-mcp-gateway airis-mcp-gateway",
                 "required": True,
             },
         }
