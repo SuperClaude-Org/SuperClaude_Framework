@@ -1,4 +1,4 @@
-"""
+"""\nSlash Commands Component\n\nResponsibility: Registers and manages slash commands for CLI interactions.\nProvides custom command definitions and execution logic.\n"""\n\n"""
 Commands component for SuperClaude slash command definitions
 """
 
@@ -9,7 +9,7 @@ from ..core.base import Component
 from setup import __version__
 
 
-class CommandsComponent(Component):
+class SlashCommandsComponent(Component):
     """SuperClaude slash commands component"""
 
     def __init__(self, install_dir: Optional[Path] = None):

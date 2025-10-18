@@ -1,4 +1,4 @@
-"""
+"""\nMCP Integration Component\n\nResponsibility: Integrates Model Context Protocol for external tool access.\nManages connections to specialized MCP servers and capabilities.\n"""\n\n"""
 MCP component for MCP server integration
 """
 
@@ -15,7 +15,7 @@ from setup import __version__
 from ..core.base import Component
 
 
-class MCPComponent(Component):
+class MCPIntegrationComponent(Component):
     """MCP servers integration component"""
 
     def __init__(self, install_dir: Optional[Path] = None):

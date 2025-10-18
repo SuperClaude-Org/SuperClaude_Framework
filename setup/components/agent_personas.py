@@ -1,4 +1,4 @@
-"""
+"""\nAgent Personas Component\n\nResponsibility: Defines AI agent personalities and role-based behaviors.\nProvides specialized personas for different task types.\n"""\n\n"""
 Agents component for SuperClaude specialized AI agents installation
 """
 
@@ -9,7 +9,7 @@ from ..core.base import Component
 from setup import __version__
 
 
-class AgentsComponent(Component):
+class AgentPersonasComponent(Component):
     """SuperClaude specialized AI agents component"""
 
     def __init__(self, install_dir: Optional[Path] = None):

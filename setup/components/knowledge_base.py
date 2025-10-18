@@ -1,6 +1,9 @@
 """
-Framework documentation component for SuperClaude
-Manages core framework documentation files (CLAUDE.md, FLAGS.md, PRINCIPLES.md, etc.)
+Knowledge Base Component for SuperClaude
+
+Responsibility: Provides structured knowledge initialization for the framework.
+Manages framework knowledge documents (principles, rules, flags, research config, business patterns).
+These files form the foundation of Claude's understanding of the SuperClaude framework.
 """
 
 from typing import Dict, List, Tuple, Optional, Any
@@ -12,20 +15,25 @@ from ..services.claude_md import CLAUDEMdService
 from setup import __version__
 
 
-class FrameworkDocsComponent(Component):
-    """SuperClaude framework documentation files component"""
+class KnowledgeBaseComponent(Component):
+    """
+    Knowledge Base Component
+
+    Responsibility: Initialize and maintain SuperClaude's knowledge base.
+    Installs framework knowledge documents that guide Claude's behavior and decision-making.
+    """
 
     def __init__(self, install_dir: Optional[Path] = None):
-        """Initialize framework docs component"""
+        """Initialize knowledge base component"""
         super().__init__(install_dir)
 
     def get_metadata(self) -> Dict[str, str]:
         """Get component metadata"""
         return {
-            "name": "framework_docs",
+            "name": "knowledge_base",
             "version": __version__,
-            "description": "SuperClaude framework documentation (CLAUDE.md, FLAGS.md, PRINCIPLES.md, RULES.md, etc.)",
-            "category": "documentation",
+            "description": "SuperClaude knowledge base (principles, rules, flags, patterns)",
+            "category": "knowledge",
         }
 
     def is_reinstallable(self) -> bool:
@@ -111,7 +119,7 @@ class FrameworkDocsComponent(Component):
                 "name": "superclaude",
                 "description": "AI-enhanced development framework for Claude Code",
                 "installation_type": "global",
-                "components": ["framework_docs"],
+                "components": ["knowledge_base"],
             },
             "superclaude": {
                 "enabled": True,
@@ -122,8 +130,8 @@ class FrameworkDocsComponent(Component):
         }
 
     def _install(self, config: Dict[str, Any]) -> bool:
-        """Install framework docs component"""
-        self.logger.info("Installing SuperClaude framework documentation...")
+        """Install knowledge base component"""
+        self.logger.info("Installing SuperClaude knowledge base...")
 
         return super()._install(config)
 
@@ -136,7 +144,7 @@ class FrameworkDocsComponent(Component):
 
             # Add component registration to metadata (with file list for sync)
             self.settings_manager.add_component_registration(
-                "framework_docs",
+                "knowledge_base",
                 {
                     "version": __version__,
                     "category": "documentation",
@@ -145,7 +153,7 @@ class FrameworkDocsComponent(Component):
                 },
             )
 
-            self.logger.info("Updated metadata with framework docs component registration")
+            self.logger.info("Updated metadata with knowledge base component registration")
 
             # Migrate any existing SuperClaude data from settings.json
             if self.settings_manager.migrate_superclaude_data():
@@ -177,9 +185,9 @@ class FrameworkDocsComponent(Component):
         return True
 
     def uninstall(self) -> bool:
-        """Uninstall framework docs component"""
+        """Uninstall knowledge base component"""
         try:
-            self.logger.info("Uninstalling SuperClaude framework docs component...")
+            self.logger.info("Uninstalling SuperClaude knowledge base component...")
 
             # Remove framework files
             removed_count = 0
@@ -191,7 +199,7 @@ class FrameworkDocsComponent(Component):
                 else:
                     self.logger.warning(f"Could not remove {filename}")
 
-            # Update metadata to remove framework docs component
+            # Update metadata to remove knowledge base component
             try:
                 if self.settings_manager.is_component_installed("framework_docs"):
                     self.settings_manager.remove_component_registration("framework_docs")
@@ -202,7 +210,7 @@ class FrameworkDocsComponent(Component):
                             del metadata[key]
 
                     self.settings_manager.save_metadata(metadata)
-                    self.logger.info("Removed framework docs component from metadata")
+                    self.logger.info("Removed knowledge base component from metadata")
             except Exception as e:
                 self.logger.warning(f"Could not update metadata: {e}")
 
@@ -212,20 +220,20 @@ class FrameworkDocsComponent(Component):
             return True
 
         except Exception as e:
-            self.logger.exception(f"Unexpected error during framework docs uninstallation: {e}")
+            self.logger.exception(f"Unexpected error during knowledge base uninstallation: {e}")
             return False
 
     def get_dependencies(self) -> List[str]:
-        """Get component dependencies (framework docs has none)"""
+        """Get component dependencies (knowledge base has none)"""
         return []
 
     def update(self, config: Dict[str, Any]) -> bool:
         """
-        Sync framework docs component (overwrite + delete obsolete files).
+        Sync knowledge base component (overwrite + delete obsolete files).
         No backup needed - SuperClaude source files are always authoritative.
         """
         try:
-            self.logger.info("Syncing SuperClaude framework docs component...")
+            self.logger.info("Syncing SuperClaude knowledge base component...")
 
             # Get previously installed files from metadata
             metadata = self.settings_manager.load_metadata()
@@ -277,11 +285,11 @@ class FrameworkDocsComponent(Component):
             return success
 
         except Exception as e:
-            self.logger.exception(f"Unexpected error during framework docs sync: {e}")
+            self.logger.exception(f"Unexpected error during knowledge base sync: {e}")
             return False
 
     def validate_installation(self) -> Tuple[bool, List[str]]:
-        """Validate framework docs component installation"""
+        """Validate knowledge base component installation"""
         errors = []
 
         # Check if all framework files exist
