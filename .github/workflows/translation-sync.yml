@@ -1,0 +1,96 @@
+name: Auto-translate README
+
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - 'README.md'
+  pull_request:
+    paths:
+      - 'README.md'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  translate:
+    name: Translate README to Multiple Languages
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Translate README to Chinese
+      uses: 3ru/gpt-translate@v1.1.11
+      with:
+        apikey: ${{ secrets.OPENAI_API_KEY }}
+        inputFiles: 'README.md'
+        outputFiles: 'README-zh.md'
+        targetLanguage: 'Simplified Chinese'
+
+    - name: Translate README to Japanese
+      uses: 3ru/gpt-translate@v1.1.11
+      with:
+        apikey: ${{ secrets.OPENAI_API_KEY }}
+        inputFiles: 'README.md'
+        outputFiles: 'README-ja.md'
+        targetLanguage: 'Japanese'
+
+    - name: Check for changes
+      id: check_changes
+      run: |
+        if git diff --quiet HEAD -- README-zh.md README-ja.md; then
+          echo "No translation changes detected"
+          echo "has_changes=false" >> $GITHUB_OUTPUT
+        else
+          echo "Translation changes detected"
+          echo "has_changes=true" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Commit translations
+      if: steps.check_changes.outputs.has_changes == 'true'
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add README-zh.md README-ja.md
+        git commit -m "chore: auto-translate README to ZH/JA
+
+        🤖 Generated with [GPT-Translate](https://github.com/3ru/gpt-translate)
+
+        Co-Authored-By: GitHub Actions <noreply@github.com>"
+
+    - name: Push changes
+      if: steps.check_changes.outputs.has_changes == 'true' && github.event_name == 'push'
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
+
+    - name: Create Pull Request
+      if: steps.check_changes.outputs.has_changes == 'true' && github.event_name == 'pull_request'
+      uses: peter-evans/create-pull-request@v6
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "chore: auto-translate README to ZH/JA"
+        title: "🌐 Auto-translate README updates"
+        body: |
+          ## 🤖 Automated Translation Update
+
+          This PR contains automated translations of README.md updates.
+
+          **Changes:**
+          - ✅ README-zh.md (Simplified Chinese)
+          - ✅ README-ja.md (Japanese)
+
+          **Translation powered by:**
+          - [GPT-Translate](https://github.com/3ru/gpt-translate)
+          - OpenAI GPT-4
+
+          Please review the translations for accuracy before merging.
+        branch: chore/auto-translate-readme
+        delete-branch: true
