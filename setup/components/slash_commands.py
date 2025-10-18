@@ -1,5 +1,8 @@
 """
-Commands component for SuperClaude slash command definitions
+Slash Commands Component
+
+Responsibility: Registers and manages slash commands for CLI interactions.
+Provides custom command definitions and execution logic.
 """
 
 from typing import Dict, List, Tuple, Optional, Any
@@ -9,7 +12,7 @@ from ..core.base import Component
 from setup import __version__
 
 
-class CommandsComponent(Component):
+class SlashCommandsComponent(Component):
     """SuperClaude slash commands component"""
 
     def __init__(self, install_dir: Optional[Path] = None):
@@ -180,7 +183,7 @@ class CommandsComponent(Component):
 
     def get_dependencies(self) -> List[str]:
         """Get dependencies"""
-        return ["framework_docs"]
+        return ["knowledge_base"]
 
     def update(self, config: Dict[str, Any]) -> bool:
         """

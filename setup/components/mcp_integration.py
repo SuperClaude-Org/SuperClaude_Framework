@@ -1,5 +1,8 @@
 """
-MCP component for MCP server integration
+MCP Integration Component
+
+Responsibility: Integrates Model Context Protocol for external tool access.
+Manages connections to specialized MCP servers and capabilities.
 """
 
 import os
@@ -15,7 +18,7 @@ from setup import __version__
 from ..core.base import Component
 
 
-class MCPComponent(Component):
+class MCPIntegrationComponent(Component):
     """MCP servers integration component"""
 
     def __init__(self, install_dir: Optional[Path] = None):
@@ -941,7 +944,7 @@ class MCPComponent(Component):
 
     def get_dependencies(self) -> List[str]:
         """Get dependencies"""
-        return ["framework_docs"]
+        return ["knowledge_base"]
 
     def update(self, config: Dict[str, Any]) -> bool:
         """Update MCP component"""

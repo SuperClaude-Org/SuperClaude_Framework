@@ -138,7 +138,7 @@ def get_components_to_install(
     # Explicit components specified
     if args.components:
         if "all" in args.components:
-            components = ["framework_docs", "commands", "agents", "modes", "mcp"]
+            components = ["knowledge_base", "commands", "agents", "modes", "mcp"]
         else:
             components = args.components
 
@@ -302,7 +302,7 @@ def select_framework_components(
 
     try:
         # Framework components (excluding MCP-related ones)
-        framework_components = ["framework_docs", "modes", "commands", "agents"]
+        framework_components = ["knowledge_base", "modes", "commands", "agents"]
 
         # Create component menu
         component_options = []
@@ -334,9 +334,9 @@ def select_framework_components(
         selections = menu.display()
 
         if not selections:
-            # Default to framework_docs if nothing selected
-            logger.info("No components selected, defaulting to framework_docs")
-            selected_components = ["framework_docs"]
+            # Default to knowledge_base if nothing selected
+            logger.info("No components selected, defaulting to knowledge_base")
+            selected_components = ["knowledge_base"]
         else:
             selected_components = []
             all_components = framework_components
@@ -354,7 +354,7 @@ def select_framework_components(
 
     except Exception as e:
         logger.error(f"Error in framework component selection: {e}")
-        return ["framework_docs"]  # Fallback to framework_docs
+        return ["knowledge_base"]  # Fallback to knowledge_base
 
 
 def interactive_component_selection(
