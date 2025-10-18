@@ -201,8 +201,8 @@ class KnowledgeBaseComponent(Component):
 
             # Update metadata to remove knowledge base component
             try:
-                if self.settings_manager.is_component_installed("framework_docs"):
-                    self.settings_manager.remove_component_registration("framework_docs")
+                if self.settings_manager.is_component_installed("knowledge_base"):
+                    self.settings_manager.remove_component_registration("knowledge_base")
                     metadata_mods = self.get_metadata_modifications()
                     metadata = self.settings_manager.load_metadata()
                     for key in metadata_mods.keys():
@@ -239,7 +239,7 @@ class KnowledgeBaseComponent(Component):
             metadata = self.settings_manager.load_metadata()
             previous_files = set(
                 metadata.get("components", {})
-                .get("framework_docs", {})
+                .get("knowledge_base", {})
                 .get("files", [])
             )
 
@@ -267,7 +267,7 @@ class KnowledgeBaseComponent(Component):
             if success:
                 # Update metadata with current file list
                 self.settings_manager.add_component_registration(
-                    "framework_docs",
+                    "knowledge_base",
                     {
                         "version": __version__,
                         "category": "documentation",
@@ -301,11 +301,11 @@ class KnowledgeBaseComponent(Component):
                 errors.append(f"Framework file is not a regular file: {filename}")
 
         # Check metadata registration
-        if not self.settings_manager.is_component_installed("framework_docs"):
-            errors.append("Framework docs component not registered in metadata")
+        if not self.settings_manager.is_component_installed("knowledge_base"):
+            errors.append("Knowledge base component not registered in metadata")
         else:
             # Check version matches
-            installed_version = self.settings_manager.get_component_version("framework_docs")
+            installed_version = self.settings_manager.get_component_version("knowledge_base")
             expected_version = self.get_metadata()["version"]
             if installed_version != expected_version:
                 errors.append(

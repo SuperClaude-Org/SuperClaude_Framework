@@ -1,5 +1,8 @@
-"""\nBehavior Modes Component\n\nResponsibility: Defines and manages execution modes for Claude behavior.\nControls how Claude responds to different contexts and user intent.\n"""\n\n"""
-Modes component for SuperClaude behavioral modes
+"""
+Behavior Modes Component
+
+Responsibility: Defines and manages execution modes for Claude behavior.
+Controls how Claude responds to different contexts and user intent.
 """
 
 from typing import Dict, List, Tuple, Optional, Any
@@ -149,7 +152,7 @@ class BehaviorModesComponent(Component):
 
     def get_dependencies(self) -> List[str]:
         """Get dependencies"""
-        return ["framework_docs"]
+        return ["knowledge_base"]
 
     def update(self, config: Dict[str, Any]) -> bool:
         """

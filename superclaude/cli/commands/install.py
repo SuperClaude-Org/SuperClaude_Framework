@@ -149,7 +149,7 @@ def _run_installation(
             verbose=verbose,
             quiet=False,
             yes=True,  # Always non-interactive
-            components=["framework_docs", "modes", "commands", "agents"],  # Full install (mcp integrated into airis-mcp-gateway)
+            components=["knowledge_base", "modes", "commands", "agents"],  # Full install (mcp integrated into airis-mcp-gateway)
             no_backup=False,
             list_components=False,
             diagnose=False,

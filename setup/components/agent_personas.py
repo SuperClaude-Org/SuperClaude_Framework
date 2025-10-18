@@ -1,5 +1,8 @@
-"""\nAgent Personas Component\n\nResponsibility: Defines AI agent personalities and role-based behaviors.\nProvides specialized personas for different task types.\n"""\n\n"""
-Agents component for SuperClaude specialized AI agents installation
+"""
+Agent Personas Component
+
+Responsibility: Defines AI agent personalities and role-based behaviors.
+Provides specialized personas for different task types.
 """
 
 from typing import Dict, List, Tuple, Optional, Any
@@ -133,7 +136,7 @@ class AgentPersonasComponent(Component):
 
     def get_dependencies(self) -> List[str]:
         """Get component dependencies"""
-        return ["framework_docs"]
+        return ["knowledge_base"]
 
     def update(self, config: Dict[str, Any]) -> bool:
         """
