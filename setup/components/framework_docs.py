@@ -35,6 +35,74 @@ class FrameworkDocsComponent(Component):
         """
         return True
 
+    def validate_prerequisites(
+        self, installSubPath: Optional[Path] = None
+    ) -> Tuple[bool, List[str]]:
+        """
+        Check prerequisites for framework docs component (multi-directory support)
+
+        Returns:
+            Tuple of (success: bool, error_messages: List[str])
+        """
+        from ..utils.security import SecurityValidator
+
+        errors = []
+
+        # Check if all source directories exist
+        for source_dir in self._get_source_dirs():
+            if not source_dir.exists():
+                errors.append(f"Source directory not found: {source_dir}")
+
+        # Check if all required framework files exist
+        missing_files = []
+        for source, _ in self.get_files_to_install():
+            if not source.exists():
+                missing_files.append(str(source.relative_to(Path(__file__).parent.parent.parent / "superclaude")))
+
+        if missing_files:
+            errors.append(f"Missing component files: {missing_files}")
+
+        # Check write permissions to install directory
+        has_perms, missing = SecurityValidator.check_permissions(
+            self.install_dir, {"write"}
+        )
+        if not has_perms:
+            errors.append(f"No write permissions to {self.install_dir}: {missing}")
+
+        # Validate installation target
+        is_safe, validation_errors = SecurityValidator.validate_installation_target(
+            self.install_component_subdir
+        )
+        if not is_safe:
+            errors.extend(validation_errors)
+
+        # Validate files individually (each file with its own source dir)
+        for source, target in self.get_files_to_install():
+            # Get the appropriate base source directory for this file
+            source_parent = source.parent
+
+            # Validate source path
+            is_safe, msg = SecurityValidator.validate_path(source, source_parent)
+            if not is_safe:
+                errors.append(f"Invalid source path {source}: {msg}")
+
+            # Validate target path
+            is_safe, msg = SecurityValidator.validate_path(target, self.install_component_subdir)
+            if not is_safe:
+                errors.append(f"Invalid target path {target}: {msg}")
+
+            # Validate file extension
+            is_allowed, msg = SecurityValidator.validate_file_extension(source)
+            if not is_allowed:
+                errors.append(f"File {source}: {msg}")
+
+        if not self.file_manager.ensure_directory(self.install_component_subdir):
+            errors.append(
+                f"Could not create install directory: {self.install_component_subdir}"
+            )
+
+        return len(errors) == 0, errors
+
     def get_metadata_modifications(self) -> Dict[str, Any]:
         """Get metadata modifications for SuperClaude"""
         return {
@@ -116,7 +184,7 @@ class FrameworkDocsComponent(Component):
             # Remove framework files
             removed_count = 0
             for filename in self.component_files:
-                file_path = self.install_dir / filename
+                file_path = self.install_component_subdir / filename
                 if self.file_manager.remove_file(file_path):
                     removed_count += 1
                     self.logger.debug(f"Removed {filename}")
@@ -176,7 +244,7 @@ class FrameworkDocsComponent(Component):
             # Delete obsolete files
             deleted_count = 0
             for filename in files_to_delete:
-                file_path = self.install_dir / filename
+                file_path = self.install_component_subdir / filename
                 if file_path.exists():
                     try:
                         file_path.unlink()
@@ -218,7 +286,7 @@ class FrameworkDocsComponent(Component):
 
         # Check if all framework files exist
         for filename in self.component_files:
-            file_path = self.install_dir / filename
+            file_path = self.install_component_subdir / filename
             if not file_path.exists():
                 errors.append(f"Missing framework file: {filename}")
             elif not file_path.is_file():
@@ -251,22 +319,78 @@ class FrameworkDocsComponent(Component):
 
         return len(errors) == 0, errors
 
-    def _get_source_dir(self):
-        """Get source directory for framework documentation files"""
+    def _get_source_dirs(self):
+        """Get source directories for framework documentation files"""
         # Assume we're in superclaude/setup/components/framework_docs.py
-        # and framework files are in superclaude/superclaude/core/
+        # Framework files are organized in superclaude/{framework,business,research}
         project_root = Path(__file__).parent.parent.parent
-        return project_root / "superclaude" / "core"
+        return [
+            project_root / "superclaude" / "framework",
+            project_root / "superclaude" / "business",
+            project_root / "superclaude" / "research",
+        ]
+
+    def _get_source_dir(self):
+        """Get source directory (compatibility method, returns first directory)"""
+        dirs = self._get_source_dirs()
+        return dirs[0] if dirs else None
+
+    def _discover_component_files(self) -> List[str]:
+        """
+        Discover framework .md files across multiple directories
+
+        Returns:
+            List of relative paths (e.g., ['framework/flags.md', 'business/examples.md'])
+        """
+        all_files = []
+        project_root = Path(__file__).parent.parent.parent / "superclaude"
+
+        for source_dir in self._get_source_dirs():
+            if not source_dir.exists():
+                self.logger.warning(f"Source directory not found: {source_dir}")
+                continue
+
+            # Get directory name relative to superclaude/
+            dir_name = source_dir.relative_to(project_root)
+
+            # Discover .md files in this directory
+            files = self._discover_files_in_directory(
+                source_dir,
+                extension=".md",
+                exclude_patterns=["README.md", "CHANGELOG.md", "LICENSE.md"],
+            )
+
+            # Add directory prefix to each file
+            for file in files:
+                all_files.append(str(dir_name / file))
+
+        return all_files
+
+    def get_files_to_install(self) -> List[Tuple[Path, Path]]:
+        """
+        Return list of files to install from multiple source directories
+
+        Returns:
+            List of tuples (source_path, target_path)
+        """
+        files = []
+        project_root = Path(__file__).parent.parent.parent / "superclaude"
+
+        for relative_path in self.component_files:
+            source = project_root / relative_path
+            # Install to superclaude/ subdirectory structure
+            target = self.install_component_subdir / relative_path
+            files.append((source, target))
+
+        return files
 
     def get_size_estimate(self) -> int:
         """Get estimated installation size"""
         total_size = 0
-        source_dir = self._get_source_dir()
 
-        for filename in self.component_files:
-            file_path = source_dir / filename
-            if file_path.exists():
-                total_size += file_path.stat().st_size
+        for source, _ in self.get_files_to_install():
+            if source.exists():
+                total_size += source.stat().st_size
 
         # Add overhead for settings.json and directories
         total_size += 10240  # ~10KB overhead
