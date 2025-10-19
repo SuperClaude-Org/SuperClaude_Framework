@@ -115,6 +115,9 @@ class ReflexionMemory:
         """Add new reflexion entry"""
         self.entries.append(entry)
 
+        # Ensure directory exists
+        self.memory_path.parent.mkdir(parents=True, exist_ok=True)
+
         # Append to JSONL file
         with open(self.memory_path, "a") as f:
             f.write(json.dumps(entry.to_dict()) + "\n")
@@ -127,9 +130,13 @@ class ReflexionMemory:
 
         for entry in self.entries:
             entry_keywords = set(entry.mistake.lower().split())
-            # If >50% keyword overlap, consider similar
-            overlap = len(keywords & entry_keywords) / len(keywords | entry_keywords)
-            if overlap > 0.5:
+            union = keywords | entry_keywords
+            # Avoid division by zero
+            if len(union) == 0:
+                continue
+            # If >30% keyword overlap, consider similar (lowered threshold for better recall)
+            overlap = len(keywords & entry_keywords) / len(union)
+            if overlap > 0.3:
                 similar.append(entry)
 
         return sorted(similar, key=lambda e: e.timestamp, reverse=True)

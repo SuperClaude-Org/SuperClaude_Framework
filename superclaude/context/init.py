@@ -1,10 +1,10 @@
-"""PM Mode Initialization Hook
+"""Context Initialization
 
-Runs automatically at session start to:
+Runs at session start to:
 1. Detect repository root and structure
 2. Generate Context Contract
 3. Load Reflexion Memory
-4. Set up PM Mode as default
+4. Set up project context
 """
 
 import os
@@ -13,8 +13,8 @@ from pathlib import Path
 from typing import Optional, Dict, Any
 import yaml
 
-from .context_contract import ContextContract
-from .reflexion_memory import ReflexionMemory
+from .contract import ContextContract
+from superclaude.memory import ReflexionMemory
 
 
 class PMInitializer:
@@ -118,11 +118,11 @@ class PMInitializer:
         }
 
 
-def initialize_pm_mode(cwd: Optional[Path] = None) -> Dict[str, Any]:
+def initialize_context(cwd: Optional[Path] = None) -> Dict[str, Any]:
     """
-    Initialize PM Mode as default.
+    Initialize project context.
 
-    This function runs automatically at session start.
+    This function runs at session start.
 
     Args:
         cwd: Current working directory (defaults to os.getcwd())
