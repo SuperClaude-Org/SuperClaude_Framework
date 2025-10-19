@@ -720,8 +720,8 @@ def run(args: argparse.Namespace) -> int:
         # Check for existing installation
         if args.install_dir.exists() and not args.force:
             if not args.dry_run:
-                logger.warning(
-                    f"Installation directory already exists: {args.install_dir}"
+                logger.info(
+                    f"Existing installation found: {args.install_dir} (will be updated)"
                 )
                 if not args.yes and not confirm(
                     "Continue and update existing installation?", default=False

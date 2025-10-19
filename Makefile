@@ -1,17 +1,21 @@
-.PHONY: install dev test clean lint format uninstall update translate help
+.PHONY: install install-release dev test clean lint format uninstall update translate help
 
-# Full installation (dependencies + SuperClaude components)
+# Development installation (local source, editable)
 install:
-	@echo "Installing SuperClaude Framework..."
+	@echo "Installing SuperClaude Framework (development mode)..."
 	uv pip install -e ".[dev]"
 	uv run superclaude install
 
-# Install dependencies and SuperClaude (for development)
-dev:
-	@echo "Installing development dependencies..."
-	uv pip install -e ".[dev]"
-	@echo "Installing SuperClaude components..."
-	uv run superclaude install
+# Production installation (from PyPI, recommended for users)
+install-release:
+	@echo "Installing SuperClaude Framework (production mode)..."
+	@echo "Using pipx for isolated environment..."
+	pipx install SuperClaude
+	pipx upgrade SuperClaude
+	superclaude install
+
+# Alias for development installation
+dev: install
 
 # Run tests
 test:
@@ -69,13 +73,21 @@ translate:
 help:
 	@echo "SuperClaude Framework - Available commands:"
 	@echo ""
-	@echo "  make install    - Full installation (dependencies + components)"
-	@echo "  make dev        - Install development dependencies only"
-	@echo "  make test       - Run tests"
-	@echo "  make lint       - Run linter"
-	@echo "  make format     - Format code"
-	@echo "  make clean      - Clean build artifacts"
-	@echo "  make uninstall  - Uninstall SuperClaude components"
-	@echo "  make update     - Update SuperClaude components"
-	@echo "  make translate  - Translate README to Chinese and Japanese (requires Ollama)"
-	@echo "  make help       - Show this help message"
+	@echo "Installation:"
+	@echo "  make install         - Development installation (local source, editable with uv)"
+	@echo "  make install-release - Production installation (from PyPI with pipx)"
+	@echo "  make dev             - Alias for 'make install'"
+	@echo ""
+	@echo "Development:"
+	@echo "  make test            - Run tests"
+	@echo "  make lint            - Run linter"
+	@echo "  make format          - Format code"
+	@echo "  make clean           - Clean build artifacts"
+	@echo ""
+	@echo "Maintenance:"
+	@echo "  make uninstall       - Uninstall SuperClaude components"
+	@echo "  make update          - Update SuperClaude components"
+	@echo ""
+	@echo "Documentation:"
+	@echo "  make translate       - Translate README to Chinese and Japanese (requires Ollama)"
+	@echo "  make help            - Show this help message"

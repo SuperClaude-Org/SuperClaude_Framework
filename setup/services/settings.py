@@ -24,7 +24,12 @@ class SettingsService:
         """
         self.install_dir = install_dir
         self.settings_file = install_dir / "settings.json"
-        self.metadata_file = install_dir / ".superclaude-metadata.json"
+
+        # Always use ~/.claude/ for metadata (unified location)
+        # This ensures all components share the same metadata regardless of install_dir
+        from ..utils.paths import get_home_directory
+        self.metadata_root = get_home_directory() / ".claude"
+        self.metadata_file = self.metadata_root / ".superclaude-metadata.json"
         self.backup_dir = install_dir / "backups" / "settings"
 
     def load_settings(self) -> Dict[str, Any]:
@@ -74,6 +79,9 @@ class SettingsService:
         Returns:
             Metadata dict (empty if file doesn't exist)
         """
+        # Migrate from old location if needed
+        self._migrate_old_metadata()
+
         if not self.metadata_file.exists():
             return {}
 
@@ -446,6 +454,44 @@ class SettingsService:
         self._cleanup_old_backups()
 
         return backup_file
+
+    def _migrate_old_metadata(self) -> None:
+        """
+        Migrate metadata from old location (~/.claude/superclaude/) to unified location (~/.claude/)
+        This handles the transition from split metadata files to a single unified file.
+        """
+        # Old metadata location (in superclaude subdirectory)
+        old_metadata_file = self.metadata_root / "superclaude" / ".superclaude-metadata.json"
+
+        # If unified metadata already exists, skip migration
+        if self.metadata_file.exists():
+            return
+
+        # If old metadata exists, merge it into the new location
+        if old_metadata_file.exists():
+            try:
+                with open(old_metadata_file, "r", encoding="utf-8") as f:
+                    old_metadata = json.load(f)
+
+                # Load current metadata (if any)
+                current_metadata = {}
+                if self.metadata_file.exists():
+                    with open(self.metadata_file, "r", encoding="utf-8") as f:
+                        current_metadata = json.load(f)
+
+                # Deep merge old into current
+                merged_metadata = self._deep_merge(current_metadata, old_metadata)
+
+                # Save to unified location
+                self.save_metadata(merged_metadata)
+
+                # Optionally backup old file (don't delete yet for safety)
+                backup_file = old_metadata_file.parent / ".superclaude-metadata.json.migrated"
+                shutil.copy2(old_metadata_file, backup_file)
+
+            except Exception as e:
+                # Log but don't fail - old metadata migration is optional
+                pass
 
     def _cleanup_old_backups(self, keep_count: int = 10) -> None:
         """
