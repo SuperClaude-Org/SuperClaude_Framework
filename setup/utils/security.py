@@ -56,7 +56,7 @@ class SecurityValidator:
         r"^/sbin/",  # System binaries
         r"^/usr/bin/",  # User command binaries
         r"^/usr/sbin/",  # Non-essential system binaries
-        r"^/var/",  # Variable data files
+        r"^/var/(?!home/)",  # Variable data files (but exclude /var/home/ used on immutable distros)
         r"^/tmp/",  # Temporary files (system-wide)
         r"^/dev/",  # Device files - FIXED: was r'/dev/' (GitHub Issue #129)
         r"^/proc/",  # Process information pseudo-filesystem
@@ -496,7 +496,8 @@ class SecurityValidator:
 
         if is_claude_dir:
             try:
-                home_path = get_home_directory()
+                # Resolve home_path to handle symlinks (e.g., /home -> /var/home on immutable distros)
+                home_path = get_home_directory().resolve()
             except (RuntimeError, OSError):
                 # If we can't determine home directory, skip .claude special handling
                 cls._log_security_decision(
@@ -507,6 +508,7 @@ class SecurityValidator:
             else:
                 try:
                     # Verify it's specifically the current user's home directory
+                    # Both abs_target and home_path are now resolved, so symlinks are handled
                     abs_target.relative_to(home_path)
 
                     # Enhanced Windows security checks for .claude directories
@@ -523,7 +525,8 @@ class SecurityValidator:
                         if ":" in abs_target_str and "\\users\\" in abs_target_str:
                             try:
                                 # Check if target is within the user's actual home directory
-                                home_path = get_home_directory()
+                                # Resolve to handle any potential symlinks
+                                home_path = get_home_directory().resolve()
                                 abs_target.relative_to(home_path)
                                 # Path is valid - within user's home directory
                             except ValueError:
@@ -607,13 +610,17 @@ class SecurityValidator:
                 )
 
         # Check if it's a system directory with enhanced messages
+        # Note: /var/home is excluded as it's used for user directories on immutable distros like Fedora Silverblue and its variants
         system_dirs = [
             Path("/etc"),
             Path("/bin"),
             Path("/sbin"),
             Path("/usr/bin"),
             Path("/usr/sbin"),
-            Path("/var"),
+            Path("/var/log"),  # Only check specific /var subdirs, not /var/home
+            Path("/var/cache"),
+            Path("/var/lib"),
+            Path("/var/spool"),
             Path("/tmp"),
             Path("/dev"),
             Path("/proc"),
@@ -772,7 +779,7 @@ class SecurityValidator:
                 r"^/sbin/": "/sbin (system binaries)",
                 r"^/usr/bin/": "/usr/bin (user binaries)",
                 r"^/usr/sbin/": "/usr/sbin (user system binaries)",
-                r"^/var/": "/var (variable data)",
+                r"^/var/(?!home/)": "/var (variable data, excluding /var/home)",
                 r"^/tmp/": "/tmp (temporary files)",
                 r"^/proc/": "/proc (process information)",
                 r"^/sys/": "/sys (system information)",
