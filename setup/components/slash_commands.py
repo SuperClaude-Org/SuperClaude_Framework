@@ -44,6 +44,78 @@ class SlashCommandsComponent(Component):
         """
         return True
 
+    def validate_prerequisites(
+        self, installSubPath: Optional[Path] = None
+    ) -> Tuple[bool, List[str]]:
+        """
+        Check prerequisites for this component - Skills-aware validation
+
+        Returns:
+            Tuple of (success: bool, error_messages: List[str])
+        """
+        from ..utils.security import SecurityValidator
+
+        errors = []
+
+        # Check if we have read access to source files
+        source_dir = self._get_source_dir()
+        if not source_dir or (source_dir and not source_dir.exists()):
+            errors.append(f"Source directory not found: {source_dir}")
+            return False, errors
+
+        # Check if all required framework files exist
+        missing_files = []
+        for filename in self.component_files:
+            # Skills files are in parent/skills/, not source_dir
+            if filename.startswith("skills/"):
+                source_file = source_dir.parent / filename
+            else:
+                source_file = source_dir / filename
+
+            if not source_file.exists():
+                missing_files.append(filename)
+
+        if missing_files:
+            errors.append(f"Missing component files: {missing_files}")
+            return False, errors
+
+        # Check write permissions to install directory
+        has_perms, missing = SecurityValidator.check_permissions(
+            self.install_dir, {"write"}
+        )
+        if not has_perms:
+            errors.append(f"No write permissions to {self.install_dir}: {missing}")
+
+        # Validate installation target
+        is_safe, validation_errors = SecurityValidator.validate_installation_target(
+            self.install_component_subdir
+        )
+        if not is_safe:
+            errors.extend(validation_errors)
+
+        # Get files to install
+        files_to_install = self.get_files_to_install()
+
+        # Validate files - Skills files have different base directories
+        for source, target in files_to_install:
+            # Skills files install to ~/.claude/skills/, no base_dir check needed
+            if "skills/" in str(target):
+                # Only validate path safety, not base_dir
+                is_safe, error = SecurityValidator.validate_path(target, None)
+            else:
+                # Regular commands - validate with base_dir
+                is_safe, error = SecurityValidator.validate_path(target, self.install_component_subdir)
+
+            if not is_safe:
+                errors.append(error)
+
+        if not self.file_manager.ensure_directory(self.install_component_subdir):
+            errors.append(
+                f"Could not create install directory: {self.install_component_subdir}"
+            )
+
+        return len(errors) == 0, errors
+
     def get_metadata_modifications(self) -> Dict[str, Any]:
         """Get metadata modifications for commands component"""
         return {
@@ -286,10 +358,10 @@ class SlashCommandsComponent(Component):
 
     def _discover_component_files(self) -> List[str]:
         """
-        Discover command files including modules subdirectory
+        Discover command files including modules subdirectory and Skills
 
         Returns:
-            List of relative file paths (e.g., ['pm.md', 'modules/token-counter.md'])
+            List of relative file paths (e.g., ['pm.md', 'modules/token-counter.md', 'skills/pm/SKILL.md'])
         """
         source_dir = self._get_source_dir()
 
@@ -315,11 +387,34 @@ class SlashCommandsComponent(Component):
                     # Store as relative path: modules/token-counter.md
                     files.append(f"modules/{file_path.name}")
 
+        # Discover Skills directory structure
+        skills_dir = source_dir.parent / "skills"
+        if skills_dir.exists() and skills_dir.is_dir():
+            for skill_path in skills_dir.iterdir():
+                if skill_path.is_dir():
+                    skill_name = skill_path.name
+                    # Add SKILL.md
+                    skill_md = skill_path / "SKILL.md"
+                    if skill_md.exists():
+                        files.append(f"skills/{skill_name}/SKILL.md")
+
+                    # Add implementation.md
+                    impl_md = skill_path / "implementation.md"
+                    if impl_md.exists():
+                        files.append(f"skills/{skill_name}/implementation.md")
+
+                    # Add modules subdirectory files
+                    skill_modules = skill_path / "modules"
+                    if skill_modules.exists() and skill_modules.is_dir():
+                        for module_file in skill_modules.iterdir():
+                            if module_file.is_file() and module_file.suffix.lower() == ".md":
+                                files.append(f"skills/{skill_name}/modules/{module_file.name}")
+
         # Sort for consistent ordering
         files.sort()
 
         self.logger.debug(
-            f"Discovered {len(files)} command files (including modules)"
+            f"Discovered {len(files)} command files (including modules and skills)"
         )
         if files:
             self.logger.debug(f"Files found: {files}")
@@ -328,7 +423,7 @@ class SlashCommandsComponent(Component):
 
     def get_files_to_install(self) -> List[Tuple[Path, Path]]:
         """
-        Return list of files to install, including modules subdirectory
+        Return list of files to install, including modules subdirectory and Skills
 
         Returns:
             List of tuples (source_path, target_path)
@@ -338,8 +433,16 @@ class SlashCommandsComponent(Component):
 
         if source_dir:
             for filename in self.component_files:
-                source = source_dir / filename
-                target = self.install_component_subdir / filename
+                # Handle Skills files - install to ~/.claude/skills/ instead of ~/.claude/commands/sc/
+                if filename.startswith("skills/"):
+                    source = source_dir.parent / filename
+                    # Install to ~/.claude/skills/ (not ~/.claude/commands/sc/skills/)
+                    skills_target = self.install_dir.parent if "commands" in str(self.install_dir) else self.install_dir
+                    target = skills_target / filename
+                else:
+                    source = source_dir / filename
+                    target = self.install_component_subdir / filename
+
                 files.append((source, target))
 
         return files

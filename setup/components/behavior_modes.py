@@ -37,44 +37,11 @@ class BehaviorModesComponent(Component):
         return True
 
     def _install(self, config: Dict[str, Any]) -> bool:
-        """Install modes component"""
-        self.logger.info("Installing SuperClaude behavioral modes...")
+        """Install modes component - DISABLED: Modes migrated to Skills"""
+        self.logger.info("Skipping modes installation (migrated to Skills architecture)")
+        self.logger.info("Modes are now loaded on-demand via Skills system")
 
-        # Validate installation
-        success, errors = self.validate_prerequisites()
-        if not success:
-            for error in errors:
-                self.logger.error(error)
-            return False
-
-        # Get files to install
-        files_to_install = self.get_files_to_install()
-
-        if not files_to_install:
-            self.logger.warning("No mode files found to install")
-            return False
-
-        # Copy mode files
-        success_count = 0
-        for source, target in files_to_install:
-            self.logger.debug(f"Copying {source.name} to {target}")
-
-            if self.file_manager.copy_file(source, target):
-                success_count += 1
-                self.logger.debug(f"Successfully copied {source.name}")
-            else:
-                self.logger.error(f"Failed to copy {source.name}")
-
-        if success_count != len(files_to_install):
-            self.logger.error(
-                f"Only {success_count}/{len(files_to_install)} mode files copied successfully"
-            )
-            return False
-
-        self.logger.success(
-            f"Modes component installed successfully ({success_count} mode files)"
-        )
-
+        # Still register component as "installed" but skip file copying
         return self._post_install()
 
     def _post_install(self) -> bool:

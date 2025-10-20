@@ -49,22 +49,12 @@ class AgentPersonasComponent(Component):
         }
 
     def _install(self, config: Dict[str, Any]) -> bool:
-        """Install agents component"""
-        self.logger.info("Installing SuperClaude specialized agents...")
+        """Install agents component - DISABLED: Agents migrated to Skills"""
+        self.logger.info("Skipping agents installation (migrated to Skills architecture)")
+        self.logger.info("Agents are now loaded on-demand via Skills system")
 
-        # Call parent install method
-        success = super()._install(config)
-
-        if success:
-            # Run post-install setup
-            success = self._post_install()
-
-        if success:
-            self.logger.success(
-                f"Successfully installed {len(self.component_files)} specialized agents"
-            )
-
-        return success
+        # Still register component as "installed" but skip file copying
+        return self._post_install()
 
     def _post_install(self) -> bool:
         """Post-install setup for agents"""
