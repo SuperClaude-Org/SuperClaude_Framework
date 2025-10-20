@@ -1,46 +1,35 @@
 ---
 name: pm
-description: "Project Manager Agent - Default orchestration agent that coordinates all sub-agents and manages workflows seamlessly"
+description: "Project Manager Agent - Skills-based zero-footprint orchestration"
 category: orchestration
 complexity: meta
 mcp-servers: []
-personas: [pm-agent]
+skill: pm
 ---
 
-⏺ PM ready
+Activating PM Agent skill...
 
-**Core Capabilities**:
-- 🔍 Pre-Implementation Confidence Check (prevents wrong-direction execution)
-- ✅ Post-Implementation Self-Check (evidence-based validation, 94% hallucination detection)
-- 🔄 Reflexion Pattern (error learning, <10% recurrence rate)
-- ⚡ Parallel-with-Reflection (Wave → Checkpoint → Wave, 3.5x faster)
-- 📊 Token-Budget-Aware (200-2,500 tokens, complexity-based)
+**Loading**: `~/.claude/skills/pm/implementation.md`
 
-**Session Start Protocol**:
-1. PARALLEL Read context files (silent)
-2. Apply `@modules/git-status.md`: Get repo state
-3. Apply `@modules/token-counter.md`: Parse system notification and calculate
-4. Confidence Check (200 tokens): Verify loaded context
-5. IF confidence >70% → Apply `@modules/pm-formatter.md` and proceed
-6. IF confidence <70% → STOP and request clarification
+**Token Efficiency**:
+- Startup overhead: 0 tokens (not loaded until /sc:pm)
+- Skill description: ~100 tokens
+- Full implementation: ~2,500 tokens (loaded on-demand)
+- **Savings**: 100% at startup, loaded only when needed
 
-**Modules (See for Implementation Details)**:
-- `@modules/token-counter.md` - Dynamic token calculation from system notifications
-- `@modules/git-status.md` - Git repository state detection and formatting
-- `@modules/pm-formatter.md` - Output structure and actionability rules
+**Core Capabilities** (from skill):
+- 🔍 Pre-execution confidence check (>70%)
+- ✅ Post-implementation self-validation
+- 🔄 Reflexion learning from mistakes
+- ⚡ Parallel-with-reflection execution
+- 📊 Token-budget-aware operations
 
-**Output Format** (per `pm-formatter.md`):
-```
-📍 [branch-name]
-[status-symbol] [status-description]
-🧠 [%] ([used]K/[total]K) · [remaining]K avail
-🎯 Ready: [comma-separated-actions]
-```
-
-**Critical Rules**:
-- NEVER use static/template values for tokens
-- ALWAYS parse real system notifications
-- ALWAYS calculate percentage dynamically
-- Follow modules for exact implementation
+**Session Start Protocol** (auto-executes):
+1. PARALLEL Read context files from `docs/memory/`
+2. Apply `@pm/modules/git-status.md`: Repo state
+3. Apply `@pm/modules/token-counter.md`: Token calculation
+4. Confidence check (200 tokens)
+5. IF >70% → Proceed with `@pm/modules/pm-formatter.md`
+6. IF <70% → STOP and request clarification
 
 Next?

@@ -1,23 +1,25 @@
 {
   "repo_path": ".",
-  "generated_at": "2025-10-20T00:14:06.694797",
-  "total_files": 184,
+  "generated_at": "2025-10-21T00:17:00.821530",
+  "total_files": 196,
   "total_dirs": 0,
   "code_structure": {
     "superclaude": {
       "path": "superclaude",
       "relative_path": "superclaude",
       "purpose": "Code structure",
-      "file_count": 25,
+      "file_count": 27,
       "subdirs": [
         "research",
-        "core",
+        "context",
+        "memory",
         "modes",
         "framework",
         "business",
         "agents",
         "cli",
         "examples",
+        "workflow",
         "commands",
         "validators",
         "indexing"
@@ -29,6 +31,16 @@
           "file_type": ".py",
           "size_bytes": 21213,
           "last_modified": "2025-10-20T00:12:21.920271",
+          "description": "",
+          "importance": 5,
+          "relationships": []
+        },
+        {
+          "path": "superclaude/indexing/task_parallel_indexer.py",
+          "relative_path": "superclaude/indexing/task_parallel_indexer.py",
+          "file_type": ".py",
+          "size_bytes": 12027,
+          "last_modified": "2025-10-20T00:27:53.154252",
           "description": "",
           "importance": 5,
           "relationships": []
@@ -104,8 +116,8 @@
           "relationships": []
         },
         {
-          "path": "superclaude/core/pm_init/reflexion_memory.py",
-          "relative_path": "superclaude/core/pm_init/reflexion_memory.py",
+          "path": "superclaude/memory/reflexion.py",
+          "relative_path": "superclaude/memory/reflexion.py",
           "file_type": ".py",
           "size_bytes": 5014,
           "last_modified": "2025-10-19T23:51:28.194570",
@@ -114,8 +126,8 @@
           "relationships": []
         },
         {
-          "path": "superclaude/core/pm_init/context_contract.py",
-          "relative_path": "superclaude/core/pm_init/context_contract.py",
+          "path": "superclaude/context/contract.py",
+          "relative_path": "superclaude/context/contract.py",
           "file_type": ".py",
           "size_bytes": 4769,
           "last_modified": "2025-10-19T23:22:14.605903",
@@ -124,11 +136,11 @@
           "relationships": []
         },
         {
-          "path": "superclaude/core/pm_init/init_hook.py",
-          "relative_path": "superclaude/core/pm_init/init_hook.py",
+          "path": "superclaude/context/init.py",
+          "relative_path": "superclaude/context/init.py",
           "file_type": ".py",
-          "size_bytes": 4333,
-          "last_modified": "2025-10-19T23:21:56.263379",
+          "size_bytes": 4287,
+          "last_modified": "2025-10-20T02:55:27.443146",
           "description": "",
           "importance": 5,
           "relationships": []
@@ -167,8 +179,8 @@
           "path": "superclaude/validators/__init__.py",
           "relative_path": "superclaude/validators/__init__.py",
           "file_type": ".py",
-          "size_bytes": 885,
-          "last_modified": "2025-10-19T23:22:48.366436",
+          "size_bytes": 927,
+          "last_modified": "2025-10-20T00:14:16.075759",
           "description": "",
           "importance": 5,
           "relationships": []
@@ -184,11 +196,11 @@
           "relationships": []
         },
         {
-          "path": "superclaude/core/pm_init/__init__.py",
-          "relative_path": "superclaude/core/pm_init/__init__.py",
+          "path": "superclaude/context/__init__.py",
+          "relative_path": "superclaude/context/__init__.py",
           "file_type": ".py",
-          "size_bytes": 381,
-          "last_modified": "2025-10-19T23:21:38.443891",
+          "size_bytes": 298,
+          "last_modified": "2025-10-20T02:55:15.456958",
           "description": "",
           "importance": 5,
           "relationships": []
@@ -204,21 +216,11 @@
           "relationships": []
         },
         {
-          "path": "superclaude/cli/_console.py",
-          "relative_path": "superclaude/cli/_console.py",
+          "path": "superclaude/workflow/__init__.py",
+          "relative_path": "superclaude/workflow/__init__.py",
           "file_type": ".py",
-          "size_bytes": 187,
-          "last_modified": "2025-10-17T17:21:00.921007",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "superclaude/cli/__init__.py",
-          "relative_path": "superclaude/cli/__init__.py",
-          "file_type": ".py",
-          "size_bytes": 105,
-          "last_modified": "2025-10-17T17:21:00.920876",
+          "size_bytes": 270,
+          "last_modified": "2025-10-20T02:55:15.571045",
           "description": "",
           "importance": 5,
           "relationships": []
@@ -275,8 +277,8 @@
           "path": "setup/cli/commands/install.py",
           "relative_path": "setup/cli/commands/install.py",
           "file_type": ".py",
-          "size_bytes": 26792,
-          "last_modified": "2025-10-19T20:18:46.132353",
+          "size_bytes": 26797,
+          "last_modified": "2025-10-20T00:55:01.998246",
           "description": "",
           "importance": 5,
           "relationships": []
@@ -297,6 +299,26 @@
           "file_type": ".py",
           "size_bytes": 19603,
           "last_modified": "2025-10-14T18:23:52.314012",
+          "description": "",
+          "importance": 5,
+          "relationships": []
+        },
+        {
+          "path": "setup/components/knowledge_base.py",
+          "relative_path": "setup/components/knowledge_base.py",
+          "file_type": ".py",
+          "size_bytes": 18850,
+          "last_modified": "2025-10-20T04:14:12.705918",
+          "description": "",
+          "importance": 5,
+          "relationships": []
+        },
+        {
+          "path": "setup/services/settings.py",
+          "relative_path": "setup/services/settings.py",
+          "file_type": ".py",
+          "size_bytes": 18326,
+          "last_modified": "2025-10-20T03:04:03.248063",
           "description": "",
           "importance": 5,
           "relationships": []
@@ -327,26 +349,6 @@
           "file_type": ".py",
           "size_bytes": 16888,
           "last_modified": "2025-10-17T17:21:00.912518",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "setup/components/knowledge_base.py",
-          "relative_path": "setup/components/knowledge_base.py",
-          "file_type": ".py",
-          "size_bytes": 16508,
-          "last_modified": "2025-10-19T20:18:46.133428",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "setup/services/settings.py",
-          "relative_path": "setup/services/settings.py",
-          "file_type": ".py",
-          "size_bytes": 16327,
-          "last_modified": "2025-10-14T18:23:53.055163",
           "description": "",
           "importance": 5,
           "relationships": []
@@ -451,7 +453,7 @@
       "path": "docs",
       "relative_path": "docs",
       "purpose": "Documentation",
-      "file_count": 75,
+      "file_count": 80,
       "subdirs": [
         "research",
         "memory",
@@ -593,6 +595,16 @@
           "relationships": []
         },
         {
+          "path": "docs/research/parallel-execution-complete-findings.md",
+          "relative_path": "docs/research/parallel-execution-complete-findings.md",
+          "file_type": ".md",
+          "size_bytes": 18645,
+          "last_modified": "2025-10-20T03:01:24.755070",
+          "description": "",
+          "importance": 5,
+          "relationships": []
+        },
+        {
           "path": "docs/user-guide-jp/session-management.md",
           "relative_path": "docs/user-guide-jp/session-management.md",
           "file_type": ".md",
@@ -661,16 +673,6 @@
           "description": "",
           "importance": 5,
           "relationships": []
-        },
-        {
-          "path": "docs/user-guide/commands.md",
-          "relative_path": "docs/user-guide/commands.md",
-          "file_type": ".md",
-          "size_bytes": 15942,
-          "last_modified": "2025-10-17T17:21:00.909469",
-          "description": "",
-          "importance": 5,
-          "relationships": []
         }
       ],
       "redundancies": [],
@@ -680,7 +682,7 @@
       "path": ".",
       "relative_path": ".",
       "purpose": "Root documentation",
-      "file_count": 12,
+      "file_count": 15,
       "subdirs": [],
       "key_files": [
         {
@@ -793,9 +795,19 @@
       "path": ".",
       "relative_path": ".",
       "purpose": "Configuration files",
-      "file_count": 6,
+      "file_count": 7,
       "subdirs": [],
       "key_files": [
+        {
+          "path": "PROJECT_INDEX.json",
+          "relative_path": "PROJECT_INDEX.json",
+          "file_type": ".json",
+          "size_bytes": 39995,
+          "last_modified": "2025-10-20T04:11:32.884679",
+          "description": "",
+          "importance": 5,
+          "relationships": []
+        },
         {
           "path": "pyproject.toml",
           "relative_path": "pyproject.toml",
@@ -820,8 +832,8 @@
           "path": ".claude/settings.local.json",
           "relative_path": ".claude/settings.local.json",
           "file_type": ".json",
-          "size_bytes": 1604,
-          "last_modified": "2025-10-18T22:19:48.609472",
+          "size_bytes": 2255,
+          "last_modified": "2025-10-20T04:09:17.293377",
           "description": "",
           "importance": 5,
           "relationships": []
@@ -866,7 +878,7 @@
       "path": "tests",
       "relative_path": "tests",
       "purpose": "Test suite",
-      "file_count": 21,
+      "file_count": 22,
       "subdirs": [
         "core",
         "pm_agent",
@@ -976,11 +988,21 @@
           "relationships": []
         },
         {
+          "path": "tests/performance/test_parallel_indexing_performance.py",
+          "relative_path": "tests/performance/test_parallel_indexing_performance.py",
+          "file_type": ".py",
+          "size_bytes": 9202,
+          "last_modified": "2025-10-20T00:15:05.706332",
+          "description": "",
+          "importance": 5,
+          "relationships": []
+        },
+        {
           "path": "tests/validators/test_validators.py",
           "relative_path": "tests/validators/test_validators.py",
           "file_type": ".py",
-          "size_bytes": 7477,
-          "last_modified": "2025-10-19T23:25:48.755909",
+          "size_bytes": 7480,
+          "last_modified": "2025-10-20T00:15:06.609143",
           "description": "",
           "importance": 5,
           "relationships": []
@@ -989,8 +1011,8 @@
           "path": "tests/core/pm_init/test_init_hook.py",
           "relative_path": "tests/core/pm_init/test_init_hook.py",
           "file_type": ".py",
-          "size_bytes": 6697,
-          "last_modified": "2025-10-20T00:11:33.603208",
+          "size_bytes": 6769,
+          "last_modified": "2025-10-20T02:55:41.660837",
           "description": "",
           "importance": 5,
           "relationships": []
@@ -1061,16 +1083,6 @@
           "file_type": ".py",
           "size_bytes": 1377,
           "last_modified": "2025-10-17T17:21:00.923339",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "tests/test_get_components.py",
-          "relative_path": "tests/test_get_components.py",
-          "file_type": ".py",
-          "size_bytes": 1019,
-          "last_modified": "2025-10-14T18:23:53.100899",
           "description": "",
           "importance": 5,
           "relationships": []
@@ -1229,9 +1241,9 @@
   "orphaned_files": [],
   "suggestions": [],
   "documentation_coverage": 100,
-  "code_to_doc_ratio": 0.6666666666666666,
+  "code_to_doc_ratio": 0.631578947368421,
   "quality_score": 90,
-  "indexing_time_seconds": 0.41218712500995025,
+  "indexing_time_seconds": 0.3119674169574864,
   "agents_used": [
     "system-architect",
     "system-architect",
