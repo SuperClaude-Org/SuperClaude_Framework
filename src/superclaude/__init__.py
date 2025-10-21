@@ -12,12 +12,10 @@ __author__ = "Kazuki Nakai"
 from .pm_agent.confidence import ConfidenceChecker
 from .pm_agent.self_check import SelfCheckProtocol
 from .pm_agent.reflexion import ReflexionPattern
-from .pm_agent.token_budget import TokenBudgetManager
 
 __all__ = [
     "ConfidenceChecker",
     "SelfCheckProtocol",
     "ReflexionPattern",
-    "TokenBudgetManager",
     "__version__",
 ]

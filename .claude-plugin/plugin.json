@@ -8,6 +8,16 @@
       "name": "pm",
       "path": "commands/pm.md",
       "description": "Activate PM Agent with confidence-driven workflow"
+    },
+    {
+      "name": "research",
+      "path": "commands/research.md",
+      "description": "Deep web research with adaptive planning and intelligent search"
+    },
+    {
+      "name": "index-repo",
+      "path": "commands/index-repo.md",
+      "description": "Create repository structure index for fast context loading (94% token reduction)"
     }
   ],
   "skills": [
