@@ -7,6 +7,13 @@
 
 import { execSync } from 'child_process';
 import { confidenceCheck } from './confidence';
+import { SelfCheckProtocol } from './self-check';
+import { ReflexionPattern } from './reflexion';
+
+// Export core modules
+export { confidenceCheck, getRecommendation, Context } from './confidence';
+export { SelfCheckProtocol, Implementation, ValidationResult } from './self-check';
+export { ReflexionPattern, ErrorInfo, Solution } from './reflexion';
 
 interface SessionContext {
   gitStatus: string;
