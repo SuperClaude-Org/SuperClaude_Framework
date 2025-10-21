@@ -1,12 +1,15 @@
 {
   "name": "superclaude-local",
   "description": "Local development marketplace for SuperClaude plugins",
+  "owner": {
+    "name": "SuperClaude Team"
+  },
   "plugins": [
     {
       "name": "pm-agent",
-      "path": ".",
-      "version": "1.0.0",
-      "description": "Project Manager Agent with 90% confidence checks and zero-footprint memory"
+      "source": "./pm-agent",
+      "version": "2.1.0",
+      "description": "PM Agent - Confidence-driven orchestrator with deep research and repository indexing"
     }
   ]
 }

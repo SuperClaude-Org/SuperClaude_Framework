@@ -4,381 +4,229 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 🐍 Python Environment Rules
 
-**CRITICAL**: This project uses **UV** for all Python operations.
+**CRITICAL**: This project uses **UV** for all Python operations. Never use `python -m`, `pip install`, or `python script.py` directly.
 
 ### Required Commands
 
 ```bash
-# ❌ WRONG - Never use these
-python -m pytest
-pip install package
-python script.py
-
-# ✅ CORRECT - Always use UV
-uv run pytest
-uv pip install package
-uv run python script.py
-```
-
-### Why UV?
-
-- **Fast**: 10-100x faster than pip
-- **Reliable**: Lock file ensures reproducibility
-- **Clean**: No system Python pollution
-- **Standard**: Project convention for consistency
-
-### Common Operations
-
-```bash
-# Run tests
-uv run pytest tests/ -v
-
-# Install dependencies
-uv pip install -r requirements.txt
-
-# Run specific script
-uv run python scripts/analyze_workflow_metrics.py
-
-# Create virtual environment (if needed)
-uv venv
-```
-
-### Integration with Docker
-
-When using Docker for development:
-```bash
-# Inside Docker container
-docker compose exec workspace uv run pytest
+# All Python operations must use UV
+uv run pytest                    # Run tests
+uv run pytest tests/pm_agent/   # Run specific tests
+uv pip install package           # Install dependencies
+uv run python script.py          # Execute scripts
 ```
 
 ## 📂 Project Structure
 
-```
-SuperClaude_Framework/
-├── .claude-plugin/             # TypeScript plugins (v2.0 architecture)
-│   ├── pm/                     # PM Agent plugin
-│   │   ├── index.ts            # Main orchestrator (SessionStart auto-activation)
-│   │   ├── confidence.ts       # Confidence assessment (≥90% threshold, Precision/Recall 1.0)
-│   │   └── package.json        # Dependencies
-│   ├── research/               # Deep Research plugin
-│   │   ├── index.ts            # Web research with adaptive planning
-│   │   └── package.json        # Dependencies
-│   ├── index/                  # Repository indexing plugin
-│   │   ├── index.ts            # 94% token reduction (58K → 3K)
-│   │   └── package.json        # Dependencies
-│   ├── hooks/
-│   │   └── hooks.json          # SessionStart hook configuration
-│   ├── tests/                  # Plugin tests (confidence_check, test cases)
-│   └── plugin.json             # Plugin manifest (v2.0.0)
-├── src/superclaude/            # Python package (pytest plugin, CLI)
-│   ├── __init__.py             # Exports: ConfidenceChecker, SelfCheckProtocol, ReflexionPattern
-│   ├── pytest_plugin.py        # Auto-loaded pytest integration
-│   ├── pm_agent/               # PM Agent core (confidence, self-check, reflexion)
-│   ├── cli/                    # CLI commands (main, doctor, install_skill)
-│   └── execution/              # Execution patterns (parallel, reflection, self_correction)
-├── docs/                       # Documentation
-├── scripts/                    # Analysis tools (A/B testing, workflow metrics)
-└── tests/                      # Python test suite
-```
+**Dual-language architecture**: TypeScript plugins for Claude Code integration + Python package for testing/CLI tools.
 
-**Architecture Overview:**
-- **TypeScript Plugins** (.claude-plugin/): Hot reload, auto-activation, production workflows
-- **Python Package** (src/superclaude/): pytest plugin, CLI tools, PM Agent core logic
-- **Dual Language**: TypeScript for Claude Code integration, Python for testing/tooling
+```
+# TypeScript Plugins (project root)
+pm/                      # PM Agent: confidence checks, orchestration
+research/                # Deep Research: web search, adaptive planning
+index/                   # Repository indexing: 94% token reduction
+hooks/hooks.json         # SessionStart auto-activation config
+
+# Claude Code Configuration
+.claude/settings.json    # Marketplace and plugin settings
+.claude-plugin/          # Plugin manifest
+├── plugin.json          # Plugin metadata (3 commands: /pm, /research, /index-repo)
+└── tests/               # Plugin tests
+
+# Python Package
+src/superclaude/         # Pytest plugin + CLI tools
+├── pytest_plugin.py     # Auto-loaded pytest integration
+├── pm_agent/            # confidence.py, self_check.py, reflexion.py
+├── execution/           # parallel.py, reflection.py, self_correction.py
+└── cli/                 # main.py, doctor.py, install_skill.py
+
+# Project Files
+tests/                   # Python test suite
+docs/                    # Documentation
+scripts/                 # Analysis tools (workflow metrics, A/B testing)
+PLANNING.md              # Architecture, absolute rules
+TASK.md                  # Current tasks
+KNOWLEDGE.md             # Accumulated insights
+```
 
 ## 🔧 Development Workflow
 
-### Makefile Commands (Recommended)
+### Essential Commands
 
 ```bash
-# Development setup
-make dev              # Install in editable mode with [dev] dependencies (RECOMMENDED)
-make verify           # Verify installation health (package, version, plugin, doctor)
+# Setup
+make dev              # Install in editable mode with dev dependencies
+make verify           # Verify installation (package, plugin, health)
 
 # Testing
-make test             # Run full test suite with pytest
-make test-plugin      # Verify pytest plugin auto-discovery
+make test             # Run full test suite
+uv run pytest tests/pm_agent/ -v              # Run specific directory
+uv run pytest tests/test_file.py -v           # Run specific file
+uv run pytest -m confidence_check             # Run by marker
+uv run pytest --cov=superclaude               # With coverage
 
-# Code quality
+# Code Quality
 make lint             # Run ruff linter
 make format           # Format code with ruff
+make doctor           # Health check diagnostics
 
 # Maintenance
-make doctor           # Run health check diagnostics
-make clean            # Remove build artifacts and caches
-make translate        # Translate README to zh/ja (requires neural-cli)
-```
-
-### Running Tests Directly
-
-```bash
-# All tests
-uv run pytest
-
-# Specific test file
-uv run pytest tests/pm_agent/test_confidence_check.py -v
-
-# By directory
-uv run pytest tests/pm_agent/ -v
-
-# By marker
-uv run pytest -m confidence_check
-uv run pytest -m "unit and not integration"
-
-# With coverage
-uv run pytest --cov=superclaude --cov-report=html
-```
-
-### Code Quality
-
-```bash
-# Linting
-uv run ruff check .
-
-# Formatting
-uv run ruff format .
-
-# Type checking (if configured)
-uv run mypy superclaude/
+make clean            # Remove build artifacts
 ```
 
 ## 📦 Core Architecture
 
-### Pytest Plugin System (Auto-loaded)
+### Pytest Plugin (Auto-loaded)
 
-SuperClaude includes an **auto-loaded pytest plugin** registered via entry points in pyproject.toml:66-67:
+Registered via `pyproject.toml` entry point, automatically available after installation.
 
-```toml
-[project.entry-points.pytest11]
-superclaude = "superclaude.pytest_plugin"
-```
+**Fixtures**: `confidence_checker`, `self_check_protocol`, `reflexion_pattern`, `token_budget`, `pm_context`
 
-**Provides:**
-- Custom fixtures: `confidence_checker`, `self_check_protocol`, `reflexion_pattern`, `token_budget`, `pm_context`
-- Auto-markers: Tests in `/unit/` → `@pytest.mark.unit`, `/integration/` → `@pytest.mark.integration`
-- Custom markers: `@pytest.mark.confidence_check`, `@pytest.mark.self_check`, `@pytest.mark.reflexion`
-- PM Agent integration for test lifecycle hooks
+**Auto-markers**:
+- Tests in `/unit/` → `@pytest.mark.unit`
+- Tests in `/integration/` → `@pytest.mark.integration`
+
+**Custom markers**: `@pytest.mark.confidence_check`, `@pytest.mark.self_check`, `@pytest.mark.reflexion`
 
 ### PM Agent - Three Core Patterns
 
-Located in `src/superclaude/pm_agent/`:
+**1. ConfidenceChecker** (src/superclaude/pm_agent/confidence.py)
+- Pre-execution confidence assessment: ≥90% required, 70-89% present alternatives, <70% ask questions
+- Prevents wrong-direction work, ROI: 25-250x token savings
 
-**1. ConfidenceChecker (Pre-execution)**
-- Prevents wrong-direction execution by assessing confidence BEFORE starting
-- Token budget: 100-200 tokens
-- ROI: 25-250x token savings when stopping wrong implementations
-- Confidence levels:
-  - High (≥90%): Proceed immediately
-  - Medium (70-89%): Present alternatives
-  - Low (<70%): STOP → Ask specific questions
+**2. SelfCheckProtocol** (src/superclaude/pm_agent/self_check.py)
+- Post-implementation evidence-based validation
+- No speculation - verify with tests/docs
 
-**2. SelfCheckProtocol (Post-implementation)**
-- Evidence-based validation after implementation
-- No speculation allowed - verify with actual tests/docs
-- Ensures implementation matches requirements
+**3. ReflexionPattern** (src/superclaude/pm_agent/reflexion.py)
+- Error learning and prevention
+- Cross-session pattern matching
 
-**3. ReflexionPattern (Error learning)**
-- Records failures for future prevention
-- Pattern matching for similar errors
-- Cross-session learning and improvement
+### Parallel Execution
 
-### Module Structure
+**Wave → Checkpoint → Wave pattern** (src/superclaude/execution/parallel.py):
+- 3.5x faster than sequential execution
+- Automatic dependency analysis
+- Example: [Read files in parallel] → Analyze → [Edit files in parallel]
 
-```
-src/superclaude/
-├── __init__.py              # Exports: ConfidenceChecker, SelfCheckProtocol, ReflexionPattern
-├── pytest_plugin.py         # Auto-loaded pytest integration (fixtures, hooks, markers)
-├── pm_agent/                # PM Agent core (confidence, self-check, reflexion)
-├── cli/                     # CLI commands (main, doctor, install_skill)
-└── execution/               # Execution patterns (parallel, reflection, self_correction)
-```
+### TypeScript Plugins (v2.0)
 
-### Parallel Execution Engine
+**Location**: Plugin source files are at **project root** (pm/, research/, index/), not in .claude-plugin/.
+**Hot reload enabled** - edit .ts file, save, instant reflection (no restart).
 
-Located in `src/superclaude/execution/parallel.py`:
+**Three plugins**:
+- **/pm**: Auto-starts on session (hooks/hooks.json), confidence-driven orchestration
+- **/research**: Deep web research, adaptive planning, Tavily MCP integration
+- **/index-repo**: Repository indexing, 94% token reduction (58K → 3K)
 
-- **Automatic parallelization**: Analyzes task dependencies and executes independent operations concurrently
-- **Wave → Checkpoint → Wave pattern**: 3.5x faster than sequential execution
-- **Dependency graph**: Topological sort for optimal grouping
-- **ThreadPoolExecutor**: Concurrent execution with result aggregation
+**Important**: When editing plugins, modify files in pm/, research/, or index/ at project root, not in .claude-plugin/.
 
-Example pattern:
-```python
-# Wave 1: Read files in parallel
-tasks = [read_file1, read_file2, read_file3]
+## 🧪 Testing with PM Agent
 
-# Checkpoint: Analyze results
-
-# Wave 2: Edit files in parallel based on analysis
-tasks = [edit_file1, edit_file2, edit_file3]
-```
-
-### Plugin Architecture (v2.0)
-
-**TypeScript Plugins** (.claude-plugin/):
-- **pm/index.ts**: PM Agent orchestrator with SessionStart auto-activation
-  - Confidence-driven workflow (≥90% threshold required)
-  - Git status detection & display
-  - Auto-starts on every session (no user command needed)
-- **research/index.ts**: Deep web research with adaptive planning
-  - 3 strategies: Planning-Only, Intent-Planning, Unified
-  - Multi-hop reasoning (up to 5 iterations)
-  - Tavily MCP integration
-- **index/index.ts**: Repository indexing for token efficiency
-  - 94% token reduction (58K → 3K tokens)
-  - Parallel analysis (5 concurrent tasks)
-  - PROJECT_INDEX.md generation
-
-**Hot Reload**:
-- Edit TypeScript file → Save → Instant reflection (no restart)
-- Faster iteration than Markdown commands
-
-**SessionStart Hook**:
-- Configured in hooks/hooks.json
-- Auto-executes /pm command on session start
-- User sees PM Agent activation message automatically
-
-## 🧪 Testing with PM Agent Markers
-
-### Custom Pytest Markers
+### Example Test with Markers
 
 ```python
-# Pre-execution confidence check (skips if confidence < 70%)
 @pytest.mark.confidence_check
 def test_feature(confidence_checker):
+    """Pre-execution confidence check - skips if < 70%"""
     context = {"test_name": "test_feature", "has_official_docs": True}
     assert confidence_checker.assess(context) >= 0.7
 
-# Post-implementation validation with evidence requirement
 @pytest.mark.self_check
 def test_implementation(self_check_protocol):
+    """Post-implementation validation with evidence"""
     implementation = {"code": "...", "tests": [...]}
     passed, issues = self_check_protocol.validate(implementation)
     assert passed, f"Validation failed: {issues}"
 
-# Error learning and prevention
 @pytest.mark.reflexion
-def test_error_prone_feature(reflexion_pattern):
-    # If this test fails, reflexion records the error for future prevention
+def test_error_learning(reflexion_pattern):
+    """If test fails, reflexion records for future prevention"""
     pass
 
-# Token budget allocation (simple: 200, medium: 1000, complex: 2500)
-@pytest.mark.complexity("medium")
+@pytest.mark.complexity("medium")  # simple: 200, medium: 1000, complex: 2500
 def test_with_budget(token_budget):
+    """Token budget allocation"""
     assert token_budget.limit == 1000
 ```
 
-### Available Fixtures
-
-From `src/superclaude/pytest_plugin.py`:
-
-- `confidence_checker` - Pre-execution confidence assessment
-- `self_check_protocol` - Post-implementation validation
-- `reflexion_pattern` - Error learning pattern
-- `token_budget` - Token allocation management
-- `pm_context` - PM Agent context (memory directory structure)
-
 ## 🌿 Git Workflow
 
-### Branch Strategy
+**Branch structure**: `master` (production) ← `integration` (testing) ← `feature/*`, `fix/*`, `docs/*`
 
-```
-master          # Production-ready releases
-├── integration # Integration testing branch (current)
-    ├── feature/*       # Feature development
-    ├── fix/*           # Bug fixes
-    └── docs/*          # Documentation updates
-```
-
-**Workflow:**
-1. Create feature branch from `integration`: `git checkout -b feature/your-feature`
+**Standard workflow**:
+1. Create branch from `integration`: `git checkout -b feature/your-feature`
 2. Develop with tests: `uv run pytest`
-3. Commit with conventional commits: `git commit -m "feat: description"`
-4. Merge to `integration` for integration testing
-5. After validation: `integration` → `master`
+3. Commit: `git commit -m "feat: description"` (conventional commits)
+4. Merge to `integration` → validate → merge to `master`
 
-**Current branch:** `integration` (see gitStatus above)
+**Current branch**: See git status in session start output
 
-## 🚀 Contributing
+### Parallel Development with Git Worktrees
 
-When making changes:
+**CRITICAL**: When running multiple Claude Code sessions in parallel, use `git worktree` to avoid conflicts.
 
-1. Create feature branch from `integration`
-2. Make changes with tests (maintain coverage)
-3. Commit with conventional commits (feat:, fix:, docs:, refactor:, test:)
-4. Merge to `integration` for integration testing
-5. Small, reviewable PRs preferred
+```bash
+# Create worktree for integration branch
+cd ~/github/superclaude
+git worktree add ../superclaude-integration integration
 
-## 📝 Essential Documentation
+# Create worktree for feature branch
+git worktree add ../superclaude-feature feature/pm-agent
+```
 
-**Read these files IN ORDER at session start:**
+**Benefits**:
+- Run Claude Code sessions on different branches simultaneously
+- No branch switching conflicts
+- Independent working directories
+- Parallel development without state corruption
 
-1. **PLANNING.md** - Architecture, design principles, absolute rules
-2. **TASK.md** - Current tasks and priorities
-3. **KNOWLEDGE.md** - Accumulated insights and troubleshooting
+**Usage**:
+- Session A: Open `~/github/superclaude/` (main)
+- Session B: Open `~/github/superclaude-integration/` (integration)
+- Session C: Open `~/github/superclaude-feature/` (feature branch)
 
-These documents are the **source of truth** for development standards.
+**Cleanup**:
+```bash
+git worktree remove ../superclaude-integration
+```
 
-**Additional Resources:**
-- User guides: `docs/user-guide/`
-- Development docs: `docs/Development/`
-- Research reports: `docs/research/`
+## 📝 Key Documentation Files
+
+**PLANNING.md** - Architecture, design principles, absolute rules
+**TASK.md** - Current tasks and priorities
+**KNOWLEDGE.md** - Accumulated insights and troubleshooting
+
+Additional docs in `docs/user-guide/`, `docs/developer-guide/`, `docs/reference/`
 
 ## 💡 Core Development Principles
 
-From KNOWLEDGE.md and PLANNING.md:
-
 ### 1. Evidence-Based Development
-- **Never guess** - verify with official docs (Context7 MCP, WebFetch, WebSearch)
-- Example: Don't assume port configuration - check official documentation first
-- Prevents wrong-direction implementations
+**Never guess** - verify with official docs (Context7 MCP, WebFetch, WebSearch) before implementation.
 
-### 2. Token Efficiency
-- Every operation has a token budget:
-  - Simple (typo fix): 200 tokens
-  - Medium (bug fix): 1,000 tokens
-  - Complex (feature): 2,500 tokens
-- Confidence check ROI: Spend 100-200 to save 5,000-50,000
+### 2. Confidence-First Implementation
+Check confidence BEFORE starting: ≥90% proceed, 70-89% present alternatives, <70% ask questions.
 
 ### 3. Parallel-First Execution
-- **Wave → Checkpoint → Wave** pattern (3.5x faster)
-- Good: `[Read file1, Read file2, Read file3]` → Analyze → `[Edit file1, Edit file2, Edit file3]`
-- Bad: Sequential reads then sequential edits
+Use **Wave → Checkpoint → Wave** pattern (3.5x faster). Example: `[Read files in parallel]` → Analyze → `[Edit files in parallel]`
 
-### 4. Confidence-First Implementation
-- Check confidence BEFORE implementation, not after
-- ≥90%: Proceed immediately
-- 70-89%: Present alternatives
-- <70%: STOP → Ask specific questions
+### 4. Token Efficiency
+- Simple (typo): 200 tokens
+- Medium (bug fix): 1,000 tokens
+- Complex (feature): 2,500 tokens
+- Confidence check ROI: spend 100-200 to save 5,000-50,000
 
 ## 🔧 MCP Server Integration
 
-This framework integrates with multiple MCP servers via **airis-mcp-gateway**:
+Integrates with multiple MCP servers via **airis-mcp-gateway**.
 
-**Priority Servers:**
-- **Tavily**: Primary web search (Deep Research plugin)
-- **Serena**: Session persistence and memory
-- **Mindbase**: Cross-session learning (zero-footprint)
-- **Sequential**: Token-efficient reasoning (30-50% reduction)
+**High Priority**:
+- **Tavily**: Web search (Deep Research)
 - **Context7**: Official documentation (prevent hallucination)
+- **Sequential**: Token-efficient reasoning (30-50% reduction)
+- **Serena**: Session persistence
+- **Mindbase**: Cross-session learning
 
-**Optional Servers:**
-- **Playwright**: JavaScript-heavy content extraction
-- **Magic**: UI component generation
-- **Chrome DevTools**: Performance analysis
+**Optional**: Playwright (browser automation), Magic (UI components), Chrome DevTools (performance)
 
-**Integration Pattern:**
-- TypeScript plugins call MCP servers directly
-- Python pytest plugin uses MCP for test validation
-- Always prefer MCP tools over speculation when documentation or research is needed
-
-**Unified Gateway:**
-- All MCP servers accessible via airis-mcp-gateway
-- Simplified configuration and tool selection
-- See: https://github.com/airis-mcp-gateway
-
-## 🔗 Related
-
-- Global rules: `~/.claude/CLAUDE.md` (workspace-level)
-- MCP servers: Unified gateway via `airis-mcp-gateway`
-- Framework docs: Auto-installed to `~/.claude/superclaude/`
+**Usage**: TypeScript plugins and Python pytest plugin can call MCP servers. Always prefer MCP tools over speculation for documentation/research.

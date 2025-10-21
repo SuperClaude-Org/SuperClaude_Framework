@@ -1,4 +1,4 @@
-.PHONY: dev install test test-plugin doctor verify clean lint format help
+.PHONY: dev install test test-plugin doctor verify clean lint format install-plugin install-plugin-minimal install-plugin-dev uninstall-plugin reinstall-plugin reinstall-plugin-minimal reinstall-plugin-dev help
 
 # Development installation (local source, editable) - RECOMMENDED
 dev:
@@ -64,6 +64,82 @@ clean:
 	find . -type d -name .pytest_cache -exec rm -rf {} +
 	find . -type d -name .ruff_cache -exec rm -rf {} +
 
+# Install Claude Code plugin - MINIMAL (manifest only, for baseline performance)
+install-plugin-minimal:
+	@echo "🔌 Installing SuperClaude plugin (MINIMAL) to Claude Code..."
+	@if [ -d ~/.claude/plugins/pm-agent ]; then \
+		echo "⚠️  Plugin already exists at ~/.claude/plugins/pm-agent"; \
+		echo "   Run 'make reinstall-plugin-minimal' to update"; \
+		exit 1; \
+	fi
+	@mkdir -p ~/.claude/plugins/pm-agent
+	@cp .claude-plugin/plugin.json ~/.claude/plugins/pm-agent/
+	@cp .claude-plugin/marketplace.json ~/.claude/plugins/pm-agent/
+	@echo ""
+	@echo "✅ Plugin installed (MINIMAL configuration)"
+	@echo "   Only manifest files copied - for baseline performance testing"
+	@echo ""
+	@echo "🔄 Restart Claude Code to activate plugins"
+
+# Install Claude Code plugin - DEV (full, for development)
+install-plugin-dev:
+	@echo "🔌 Installing SuperClaude plugin (DEV) to Claude Code..."
+	@if [ -d ~/.claude/plugins/pm-agent ]; then \
+		echo "⚠️  Plugin already exists at ~/.claude/plugins/pm-agent"; \
+		echo "   Run 'make reinstall-plugin-dev' to update"; \
+		exit 1; \
+	fi
+	@mkdir -p ~/.claude/plugins/pm-agent
+	@cp -r .claude-plugin/* ~/.claude/plugins/pm-agent/
+	@cp -r commands ~/.claude/plugins/pm-agent/
+	@cp -r hooks ~/.claude/plugins/pm-agent/
+	@echo ""
+	@echo "✅ Plugin installed (DEV configuration)"
+	@echo ""
+	@echo "📋 Installed components:"
+	@echo "   - /pm: PM Agent orchestrator (SessionStart hook)"
+	@echo "   - /research: Deep web search with adaptive planning"
+	@echo "   - /index-repo: Repository indexing (94%% token reduction)"
+	@echo ""
+	@echo "🔄 Restart Claude Code to activate plugins"
+
+# Default install (dev configuration for backward compatibility)
+install-plugin: install-plugin-dev
+
+# Uninstall Claude Code plugin
+uninstall-plugin:
+	@echo "🗑️  Uninstalling SuperClaude plugin..."
+	@if [ ! -d ~/.claude/plugins/pm-agent ]; then \
+		echo "❌ Plugin not found at ~/.claude/plugins/pm-agent"; \
+		exit 1; \
+	fi
+	@rm -rf ~/.claude/plugins/pm-agent
+	@echo "✅ Plugin uninstalled successfully"
+
+# Reinstall plugin - MINIMAL
+reinstall-plugin-minimal:
+	@echo "🔄 Reinstalling SuperClaude plugin (MINIMAL)..."
+	@rm -rf ~/.claude/plugins/pm-agent 2>/dev/null || true
+	@mkdir -p ~/.claude/plugins/pm-agent
+	@cp .claude-plugin/plugin.json ~/.claude/plugins/pm-agent/
+	@cp .claude-plugin/marketplace.json ~/.claude/plugins/pm-agent/
+	@echo "✅ Plugin reinstalled (MINIMAL configuration)"
+	@echo "🔄 Restart Claude Code to apply changes"
+
+# Reinstall plugin - DEV
+reinstall-plugin-dev:
+	@echo "🔄 Reinstalling SuperClaude plugin (DEV)..."
+	@rm -rf ~/.claude/plugins/pm-agent 2>/dev/null || true
+	@mkdir -p ~/.claude/plugins/pm-agent
+	@cp -r .claude-plugin/* ~/.claude/plugins/pm-agent/
+	@cp -r commands ~/.claude/plugins/pm-agent/
+	@cp -r hooks ~/.claude/plugins/pm-agent/
+	@echo "✅ Plugin reinstalled (DEV configuration)"
+	@echo "🔄 Restart Claude Code to apply changes"
+
+# Default reinstall (dev configuration for backward compatibility)
+reinstall-plugin: reinstall-plugin-dev
+
 # Translate README to multiple languages using Neural CLI
 translate:
 	@echo "🌐 Translating README using Neural CLI (Ollama + qwen2.5:3b)..."
@@ -99,13 +175,14 @@ help:
 	@echo "  make format          - Format code (ruff format)"
 	@echo "  make clean           - Clean build artifacts"
 	@echo ""
+	@echo "🔌 Plugin Management:"
+	@echo "  make install-plugin  - Install plugin to Claude Code (~/.claude/plugins/)"
+	@echo "  make uninstall-plugin - Remove plugin from Claude Code"
+	@echo "  make reinstall-plugin - Update existing plugin installation"
+	@echo ""
 	@echo "📚 Documentation:"
 	@echo "  make translate       - Translate README to Chinese and Japanese"
 	@echo "  make help            - Show this help message"
-	@echo ""
-	@echo "💡 Plugin Usage:"
-	@echo "  cd /path/to/SuperClaude_Framework && claude"
-	@echo "  → .claude-plugin/ auto-detected (project-local plugin)"
 	@echo ""
 	@echo "💡 Legacy (backward compatibility):"
 	@echo "  make install         - Alias for 'make dev'"
