@@ -100,23 +100,33 @@ Claude Code is a product built and maintained by [Anthropic](https://www.anthrop
 
 ## ⚡ **Quick Installation**
 
-### **Plugin Installation - Auto-Activation with Hot Reload**
+### **One-Command Plugin Installation**
 
-SuperClaude v2.0+ uses **TypeScript plugins** for instant updates and auto-activation:
+SuperClaude v2.0+ uses **TypeScript plugins** with automated installer:
 
 ```bash
-# Method 1: Plugin Marketplace (Recommended)
-# Open Claude Code → /plugin marketplace → Search "pm-agent" → Install
+# Clone repository
+git clone https://github.com/SuperClaude-Org/SuperClaude_Framework.git
+cd SuperClaude_Framework
 
-# Method 2: Manual Installation
-cd /Users/kazuki/github/superclaude
-# Plugin auto-registers on session start via SessionStart hook
+# Install plugin (one command)
+make install-plugin
+```
+
+**That's it!** Restart Claude Code and the plugin auto-activates.
+
+**Plugin Management Commands**:
+```bash
+make install-plugin    # Install plugin to ~/.claude/plugins/
+make uninstall-plugin  # Remove plugin
+make reinstall-plugin  # Update existing installation
 ```
 
 **Key Features**:
+- ✅ **One-Command Install**: No manual configuration needed
 - ✅ **Hot Reload**: Edit TypeScript → Save → Instant reflection (no restart)
 - ✅ **Auto-Activation**: PM Agent starts automatically on session start
-- ✅ **Zero Configuration**: Works out of the box
+- ✅ **Zero Configuration**: Works out of the box after `make install-plugin`
 
 ### **Enhanced Performance (Optional MCPs)**
 
@@ -148,13 +158,14 @@ For **2-3x faster** execution and **30-50% fewer tokens**, optionally install MC
 # 1. Remove old slash commands (if installed)
 rm -rf ~/.claude/commands/sc/
 
-# 2. Install new plugin
-# Via Claude Code: /plugin marketplace → "pm-agent"
-# Or clone repository to project directory
+# 2. Install new plugin (one command)
+cd SuperClaude_Framework
+make install-plugin
 ```
 
 **What's New in V2.0:**
 - ✅ TypeScript plugins (hot reload support)
+- ✅ One-command installation (no manual config)
 - ✅ Auto-activation via SessionStart hook
 - ✅ 3 core plugins: PM Agent, Research, Index
 - ✅ Confidence-driven workflow (≥90% threshold, Precision/Recall 1.0)
@@ -163,21 +174,39 @@ rm -rf ~/.claude/commands/sc/
 - Old: `/sc:pm`, `/sc:research`, `/sc:index-repo` (27 commands)
 - New: `/pm`, `/research`, `/index-repo` (3 plugin commands)
 - Functionality improved with hot reload and auto-activation
+- Installation: Manual file copying → `make install-plugin`
 
 </details>
 
 <details>
-<summary><b>💡 Troubleshooting PEP 668 Errors</b></summary>
+<summary><b>💡 Installation Troubleshooting</b></summary>
 
+**Plugin installation failed?**
 ```bash
-# Option 1: Use pipx (Recommended)
-pipx install SuperClaude
+# Check if Claude Code is installed
+which claude
 
-# Option 2: User installation
-pip install --user SuperClaude
+# Verify plugin directory exists
+ls ~/.claude/plugins/
 
-# Option 3: Force installation (use with caution)
-pip install --break-system-packages SuperClaude
+# Reinstall plugin
+make reinstall-plugin
+
+# Check installation
+ls ~/.claude/plugins/pm-agent/
+```
+
+**Plugin not loading?**
+- Restart Claude Code completely
+- Run `/plugin` in Claude Code to verify installation
+- Check that `.claude-plugin/plugin.json` exists in repository
+
+**Development mode (for contributors):**
+```bash
+# Install Python package for testing
+make dev
+make verify
+uv run pytest
 ```
 </details>
 
