@@ -9,18 +9,8 @@
   "repository": "https://github.com/kazukixjp/superclaude",
   "license": "MIT",
   "keywords": ["pm-agent", "confidence-check", "research", "indexing"],
-  "commands": [
-    "./commands/pm.md",
-    "./commands/research.md",
-    "./commands/index-repo.md"
-  ],
-  "skills": [
-    {
-      "name": "confidence_check",
-      "path": "pm/confidence.ts",
-      "description": "Pre-implementation confidence assessment (≥90% required, Precision/Recall 1.0)"
-    }
-  ],
+  "commands": "./commands/",
+  "skills": "./skills/",
   "hooks": "./hooks/hooks.json",
   "engines": {
     "node": ">=18.0.0"

@@ -133,8 +133,15 @@ reinstall-plugin-dev:
 	@mkdir -p ~/.claude/plugins/pm-agent
 	@cp -r .claude-plugin/* ~/.claude/plugins/pm-agent/
 	@cp -r commands ~/.claude/plugins/pm-agent/
+	@cp -r skills ~/.claude/plugins/pm-agent/
 	@cp -r hooks ~/.claude/plugins/pm-agent/
+	@cp -r pm ~/.claude/plugins/pm-agent/
+	@cp -r research ~/.claude/plugins/pm-agent/
+	@cp -r index ~/.claude/plugins/pm-agent/
 	@echo "✅ Plugin reinstalled (DEV configuration)"
+	@echo "   - Commands: /pm, /research, /index-repo"
+	@echo "   - Skills: confidence-check"
+	@echo "   - TypeScript: pm/, research/, index/"
 	@echo "🔄 Restart Claude Code to apply changes"
 
 # Default reinstall (dev configuration for backward compatibility)
