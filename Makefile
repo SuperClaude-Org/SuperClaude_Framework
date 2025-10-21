@@ -1,19 +1,15 @@
-.PHONY: install install-release dev test test-plugin doctor verify clean lint format uninstall update translate help
+.PHONY: dev install test test-plugin doctor verify clean lint format help
 
-# Development installation (local source, editable)
-install:
-	@echo "Installing SuperClaude Framework (development mode)..."
+# Development installation (local source, editable) - RECOMMENDED
+dev:
+	@echo "🔧 Installing SuperClaude Framework (development mode)..."
 	uv pip install -e ".[dev]"
+	@echo ""
+	@echo "✅ Installation complete!"
+	@echo "   Run 'make verify' to check installation"
 
-# Production installation (from PyPI, recommended for users)
-install-release:
-	@echo "Installing SuperClaude Framework (production mode)..."
-	@echo "Using pipx for isolated environment..."
-	pipx install SuperClaude
-	pipx upgrade SuperClaude
-
-# Alias for development installation
-dev: install
+# Alias for backward compatibility
+install: dev
 
 # Run tests
 test:
@@ -68,16 +64,6 @@ clean:
 	find . -type d -name .pytest_cache -exec rm -rf {} +
 	find . -type d -name .ruff_cache -exec rm -rf {} +
 
-# Uninstall SuperClaude components
-uninstall:
-	@echo "Uninstalling SuperClaude components..."
-	uv run superclaude uninstall
-
-# Update SuperClaude components
-update:
-	@echo "Updating SuperClaude components..."
-	uv run superclaude update
-
 # Translate README to multiple languages using Neural CLI
 translate:
 	@echo "🌐 Translating README using Neural CLI (Ollama + qwen2.5:3b)..."
@@ -101,24 +87,21 @@ translate:
 help:
 	@echo "SuperClaude Framework - Available commands:"
 	@echo ""
-	@echo "Installation:"
-	@echo "  make install         - Development installation (local source, editable with uv)"
-	@echo "  make install-release - Production installation (from PyPI with pipx)"
-	@echo "  make dev             - Alias for 'make install'"
+	@echo "🚀 Quick Start:"
+	@echo "  make dev             - Install in development mode (RECOMMENDED)"
+	@echo "  make verify          - Verify installation is working"
 	@echo ""
-	@echo "Development:"
-	@echo "  make test            - Run tests"
-	@echo "  make test-plugin     - Test pytest plugin loading"
+	@echo "🔧 Development:"
+	@echo "  make test            - Run test suite"
+	@echo "  make test-plugin     - Test pytest plugin auto-discovery"
 	@echo "  make doctor          - Run health check"
-	@echo "  make verify          - Verify Phase 1 installation (comprehensive)"
-	@echo "  make lint            - Run linter"
-	@echo "  make format          - Format code"
+	@echo "  make lint            - Run linter (ruff check)"
+	@echo "  make format          - Format code (ruff format)"
 	@echo "  make clean           - Clean build artifacts"
 	@echo ""
-	@echo "Maintenance:"
-	@echo "  make uninstall       - Uninstall SuperClaude components"
-	@echo "  make update          - Update SuperClaude components"
-	@echo ""
-	@echo "Documentation:"
-	@echo "  make translate       - Translate README to Chinese and Japanese (requires Ollama)"
+	@echo "📚 Documentation:"
+	@echo "  make translate       - Translate README to Chinese and Japanese"
 	@echo "  make help            - Show this help message"
+	@echo ""
+	@echo "💡 Legacy (backward compatibility):"
+	@echo "  make install         - Alias for 'make dev'"
