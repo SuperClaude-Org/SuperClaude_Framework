@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/pm",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

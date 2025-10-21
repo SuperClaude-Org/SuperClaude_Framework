@@ -1,30 +1,38 @@
 {
   "name": "pm-agent",
-  "version": "1.0.0",
-  "description": "Project Manager Agent with 90% confidence checks and zero-footprint memory",
+  "version": "2.0.0",
+  "description": "PM Agent - Auto-activating orchestrator with hot reload support",
   "author": "SuperClaude Team",
+  "main": "pm/index.ts",
   "commands": [
     {
       "name": "pm",
-      "path": "commands/pm.md",
-      "description": "Activate PM Agent with confidence-driven workflow"
+      "path": "pm/index.ts",
+      "description": "Activate PM Agent with confidence-driven workflow (auto-starts via hooks)"
     },
     {
       "name": "research",
-      "path": "commands/research.md",
+      "path": "research/index.ts",
       "description": "Deep web research with adaptive planning and intelligent search"
     },
     {
       "name": "index-repo",
-      "path": "commands/index-repo.md",
+      "path": "index/index.ts",
       "description": "Create repository structure index for fast context loading (94% token reduction)"
     }
   ],
   "skills": [
     {
       "name": "confidence_check",
-      "path": "skills/confidence_check.py",
-      "description": "Pre-implementation confidence assessment (≥90% required)"
+      "path": "pm/confidence.ts",
+      "description": "Pre-implementation confidence assessment (≥90% required, Precision/Recall 1.0)"
     }
-  ]
+  ],
+  "hooks": {
+    "path": "hooks/hooks.json",
+    "description": "SessionStart auto-activation: /pm runs automatically on session start"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }
