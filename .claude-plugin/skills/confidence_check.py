@@ -101,14 +101,16 @@ class ConfidenceChecker:
 
     def _has_official_docs(self, context: Dict[str, Any]) -> bool:
         """
-        Check if official documentation exists
+        Check if official documentation verified
 
-        Looks for:
-        - README.md in project
-        - CLAUDE.md with relevant patterns
-        - docs/ directory with related content
+        For testing: uses context flag 'official_docs_verified'
+        For production: checks for README.md, CLAUDE.md, docs/ directory
         """
-        # Check for test file path
+        # Check context flag (for testing)
+        if "official_docs_verified" in context:
+            return context["official_docs_verified"]
+
+        # Fallback: check for test file path (for production)
         test_file = context.get("test_file")
         if not test_file:
             return False
