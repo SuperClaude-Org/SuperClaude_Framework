@@ -55,23 +55,36 @@ docker compose exec workspace uv run pytest
 
 ```
 SuperClaude_Framework/
-├── superclaude/           # Framework source
-│   ├── commands/          # Slash commands
-│   ├── agents/            # Agent personas
-│   ├── modes/             # Behavior modes
-│   ├── framework/         # Core principles/rules/flags
-│   ├── business/          # Business analysis patterns
-│   └── research/          # Research configurations
-├── setup/                 # Installation system
-│   ├── components/        # Installable components
-│   │   ├── knowledge_base.py       # Framework knowledge
-│   │   ├── behavior_modes.py       # Mode definitions
-│   │   ├── agent_personas.py       # Agent definitions
-│   │   ├── slash_commands.py       # Command registration
-│   │   └── mcp_integration.py      # External tool integration
-│   └── core/              # Installation logic
-└── tests/                 # Test suite
+├── .claude-plugin/             # TypeScript plugins (v2.0 architecture)
+│   ├── pm/                     # PM Agent plugin
+│   │   ├── index.ts            # Main orchestrator (SessionStart auto-activation)
+│   │   ├── confidence.ts       # Confidence assessment (≥90% threshold, Precision/Recall 1.0)
+│   │   └── package.json        # Dependencies
+│   ├── research/               # Deep Research plugin
+│   │   ├── index.ts            # Web research with adaptive planning
+│   │   └── package.json        # Dependencies
+│   ├── index/                  # Repository indexing plugin
+│   │   ├── index.ts            # 94% token reduction (58K → 3K)
+│   │   └── package.json        # Dependencies
+│   ├── hooks/
+│   │   └── hooks.json          # SessionStart hook configuration
+│   ├── tests/                  # Plugin tests (confidence_check, test cases)
+│   └── plugin.json             # Plugin manifest (v2.0.0)
+├── src/superclaude/            # Python package (pytest plugin, CLI)
+│   ├── __init__.py             # Exports: ConfidenceChecker, SelfCheckProtocol, ReflexionPattern
+│   ├── pytest_plugin.py        # Auto-loaded pytest integration
+│   ├── pm_agent/               # PM Agent core (confidence, self-check, reflexion)
+│   ├── cli/                    # CLI commands (main, doctor, install_skill)
+│   └── execution/              # Execution patterns (parallel, reflection, self_correction)
+├── docs/                       # Documentation
+├── scripts/                    # Analysis tools (A/B testing, workflow metrics)
+└── tests/                      # Python test suite
 ```
+
+**Architecture Overview:**
+- **TypeScript Plugins** (.claude-plugin/): Hot reload, auto-activation, production workflows
+- **Python Package** (src/superclaude/): pytest plugin, CLI tools, PM Agent core logic
+- **Dual Language**: TypeScript for Claude Code integration, Python for testing/tooling
 
 ## 🔧 Development Workflow
 
@@ -200,13 +213,30 @@ tasks = [read_file1, read_file2, read_file3]
 tasks = [edit_file1, edit_file2, edit_file3]
 ```
 
-### Component Responsibility
+### Plugin Architecture (v2.0)
 
-- **knowledge_base**: Framework knowledge initialization
-- **behavior_modes**: Execution mode definitions
-- **agent_personas**: AI agent personality definitions
-- **slash_commands**: CLI command registration
-- **mcp_integration**: External tool integration
+**TypeScript Plugins** (.claude-plugin/):
+- **pm/index.ts**: PM Agent orchestrator with SessionStart auto-activation
+  - Confidence-driven workflow (≥90% threshold required)
+  - Git status detection & display
+  - Auto-starts on every session (no user command needed)
+- **research/index.ts**: Deep web research with adaptive planning
+  - 3 strategies: Planning-Only, Intent-Planning, Unified
+  - Multi-hop reasoning (up to 5 iterations)
+  - Tavily MCP integration
+- **index/index.ts**: Repository indexing for token efficiency
+  - 94% token reduction (58K → 3K tokens)
+  - Parallel analysis (5 concurrent tasks)
+  - PROJECT_INDEX.md generation
+
+**Hot Reload**:
+- Edit TypeScript file → Save → Instant reflection (no restart)
+- Faster iteration than Markdown commands
+
+**SessionStart Hook**:
+- Configured in hooks/hooks.json
+- Auto-executes /pm command on session start
+- User sees PM Agent activation message automatically
 
 ## 🧪 Testing with PM Agent Markers
 
@@ -323,19 +353,29 @@ From KNOWLEDGE.md and PLANNING.md:
 
 ## 🔧 MCP Server Integration
 
-This framework integrates with multiple MCP servers:
+This framework integrates with multiple MCP servers via **airis-mcp-gateway**:
 
 **Priority Servers:**
+- **Tavily**: Primary web search (Deep Research plugin)
+- **Serena**: Session persistence and memory
+- **Mindbase**: Cross-session learning (zero-footprint)
+- **Sequential**: Token-efficient reasoning (30-50% reduction)
 - **Context7**: Official documentation (prevent hallucination)
-- **Sequential**: Complex analysis and multi-step reasoning
-- **Tavily**: Web search for Deep Research
 
 **Optional Servers:**
-- **Serena**: Session persistence and memory
-- **Playwright**: Browser automation testing
+- **Playwright**: JavaScript-heavy content extraction
 - **Magic**: UI component generation
+- **Chrome DevTools**: Performance analysis
 
-**Always prefer MCP tools over speculation** when documentation or research is needed.
+**Integration Pattern:**
+- TypeScript plugins call MCP servers directly
+- Python pytest plugin uses MCP for test validation
+- Always prefer MCP tools over speculation when documentation or research is needed
+
+**Unified Gateway:**
+- All MCP servers accessible via airis-mcp-gateway
+- Simplified configuration and tool selection
+- See: https://github.com/airis-mcp-gateway
 
 ## 🔗 Related
 

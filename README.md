@@ -62,12 +62,12 @@
 
 ## 📊 **Framework Statistics**
 
-| **Commands** | **Agents** | **Modes** | **MCP Servers** |
+| **Plugins** | **Agents** | **Modes** | **MCP Servers** |
 |:------------:|:----------:|:---------:|:---------------:|
-| **26** | **16** | **7** | **8** |
-| Slash Commands | Specialized AI | Behavioral | Integrations |
+| **3** | **16** | **7** | **8** |
+| Plugin Commands | Specialized AI | Behavioral | Integrations |
 
-Use the new `/sc:help` command to see a full list of all available commands.
+Three core plugins: **PM Agent** (orchestration), **Research** (web search), **Index** (context optimization).
 
 </div>
 
@@ -100,29 +100,37 @@ Claude Code is a product built and maintained by [Anthropic](https://www.anthrop
 
 ## ⚡ **Quick Installation**
 
-### **Minimal Setup - Works Immediately (No MCPs Required)**
+### **Plugin Installation - Auto-Activation with Hot Reload**
 
-SuperClaude works **fully functional** without any MCP servers. Install and start using immediately:
+SuperClaude v2.0+ uses **TypeScript plugins** for instant updates and auto-activation:
 
-| Method | Command | Best For |
-|:------:|---------|----------|
-| **🐍 pipx** | `pipx install SuperClaude && pipx upgrade SuperClaude && SuperClaude install` | **✅ Recommended** - Linux/macOS |
-| **📦 pip** | `pip install SuperClaude && pip upgrade SuperClaude && SuperClaude install` | Traditional Python environments |
-| **🌐 npm** | `npm install -g @bifrost_inc/superclaude && superclaude install` | Cross-platform, Node.js users |
+```bash
+# Method 1: Plugin Marketplace (Recommended)
+# Open Claude Code → /plugin marketplace → Search "pm-agent" → Install
 
-### **Recommended Setup - Enhanced Performance (Optional MCPs)**
+# Method 2: Manual Installation
+cd /Users/kazuki/github/superclaude
+# Plugin auto-registers on session start via SessionStart hook
+```
+
+**Key Features**:
+- ✅ **Hot Reload**: Edit TypeScript → Save → Instant reflection (no restart)
+- ✅ **Auto-Activation**: PM Agent starts automatically on session start
+- ✅ **Zero Configuration**: Works out of the box
+
+### **Enhanced Performance (Optional MCPs)**
 
 For **2-3x faster** execution and **30-50% fewer tokens**, optionally install MCP servers:
 
 ```bash
-# After basic installation, enhance with MCP servers:
+# Recommended MCP servers (via airis-mcp-gateway):
 # - Mindbase: Cross-session memory (automatic)
-# - Serena: Faster code understanding (2-3x faster)
+# - Serena: Session persistence (2-3x faster)
 # - Sequential: Token-efficient reasoning (30-50% fewer tokens)
-# - Context7: Curated official documentation
-# - Tavily: Optimized web search
+# - Tavily: Web search for Deep Research
+# - Context7: Official documentation lookup
 
-# See docs/mcp/mcp-integration-policy.md for MCP installation guides
+# Install via: https://github.com/airis-mcp-gateway
 ```
 
 **Performance Comparison:**
@@ -132,26 +140,29 @@ For **2-3x faster** execution and **30-50% fewer tokens**, optionally install MC
 </div>
 
 <details>
-<summary><b>⚠️ IMPORTANT: Upgrading from SuperClaude V3</b></summary>
+<summary><b>⚠️ IMPORTANT: Upgrading from SuperClaude V1.x (Slash Commands)</b></summary>
 
-**If you have SuperClaude V3 installed, you SHOULD uninstall it before installing V4:**
+**V2.0 introduces breaking changes - migration from slash commands to TypeScript plugins:**
 
 ```bash
-# Uninstall V3 first
-Remove all related files and directories :
-*.md *.json and commands/
+# 1. Remove old slash commands (if installed)
+rm -rf ~/.claude/commands/sc/
 
-# Then install V4
-pipx install SuperClaude && pipx upgrade SuperClaude && SuperClaude install
+# 2. Install new plugin
+# Via Claude Code: /plugin marketplace → "pm-agent"
+# Or clone repository to project directory
 ```
 
-**✅ What gets preserved during upgrade:**
-- ✓ Your custom slash commands (outside `commands/sc/`)
-- ✓ Your custom content in `CLAUDE.md` 
-- ✓ Claude Code's `.claude.json`, `.credentials.json`, `settings.json` and `settings.local.json`
-- ✓ Any custom agents and files you've added
+**What's New in V2.0:**
+- ✅ TypeScript plugins (hot reload support)
+- ✅ Auto-activation via SessionStart hook
+- ✅ 3 core plugins: PM Agent, Research, Index
+- ✅ Confidence-driven workflow (≥90% threshold, Precision/Recall 1.0)
 
-**⚠️ Note:** Other SuperClaude-related `.json` files from V3 may cause conflicts and should be removed.
+**Migration Notes:**
+- Old: `/sc:pm`, `/sc:research`, `/sc:index-repo` (27 commands)
+- New: `/pm`, `/research`, `/index-repo` (3 plugin commands)
+- Functionality improved with hot reload and auto-activation
 
 </details>
 
@@ -232,9 +243,9 @@ pip install --break-system-packages SuperClaude
 
 <div align="center">
 
-## 🎉 **What's New in V4**
+## 🎉 **What's New in V2.0**
 
-> *Version 4 brings significant improvements based on community feedback and real-world usage patterns.*
+> *Version 2.0 brings architectural transformation: migration from 27 slash commands to 3 TypeScript plugins with hot reload and auto-activation.*
 
 <table>
 <tr>
@@ -252,12 +263,13 @@ pip install --break-system-packages SuperClaude
 </td>
 <td width="50%">
 
-### 📝 **Improved Namespace**
-**`/sc:` prefix** for all commands:
-- No conflicts with custom commands
-- 25 commands covering full lifecycle
-- From brainstorming to deployment
-- Clean, organized command structure
+### 🔥 **TypeScript Plugins**
+**3 core plugins** with hot reload:
+- **PM Agent**: Confidence-driven orchestration (≥90% threshold)
+- **Research**: Deep web search with adaptive planning
+- **Index**: 94% token reduction (58K → 3K)
+- Auto-activation via SessionStart hook
+- Edit → Save → Instant reflection (no restart)
 
 </td>
 </tr>
@@ -265,14 +277,14 @@ pip install --break-system-packages SuperClaude
 <td width="50%">
 
 ### 🔧 **MCP Server Integration**
-**8 powerful servers** working together:
-- **Context7** → Up-to-date documentation
-- **Sequential** → Complex analysis
+**8 powerful servers** (via airis-mcp-gateway):
+- **Tavily** → Primary web search (Deep Research)
+- **Serena** → Session persistence & memory
+- **Mindbase** → Cross-session learning (zero-footprint)
+- **Sequential** → Token-efficient reasoning
+- **Context7** → Official documentation lookup
+- **Playwright** → JavaScript-heavy content extraction
 - **Magic** → UI component generation
-- **Playwright** → Browser testing
-- **Morphllm** → Bulk transformations
-- **Serena** → Session persistence
-- **Tavily** → Web search for deep research
 - **Chrome DevTools** → Performance analysis
 
 </td>
@@ -376,16 +388,16 @@ SuperClaude v4.2 introduces comprehensive Deep Research capabilities, enabling a
 
 ```bash
 # Basic research with automatic depth
-/sc:research "latest AI developments 2024"
+/research "latest AI developments 2024"
 
-# Controlled research depth
-/sc:research "quantum computing breakthroughs" --depth exhaustive
+# Controlled research depth (via options in TypeScript)
+/research "quantum computing breakthroughs"  # depth: exhaustive
 
 # Specific strategy selection
-/sc:research "market analysis" --strategy planning-only
+/research "market analysis"  # strategy: planning-only
 
-# Domain-filtered research
-/sc:research "React patterns" --domains "reactjs.org,github.com"
+# Domain-filtered research (Tavily MCP integration)
+/research "React patterns"  # domains: reactjs.org,github.com
 ```
 
 ### **Research Depth Levels**
@@ -435,8 +447,8 @@ The Deep Research system intelligently coordinates multiple tools:
 </td>
 <td valign="top">
 
-- 🎯 [**Commands Reference**](docs/user-guide/commands.md)  
-  *All 25 slash commands*
+- 🎯 [**Plugin Commands**](docs/user-guide/commands.md)
+  *3 core plugin commands*
 
 - 🤖 [**Agents Guide**](docs/user-guide/agents.md)  
   *15 specialized agents*
