@@ -1,4 +1,4 @@
-.PHONY: dev install test test-plugin doctor verify clean lint format install-plugin uninstall-plugin reinstall-plugin help
+.PHONY: dev install test test-plugin doctor verify clean lint format help
 
 # Development installation (local source, editable) - RECOMMENDED
 dev:
@@ -64,46 +64,6 @@ clean:
 	find . -type d -name .pytest_cache -exec rm -rf {} +
 	find . -type d -name .ruff_cache -exec rm -rf {} +
 
-# Install Claude Code plugin
-install-plugin:
-	@echo "🔌 Installing SuperClaude plugin to Claude Code..."
-	@if [ -d ~/.claude/plugins/pm-agent ]; then \
-		echo "⚠️  Plugin already exists at ~/.claude/plugins/pm-agent"; \
-		echo "   Run 'make reinstall-plugin' to update"; \
-		exit 1; \
-	fi
-	@mkdir -p ~/.claude/plugins/pm-agent
-	@cp -r .claude-plugin/* ~/.claude/plugins/pm-agent/
-	@echo ""
-	@echo "✅ Plugin installed successfully!"
-	@echo ""
-	@echo "📋 Installed components:"
-	@echo "   - PM Agent: Auto-activation orchestrator (SessionStart hook)"
-	@echo "   - Research: Deep web search with adaptive planning"
-	@echo "   - Index: Repository indexing (94% token reduction)"
-	@echo ""
-	@echo "🔄 Restart Claude Code or run /plugin to verify installation"
-	@echo "   Available commands: /pm, /research, /index-repo"
-
-# Uninstall Claude Code plugin
-uninstall-plugin:
-	@echo "🗑️  Uninstalling SuperClaude plugin..."
-	@if [ ! -d ~/.claude/plugins/pm-agent ]; then \
-		echo "❌ Plugin not found at ~/.claude/plugins/pm-agent"; \
-		exit 1; \
-	fi
-	@rm -rf ~/.claude/plugins/pm-agent
-	@echo "✅ Plugin uninstalled successfully"
-
-# Reinstall Claude Code plugin (uninstall + install)
-reinstall-plugin:
-	@echo "🔄 Reinstalling SuperClaude plugin..."
-	@rm -rf ~/.claude/plugins/pm-agent 2>/dev/null || true
-	@mkdir -p ~/.claude/plugins/pm-agent
-	@cp -r .claude-plugin/* ~/.claude/plugins/pm-agent/
-	@echo "✅ Plugin reinstalled successfully"
-	@echo "🔄 Restart Claude Code to apply changes"
-
 # Translate README to multiple languages using Neural CLI
 translate:
 	@echo "🌐 Translating README using Neural CLI (Ollama + qwen2.5:3b)..."
@@ -130,7 +90,6 @@ help:
 	@echo "🚀 Quick Start:"
 	@echo "  make dev             - Install in development mode (RECOMMENDED)"
 	@echo "  make verify          - Verify installation is working"
-	@echo "  make install-plugin  - Install plugin to Claude Code (~/.claude/plugins/)"
 	@echo ""
 	@echo "🔧 Development:"
 	@echo "  make test            - Run test suite"
@@ -140,14 +99,13 @@ help:
 	@echo "  make format          - Format code (ruff format)"
 	@echo "  make clean           - Clean build artifacts"
 	@echo ""
-	@echo "🔌 Plugin Management:"
-	@echo "  make install-plugin  - Install plugin to Claude Code"
-	@echo "  make uninstall-plugin - Remove plugin from Claude Code"
-	@echo "  make reinstall-plugin - Update existing plugin installation"
-	@echo ""
 	@echo "📚 Documentation:"
 	@echo "  make translate       - Translate README to Chinese and Japanese"
 	@echo "  make help            - Show this help message"
+	@echo ""
+	@echo "💡 Plugin Usage:"
+	@echo "  cd /path/to/SuperClaude_Framework && claude"
+	@echo "  → .claude-plugin/ auto-detected (project-local plugin)"
 	@echo ""
 	@echo "💡 Legacy (backward compatibility):"
 	@echo "  make install         - Alias for 'make dev'"

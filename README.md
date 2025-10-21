@@ -100,33 +100,26 @@ Claude Code is a product built and maintained by [Anthropic](https://www.anthrop
 
 ## ⚡ **Quick Installation**
 
-### **One-Command Plugin Installation**
+### **Project-Local Plugin (Recommended)**
 
-SuperClaude v2.0+ uses **TypeScript plugins** with automated installer:
+SuperClaude v2.0+ uses **TypeScript plugins** with project-local auto-detection:
 
 ```bash
 # Clone repository
 git clone https://github.com/SuperClaude-Org/SuperClaude_Framework.git
 cd SuperClaude_Framework
 
-# Install plugin (one command)
-make install-plugin
+# Start Claude Code in this directory
+claude
 ```
 
-**That's it!** Restart Claude Code and the plugin auto-activates.
-
-**Plugin Management Commands**:
-```bash
-make install-plugin    # Install plugin to ~/.claude/plugins/
-make uninstall-plugin  # Remove plugin
-make reinstall-plugin  # Update existing installation
-```
+**That's it!** `.claude-plugin/` is auto-detected and PM Agent activates on session start.
 
 **Key Features**:
-- ✅ **One-Command Install**: No manual configuration needed
-- ✅ **Hot Reload**: Edit TypeScript → Save → Instant reflection (no restart)
-- ✅ **Auto-Activation**: PM Agent starts automatically on session start
-- ✅ **Zero Configuration**: Works out of the box after `make install-plugin`
+- ✅ **Zero Install**: No copying, no configuration
+- ✅ **Hot Reload**: Edit TypeScript → Save → Instant reflection
+- ✅ **Auto-Activation**: PM Agent starts automatically (SessionStart hook)
+- ✅ **Safe Development**: Separate sandbox from global Claude Code
 
 ### **Enhanced Performance (Optional MCPs)**
 
@@ -158,14 +151,14 @@ For **2-3x faster** execution and **30-50% fewer tokens**, optionally install MC
 # 1. Remove old slash commands (if installed)
 rm -rf ~/.claude/commands/sc/
 
-# 2. Install new plugin (one command)
+# 2. Use new plugin (project-local)
 cd SuperClaude_Framework
-make install-plugin
+claude  # .claude-plugin/ auto-detected
 ```
 
 **What's New in V2.0:**
 - ✅ TypeScript plugins (hot reload support)
-- ✅ One-command installation (no manual config)
+- ✅ Project-local detection (zero install)
 - ✅ Auto-activation via SessionStart hook
 - ✅ 3 core plugins: PM Agent, Research, Index
 - ✅ Confidence-driven workflow (≥90% threshold, Precision/Recall 1.0)
@@ -173,33 +166,35 @@ make install-plugin
 **Migration Notes:**
 - Old: `/sc:pm`, `/sc:research`, `/sc:index-repo` (27 commands)
 - New: `/pm`, `/research`, `/index-repo` (3 plugin commands)
-- Functionality improved with hot reload and auto-activation
-- Installation: Manual file copying → `make install-plugin`
+- Installation: Global `~/.claude/commands/` → Project-local `.claude-plugin/`
+- Just `cd` to project directory and run `claude`
 
 </details>
 
 <details>
-<summary><b>💡 Installation Troubleshooting</b></summary>
-
-**Plugin installation failed?**
-```bash
-# Check if Claude Code is installed
-which claude
-
-# Verify plugin directory exists
-ls ~/.claude/plugins/
-
-# Reinstall plugin
-make reinstall-plugin
-
-# Check installation
-ls ~/.claude/plugins/pm-agent/
-```
+<summary><b>💡 Troubleshooting</b></summary>
 
 **Plugin not loading?**
-- Restart Claude Code completely
-- Run `/plugin` in Claude Code to verify installation
-- Check that `.claude-plugin/plugin.json` exists in repository
+```bash
+# Verify you're in the project directory
+pwd  # Should show: /path/to/SuperClaude_Framework
+
+# Check .claude-plugin/ exists
+ls .claude-plugin/plugin.json
+
+# Restart Claude Code in this directory
+claude
+```
+
+**Commands not working (/pm, /research, /index-repo)?**
+- Ensure you started `claude` from the SuperClaude_Framework directory
+- Check for errors in Claude Code output
+- Verify `.claude-plugin/plugin.json` has correct structure
+
+**Hot reload not working?**
+- Edit `.claude-plugin/pm/index.ts`
+- Save file
+- Changes should reflect immediately (no restart needed)
 
 **Development mode (for contributors):**
 ```bash
