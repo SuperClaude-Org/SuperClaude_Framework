@@ -1,0 +1,20 @@
+{
+  "name": "pm-agent",
+  "version": "1.0.0",
+  "description": "Project Manager Agent with 90% confidence checks and zero-footprint memory",
+  "author": "SuperClaude Team",
+  "commands": [
+    {
+      "name": "pm",
+      "path": "commands/pm.md",
+      "description": "Activate PM Agent with confidence-driven workflow"
+    }
+  ],
+  "skills": [
+    {
+      "name": "confidence_check",
+      "path": "skills/confidence_check.py",
+      "description": "Pre-implementation confidence assessment (≥90% required)"
+    }
+  ]
+}
