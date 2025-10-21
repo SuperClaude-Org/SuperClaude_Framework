@@ -1,128 +1,114 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
-name = "SuperClaude"
-version = "4.1.6"
+name = "superclaude"
+version = "0.4.0"
+description = "AI-enhanced development framework for Claude Code - pytest plugin with optional skills"
+readme = "README.md"
+license = {text = "MIT"}
 authors = [
+    {name = "Kazuki Nakai"},
     {name = "NomenAK", email = "anton.knoery@gmail.com"},
     {name = "Mithun Gowda B", email = "mithungowda.b7411@gmail.com"}
 ]
-description = "SuperClaude Framework Management Hub - AI-enhanced development framework for Claude Code"
-readme = "README.md"
-license = {text = "MIT"}
-requires-python = ">=3.8"
+requires-python = ">=3.10"
+keywords = ["claude", "ai", "automation", "framework", "pytest", "plugin", "testing", "development"]
 classifiers = [
     "Development Status :: 4 - Beta",
+    "Framework :: Pytest",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9", 
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Software Development :: Libraries :: Python Modules",
-    "Topic :: Software Development :: Code Generators",
+    "Topic :: Software Development :: Testing",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Environment :: Console",
 ]
-keywords = ["claude", "ai", "automation", "framework", "mcp", "agents", "development", "code-generation", "assistant"]
+
 dependencies = [
-    "setuptools>=45.0.0",
-    "importlib-metadata>=1.0.0; python_version<'3.8'",
-    "typer>=0.9.0",
-    "rich>=13.0.0",
+    "pytest>=7.0.0",
     "click>=8.0.0",
-    "pyyaml>=6.0.0",
-    "requests>=2.28.0"
+    "rich>=13.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest-cov>=4.0.0",
+    "pytest-benchmark>=4.0.0",
+    "scipy>=1.10.0",  # For A/B testing
+    "black>=22.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0",
+]
+test = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "scipy>=1.10.0",
 ]
 
 [project.urls]
 Homepage = "https://github.com/SuperClaude-Org/SuperClaude_Framework"
 GitHub = "https://github.com/SuperClaude-Org/SuperClaude_Framework"
 "Bug Tracker" = "https://github.com/SuperClaude-Org/SuperClaude_Framework/issues"
-"Mithun Gowda B" = "https://github.com/mithun50"
-"NomenAK" = "https://github.com/NomenAK"
+Documentation = "https://github.com/SuperClaude-Org/SuperClaude_Framework/blob/main/README.md"
 
+# ⭐ CLI commands (hatchling format)
 [project.scripts]
-SuperClaude = "superclaude.cli.app:cli_main"
-superclaude = "superclaude.cli.app:cli_main"
+superclaude = "superclaude.cli.main:main"
 
-[project.optional-dependencies]
-dev = [
-    "pytest>=6.0",
-    "pytest-cov>=2.0",
-    "black>=22.0",
-    "flake8>=4.0",
-    "mypy>=0.900"
+# ⭐ pytest plugin auto-discovery (most important!)
+[project.entry-points.pytest11]
+superclaude = "superclaude.pytest_plugin"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/superclaude"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/",
+    "tests/",
+    "README.md",
+    "LICENSE",
+    "pyproject.toml",
 ]
-test = [
-    "pytest>=6.0", 
-    "pytest-cov>=2.0"
+exclude = [
+    "*.pyc",
+    "__pycache__",
+    ".git*",
+    ".venv*",
+    "*.egg-info",
+    ".DS_Store",
 ]
-
-[tool.setuptools]
-include-package-data = true
-
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["superclaude*", "setup*"]
-exclude = ["tests*", "*.tests*", "*.tests", ".git*", ".venv*", "*.egg-info*"]
-
-[tool.setuptools.package-data]
-"setup" = ["data/*.json", "data/*.yaml", "data/*.yml", "components/*.py", "**/*.py"]
-"superclaude" = ["*.md", "*.txt", "**/*.md", "**/*.txt", "**/*.json", "**/*.yaml", "**/*.yml"]
-
-[tool.black]
-line-length = 88
-target-version = ["py38", "py39", "py310", "py311", "py312"]
-include = '\.pyi?$'
-extend-exclude = '''
-/(
-  # directories
-  \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | build
-  | dist
-)/
-'''
-
-[tool.mypy]
-python_version = "3.8"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = true
-disallow_incomplete_defs = true
-check_untyped_defs = true
-disallow_untyped_decorators = true
-no_implicit_optional = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-warn_no_return = true
-warn_unreachable = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-python_files = ["test_*.py", "*_test.py"]
+python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-addopts = "-v --tb=short --strict-markers"
+addopts = [
+    "-v",
+    "--strict-markers",
+    "--tb=short",
+]
 markers = [
-    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-    "integration: marks tests as integration tests",
-    "benchmark: marks tests as performance benchmarks",
-    "validation: marks tests as validation tests for PM mode claims"
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "hallucination: Hallucination detection tests",
+    "performance: Performance benchmark tests",
+    "confidence_check: Pre-execution confidence assessment",
+    "self_check: Post-implementation validation",
+    "reflexion: Error learning and prevention",
+    "complexity: Task complexity level (simple, medium, complex)",
 ]
 
 [tool.coverage.run]
-source = ["superclaude", "setup"]
+source = ["src/superclaude"]
 omit = [
     "*/tests/*",
     "*/test_*",
@@ -136,9 +122,43 @@ exclude_lines = [
     "def __repr__",
     "if self.debug:",
     "if settings.DEBUG",
-    "raise AssertionError", 
+    "raise AssertionError",
     "raise NotImplementedError",
     "if 0:",
-    "if __name__ == .__main__.:"
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
 ]
 show_missing = true
+
+[tool.black]
+line-length = 88
+target-version = ["py310", "py311", "py312"]
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+select = ["E", "F", "I", "N", "W"]
+ignore = ["E501"]  # Line too long (handled by black)
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false  # Allow for gradual typing
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true

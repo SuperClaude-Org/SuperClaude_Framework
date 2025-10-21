@@ -1,10 +1,9 @@
-.PHONY: install install-release dev test clean lint format uninstall update translate help
+.PHONY: install install-release dev test test-plugin doctor verify clean lint format uninstall update translate help
 
 # Development installation (local source, editable)
 install:
 	@echo "Installing SuperClaude Framework (development mode)..."
 	uv pip install -e ".[dev]"
-	uv run superclaude install
 
 # Production installation (from PyPI, recommended for users)
 install-release:
@@ -12,7 +11,6 @@ install-release:
 	@echo "Using pipx for isolated environment..."
 	pipx install SuperClaude
 	pipx upgrade SuperClaude
-	superclaude install
 
 # Alias for development installation
 dev: install
@@ -21,6 +19,36 @@ dev: install
 test:
 	@echo "Running tests..."
 	uv run pytest
+
+# Test pytest plugin loading
+test-plugin:
+	@echo "Testing pytest plugin auto-discovery..."
+	@uv run python -m pytest --trace-config 2>&1 | grep -A2 "registered third-party plugins:" | grep superclaude && echo "✅ Plugin loaded successfully" || echo "❌ Plugin not loaded"
+
+# Run doctor command
+doctor:
+	@echo "Running SuperClaude health check..."
+	@uv run superclaude doctor
+
+# Verify Phase 1 installation
+verify:
+	@echo "🔍 Phase 1 Installation Verification"
+	@echo "======================================"
+	@echo ""
+	@echo "1. Package location:"
+	@uv run python -c "import superclaude; print(f'   {superclaude.__file__}')"
+	@echo ""
+	@echo "2. Package version:"
+	@uv run superclaude --version | sed 's/^/   /'
+	@echo ""
+	@echo "3. Pytest plugin:"
+	@uv run python -m pytest --trace-config 2>&1 | grep "registered third-party plugins:" -A2 | grep superclaude | sed 's/^/   /' && echo "   ✅ Plugin loaded" || echo "   ❌ Plugin not loaded"
+	@echo ""
+	@echo "4. Health check:"
+	@uv run superclaude doctor | grep "SuperClaude is healthy" > /dev/null && echo "   ✅ All checks passed" || echo "   ❌ Some checks failed"
+	@echo ""
+	@echo "======================================"
+	@echo "✅ Phase 1 verification complete"
 
 # Linting
 lint:
@@ -80,6 +108,9 @@ help:
 	@echo ""
 	@echo "Development:"
 	@echo "  make test            - Run tests"
+	@echo "  make test-plugin     - Test pytest plugin loading"
+	@echo "  make doctor          - Run health check"
+	@echo "  make verify          - Verify Phase 1 installation (comprehensive)"
 	@echo "  make lint            - Run linter"
 	@echo "  make format          - Format code"
 	@echo "  make clean           - Clean build artifacts"
