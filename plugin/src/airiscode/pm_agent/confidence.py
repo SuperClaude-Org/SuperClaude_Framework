@@ -108,10 +108,6 @@ class ConfidenceChecker:
         - CLAUDE.md with relevant patterns
         - docs/ directory with related content
         """
-        # Check context flag first (for testing)
-        if "official_docs_verified" in context:
-            return context.get("official_docs_verified", False)
-
         # Check for test file path
         test_file = context.get("test_file")
         if not test_file:

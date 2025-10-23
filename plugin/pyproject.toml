@@ -1,0 +1,164 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "airiscode"
+version = "0.1.0"
+description = "PM Agent for Claude Code - Confidence-driven development framework"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Kazuki Nakai"},
+    {name = "Agiletec Inc."}
+]
+requires-python = ">=3.10"
+keywords = ["claude", "ai", "automation", "framework", "pytest", "plugin", "testing", "development"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Framework :: Pytest",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Environment :: Console",
+]
+
+dependencies = [
+    "pytest>=7.0.0",
+    "click>=8.0.0",
+    "rich>=13.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest-cov>=4.0.0",
+    "pytest-benchmark>=4.0.0",
+    "scipy>=1.10.0",  # For A/B testing
+    "black>=22.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0",
+]
+test = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "scipy>=1.10.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/agiletec-inc/airiscode"
+GitHub = "https://github.com/agiletec-inc/airiscode"
+"Bug Tracker" = "https://github.com/agiletec-inc/airiscode/issues"
+Documentation = "https://github.com/agiletec-inc/airiscode/blob/main/README.md"
+Upstream = "https://github.com/SuperClaude-Org/SuperClaude_Framework"
+
+# ⭐ CLI commands (hatchling format)
+[project.scripts]
+airiscode = "airiscode.cli.main:main"
+
+# ⭐ pytest plugin auto-discovery (most important!)
+[project.entry-points.pytest11]
+airiscode = "airiscode.pytest_plugin"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/airiscode"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/",
+    "tests/",
+    "README.md",
+    "LICENSE",
+    "pyproject.toml",
+]
+exclude = [
+    "*.pyc",
+    "__pycache__",
+    ".git*",
+    ".venv*",
+    "*.egg-info",
+    ".DS_Store",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "-v",
+    "--strict-markers",
+    "--tb=short",
+]
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "hallucination: Hallucination detection tests",
+    "performance: Performance benchmark tests",
+    "confidence_check: Pre-execution confidence assessment",
+    "self_check: Post-implementation validation",
+    "reflexion: Error learning and prevention",
+    "complexity: Task complexity level (simple, medium, complex)",
+]
+
+[tool.coverage.run]
+source = ["src/airiscode"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__pycache__/*",
+    "*/.*"
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
+show_missing = true
+
+[tool.black]
+line-length = 88
+target-version = ["py310", "py311", "py312"]
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+select = ["E", "F", "I", "N", "W"]
+ignore = ["E501"]  # Line too long (handled by black)
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false  # Allow for gradual typing
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true

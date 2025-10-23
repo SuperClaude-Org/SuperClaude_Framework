@@ -8,11 +8,5 @@
   "homepage": "https://github.com/kazukixjp/superclaude",
   "repository": "https://github.com/kazukixjp/superclaude",
   "license": "MIT",
-  "keywords": ["pm-agent", "confidence-check", "research", "indexing"],
-  "commands": "./commands/",
-  "skills": "./skills/",
-  "hooks": "./hooks/hooks.json",
-  "engines": {
-    "node": ">=18.0.0"
-  }
+  "keywords": ["pm-agent", "confidence-check", "research", "indexing"]
 }

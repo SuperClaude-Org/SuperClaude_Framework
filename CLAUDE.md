@@ -40,6 +40,12 @@ src/superclaude/         # Pytest plugin + CLI tools
 ├── execution/           # parallel.py, reflection.py, self_correction.py
 └── cli/                 # main.py, doctor.py, install_skill.py
 
+# Command Definitions
+commands/                # Plugin command markdown files
+├── pm.md                # PM Agent command definition
+├── research.md          # Research command definition
+└── index-repo.md        # Index command definition
+
 # Project Files
 tests/                   # Python test suite
 docs/                    # Documentation
@@ -69,6 +75,12 @@ uv run pytest --cov=superclaude               # With coverage
 make lint             # Run ruff linter
 make format           # Format code with ruff
 make doctor           # Health check diagnostics
+
+# Plugin Installation
+make install-plugin-dev      # Install full plugin to ~/.claude/plugins/
+make install-plugin-minimal  # Install minimal (manifest only)
+make reinstall-plugin-dev    # Update existing plugin
+make uninstall-plugin        # Remove plugin
 
 # Maintenance
 make clean            # Remove build artifacts
@@ -119,7 +131,11 @@ Registered via `pyproject.toml` entry point, automatically available after insta
 - **/research**: Deep web research, adaptive planning, Tavily MCP integration
 - **/index-repo**: Repository indexing, 94% token reduction (58K → 3K)
 
-**Important**: When editing plugins, modify files in pm/, research/, or index/ at project root, not in .claude-plugin/.
+**Important**: When editing plugins:
+- Source files: pm/index.ts, research/index.ts, index/index.ts (project root)
+- Command definitions: commands/*.md
+- Manifest: .claude-plugin/plugin.json
+- Hooks: hooks/hooks.json
 
 ## 🧪 Testing with PM Agent
 
@@ -168,11 +184,11 @@ def test_with_budget(token_budget):
 
 ```bash
 # Create worktree for integration branch
-cd ~/github/superclaude
-git worktree add ../superclaude-integration integration
+cd ~/github/SuperClaude_Framework
+git worktree add ../SuperClaude_Framework-integration integration
 
 # Create worktree for feature branch
-git worktree add ../superclaude-feature feature/pm-agent
+git worktree add ../SuperClaude_Framework-feature feature/pm-agent
 ```
 
 **Benefits**:
@@ -182,13 +198,13 @@ git worktree add ../superclaude-feature feature/pm-agent
 - Parallel development without state corruption
 
 **Usage**:
-- Session A: Open `~/github/superclaude/` (main)
-- Session B: Open `~/github/superclaude-integration/` (integration)
-- Session C: Open `~/github/superclaude-feature/` (feature branch)
+- Session A: Open `~/github/SuperClaude_Framework/` (current branch)
+- Session B: Open `~/github/SuperClaude_Framework-integration/` (integration)
+- Session C: Open `~/github/SuperClaude_Framework-feature/` (feature branch)
 
 **Cleanup**:
 ```bash
-git worktree remove ../superclaude-integration
+git worktree remove ../SuperClaude_Framework-integration
 ```
 
 ## 📝 Key Documentation Files
@@ -230,3 +246,68 @@ Integrates with multiple MCP servers via **airis-mcp-gateway**.
 **Optional**: Playwright (browser automation), Magic (UI components), Chrome DevTools (performance)
 
 **Usage**: TypeScript plugins and Python pytest plugin can call MCP servers. Always prefer MCP tools over speculation for documentation/research.
+
+## 🚀 Plugin Development
+
+### Project-Local Plugin Detection
+
+This project uses **project-local plugin detection** (v2.0):
+- `.claude-plugin/plugin.json` is auto-detected when you start Claude Code in this directory
+- No global installation needed for development
+- PM Agent auto-activates via SessionStart hook
+
+### Plugin Architecture
+
+```
+Plugin Components:
+1. Manifest (.claude-plugin/plugin.json) - Plugin metadata
+2. Commands (commands/*.md) - Command definitions
+3. Source (pm/, research/, index/) - TypeScript implementation
+4. Hooks (hooks/hooks.json) - Auto-activation config
+```
+
+### Development Workflow
+
+```bash
+# 1. Edit plugin source
+vim pm/index.ts          # Edit PM Agent logic
+vim commands/pm.md       # Edit command definition
+
+# 2. Test changes (hot reload - no restart needed)
+# Just save the file and run command in Claude Code
+
+# 3. Run tests
+uv run pytest .claude-plugin/tests/
+
+# 4. Install to global Claude Code (optional)
+make install-plugin-dev
+```
+
+### Global vs Project-Local
+
+**Project-Local** (auto-detected when in this directory):
+- `.claude-plugin/plugin.json` exists
+- PM Agent activates automatically
+- Hot reload enabled
+- Safe for development
+
+**Global** (installed to `~/.claude/plugins/`):
+- Available in all Claude Code sessions
+- Use `make install-plugin-dev` to install
+- Use `make uninstall-plugin` to remove
+
+## 📊 Package Information
+
+**Package name**: `superclaude`
+**Version**: 0.4.0
+**Python**: >=3.10
+**Build system**: hatchling (PEP 517)
+
+**Entry points**:
+- CLI: `superclaude` command
+- Pytest plugin: Auto-loaded as `superclaude`
+
+**Dependencies**:
+- pytest>=7.0.0
+- click>=8.0.0
+- rich>=13.0.0

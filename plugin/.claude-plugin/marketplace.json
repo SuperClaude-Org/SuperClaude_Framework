@@ -1,0 +1,15 @@
+{
+  "name": "airiscode",
+  "description": "PM Agent for Claude Code - Confidence-driven development framework",
+  "owner": {
+    "name": "Agiletec Inc."
+  },
+  "plugins": [
+    {
+      "name": "airiscode",
+      "source": "..",
+      "version": "0.1.0",
+      "description": "PM Agent for Claude Code - Confidence-driven development framework"
+    }
+  ]
+}
