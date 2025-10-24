@@ -12,6 +12,19 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from setup import __version__
 
+AIRIS_MCP_GITHUB_REPO = "https://github.com/agiletec-inc/airis-mcp-gateway"
+AIRIS_MCP_CLONE_COMMAND = [
+    "git",
+    "clone",
+    AIRIS_MCP_GITHUB_REPO,
+    str(Path.home() / ".airis-mcp-gateway"),
+]
+AIRIS_MCP_UPDATE_COMMAND = ["git", "pull", "origin", "master"]
+AIRIS_MCP_INSTALL_COMMAND = ["make", "install-claude"]
+AIRIS_MCP_GATEWAY_DIR = Path.home() / ".airis-mcp-gateway"
+AIRIS_MCP_CONFIG_PATH = Path.home() / ".claude" / "mcp.json"
+AIRIS_MCP_EXPECTED_CONFIG_TARGET = "mcp.json"
+
 from ..core.base import Component
 
 
@@ -30,9 +43,7 @@ class MCPComponent(Component):
             "airis-mcp-gateway": {
                 "name": "airis-mcp-gateway",
                 "description": "Unified MCP Gateway with all tools (sequential-thinking, context7, magic, playwright, serena, morphllm, tavily, chrome-devtools, git, puppeteer)",
-                "install_method": "github",
-                "install_command": "uvx --from git+https://github.com/oraios/airis-mcp-gateway airis-mcp-gateway --help",
-                "run_command": "uvx --from git+https://github.com/oraios/airis-mcp-gateway airis-mcp-gateway",
+                "install_method": "airis_gateway",
                 "required": True,
             },
         }
@@ -168,18 +179,27 @@ class MCPComponent(Component):
             except (subprocess.TimeoutExpired, FileNotFoundError):
                 errors.append("npm not found - required for legacy MCP server installation")
         else:
-            # Default mode: requires uv for airis-mcp-gateway
-            try:
-                result = self._run_command_cross_platform(
-                    ["uv", "--version"], capture_output=True, text=True, timeout=10
-                )
-                if result.returncode != 0:
-                    errors.append("uv not found - required for airis-mcp-gateway installation")
-                else:
-                    version = result.stdout.strip()
-                    self.logger.debug(f"Found uv {version}")
-            except (subprocess.TimeoutExpired, FileNotFoundError):
-                errors.append("uv not found - required for airis-mcp-gateway installation")
+            # Default mode: requires Node.js toolchain and Docker for AIRIS MCP Gateway
+            tool_checks = [
+                (["git", "--version"], "Git not found - required for cloning airis-mcp-gateway"),
+                (["docker", "--version"], "Docker not found - required for airis-mcp-gateway services"),
+                (["docker", "compose", "version"], "Docker Compose not found - required for managing airis-mcp-gateway containers"),
+                (["make", "--version"], "make not found - required for airis-mcp-gateway automation"),
+            ]
+
+            for cmd, error_msg in tool_checks:
+                try:
+                    result = self._run_command_cross_platform(
+                        cmd, capture_output=True, text=True, timeout=10
+                    )
+                    if result.returncode != 0:
+                        errors.append(error_msg)
+                    else:
+                        self.logger.debug(
+                            f"Found dependency for airis-mcp-gateway: {cmd[0]} {result.stdout.strip()}"
+                        )
+                except (subprocess.TimeoutExpired, FileNotFoundError):
+                    errors.append(error_msg)
 
         return len(errors) == 0, errors
 
@@ -608,6 +628,8 @@ class MCPComponent(Component):
         """Install a single MCP server"""
         if server_info.get("install_method") == "uv":
             return self._install_uv_mcp_server(server_info, config)
+        elif server_info.get("install_method") == "airis_gateway":
+            return self._install_airis_gateway(server_info, config)
         elif server_info.get("install_method") == "github":
             return self._install_github_mcp_server(server_info, config)
 
@@ -723,6 +745,161 @@ class MCPComponent(Component):
         except Exception as e:
             self.logger.error(f"Error installing MCP server {server_name}: {e}")
             return False
+
+    def _install_airis_gateway(
+        self, server_info: Dict[str, Any], config: Dict[str, Any]
+    ) -> bool:
+        """Install AIRIS MCP Gateway via official repository automation"""
+        server_name = server_info["name"]
+
+        if self._check_mcp_server_installed(server_name):
+            self.logger.info(f"MCP server {server_name} already installed")
+            return True
+
+        if config.get("dry_run"):
+            self.logger.info(
+                "Would install AIRIS MCP Gateway by cloning repository and running make install-claude"
+            )
+            return True
+
+        self.logger.info(
+            f"Installing {server_name} from {AIRIS_MCP_GITHUB_REPO} into {AIRIS_MCP_GATEWAY_DIR}"
+        )
+
+        # Step 1: Clone repository if necessary
+        if not AIRIS_MCP_GATEWAY_DIR.exists():
+            self.logger.info("Cloning AIRIS MCP Gateway repository...")
+            try:
+                clone_result = self._run_command_cross_platform(
+                    AIRIS_MCP_CLONE_COMMAND,
+                    capture_output=True,
+                    text=True,
+                    timeout=600,
+                )
+            except subprocess.TimeoutExpired:
+                self.logger.error(
+                    f"Timeout while cloning {AIRIS_MCP_GITHUB_REPO}"
+                )
+                return False
+            except Exception as exc:
+                self.logger.error(
+                    f"Error cloning AIRIS MCP Gateway repository: {exc}"
+                )
+                return False
+
+            if clone_result.returncode != 0:
+                stderr = (
+                    clone_result.stderr.strip()
+                    if clone_result.stderr
+                    else "Unknown error"
+                )
+                self.logger.error(
+                    f"Failed to clone AIRIS MCP Gateway repository: {stderr}"
+                )
+                if clone_result.stdout:
+                    self.logger.debug(clone_result.stdout)
+                return False
+        else:
+            self.logger.info("Updating existing AIRIS MCP Gateway checkout...")
+            try:
+                update_result = self._run_command_cross_platform(
+                    AIRIS_MCP_UPDATE_COMMAND,
+                    capture_output=True,
+                    text=True,
+                    timeout=180,
+                    cwd=str(AIRIS_MCP_GATEWAY_DIR),
+                )
+            except subprocess.TimeoutExpired:
+                self.logger.warning(
+                    "Timeout while updating AIRIS MCP Gateway repository (continuing with current version)"
+                )
+                update_result = None
+            except Exception as exc:
+                self.logger.warning(
+                    f"Error updating AIRIS MCP Gateway repository: {exc}"
+                )
+                update_result = None
+
+            if update_result and update_result.returncode != 0:
+                stderr = (
+                    update_result.stderr.strip()
+                    if update_result.stderr
+                    else "Unknown error"
+                )
+                self.logger.warning(
+                    f"Failed to update AIRIS MCP Gateway repository: {stderr}"
+                )
+                if update_result.stdout:
+                    self.logger.debug(update_result.stdout)
+
+        # Step 2: Run make install-claude to provision MCP configuration
+        try:
+            install_result = self._run_command_cross_platform(
+                AIRIS_MCP_INSTALL_COMMAND,
+                capture_output=True,
+                text=True,
+                timeout=900,
+                cwd=str(AIRIS_MCP_GATEWAY_DIR),
+            )
+        except subprocess.TimeoutExpired:
+            self.logger.error(
+                f"Timeout while running make install-claude for {server_name}"
+            )
+            return False
+        except Exception as exc:
+            self.logger.error(
+                f"Error running make install-claude for {server_name}: {exc}"
+            )
+            return False
+
+        if install_result.returncode != 0:
+            stderr = (
+                install_result.stderr.strip()
+                if install_result.stderr
+                else "Unknown error"
+            )
+            self.logger.error(
+                f"Failed to configure {server_name} via make install-claude: {stderr}"
+            )
+            if install_result.stdout:
+                self.logger.debug(install_result.stdout)
+            return False
+
+        if install_result.stdout:
+            self.logger.debug(install_result.stdout)
+
+        # Re-check using Claude CLI to confirm registration
+        if self._check_mcp_server_installed(server_name):
+            self.logger.success(f"Successfully installed MCP server: {server_name}")
+            return True
+
+        # Fallback: inspect ~/.claude/mcp.json symlink to ensure installation completed
+        try:
+            if AIRIS_MCP_CONFIG_PATH.is_symlink():
+                target_path = AIRIS_MCP_CONFIG_PATH.resolve()
+                if (
+                    target_path.name == AIRIS_MCP_EXPECTED_CONFIG_TARGET
+                    and AIRIS_MCP_GATEWAY_DIR in target_path.parents
+                ):
+                    self.logger.success(
+                        f"Linked Claude configuration to AIRIS MCP Gateway ({target_path})"
+                    )
+                    self.logger.info(
+                        "Please restart Claude Code to refresh MCP server list."
+                    )
+                    return True
+            elif AIRIS_MCP_CONFIG_PATH.exists():
+                self.logger.warning(
+                    "Claude MCP configuration exists but is not linked to AIRIS Gateway."
+                )
+        except OSError as exc:
+            self.logger.warning(f"Could not inspect Claude MCP configuration: {exc}")
+
+        self.logger.error(
+            "AIRIS MCP Gateway installer finished, but the server was not detected. "
+            "Verify Docker containers are running with `airis-gateway status`."
+        )
+        return False
 
     def _uninstall_mcp_server(self, server_name: str) -> bool:
         """Uninstall a single MCP server"""

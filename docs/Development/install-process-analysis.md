@@ -428,7 +428,7 @@ pytest tests/performance/ -v
 
 # 3. User Acceptance
 - Install with --recommended
-- Verify airis-mcp-gateway works
+- Verify airis-mcp-gateway works (using https://github.com/agiletec-inc/airis-mcp-gateway)
 - Verify PM Agent can delegate to sub-agents
 - Verify no warnings or errors
 
