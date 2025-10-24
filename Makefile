@@ -67,14 +67,14 @@ clean:
 # Install Claude Code plugin - MINIMAL (manifest only, for baseline performance)
 install-plugin-minimal:
 	@echo "🔌 Installing SuperClaude plugin (MINIMAL) to Claude Code..."
-	@if [ -d ~/.claude/plugins/pm-agent ]; then \
-		echo "⚠️  Plugin already exists at ~/.claude/plugins/pm-agent"; \
+	@if [ -d ~/.claude/plugins/superclaude ]; then \
+		echo "⚠️  Plugin already exists at ~/.claude/plugins/superclaude"; \
 		echo "   Run 'make reinstall-plugin-minimal' to update"; \
 		exit 1; \
 	fi
-	@mkdir -p ~/.claude/plugins/pm-agent
-	@cp .claude-plugin/plugin.json ~/.claude/plugins/pm-agent/
-	@cp .claude-plugin/marketplace.json ~/.claude/plugins/pm-agent/
+	@mkdir -p ~/.claude/plugins/superclaude
+	@cp .claude-plugin/plugin.json ~/.claude/plugins/superclaude/
+	@cp .claude-plugin/marketplace.json ~/.claude/plugins/superclaude/
 	@echo ""
 	@echo "✅ Plugin installed (MINIMAL configuration)"
 	@echo "   Only manifest files copied - for baseline performance testing"
@@ -84,15 +84,15 @@ install-plugin-minimal:
 # Install Claude Code plugin - DEV (full, for development)
 install-plugin-dev:
 	@echo "🔌 Installing SuperClaude plugin (DEV) to Claude Code..."
-	@if [ -d ~/.claude/plugins/pm-agent ]; then \
-		echo "⚠️  Plugin already exists at ~/.claude/plugins/pm-agent"; \
+	@if [ -d ~/.claude/plugins/superclaude ]; then \
+		echo "⚠️  Plugin already exists at ~/.claude/plugins/superclaude"; \
 		echo "   Run 'make reinstall-plugin-dev' to update"; \
 		exit 1; \
 	fi
-	@mkdir -p ~/.claude/plugins/pm-agent
-	@cp -r .claude-plugin/* ~/.claude/plugins/pm-agent/
-	@cp -r commands ~/.claude/plugins/pm-agent/
-	@cp -r hooks ~/.claude/plugins/pm-agent/
+	@mkdir -p ~/.claude/plugins/superclaude
+	@cp -r .claude-plugin/* ~/.claude/plugins/superclaude/
+	@cp -r commands ~/.claude/plugins/superclaude/
+	@cp -r hooks ~/.claude/plugins/superclaude/
 	@echo ""
 	@echo "✅ Plugin installed (DEV configuration)"
 	@echo ""
@@ -109,37 +109,39 @@ install-plugin: install-plugin-dev
 # Uninstall Claude Code plugin
 uninstall-plugin:
 	@echo "🗑️  Uninstalling SuperClaude plugin..."
-	@if [ ! -d ~/.claude/plugins/pm-agent ]; then \
-		echo "❌ Plugin not found at ~/.claude/plugins/pm-agent"; \
+	@if [ ! -d ~/.claude/plugins/superclaude ]; then \
+		echo "❌ Plugin not found at ~/.claude/plugins/superclaude"; \
 		exit 1; \
 	fi
-	@rm -rf ~/.claude/plugins/pm-agent
+	@rm -rf ~/.claude/plugins/superclaude
 	@echo "✅ Plugin uninstalled successfully"
 
 # Reinstall plugin - MINIMAL
 reinstall-plugin-minimal:
 	@echo "🔄 Reinstalling SuperClaude plugin (MINIMAL)..."
-	@rm -rf ~/.claude/plugins/pm-agent 2>/dev/null || true
-	@mkdir -p ~/.claude/plugins/pm-agent
-	@cp .claude-plugin/plugin.json ~/.claude/plugins/pm-agent/
-	@cp .claude-plugin/marketplace.json ~/.claude/plugins/pm-agent/
+	@rm -rf ~/.claude/plugins/superclaude 2>/dev/null || true
+	@mkdir -p ~/.claude/plugins/superclaude
+	@cp .claude-plugin/plugin.json ~/.claude/plugins/superclaude/
+	@cp .claude-plugin/marketplace.json ~/.claude/plugins/superclaude/
 	@echo "✅ Plugin reinstalled (MINIMAL configuration)"
 	@echo "🔄 Restart Claude Code to apply changes"
 
 # Reinstall plugin - DEV
 reinstall-plugin-dev:
 	@echo "🔄 Reinstalling SuperClaude plugin (DEV)..."
-	@rm -rf ~/.claude/plugins/pm-agent 2>/dev/null || true
-	@mkdir -p ~/.claude/plugins/pm-agent
-	@cp -r .claude-plugin/* ~/.claude/plugins/pm-agent/
-	@cp -r commands ~/.claude/plugins/pm-agent/
-	@cp -r skills ~/.claude/plugins/pm-agent/
-	@cp -r hooks ~/.claude/plugins/pm-agent/
-	@cp -r pm ~/.claude/plugins/pm-agent/
-	@cp -r research ~/.claude/plugins/pm-agent/
-	@cp -r index ~/.claude/plugins/pm-agent/
+	@rm -rf ~/.claude/plugins/superclaude 2>/dev/null || true
+	@mkdir -p ~/.claude/plugins/superclaude
+	@cp -r .claude-plugin/* ~/.claude/plugins/superclaude/
+	@cp -r agents ~/.claude/plugins/superclaude/
+	@cp -r commands ~/.claude/plugins/superclaude/
+	@cp -r skills ~/.claude/plugins/superclaude/
+	@cp -r hooks ~/.claude/plugins/superclaude/
+	@cp -r pm ~/.claude/plugins/superclaude/
+	@cp -r research ~/.claude/plugins/superclaude/
+	@cp -r index ~/.claude/plugins/superclaude/
 	@echo "✅ Plugin reinstalled (DEV configuration)"
 	@echo "   - Commands: /pm, /research, /index-repo"
+	@echo "   - Agents: self-review, deep-research, repo-index"
 	@echo "   - Skills: confidence-check"
 	@echo "   - TypeScript: pm/, research/, index/"
 	@echo "🔄 Restart Claude Code to apply changes"

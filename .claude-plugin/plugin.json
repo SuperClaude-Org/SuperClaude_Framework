@@ -1,12 +1,12 @@
 {
-  "name": "pm-agent",
+  "name": "superclaude",
   "version": "2.1.0",
-  "description": "PM Agent - Confidence-driven orchestrator with deep research and repository indexing",
+  "description": "SuperClaude - Confidence-driven orchestrator with deep research and repository indexing",
   "author": {
     "name": "SuperClaude Team"
   },
   "homepage": "https://github.com/kazukixjp/superclaude",
   "repository": "https://github.com/kazukixjp/superclaude",
   "license": "MIT",
-  "keywords": ["pm-agent", "confidence-check", "research", "indexing"]
+  "keywords": ["superclaude", "confidence-check", "research", "indexing"]
 }

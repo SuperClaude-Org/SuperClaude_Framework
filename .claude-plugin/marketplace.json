@@ -1,15 +1,15 @@
 {
-  "name": "superclaude-local",
-  "description": "Local development marketplace for SuperClaude plugins",
+  "name": "superclaude",
+  "description": "SuperClaude plugin marketplace",
   "owner": {
     "name": "SuperClaude Team"
   },
   "plugins": [
     {
-      "name": "pm-agent",
-      "source": "./pm-agent",
+      "name": "superclaude",
+      "source": "..",
       "version": "2.1.0",
-      "description": "PM Agent - Confidence-driven orchestrator with deep research and repository indexing"
+      "description": "SuperClaude - Confidence-driven orchestrator with deep research and repository indexing"
     }
   ]
 }

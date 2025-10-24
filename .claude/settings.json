@@ -1,11 +1,11 @@
 {
   "marketplaces": [
     {
-      "name": "airiscode-dev",
-      "path": "./plugin/.claude-plugin/marketplace.json"
+      "name": "superclaude",
+      "path": "./.claude-plugin/marketplace.json"
     }
   ],
   "enabledPlugins": {
-    "airiscode@airiscode": true
+    "superclaude@superclaude": true
   }
 }

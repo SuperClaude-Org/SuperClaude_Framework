@@ -101,6 +101,7 @@ poetry.lock
 # Claude Code
 .claude/
 !.claude/
+.claude/*
 !.claude/settings.json
 CLAUDE.md
 
