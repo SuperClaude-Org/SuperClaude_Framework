@@ -136,14 +136,10 @@ reinstall-plugin-dev:
 	@cp -r commands ~/.claude/plugins/superclaude/
 	@cp -r skills ~/.claude/plugins/superclaude/
 	@cp -r hooks ~/.claude/plugins/superclaude/
-	@cp -r pm ~/.claude/plugins/superclaude/
-	@cp -r research ~/.claude/plugins/superclaude/
-	@cp -r index ~/.claude/plugins/superclaude/
 	@echo "✅ Plugin reinstalled (DEV configuration)"
 	@echo "   - Commands: /pm, /research, /index-repo"
 	@echo "   - Agents: self-review, deep-research, repo-index"
 	@echo "   - Skills: confidence-check"
-	@echo "   - TypeScript: pm/, research/, index/"
 	@echo "🔄 Restart Claude Code to apply changes"
 
 # Default reinstall (dev configuration for backward compatibility)
