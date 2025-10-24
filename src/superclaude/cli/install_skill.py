@@ -5,7 +5,7 @@ Installs SuperClaude skills to ~/.claude/skills/ directory.
 """
 
 from pathlib import Path
-from typing import Tuple
+from typing import List, Optional, Tuple
 import shutil
 
 
@@ -54,7 +54,7 @@ def install_skill_command(
         return False, f"Failed to install skill: {e}"
 
 
-def _get_skill_source(skill_name: str) -> Path:
+def _get_skill_source(skill_name: str) -> Optional[Path]:
     """
     Get source directory for skill
 
@@ -67,13 +67,48 @@ def _get_skill_source(skill_name: str) -> Path:
     Returns:
         Path to skill source directory
     """
-    # Get package root
-    package_root = Path(__file__).parent.parent
+    package_root = Path(__file__).resolve().parent.parent
+    skill_dirs: List[Path] = []
 
-    # Skill source directory
-    skill_source = package_root / "skills" / skill_name
+    def _candidate_paths(base: Path) -> List[Path]:
+        if not base.exists():
+            return []
+        normalized = skill_name.replace("-", "_")
+        return [
+            base / skill_name,
+            base / normalized,
+        ]
 
-    return skill_source if skill_source.exists() else None
+    # Packaged skills (src/superclaude/skills/…)
+    skill_dirs.extend(_candidate_paths(package_root / "skills"))
+
+    # Repository root skills/ when running from source checkout
+    repo_root = package_root.parent  # -> src/
+    if repo_root.name == "src":
+        project_root = repo_root.parent
+        skill_dirs.extend(_candidate_paths(project_root / "skills"))
+
+    for candidate in skill_dirs:
+        if _is_valid_skill_dir(candidate):
+            return candidate
+
+    return None
+
+
+def _is_valid_skill_dir(path: Path) -> bool:
+    """Return True if directory looks like a SuperClaude skill payload."""
+    if not path or not path.exists() or not path.is_dir():
+        return False
+
+    manifest_files = {"SKILL.md", "skill.md", "implementation.md"}
+    if any((path / manifest).exists() for manifest in manifest_files):
+        return True
+
+    # Otherwise check for any content files (ts/py/etc.)
+    for item in path.iterdir():
+        if item.is_file() and item.suffix in {".ts", ".js", ".py", ".json"}:
+            return True
+    return False
 
 
 def list_available_skills() -> list[str]:
@@ -83,17 +118,32 @@ def list_available_skills() -> list[str]:
     Returns:
         List of skill names
     """
-    package_root = Path(__file__).parent.parent
-    skills_dir = package_root / "skills"
+    package_root = Path(__file__).resolve().parent.parent
+    candidate_dirs = [
+        package_root / "skills",
+    ]
 
-    if not skills_dir.exists():
-        return []
+    repo_root = package_root.parent
+    if repo_root.name == "src":
+        candidate_dirs.append(repo_root.parent / "skills")
 
-    skills = []
-    for item in skills_dir.iterdir():
-        if item.is_dir() and not item.name.startswith("_"):
-            # Check if skill has implementation.md
-            if (item / "implementation.md").exists():
-                skills.append(item.name)
+    skills: List[str] = []
+    seen: set[str] = set()
 
+    for base in candidate_dirs:
+        if not base.exists():
+            continue
+        for item in base.iterdir():
+            if not item.is_dir() or item.name.startswith("_"):
+                continue
+            if not _is_valid_skill_dir(item):
+                continue
+
+            # Prefer kebab-case names as canonical
+            canonical = item.name.replace("_", "-")
+            if canonical not in seen:
+                seen.add(canonical)
+                skills.append(canonical)
+
+    skills.sort()
     return skills

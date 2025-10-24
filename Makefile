@@ -1,4 +1,4 @@
-.PHONY: dev install test test-plugin doctor verify clean lint format install-plugin install-plugin-minimal install-plugin-dev uninstall-plugin reinstall-plugin reinstall-plugin-minimal reinstall-plugin-dev help
+.PHONY: dev install test test-plugin doctor verify clean lint format install-plugin install-plugin-minimal install-plugin-dev uninstall-plugin reinstall-plugin reinstall-plugin-minimal reinstall-plugin-dev help plugin-message
 
 # Development installation (local source, editable) - RECOMMENDED
 dev:
@@ -65,82 +65,28 @@ clean:
 	find . -type d -name .ruff_cache -exec rm -rf {} +
 
 # Install Claude Code plugin - MINIMAL (manifest only, for baseline performance)
-install-plugin-minimal:
-	@echo "🔌 Installing SuperClaude plugin (MINIMAL) to Claude Code..."
-	@if [ -d ~/.claude/plugins/superclaude ]; then \
-		echo "⚠️  Plugin already exists at ~/.claude/plugins/superclaude"; \
-		echo "   Run 'make reinstall-plugin-minimal' to update"; \
-		exit 1; \
-	fi
-	@mkdir -p ~/.claude/plugins/superclaude
-	@cp .claude-plugin/plugin.json ~/.claude/plugins/superclaude/
-	@cp .claude-plugin/marketplace.json ~/.claude/plugins/superclaude/
-	@echo ""
-	@echo "✅ Plugin installed (MINIMAL configuration)"
-	@echo "   Only manifest files copied - for baseline performance testing"
-	@echo ""
-	@echo "🔄 Restart Claude Code to activate plugins"
+plugin-message:
+	@echo "⚠️  Claude Code plugin assets moved to the separate SuperClaude_Plugin repository."
+	@echo "    Clone or update: ${HOME}/github/SuperClaude_Plugin"
+	@echo "    Then run plugin make targets from that project (e.g. 'make install')."
+	@echo "    These placeholders avoid copying stale files from this framework repo."
+
+install-plugin-minimal: plugin-message
 
 # Install Claude Code plugin - DEV (full, for development)
-install-plugin-dev:
-	@echo "🔌 Installing SuperClaude plugin (DEV) to Claude Code..."
-	@if [ -d ~/.claude/plugins/superclaude ]; then \
-		echo "⚠️  Plugin already exists at ~/.claude/plugins/superclaude"; \
-		echo "   Run 'make reinstall-plugin-dev' to update"; \
-		exit 1; \
-	fi
-	@mkdir -p ~/.claude/plugins/superclaude
-	@cp -r .claude-plugin/* ~/.claude/plugins/superclaude/
-	@cp -r commands ~/.claude/plugins/superclaude/
-	@cp -r hooks ~/.claude/plugins/superclaude/
-	@echo ""
-	@echo "✅ Plugin installed (DEV configuration)"
-	@echo ""
-	@echo "📋 Installed components:"
-	@echo "   - /pm: PM Agent orchestrator (SessionStart hook)"
-	@echo "   - /research: Deep web search with adaptive planning"
-	@echo "   - /index-repo: Repository indexing (94%% token reduction)"
-	@echo ""
-	@echo "🔄 Restart Claude Code to activate plugins"
+install-plugin-dev: plugin-message
 
 # Default install (dev configuration for backward compatibility)
 install-plugin: install-plugin-dev
 
 # Uninstall Claude Code plugin
-uninstall-plugin:
-	@echo "🗑️  Uninstalling SuperClaude plugin..."
-	@if [ ! -d ~/.claude/plugins/superclaude ]; then \
-		echo "❌ Plugin not found at ~/.claude/plugins/superclaude"; \
-		exit 1; \
-	fi
-	@rm -rf ~/.claude/plugins/superclaude
-	@echo "✅ Plugin uninstalled successfully"
+uninstall-plugin: plugin-message
 
 # Reinstall plugin - MINIMAL
-reinstall-plugin-minimal:
-	@echo "🔄 Reinstalling SuperClaude plugin (MINIMAL)..."
-	@rm -rf ~/.claude/plugins/superclaude 2>/dev/null || true
-	@mkdir -p ~/.claude/plugins/superclaude
-	@cp .claude-plugin/plugin.json ~/.claude/plugins/superclaude/
-	@cp .claude-plugin/marketplace.json ~/.claude/plugins/superclaude/
-	@echo "✅ Plugin reinstalled (MINIMAL configuration)"
-	@echo "🔄 Restart Claude Code to apply changes"
+reinstall-plugin-minimal: plugin-message
 
 # Reinstall plugin - DEV
-reinstall-plugin-dev:
-	@echo "🔄 Reinstalling SuperClaude plugin (DEV)..."
-	@rm -rf ~/.claude/plugins/superclaude 2>/dev/null || true
-	@mkdir -p ~/.claude/plugins/superclaude
-	@cp -r .claude-plugin/* ~/.claude/plugins/superclaude/
-	@cp -r agents ~/.claude/plugins/superclaude/
-	@cp -r commands ~/.claude/plugins/superclaude/
-	@cp -r skills ~/.claude/plugins/superclaude/
-	@cp -r hooks ~/.claude/plugins/superclaude/
-	@echo "✅ Plugin reinstalled (DEV configuration)"
-	@echo "   - Commands: /pm, /research, /index-repo"
-	@echo "   - Agents: self-review, deep-research, repo-index"
-	@echo "   - Skills: confidence-check"
-	@echo "🔄 Restart Claude Code to apply changes"
+reinstall-plugin-dev: plugin-message
 
 # Default reinstall (dev configuration for backward compatibility)
 reinstall-plugin: reinstall-plugin-dev

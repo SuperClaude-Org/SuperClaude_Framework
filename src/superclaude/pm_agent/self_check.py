@@ -7,10 +7,10 @@ Token Budget: 200-2,500 tokens (complexity-dependent)
 Detection Rate: 94% (Reflexion benchmark)
 
 The Four Questions:
-1. テストは全てpassしてる？ (Are all tests passing?)
-2. 要件を全て満たしてる？ (Are all requirements met?)
-3. 思い込みで実装してない？ (No assumptions without verification?)
-4. 証拠はある？ (Is there evidence?)
+1. Are all tests passing?
+2. Are all requirements met?
+3. No assumptions without verification?
+4. Is there evidence?
 """
 
 from typing import Dict, List, Tuple, Any, Optional
@@ -21,19 +21,19 @@ class SelfCheckProtocol:
     Post-implementation validation
 
     Mandatory Questions (The Four Questions):
-        1. テストは全てpassしてる？
+        1. Are all tests passing?
            → Run tests → Show ACTUAL results
            → IF any fail: NOT complete
 
-        2. 要件を全て満たしてる？
+        2. Are all requirements met?
            → Compare implementation vs requirements
            → List: ✅ Done, ❌ Missing
 
-        3. 思い込みで実装してない？
+        3. No assumptions without verification?
            → Review: Assumptions verified?
            → Check: Official docs consulted?
 
-        4. 証拠はある？
+        4. Is there evidence?
            → Test results (actual output)
            → Code changes (file list)
            → Validation (lint, typecheck)

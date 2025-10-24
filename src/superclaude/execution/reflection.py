@@ -1,7 +1,7 @@
 """
 Reflection Engine - 3-Stage Pre-Execution Confidence Check
 
-Implements the "振り返り×3" pattern:
+Implements the "Triple Reflection" pattern:
 1. Requirement clarity analysis
 2. Past mistake pattern detection
 3. Context sufficiency validation

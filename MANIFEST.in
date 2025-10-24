@@ -3,16 +3,11 @@ include README.md
 include LICENSE
 include CHANGELOG.md
 include CONTRIBUTING.md
-include ROADMAP.md
 include SECURITY.md
-include ARCHITECTURE_OVERVIEW.md
 include pyproject.toml
-recursive-include superclaude *
-recursive-include Templates *
-recursive-include Docs *.md
-recursive-include Setup *
-recursive-include profiles *
-recursive-include config *
+recursive-include docs *.md
+recursive-include tests *.py
+recursive-include src/superclaude *.py *.md *.ts *.json
 global-exclude __pycache__
 global-exclude *.py[co]
 global-exclude .DS_Store

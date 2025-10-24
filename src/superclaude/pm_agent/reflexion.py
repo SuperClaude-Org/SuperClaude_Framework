@@ -241,12 +241,12 @@ class ReflexionPattern:
         Format: docs/mistakes/[feature]-YYYY-MM-DD.md
 
         Structure:
-            - What Happened (現象)
-            - Root Cause (根本原因)
-            - Why Missed (なぜ見逃したか)
-            - Fix Applied (修正内容)
-            - Prevention Checklist (防止策)
-            - Lesson Learned (教訓)
+            - What Happened
+            - Root Cause
+            - Why Missed
+            - Fix Applied
+            - Prevention Checklist
+            - Lesson Learned
 
         Args:
             error_info: Error information with analysis
@@ -265,7 +265,7 @@ class ReflexionPattern:
 
 ---
 
-## ❌ What Happened (現象)
+## ❌ What Happened
 
 {error_info.get('error_message', 'No error message')}
 
@@ -275,31 +275,31 @@ class ReflexionPattern:
 
 ---
 
-## 🔍 Root Cause (根本原因)
+## 🔍 Root Cause
 
 {error_info.get('root_cause', 'Not analyzed')}
 
 ---
 
-## 🤔 Why Missed (なぜ見逃したか)
+## 🤔 Why Missed
 
 {error_info.get('why_missed', 'Not analyzed')}
 
 ---
 
-## ✅ Fix Applied (修正内容)
+## ✅ Fix Applied
 
 {error_info.get('solution', 'Not documented')}
 
 ---
 
-## 🛡️ Prevention Checklist (防止策)
+## 🛡️ Prevention Checklist
 
 {error_info.get('prevention', 'Not documented')}
 
 ---
 
-## 💡 Lesson Learned (教訓)
+## 💡 Lesson Learned
 
 {error_info.get('lesson', 'Not documented')}
 """

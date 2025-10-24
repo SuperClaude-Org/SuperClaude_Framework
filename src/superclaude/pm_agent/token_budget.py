@@ -56,9 +56,22 @@ class TokenBudgetManager:
             return True
         return False
 
+    def use(self, amount: int) -> bool:
+        """
+        Consume tokens from the budget.
+
+        Convenience wrapper around allocate() to match historical CLI usage.
+        """
+        return self.allocate(amount)
+
+    @property
     def remaining(self) -> int:
-        """Get remaining token budget"""
+        """Number of tokens still available."""
         return self.limit - self.used
+
+    def remaining_tokens(self) -> int:
+        """Backward compatible helper that mirrors the remaining property."""
+        return self.remaining
 
     def reset(self) -> None:
         """Reset used tokens counter"""
