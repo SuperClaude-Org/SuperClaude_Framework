@@ -1,0 +1,11 @@
+{
+  "marketplaces": {
+    "airiscode": {
+      "type": "local",
+      "path": ".claude-plugin"
+    }
+  },
+  "plugins": {
+    "autoInstall": ["airiscode@airiscode"]
+  }
+}
