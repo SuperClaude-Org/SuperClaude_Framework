@@ -261,38 +261,6 @@ pip install --break-system-packages SuperClaude
 
 <div align="center">
 
-## 🔬 **深度研究能力**
-
-SuperClaude v4.2引入了全面的深度研究能力，实现自主、自适应和智能的网络研究。
-
-### 🎯 **自适应规划**
-三种智能策略：**规划优先**（直接执行）、**意图规划**（澄清模糊请求）、**统一规划**（协作细化，默认）
-
-### 🔄 **多跳推理**
-最多5次迭代搜索：实体扩展、概念深化、时序进展、因果链
-
-### 📊 **质量评分**
-基于置信度的验证：来源可信度评估(0.0-1.0)、覆盖完整性跟踪、综合连贯性评估
-
-### 🧠 **案例学习**
-跨会话智能：模式识别和重用、策略优化、成功查询保存
-
-### **研究命令使用**
-
-```bash
-/sc:research "AI最新发展 2024"
-/sc:research "量子计算突破" --depth exhaustive
-```
-
-### **集成工具编排**
-智能协调多个工具：**Tavily MCP**（网页搜索）、**Playwright MCP**（内容提取）、**Sequential MCP**（推理合成）、**Serena MCP**（记忆持久化）、**Context7 MCP**（技术文档）
-
-</div>
-
----
-
-<div align="center">
-
 ## 📚 **Documentation**
 
 ### **Complete Guide to SuperClaude**
@@ -349,7 +317,7 @@ SuperClaude v4.2引入了全面的深度研究能力，实现自主、自适应�
 </td>
 <td valign="top">
 
-- ✨ [**最佳实践**](docs/getting-started/quick-start.md)
+- ✨ [**最佳实践**](docs/reference/quick-start-practices.md)  
   *专业技巧和模式*
 
 - 📓 [**示例手册**](docs/reference/examples-cookbook.md)  

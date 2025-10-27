@@ -261,38 +261,6 @@ pip install --break-system-packages SuperClaude
 
 <div align="center">
 
-## 🔬 **深層リサーチ機能**
-
-SuperClaude v4.2は、自律的、適応的、知的なWeb調査を可能にする包括的な深層リサーチ機能を導入しました。
-
-### 🎯 **適応型計画**
-3つのインテリジェント戦略：**計画優先**（明確なクエリの直接実行）、**意図計画**（曖昧なリクエストの明確化）、**統合**（協調的な計画改善、デフォルト）
-
-### 🔄 **マルチホップ推論**
-最大5回の反復検索：エンティティ拡張、概念深化、時系列進行、因果チェーン
-
-### 📊 **品質スコアリング**
-信頼性ベースの検証：情報源の信頼性評価(0.0-1.0)、カバレッジ完全性追跡、統合一貫性評価
-
-### 🧠 **ケースベース学習**
-クロスセッション・インテリジェンス：パターン認識と再利用、戦略最適化、成功したクエリ保存
-
-### **リサーチコマンド使用法**
-
-```bash
-/sc:research "AI最新動向 2024"
-/sc:research "量子コンピューティング" --depth exhaustive
-```
-
-### **統合ツール・オーケストレーション**
-複数ツールのインテリジェント調整：**Tavily MCP**（Web検索）、**Playwright MCP**（コンテンツ抽出）、**Sequential MCP**（推論合成）、**Serena MCP**（メモリ永続化）、**Context7 MCP**（技術ドキュメント）
-
-</div>
-
----
-
-<div align="center">
-
 ## 📚 **ドキュメント**
 
 ### **🇯🇵 SuperClaude完全日本語ガイド**
@@ -349,7 +317,7 @@ SuperClaude v4.2は、自律的、適応的、知的なWeb調査を可能にす�
 </td>
 <td valign="top">
 
-- ✨ [**ベストプラクティス**](docs/getting-started/quick-start.md)
+- ✨ [**ベストプラクティス**](docs/reference/quick-start-practices.md)  
   *プロのコツとパターン*
 
 - 📓 [**サンプル集**](docs/reference/examples-cookbook.md)  
