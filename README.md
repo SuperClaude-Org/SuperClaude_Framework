@@ -199,7 +199,7 @@ claude
 **Development mode (for contributors):**
 ```bash
 # Install Python package for testing
-make dev
+make install
 make verify
 uv run pytest
 ```

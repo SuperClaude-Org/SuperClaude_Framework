@@ -8,7 +8,7 @@
 - `docs/` provides reference packs; start with `docs/developer-guide` for workflow expectations.
 
 ## Build, Test, and Development Commands
-- `make dev` installs the framework editable via `uv pip install -e ".[dev]"`.
+- `make install` installs the framework editable via `uv pip install -e ".[dev]"`.
 - `make test` runs `uv run pytest` across `tests/`.
 - `make doctor` or `make verify` check CLI wiring and plugin health.
 - `make lint` and `make format` delegate to Ruff; run after significant edits.

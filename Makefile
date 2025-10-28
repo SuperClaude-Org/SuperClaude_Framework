@@ -1,15 +1,12 @@
-.PHONY: dev install test test-plugin doctor verify clean lint format install-plugin install-plugin-minimal install-plugin-dev uninstall-plugin reinstall-plugin reinstall-plugin-minimal reinstall-plugin-dev help plugin-message
+.PHONY: install test test-plugin doctor verify clean lint format install-plugin install-plugin-minimal install-plugin-dev uninstall-plugin reinstall-plugin reinstall-plugin-minimal reinstall-plugin-dev help plugin-message
 
-# Development installation (local source, editable) - RECOMMENDED
-dev:
+# Installation (local source, editable) - RECOMMENDED
+install:
 	@echo "🔧 Installing SuperClaude Framework (development mode)..."
 	uv pip install -e ".[dev]"
 	@echo ""
 	@echo "✅ Installation complete!"
 	@echo "   Run 'make verify' to check installation"
-
-# Alias for backward compatibility
-install: dev
 
 # Run tests
 test:
@@ -115,7 +112,7 @@ help:
 	@echo "SuperClaude Framework - Available commands:"
 	@echo ""
 	@echo "🚀 Quick Start:"
-	@echo "  make dev             - Install in development mode (RECOMMENDED)"
+	@echo "  make install         - Install in development mode (RECOMMENDED)"
 	@echo "  make verify          - Verify installation is working"
 	@echo ""
 	@echo "🔧 Development:"
@@ -135,5 +132,3 @@ help:
 	@echo "  make translate       - Translate README to Chinese and Japanese"
 	@echo "  make help            - Show this help message"
 	@echo ""
-	@echo "💡 Legacy (backward compatibility):"
-	@echo "  make install         - Alias for 'make dev'"

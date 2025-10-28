@@ -1,1254 +1,245 @@
 {
-  "repo_path": ".",
-  "generated_at": "2025-10-21T00:17:00.821530",
-  "total_files": 196,
-  "total_dirs": 0,
-  "code_structure": {
-    "superclaude": {
-      "path": "superclaude",
-      "relative_path": "superclaude",
-      "purpose": "Code structure",
-      "file_count": 27,
-      "subdirs": [
-        "research",
-        "context",
-        "memory",
-        "modes",
-        "framework",
-        "business",
-        "agents",
-        "cli",
-        "examples",
-        "workflow",
-        "commands",
-        "validators",
-        "indexing"
-      ],
-      "key_files": [
-        {
-          "path": "superclaude/indexing/parallel_repository_indexer.py",
-          "relative_path": "superclaude/indexing/parallel_repository_indexer.py",
-          "file_type": ".py",
-          "size_bytes": 21213,
-          "last_modified": "2025-10-20T00:12:21.920271",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "superclaude/indexing/task_parallel_indexer.py",
-          "relative_path": "superclaude/indexing/task_parallel_indexer.py",
-          "file_type": ".py",
-          "size_bytes": 12027,
-          "last_modified": "2025-10-20T00:27:53.154252",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "superclaude/cli/commands/install.py",
-          "relative_path": "superclaude/cli/commands/install.py",
-          "file_type": ".py",
-          "size_bytes": 8214,
-          "last_modified": "2025-10-19T20:18:46.135512",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "superclaude/cli/commands/config.py",
-          "relative_path": "superclaude/cli/commands/config.py",
-          "file_type": ".py",
-          "size_bytes": 8119,
-          "last_modified": "2025-10-17T17:21:00.921712",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "superclaude/cli/commands/doctor.py",
-          "relative_path": "superclaude/cli/commands/doctor.py",
-          "file_type": ".py",
-          "size_bytes": 6598,
-          "last_modified": "2025-10-17T17:21:00.921833",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "superclaude/validators/runtime_policy.py",
-          "relative_path": "superclaude/validators/runtime_policy.py",
-          "file_type": ".py",
-          "size_bytes": 5463,
-          "last_modified": "2025-10-19T23:24:02.855852",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "superclaude/validators/dep_sanity.py",
-          "relative_path": "superclaude/validators/dep_sanity.py",
-          "file_type": ".py",
-          "size_bytes": 5458,
-          "last_modified": "2025-10-19T23:23:42.550227",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "superclaude/validators/test_runner.py",
-          "relative_path": "superclaude/validators/test_runner.py",
-          "file_type": ".py",
-          "size_bytes": 5165,
-          "last_modified": "2025-10-19T23:24:23.369651",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "superclaude/validators/security_roughcheck.py",
-          "relative_path": "superclaude/validators/security_roughcheck.py",
-          "file_type": ".py",
-          "size_bytes": 5154,
-          "last_modified": "2025-10-19T23:24:47.308613",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "superclaude/memory/reflexion.py",
-          "relative_path": "superclaude/memory/reflexion.py",
-          "file_type": ".py",
-          "size_bytes": 5014,
-          "last_modified": "2025-10-19T23:51:28.194570",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "superclaude/context/contract.py",
-          "relative_path": "superclaude/context/contract.py",
-          "file_type": ".py",
-          "size_bytes": 4769,
-          "last_modified": "2025-10-19T23:22:14.605903",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "superclaude/context/init.py",
-          "relative_path": "superclaude/context/init.py",
-          "file_type": ".py",
-          "size_bytes": 4287,
-          "last_modified": "2025-10-20T02:55:27.443146",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "superclaude/validators/base.py",
-          "relative_path": "superclaude/validators/base.py",
-          "file_type": ".py",
-          "size_bytes": 4030,
-          "last_modified": "2025-10-19T23:23:03.548135",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "superclaude/validators/context_contract.py",
-          "relative_path": "superclaude/validators/context_contract.py",
-          "file_type": ".py",
-          "size_bytes": 3703,
-          "last_modified": "2025-10-19T23:23:22.104395",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "superclaude/cli/app.py",
-          "relative_path": "superclaude/cli/app.py",
-          "file_type": ".py",
-          "size_bytes": 2014,
-          "last_modified": "2025-10-17T17:21:00.921212",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "superclaude/validators/__init__.py",
-          "relative_path": "superclaude/validators/__init__.py",
-          "file_type": ".py",
-          "size_bytes": 927,
-          "last_modified": "2025-10-20T00:14:16.075759",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "superclaude/__init__.py",
-          "relative_path": "superclaude/__init__.py",
-          "file_type": ".py",
-          "size_bytes": 646,
-          "last_modified": "2025-10-14T18:23:56.624148",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "superclaude/context/__init__.py",
-          "relative_path": "superclaude/context/__init__.py",
-          "file_type": ".py",
-          "size_bytes": 298,
-          "last_modified": "2025-10-20T02:55:15.456958",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "superclaude/__main__.py",
-          "relative_path": "superclaude/__main__.py",
-          "file_type": ".py",
-          "size_bytes": 279,
-          "last_modified": "2025-10-17T17:21:00.920182",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "superclaude/workflow/__init__.py",
-          "relative_path": "superclaude/workflow/__init__.py",
-          "file_type": ".py",
-          "size_bytes": 270,
-          "last_modified": "2025-10-20T02:55:15.571045",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        }
-      ],
-      "redundancies": [],
-      "suggestions": []
+  "metadata": {
+    "generated_at": "2025-10-29T00:00:00Z",
+    "version": "0.4.0",
+    "total_files": 196,
+    "python_loc": 3002,
+    "test_files": 7,
+    "documentation_files": 90
+  },
+  "entry_points": {
+    "cli": {
+      "command": "superclaude",
+      "source": "src/superclaude/cli/main.py",
+      "purpose": "CLI interface for SuperClaude operations"
     },
-    "setup": {
-      "path": "setup",
-      "relative_path": "setup",
-      "purpose": "Code structure",
-      "file_count": 33,
-      "subdirs": [
-        "core",
-        "utils",
-        "cli",
-        "components",
-        "data",
-        "services"
-      ],
-      "key_files": [
-        {
-          "path": "setup/components/mcp_integration.py",
-          "relative_path": "setup/components/mcp_integration.py",
-          "file_type": ".py",
-          "size_bytes": 43351,
-          "last_modified": "2025-10-19T20:18:46.133802",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "setup/utils/security.py",
-          "relative_path": "setup/utils/security.py",
-          "file_type": ".py",
-          "size_bytes": 33654,
-          "last_modified": "2025-10-14T18:23:52.059933",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "setup/cli/commands/uninstall.py",
-          "relative_path": "setup/cli/commands/uninstall.py",
-          "file_type": ".py",
-          "size_bytes": 33611,
-          "last_modified": "2025-10-17T17:21:00.912248",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "setup/cli/commands/install.py",
-          "relative_path": "setup/cli/commands/install.py",
-          "file_type": ".py",
-          "size_bytes": 26797,
-          "last_modified": "2025-10-20T00:55:01.998246",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "setup/core/validator.py",
-          "relative_path": "setup/core/validator.py",
-          "file_type": ".py",
-          "size_bytes": 26312,
-          "last_modified": "2025-10-14T18:23:51.875513",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "setup/cli/commands/backup.py",
-          "relative_path": "setup/cli/commands/backup.py",
-          "file_type": ".py",
-          "size_bytes": 19603,
-          "last_modified": "2025-10-14T18:23:52.314012",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "setup/components/knowledge_base.py",
-          "relative_path": "setup/components/knowledge_base.py",
-          "file_type": ".py",
-          "size_bytes": 18850,
-          "last_modified": "2025-10-20T04:14:12.705918",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "setup/services/settings.py",
-          "relative_path": "setup/services/settings.py",
-          "file_type": ".py",
-          "size_bytes": 18326,
-          "last_modified": "2025-10-20T03:04:03.248063",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "setup/components/slash_commands.py",
-          "relative_path": "setup/components/slash_commands.py",
-          "file_type": ".py",
-          "size_bytes": 18175,
-          "last_modified": "2025-10-19T20:18:46.134139",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "setup/utils/environment.py",
-          "relative_path": "setup/utils/environment.py",
-          "file_type": ".py",
-          "size_bytes": 17716,
-          "last_modified": "2025-10-14T18:23:52.248992",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "setup/cli/commands/update.py",
-          "relative_path": "setup/cli/commands/update.py",
-          "file_type": ".py",
-          "size_bytes": 16888,
-          "last_modified": "2025-10-17T17:21:00.912518",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "setup/core/base.py",
-          "relative_path": "setup/core/base.py",
-          "file_type": ".py",
-          "size_bytes": 14911,
-          "last_modified": "2025-10-14T18:23:51.976144",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "setup/core/registry.py",
-          "relative_path": "setup/core/registry.py",
-          "file_type": ".py",
-          "size_bytes": 13131,
-          "last_modified": "2025-10-14T18:23:51.897073",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "setup/services/files.py",
-          "relative_path": "setup/services/files.py",
-          "file_type": ".py",
-          "size_bytes": 12872,
-          "last_modified": "2025-10-14T18:23:52.919505",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "setup/services/config.py",
-          "relative_path": "setup/services/config.py",
-          "file_type": ".py",
-          "size_bytes": 12601,
-          "last_modified": "2025-10-14T18:23:52.938794",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "setup/services/claude_md.py",
-          "relative_path": "setup/services/claude_md.py",
-          "file_type": ".py",
-          "size_bytes": 11725,
-          "last_modified": "2025-10-17T17:21:00.917557",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "setup/utils/logger.py",
-          "relative_path": "setup/utils/logger.py",
-          "file_type": ".py",
-          "size_bytes": 10767,
-          "last_modified": "2025-10-17T17:21:00.919322",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "setup/core/installer.py",
-          "relative_path": "setup/core/installer.py",
-          "file_type": ".py",
-          "size_bytes": 10537,
-          "last_modified": "2025-10-19T20:18:46.134579",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "setup/utils/updater.py",
-          "relative_path": "setup/utils/updater.py",
-          "file_type": ".py",
-          "size_bytes": 9868,
-          "last_modified": "2025-10-14T18:23:52.208459",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "setup/components/agent_personas.py",
-          "relative_path": "setup/components/agent_personas.py",
-          "file_type": ".py",
-          "size_bytes": 9670,
-          "last_modified": "2025-10-19T20:18:46.132981",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        }
-      ],
-      "redundancies": [],
-      "suggestions": []
+    "pytest_plugin": {
+      "auto_loaded": true,
+      "source": "src/superclaude/pytest_plugin.py",
+      "purpose": "PM Agent fixtures and test automation"
+    },
+    "skills": {
+      "confidence_check": {
+        "source": ".claude/skills/confidence-check/confidence.ts",
+        "purpose": "Pre-implementation confidence assessment"
+      }
     }
   },
-  "documentation": {
-    "docs": {
-      "path": "docs",
-      "relative_path": "docs",
-      "purpose": "Documentation",
-      "file_count": 80,
-      "subdirs": [
-        "research",
-        "memory",
-        "patterns",
-        "user-guide",
-        "Development",
-        "agents",
-        "mcp",
-        "troubleshooting",
-        "testing",
-        "architecture",
-        "sessions",
-        "getting-started",
-        "user-guide-jp",
-        "developer-guide",
-        "user-guide-kr",
-        "user-guide-zh",
-        "reference"
-      ],
-      "key_files": [
-        {
-          "path": "docs/user-guide-jp/agents.md",
-          "relative_path": "docs/user-guide-jp/agents.md",
-          "file_type": ".md",
-          "size_bytes": 60114,
-          "last_modified": "2025-10-16T16:17:25.202053",
-          "description": "",
-          "importance": 5,
-          "relationships": []
+  "core_modules": {
+    "pm_agent": {
+      "path": "src/superclaude/pm_agent/",
+      "modules": {
+        "confidence": {
+          "file": "confidence.py",
+          "purpose": "Pre-execution confidence assessment",
+          "threshold": "≥90% required, 70-89% present alternatives, <70% ask questions",
+          "roi": "25-250x token savings"
         },
-        {
-          "path": "docs/user-guide/agents.md",
-          "relative_path": "docs/user-guide/agents.md",
-          "file_type": ".md",
-          "size_bytes": 45103,
-          "last_modified": "2025-10-17T17:21:00.909156",
-          "description": "",
-          "importance": 5,
-          "relationships": []
+        "self_check": {
+          "file": "self_check.py",
+          "purpose": "Post-implementation evidence-based validation",
+          "pattern": "Assert → Verify → Report"
         },
-        {
-          "path": "docs/user-guide-kr/agents.md",
-          "relative_path": "docs/user-guide-kr/agents.md",
-          "file_type": ".md",
-          "size_bytes": 43477,
-          "last_modified": "2025-10-17T17:21:00.906597",
-          "description": "",
-          "importance": 5,
-          "relationships": []
+        "reflexion": {
+          "file": "reflexion.py",
+          "purpose": "Error learning and prevention",
+          "features": ["Cross-session pattern matching", "Failure analysis"]
         },
-        {
-          "path": "docs/user-guide-jp/modes.md",
-          "relative_path": "docs/user-guide-jp/modes.md",
-          "file_type": ".md",
-          "size_bytes": 36769,
-          "last_modified": "2025-10-16T16:17:25.202600",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "docs/user-guide-zh/agents.md",
-          "relative_path": "docs/user-guide-zh/agents.md",
-          "file_type": ".md",
-          "size_bytes": 34333,
-          "last_modified": "2025-10-16T16:17:25.203588",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "docs/user-guide-kr/modes.md",
-          "relative_path": "docs/user-guide-kr/modes.md",
-          "file_type": ".md",
-          "size_bytes": 29397,
-          "last_modified": "2025-10-17T17:21:00.907641",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "docs/research/research_installer_improvements_20251017.md",
-          "relative_path": "docs/research/research_installer_improvements_20251017.md",
-          "file_type": ".md",
-          "size_bytes": 28667,
-          "last_modified": "2025-10-17T17:21:00.903081",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "docs/user-guide/modes.md",
-          "relative_path": "docs/user-guide/modes.md",
-          "file_type": ".md",
-          "size_bytes": 28371,
-          "last_modified": "2025-10-17T17:21:00.909865",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "docs/research/research_python_directory_naming_automation_2025.md",
-          "relative_path": "docs/research/research_python_directory_naming_automation_2025.md",
-          "file_type": ".md",
-          "size_bytes": 23482,
-          "last_modified": "2025-10-17T17:21:00.903946",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "docs/user-guide-zh/modes.md",
-          "relative_path": "docs/user-guide-zh/modes.md",
-          "file_type": ".md",
-          "size_bytes": 22656,
-          "last_modified": "2025-10-16T16:17:25.204007",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "docs/reference/mcp-server-guide.md",
-          "relative_path": "docs/reference/mcp-server-guide.md",
-          "file_type": ".md",
-          "size_bytes": 20576,
-          "last_modified": "2025-10-16T22:37:42.697038",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "docs/user-guide-jp/commands.md",
-          "relative_path": "docs/user-guide-jp/commands.md",
-          "file_type": ".md",
-          "size_bytes": 20102,
-          "last_modified": "2025-10-16T16:17:25.202202",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "docs/research/parallel-execution-complete-findings.md",
-          "relative_path": "docs/research/parallel-execution-complete-findings.md",
-          "file_type": ".md",
-          "size_bytes": 18645,
-          "last_modified": "2025-10-20T03:01:24.755070",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "docs/user-guide-jp/session-management.md",
-          "relative_path": "docs/user-guide-jp/session-management.md",
-          "file_type": ".md",
-          "size_bytes": 18472,
-          "last_modified": "2025-10-16T16:17:25.202719",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "docs/reference/pm-agent-autonomous-reflection.md",
-          "relative_path": "docs/reference/pm-agent-autonomous-reflection.md",
-          "file_type": ".md",
-          "size_bytes": 18157,
-          "last_modified": "2025-10-17T17:21:00.901649",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "docs/research/research_repository_scoped_memory_2025-10-16.md",
-          "relative_path": "docs/research/research_repository_scoped_memory_2025-10-16.md",
-          "file_type": ".md",
-          "size_bytes": 17737,
-          "last_modified": "2025-10-17T17:21:00.904212",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "docs/user-guide-jp/flags.md",
-          "relative_path": "docs/user-guide-jp/flags.md",
-          "file_type": ".md",
-          "size_bytes": 17647,
-          "last_modified": "2025-10-16T16:17:25.202327",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "docs/reference/basic-examples.md",
-          "relative_path": "docs/reference/basic-examples.md",
-          "file_type": ".md",
-          "size_bytes": 17274,
-          "last_modified": "2025-10-16T16:17:25.200681",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "docs/reference/claude-code-history-management.md",
-          "relative_path": "docs/reference/claude-code-history-management.md",
-          "file_type": ".md",
-          "size_bytes": 16820,
-          "last_modified": "2025-10-16T18:11:39.682953",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "docs/user-guide-kr/commands.md",
-          "relative_path": "docs/user-guide-kr/commands.md",
-          "file_type": ".md",
-          "size_bytes": 16310,
-          "last_modified": "2025-10-17T17:21:00.907320",
-          "description": "",
-          "importance": 5,
-          "relationships": []
+        "token_budget": {
+          "file": "token_budget.py",
+          "purpose": "Token allocation and tracking",
+          "levels": {
+            "simple": 200,
+            "medium": 1000,
+            "complex": 2500
+          }
         }
-      ],
-      "redundancies": [],
-      "suggestions": []
+      }
     },
-    "root": {
-      "path": ".",
-      "relative_path": ".",
-      "purpose": "Root documentation",
-      "file_count": 15,
-      "subdirs": [],
-      "key_files": [
-        {
-          "path": "SECURITY.md",
-          "relative_path": "SECURITY.md",
-          "file_type": ".md",
-          "size_bytes": 33080,
-          "last_modified": "2025-10-16T18:52:07.107057",
-          "description": "",
-          "importance": 5,
-          "relationships": []
+    "execution": {
+      "path": "src/superclaude/execution/",
+      "modules": {
+        "parallel": {
+          "file": "parallel.py",
+          "pattern": "Wave → Checkpoint → Wave",
+          "performance": "3.5x faster than sequential"
         },
-        {
-          "path": "CODE_OF_CONDUCT.md",
-          "relative_path": "CODE_OF_CONDUCT.md",
-          "file_type": ".md",
-          "size_bytes": 28173,
-          "last_modified": "2025-10-16T18:52:07.106653",
-          "description": "",
-          "importance": 5,
-          "relationships": []
+        "reflection": {
+          "file": "reflection.py",
+          "purpose": "Post-execution analysis and improvement"
         },
-        {
-          "path": "CONTRIBUTING.md",
-          "relative_path": "CONTRIBUTING.md",
-          "file_type": ".md",
-          "size_bytes": 17655,
-          "last_modified": "2025-10-16T18:52:07.106793",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "README.md",
-          "relative_path": "README.md",
-          "file_type": ".md",
-          "size_bytes": 16659,
-          "last_modified": "2025-10-19T22:38:18.816223",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "README-ja.md",
-          "relative_path": "README-ja.md",
-          "file_type": ".md",
-          "size_bytes": 14734,
-          "last_modified": "2025-10-19T20:18:46.129509",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "PLANNING.md",
-          "relative_path": "PLANNING.md",
-          "file_type": ".md",
-          "size_bytes": 14441,
-          "last_modified": "2025-10-19T20:18:46.129044",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "KNOWLEDGE.md",
-          "relative_path": "KNOWLEDGE.md",
-          "file_type": ".md",
-          "size_bytes": 12589,
-          "last_modified": "2025-10-19T20:18:46.124564",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "README-kr.md",
-          "relative_path": "README-kr.md",
-          "file_type": ".md",
-          "size_bytes": 12117,
-          "last_modified": "2025-10-16T16:17:25.196043",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "README-zh.md",
-          "relative_path": "README-zh.md",
-          "file_type": ".md",
-          "size_bytes": 11720,
-          "last_modified": "2025-10-19T20:18:46.130038",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "CHANGELOG.md",
-          "relative_path": "CHANGELOG.md",
-          "file_type": ".md",
-          "size_bytes": 10169,
-          "last_modified": "2025-10-16T18:52:07.106265",
-          "description": "",
-          "importance": 5,
-          "relationships": []
+        "self_correction": {
+          "file": "self_correction.py",
+          "purpose": "Automated error detection and correction"
         }
-      ],
-      "redundancies": [],
-      "suggestions": []
+      }
+    },
+    "cli": {
+      "path": "src/superclaude/cli/",
+      "modules": {
+        "main": {
+          "file": "main.py",
+          "exports": ["main()"],
+          "framework": "Click-based CLI"
+        },
+        "doctor": {
+          "file": "doctor.py",
+          "purpose": "Health check diagnostics"
+        },
+        "install_skill": {
+          "file": "install_skill.py",
+          "purpose": "Install SuperClaude skills to Claude Code",
+          "target": "~/.claude/skills/"
+        }
+      }
     }
   },
   "configuration": {
-    "config": {
-      "path": ".",
-      "relative_path": ".",
-      "purpose": "Configuration files",
-      "file_count": 7,
-      "subdirs": [],
-      "key_files": [
-        {
-          "path": "PROJECT_INDEX.json",
-          "relative_path": "PROJECT_INDEX.json",
-          "file_type": ".json",
-          "size_bytes": 39995,
-          "last_modified": "2025-10-20T04:11:32.884679",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "pyproject.toml",
-          "relative_path": "pyproject.toml",
-          "file_type": ".toml",
-          "size_bytes": 3939,
-          "last_modified": "2025-10-19T23:16:35.907489",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": ".pre-commit-config.yaml",
-          "relative_path": ".pre-commit-config.yaml",
-          "file_type": ".yaml",
-          "size_bytes": 2882,
-          "last_modified": "2025-10-17T17:21:00.896802",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": ".claude/settings.local.json",
-          "relative_path": ".claude/settings.local.json",
-          "file_type": ".json",
-          "size_bytes": 2255,
-          "last_modified": "2025-10-20T04:09:17.293377",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "package.json",
-          "relative_path": "package.json",
-          "file_type": ".json",
-          "size_bytes": 1340,
-          "last_modified": "2025-10-14T15:40:11.086640",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": ".github/FUNDING.yml",
-          "relative_path": ".github/FUNDING.yml",
-          "file_type": ".yml",
-          "size_bytes": 799,
-          "last_modified": "2025-10-07T11:55:15.801478",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": ".venv/pyvenv.cfg",
-          "relative_path": ".venv/pyvenv.cfg",
-          "file_type": ".cfg",
-          "size_bytes": 317,
-          "last_modified": "2025-10-17T05:21:27.152586",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        }
-      ],
-      "redundancies": [],
-      "suggestions": []
+    "python_package": {
+      "file": "pyproject.toml",
+      "build_system": "hatchling (PEP 517)",
+      "python_version": ">=3.10",
+      "dependencies": {
+        "pytest": ">=7.0.0",
+        "click": ">=8.0.0",
+        "rich": ">=13.0.0"
+      }
+    },
+    "npm_wrapper": {
+      "file": "package.json",
+      "package": "@bifrost_inc/superclaude",
+      "version": "4.1.5",
+      "purpose": "Cross-platform installation wrapper"
+    },
+    "claude_code": {
+      "file": ".claude/settings.json",
+      "purpose": "Plugin and marketplace settings"
     }
+  },
+  "documentation": {
+    "key_files": [
+      "CLAUDE.md",
+      "README.md",
+      "CONTRIBUTING.md",
+      "CHANGELOG.md",
+      "AGENTS.md"
+    ],
+    "user_guides": [
+      "docs/user-guide/commands.md",
+      "docs/user-guide/agents.md",
+      "docs/user-guide/flags.md",
+      "docs/user-guide/modes.md",
+      "docs/user-guide/session-management.md",
+      "docs/user-guide/mcp-servers.md"
+    ],
+    "developer_guides": [
+      "docs/developer-guide/contributing-code.md",
+      "docs/developer-guide/technical-architecture.md",
+      "docs/developer-guide/testing-debugging.md"
+    ],
+    "architecture": [
+      "docs/architecture/MIGRATION_TO_CLEAN_ARCHITECTURE.md",
+      "docs/architecture/PM_AGENT_COMPARISON.md",
+      "docs/architecture/CONTEXT_WINDOW_ANALYSIS.md"
+    ],
+    "research": [
+      "docs/research/llm-agent-token-efficiency-2025.md",
+      "docs/research/reflexion-integration-2025.md",
+      "docs/research/parallel-execution-complete-findings.md",
+      "docs/research/pm_agent_roi_analysis_2025-10-21.md"
+    ]
   },
   "tests": {
-    "tests": {
-      "path": "tests",
-      "relative_path": "tests",
-      "purpose": "Test suite",
-      "file_count": 22,
-      "subdirs": [
-        "core",
-        "pm_agent",
-        "validators",
-        "performance",
-        "validation"
-      ],
-      "key_files": [
-        {
-          "path": "tests/pm_agent/test_self_check_protocol.py",
-          "relative_path": "tests/pm_agent/test_self_check_protocol.py",
-          "file_type": ".py",
-          "size_bytes": 30166,
-          "last_modified": "2025-10-17T04:59:20.474674",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "tests/pm_agent/test_reflexion_pattern.py",
-          "relative_path": "tests/pm_agent/test_reflexion_pattern.py",
-          "file_type": ".py",
-          "size_bytes": 25270,
-          "last_modified": "2025-10-17T03:41:52.702929",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "tests/pm_agent/test_confidence_check.py",
-          "relative_path": "tests/pm_agent/test_confidence_check.py",
-          "file_type": ".py",
-          "size_bytes": 20964,
-          "last_modified": "2025-10-17T05:10:07.932935",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "tests/pm_agent/test_token_budget.py",
-          "relative_path": "tests/pm_agent/test_token_budget.py",
-          "file_type": ".py",
-          "size_bytes": 20115,
-          "last_modified": "2025-10-17T04:59:39.434127",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "tests/validation/test_error_recurrence.py",
-          "relative_path": "tests/validation/test_error_recurrence.py",
-          "file_type": ".py",
-          "size_bytes": 19200,
-          "last_modified": "2025-10-19T23:09:35.576868",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "tests/test_pm_autonomous.py",
-          "relative_path": "tests/test_pm_autonomous.py",
-          "file_type": ".py",
-          "size_bytes": 19135,
-          "last_modified": "2025-10-14T18:23:53.291684",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "tests/validation/test_hallucination_detection.py",
-          "relative_path": "tests/validation/test_hallucination_detection.py",
-          "file_type": ".py",
-          "size_bytes": 17467,
-          "last_modified": "2025-10-19T23:08:23.765928",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "tests/validation/test_real_world_speed.py",
-          "relative_path": "tests/validation/test_real_world_speed.py",
-          "file_type": ".py",
-          "size_bytes": 15713,
-          "last_modified": "2025-10-19T23:10:38.748714",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "tests/performance/test_pm_mode_performance.py",
-          "relative_path": "tests/performance/test_pm_mode_performance.py",
-          "file_type": ".py",
-          "size_bytes": 15698,
-          "last_modified": "2025-10-19T22:16:07.547050",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "tests/performance/test_installation_performance.py",
-          "relative_path": "tests/performance/test_installation_performance.py",
-          "file_type": ".py",
-          "size_bytes": 11430,
-          "last_modified": "2025-10-17T00:47:33.019969",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "tests/performance/test_parallel_indexing_performance.py",
-          "relative_path": "tests/performance/test_parallel_indexing_performance.py",
-          "file_type": ".py",
-          "size_bytes": 9202,
-          "last_modified": "2025-10-20T00:15:05.706332",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "tests/validators/test_validators.py",
-          "relative_path": "tests/validators/test_validators.py",
-          "file_type": ".py",
-          "size_bytes": 7480,
-          "last_modified": "2025-10-20T00:15:06.609143",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "tests/core/pm_init/test_init_hook.py",
-          "relative_path": "tests/core/pm_init/test_init_hook.py",
-          "file_type": ".py",
-          "size_bytes": 6769,
-          "last_modified": "2025-10-20T02:55:41.660837",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "tests/test_cli_smoke.py",
-          "relative_path": "tests/test_cli_smoke.py",
-          "file_type": ".py",
-          "size_bytes": 4195,
-          "last_modified": "2025-10-17T17:21:00.923010",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "tests/test_installer.py",
-          "relative_path": "tests/test_installer.py",
-          "file_type": ".py",
-          "size_bytes": 3706,
-          "last_modified": "2025-10-14T18:23:53.081582",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "tests/test_mcp_component.py",
-          "relative_path": "tests/test_mcp_component.py",
-          "file_type": ".py",
-          "size_bytes": 3192,
-          "last_modified": "2025-10-14T18:23:53.175368",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "tests/test_install_command.py",
-          "relative_path": "tests/test_install_command.py",
-          "file_type": ".py",
-          "size_bytes": 2371,
-          "last_modified": "2025-10-14T18:23:53.204213",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "tests/pm_agent/conftest.py",
-          "relative_path": "tests/pm_agent/conftest.py",
-          "file_type": ".py",
-          "size_bytes": 1596,
-          "last_modified": "2025-10-17T03:42:45.770602",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "tests/test_mcp_docs_component.py",
-          "relative_path": "tests/test_mcp_docs_component.py",
-          "file_type": ".py",
-          "size_bytes": 1427,
-          "last_modified": "2025-10-14T18:23:53.260932",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "tests/test_ui.py",
-          "relative_path": "tests/test_ui.py",
-          "file_type": ".py",
-          "size_bytes": 1377,
-          "last_modified": "2025-10-17T17:21:00.923339",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        }
-      ],
-      "redundancies": [],
-      "suggestions": []
+    "framework": "pytest >=7.0.0",
+    "coverage_tool": "pytest-cov >=4.0.0",
+    "markers": [
+      "confidence_check",
+      "self_check",
+      "reflexion",
+      "unit",
+      "integration"
+    ],
+    "test_files": [
+      "tests/pm_agent/test_confidence_check.py",
+      "tests/pm_agent/test_self_check_protocol.py",
+      "tests/pm_agent/test_reflexion_pattern.py",
+      "tests/pm_agent/test_token_budget.py",
+      "tests/test_pytest_plugin.py",
+      "tests/conftest.py"
+    ],
+    "commands": {
+      "all_tests": "uv run pytest",
+      "specific_directory": "uv run pytest tests/pm_agent/ -v",
+      "by_marker": "uv run pytest -m confidence_check",
+      "with_coverage": "uv run pytest --cov=superclaude"
     }
   },
-  "scripts": {
-    "scripts": {
-      "path": "scripts",
-      "relative_path": "scripts",
-      "purpose": "Scripts and utilities",
-      "file_count": 7,
-      "subdirs": [],
-      "key_files": [
-        {
-          "path": "scripts/analyze_workflow_metrics.py",
-          "relative_path": "scripts/analyze_workflow_metrics.py",
-          "file_type": ".py",
-          "size_bytes": 11915,
-          "last_modified": "2025-10-17T17:21:00.910544",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "scripts/ab_test_workflows.py",
-          "relative_path": "scripts/ab_test_workflows.py",
-          "file_type": ".py",
-          "size_bytes": 10369,
-          "last_modified": "2025-10-17T17:21:00.910413",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "scripts/build_and_upload.py",
-          "relative_path": "scripts/build_and_upload.py",
-          "file_type": ".py",
-          "size_bytes": 8054,
-          "last_modified": "2025-10-14T18:24:17.122790",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "scripts/validate_pypi_ready.py",
-          "relative_path": "scripts/validate_pypi_ready.py",
-          "file_type": ".py",
-          "size_bytes": 7063,
-          "last_modified": "2025-10-14T18:24:17.136184",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "scripts/verify_research_integration.sh",
-          "relative_path": "scripts/verify_research_integration.sh",
-          "file_type": ".sh",
-          "size_bytes": 5506,
-          "last_modified": "2025-10-07T11:55:15.813024",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "scripts/cleanup.sh",
-          "relative_path": "scripts/cleanup.sh",
-          "file_type": ".sh",
-          "size_bytes": 3761,
-          "last_modified": "2025-10-07T11:55:15.812849",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "scripts/publish.sh",
-          "relative_path": "scripts/publish.sh",
-          "file_type": ".sh",
-          "size_bytes": 2978,
-          "last_modified": "2025-10-07T11:55:15.812904",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        }
-      ],
-      "redundancies": [],
-      "suggestions": []
+  "dependencies": {
+    "core": {
+      "pytest": ">=7.0.0",
+      "click": ">=8.0.0",
+      "rich": ">=13.0.0"
     },
-    "bin": {
-      "path": "bin",
-      "relative_path": "bin",
-      "purpose": "Scripts and utilities",
-      "file_count": 5,
-      "subdirs": [],
-      "key_files": [
-        {
-          "path": "bin/check_update.js",
-          "relative_path": "bin/check_update.js",
-          "file_type": ".js",
-          "size_bytes": 6971,
-          "last_modified": "2025-10-14T07:01:32.650330",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "bin/install.js",
-          "relative_path": "bin/install.js",
-          "file_type": ".js",
-          "size_bytes": 4278,
-          "last_modified": "2025-10-14T07:01:32.650964",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "bin/update.js",
-          "relative_path": "bin/update.js",
-          "file_type": ".js",
-          "size_bytes": 2332,
-          "last_modified": "2025-10-14T07:01:32.651198",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "bin/check_env.js",
-          "relative_path": "bin/check_env.js",
-          "file_type": ".js",
-          "size_bytes": 1644,
-          "last_modified": "2025-10-14T07:01:32.650230",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        },
-        {
-          "path": "bin/cli.js",
-          "relative_path": "bin/cli.js",
-          "file_type": ".js",
-          "size_bytes": 1291,
-          "last_modified": "2025-10-14T07:01:32.650676",
-          "description": "",
-          "importance": 5,
-          "relationships": []
-        }
-      ],
-      "redundancies": [],
-      "suggestions": []
+    "dev": {
+      "pytest-cov": ">=4.0.0",
+      "pytest-benchmark": ">=4.0.0",
+      "scipy": ">=1.10.0",
+      "ruff": ">=0.1.0",
+      "mypy": ">=1.0"
     }
   },
-  "redundancies": [],
-  "missing_docs": [],
-  "orphaned_files": [],
-  "suggestions": [],
-  "documentation_coverage": 100,
-  "code_to_doc_ratio": 0.631578947368421,
-  "quality_score": 90,
-  "indexing_time_seconds": 0.3119674169574864,
-  "agents_used": [
-    "system-architect",
-    "system-architect",
-    "system-architect",
-    "system-architect",
-    "technical-writer"
+  "quick_start": {
+    "installation": [
+      "uv pip install superclaude",
+      "pip install superclaude",
+      "make install"
+    ],
+    "usage": [
+      "superclaude --version",
+      "superclaude install-skill confidence-check",
+      "make doctor",
+      "make test"
+    ]
+  },
+  "git_workflow": {
+    "branch_structure": "master (production) ← integration (testing) ← feature/*, fix/*, docs/*",
+    "current_branch": "next"
+  },
+  "token_efficiency": {
+    "index_performance": {
+      "before": "58,000 tokens (reading all files every session)",
+      "after": "3,000 tokens (reading this index)",
+      "reduction": "94% (55,000 tokens saved per session)"
+    },
+    "pm_agent_roi": {
+      "confidence_check_cost": "100-200 tokens",
+      "savings": "5,000-50,000 tokens",
+      "roi": "25-250x token savings",
+      "break_even": "1 failed implementation prevented"
+    }
+  },
+  "project_stats": {
+    "python_source_lines": 3002,
+    "test_files_count": 7,
+    "documentation_files_count": 90,
+    "supported_python": ["3.10", "3.11", "3.12"],
+    "license": "MIT",
+    "contributors": 3
+  },
+  "mcp_integration": {
+    "servers": {
+      "tavily": "Web search (Deep Research)",
+      "context7": "Official documentation (prevent hallucination)",
+      "sequential": "Token-efficient reasoning (30-50% reduction)",
+      "serena": "Session persistence",
+      "mindbase": "Cross-session learning"
+    }
+  },
+  "project_principles": [
+    "Evidence-Based Development - Never guess, verify with official docs",
+    "Confidence-First Implementation - Check confidence BEFORE starting",
+    "Parallel-First Execution - Use Wave → Checkpoint → Wave (3.5x faster)",
+    "Token Efficiency - Optimize for minimal token usage",
+    "Test-Driven Development - Tests first, implementation second"
   ]
 }
