@@ -76,11 +76,9 @@ make lint             # Run ruff linter
 make format           # Format code with ruff
 make doctor           # Health check diagnostics
 
-# Plugin Installation
-make install-plugin-dev      # Install full plugin to ~/.claude/plugins/
-make install-plugin-minimal  # Install minimal (manifest only)
-make reinstall-plugin-dev    # Update existing plugin
-make uninstall-plugin        # Remove plugin
+# Plugin Packaging
+make build-plugin            # Build plugin artefacts into dist/
+make sync-plugin-repo        # Sync artefacts into ../SuperClaude_Plugin
 
 # Maintenance
 make clean            # Remove build artifacts
@@ -123,19 +121,18 @@ Registered via `pyproject.toml` entry point, automatically available after insta
 
 ### TypeScript Plugins (v2.0)
 
-**Location**: Plugin source files are at **project root** (pm/, research/, index/), not in .claude-plugin/.
-**Hot reload enabled** - edit .ts file, save, instant reflection (no restart).
+**Location**: Plugin source lives under `plugins/superclaude/` with unified assets (agents, commands, hooks, skills).
+**Packaging**: `make build-plugin` renders `.claude-plugin/*` manifests into `dist/plugins/superclaude/`.
 
-**Three plugins**:
-- **/pm**: Auto-starts on session (hooks/hooks.json), confidence-driven orchestration
-- **/research**: Deep web research, adaptive planning, Tavily MCP integration
-- **/index-repo**: Repository indexing, 94% token reduction (58K → 3K)
+**Distributed commands**:
+- **/sc:agent**: Session orchestrator, auto-starts via hooks
+- **/sc:index-repo**: Repository indexing + PROJECT_INDEX generation
+- **/sc:research**: Deep research workflow with Tavily + Context7 integration
 
-**Important**: When editing plugins:
-- Source files: pm/index.ts, research/index.ts, index/index.ts (project root)
-- Command definitions: commands/*.md
-- Manifest: .claude-plugin/plugin.json
-- Hooks: hooks/hooks.json
+**Editing flow**:
+- Update agents/commands/hooks/skills in `plugins/superclaude/*`
+- Run `make build-plugin` locally to verify packaging
+- Optionally `make sync-plugin-repo` to push artefacts into `../SuperClaude_Plugin`
 
 ## 🧪 Testing with PM Agent
 
@@ -260,41 +257,36 @@ This project uses **project-local plugin detection** (v2.0):
 
 ```
 Plugin Components:
-1. Manifest (.claude-plugin/plugin.json) - Plugin metadata
-2. Commands (commands/*.md) - Command definitions
-3. Source (pm/, research/, index/) - TypeScript implementation
-4. Hooks (hooks/hooks.json) - Auto-activation config
+1. Manifest templates (`plugins/superclaude/manifest/*.template.json`)
+2. Command/agent assets (`plugins/superclaude/{commands,agents}/`)
+3. Skills (`plugins/superclaude/skills/`)
+4. Hooks & scripts (`plugins/superclaude/{hooks,scripts}/`)
 ```
 
 ### Development Workflow
 
 ```bash
 # 1. Edit plugin source
-vim pm/index.ts          # Edit PM Agent logic
-vim commands/pm.md       # Edit command definition
+vim plugins/superclaude/commands/agent.md
+vim plugins/superclaude/skills/confidence-check/confidence.ts
 
-# 2. Test changes (hot reload - no restart needed)
-# Just save the file and run command in Claude Code
+# 2. Run packaging + smoke tests
+make build-plugin
 
-# 3. Run tests
-uv run pytest .claude-plugin/tests/
-
-# 4. Install to global Claude Code (optional)
-make install-plugin-dev
+# 3. (optional) Sync generated artefacts into ../SuperClaude_Plugin
+make sync-plugin-repo
 ```
 
 ### Global vs Project-Local
 
-**Project-Local** (auto-detected when in this directory):
-- `.claude-plugin/plugin.json` exists
-- PM Agent activates automatically
-- Hot reload enabled
-- Safe for development
+**Project-Local**:
+- Work directly from `plugins/superclaude/`
+- Use `make build-plugin` for validation / artefact refresh
+- Launch Claude Code inside this repo to exercise commands hot-loaded from disk
 
-**Global** (installed to `~/.claude/plugins/`):
-- Available in all Claude Code sessions
-- Use `make install-plugin-dev` to install
-- Use `make uninstall-plugin` to remove
+**Distributed Package** (`../SuperClaude_Plugin`):
+- Generated output committed for marketplace distribution
+- Do not edit manually—regenerate via `make sync-plugin-repo`
 
 ## 📊 Package Information
 

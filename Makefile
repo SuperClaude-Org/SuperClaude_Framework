@@ -1,4 +1,4 @@
-.PHONY: install test test-plugin doctor verify clean lint format install-plugin install-plugin-minimal install-plugin-dev uninstall-plugin reinstall-plugin reinstall-plugin-minimal reinstall-plugin-dev help plugin-message
+.PHONY: install test test-plugin doctor verify clean lint format build-plugin sync-plugin-repo help
 
 # Installation (local source, editable) - RECOMMENDED
 install:
@@ -61,32 +61,29 @@ clean:
 	find . -type d -name .pytest_cache -exec rm -rf {} +
 	find . -type d -name .ruff_cache -exec rm -rf {} +
 
-# Install Claude Code plugin - MINIMAL (manifest only, for baseline performance)
-plugin-message:
-	@echo "⚠️  Claude Code plugin assets moved to the separate SuperClaude_Plugin repository."
-	@echo "    Clone or update: ${HOME}/github/SuperClaude_Plugin"
-	@echo "    Then run plugin make targets from that project (e.g. 'make install')."
-	@echo "    These placeholders avoid copying stale files from this framework repo."
+PLUGIN_DIST := dist/plugins/superclaude
+PLUGIN_REPO ?= ../SuperClaude_Plugin
 
-install-plugin-minimal: plugin-message
+.PHONY: build-plugin
+build-plugin: ## Build SuperClaude plugin artefacts into dist/
+	@echo "🛠️  Building SuperClaude plugin from unified sources..."
+	@uv run python scripts/build_superclaude_plugin.py
 
-# Install Claude Code plugin - DEV (full, for development)
-install-plugin-dev: plugin-message
-
-# Default install (dev configuration for backward compatibility)
-install-plugin: install-plugin-dev
-
-# Uninstall Claude Code plugin
-uninstall-plugin: plugin-message
-
-# Reinstall plugin - MINIMAL
-reinstall-plugin-minimal: plugin-message
-
-# Reinstall plugin - DEV
-reinstall-plugin-dev: plugin-message
-
-# Default reinstall (dev configuration for backward compatibility)
-reinstall-plugin: reinstall-plugin-dev
+.PHONY: sync-plugin-repo
+sync-plugin-repo: build-plugin ## Sync built plugin artefacts into ../SuperClaude_Plugin
+	@if [ ! -d "$(PLUGIN_REPO)" ]; then \
+		echo "❌ Target plugin repository not found at $(PLUGIN_REPO)"; \
+		echo "   Set PLUGIN_REPO=/path/to/SuperClaude_Plugin when running make."; \
+		exit 1; \
+	fi
+	@echo "📦 Syncing artefacts to $(PLUGIN_REPO)..."
+	@rsync -a --delete $(PLUGIN_DIST)/agents/ $(PLUGIN_REPO)/agents/
+	@rsync -a --delete $(PLUGIN_DIST)/commands/ $(PLUGIN_REPO)/commands/
+	@rsync -a --delete $(PLUGIN_DIST)/hooks/ $(PLUGIN_REPO)/hooks/
+	@rsync -a --delete $(PLUGIN_DIST)/scripts/ $(PLUGIN_REPO)/scripts/
+	@rsync -a --delete $(PLUGIN_DIST)/skills/ $(PLUGIN_REPO)/skills/
+	@rsync -a --delete $(PLUGIN_DIST)/.claude-plugin/ $(PLUGIN_REPO)/.claude-plugin/
+	@echo "✅ Sync complete."
 
 # Translate README to multiple languages using Neural CLI
 translate:
@@ -123,10 +120,9 @@ help:
 	@echo "  make format          - Format code (ruff format)"
 	@echo "  make clean           - Clean build artifacts"
 	@echo ""
-	@echo "🔌 Plugin Management:"
-	@echo "  make install-plugin  - Install plugin to Claude Code (~/.claude/plugins/)"
-	@echo "  make uninstall-plugin - Remove plugin from Claude Code"
-	@echo "  make reinstall-plugin - Update existing plugin installation"
+	@echo "🔌 Plugin Packaging:"
+	@echo "  make build-plugin    - Build SuperClaude plugin artefacts into dist/"
+	@echo "  make sync-plugin-repo - Sync artefacts into ../SuperClaude_Plugin"
 	@echo ""
 	@echo "📚 Documentation:"
 	@echo "  make translate       - Translate README to Chinese and Japanese"
