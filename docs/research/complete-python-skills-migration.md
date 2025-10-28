@@ -472,7 +472,7 @@ class TestPMAgent:
 
 #### Day 5: PM Command統合
 
-**Update**: `superclaude/commands/pm.md`
+**Update**: `plugins/superclaude/commands/pm.md`
 
 ```markdown
 ---

@@ -8,7 +8,7 @@
 ## ✅ Implementation Checklist
 
 ### Layer 0: Bootstrap (150 tokens)
-- ✅ Session Start Protocol rewritten in `superclaude/commands/pm.md:67-102`
+- ✅ Session Start Protocol rewritten in `plugins/superclaude/commands/pm.md:67-102`
 - ✅ Bootstrap operations: Time awareness, repo detection, session initialization
 - ✅ NO auto-loading behavior implemented
 - ✅ User Request First philosophy enforced
@@ -16,7 +16,7 @@
 **Token Reduction**: 2,300 tokens → 150 tokens = **95% reduction**
 
 ### Intent Classification System
-- ✅ 5 complexity levels implemented in `superclaude/commands/pm.md:104-119`
+- ✅ 5 complexity levels implemented in `plugins/superclaude/commands/pm.md:104-119`
   - Ultra-Light (100-500 tokens)
   - Light (500-2K tokens)
   - Medium (2-5K tokens)
@@ -156,7 +156,7 @@
 
 - **Research Report**: `docs/research/llm-agent-token-efficiency-2025.md`
 - **Context File**: `docs/memory/pm_context.md`
-- **PM Specification**: `superclaude/commands/pm.md` (lines 67-793)
+- **PM Specification**: `plugins/superclaude/commands/pm.md` (lines 67-793)
 
 **Industry Benchmarks**:
 - Anthropic: 39% reduction with orchestrator pattern

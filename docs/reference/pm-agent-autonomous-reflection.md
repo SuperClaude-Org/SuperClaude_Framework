@@ -48,7 +48,7 @@ PM Agentの自律的振り返りとトークン最適化システム。**間違�
 
 **Integration Points**:
 ```yaml
-pm.md (superclaude/commands/):
+pm.md (plugins/superclaude/commands/):
   - Line 870-1016: Self-Correction Loop (拡張済み)
     - Confidence Check (Line 881-921)
     - Self-Check Protocol (Line 928-1016)
@@ -275,7 +275,7 @@ Token Savings:
 
 ```yaml
 Core Implementation:
-  superclaude/commands/pm.md:
+  plugins/superclaude/commands/pm.md:
     - Line 870-1016: Self-Correction Loop (UPDATED)
     - Confidence Check + Self-Check + Evidence Requirement
 
@@ -656,5 +656,5 @@ Weekly Analysis:
 
 **End of Document**
 
-For implementation details, see `superclaude/commands/pm.md` (Line 870-1016).
+For implementation details, see `plugins/superclaude/commands/pm.md` (Line 870-1016).
 For research background, see `docs/research/reflexion-integration-2025.md` and `docs/research/llm-agent-token-efficiency-2025.md`.

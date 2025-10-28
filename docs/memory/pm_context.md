@@ -16,8 +16,8 @@ SuperClaude is a comprehensive framework for Claude Code that provides:
 
 ## Architecture
 
-- `superclaude/agents/` - Agent persona definitions
-- `superclaude/commands/` - Slash command definitions (pm.md: token-efficient redesign)
+- `plugins/superclaude/agents/` - Agent persona definitions
+- `plugins/superclaude/commands/` - Slash command definitions (pm.md: token-efficient redesign)
 - `docs/` - Documentation and patterns
 - `docs/memory/` - PM Agent session state (local files)
 - `docs/pdca/` - PDCA cycle documentation per feature

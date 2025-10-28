@@ -52,7 +52,7 @@ Break-even point: >3% of sessions using PM = net neutral
 
 ### Modified
 ```
-~/github/superclaude/superclaude/commands/pm.md
+~/github/superclaude/plugins/superclaude/commands/pm.md
   - Added: skill: pm
   - Updated: Description to reference Skills loading
 ```
@@ -170,7 +170,7 @@ If Skills migration causes issues:
 ```bash
 # 1. Revert slash command
 cd ~/github/superclaude
-git checkout superclaude/commands/pm.md
+git checkout plugins/superclaude/commands/pm.md
 
 # 2. Remove Skills directory
 rm -rf ~/.claude/skills/pm

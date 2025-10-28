@@ -59,7 +59,7 @@ mkdir -p ~/.claude/skills/pm
 
 ### 3. Update Slash Command
 ```bash
-# superclaude/commands/pm.md
+# plugins/superclaude/commands/pm.md
 # Updated to reference skill: pm
 ```
 
@@ -107,7 +107,7 @@ rm -rf ~/.claude/skills/pm
 mv ~/.claude/superclaude.backup ~/.claude/superclaude
 
 # Revert slash command
-git checkout superclaude/commands/pm.md
+git checkout plugins/superclaude/commands/pm.md
 ```
 
 ## Next Steps

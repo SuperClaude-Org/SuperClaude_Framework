@@ -346,7 +346,7 @@ Benefits:
 
 **Implementation Steps**:
 
-1. **Update `superclaude/commands/pm.md`**:
+1. **Update `plugins/superclaude/commands/pm.md`**:
    ```diff
    - ## Session Lifecycle (Serena MCP Memory Integration)
    + ## Session Lifecycle (Repository-Scoped Local Memory)
@@ -418,6 +418,6 @@ Benefits:
 
 **Solution**: Clarify documentation to match reality (Option B), with optional future enhancement (Option C).
 
-**Action Required**: Update `superclaude/commands/pm.md` to remove Serena references and explicitly document file-based memory approach.
+**Action Required**: Update `plugins/superclaude/commands/pm.md` to remove Serena references and explicitly document file-based memory approach.
 
 **Confidence**: High (90%) - Evidence-based analysis with official documentation verification.
