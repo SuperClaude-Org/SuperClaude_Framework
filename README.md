@@ -126,14 +126,17 @@ claude
 For **2-3x faster** execution and **30-50% fewer tokens**, optionally install MCP servers:
 
 ```bash
-# Recommended MCP servers (via airis-mcp-gateway):
-# - Mindbase: Cross-session memory (automatic)
-# - Serena: Session persistence (2-3x faster)
+# Optional MCP servers for enhanced performance (via airis-mcp-gateway):
+# - Serena: Code understanding (2-3x faster)
 # - Sequential: Token-efficient reasoning (30-50% fewer tokens)
 # - Tavily: Web search for Deep Research
 # - Context7: Official documentation lookup
+# - Mindbase: Semantic search across all conversations (optional enhancement)
 
-# Install via: https://github.com/airis-mcp-gateway
+# Note: Error learning available via built-in ReflexionMemory (no installation required)
+# Mindbase provides semantic search enhancement (requires "recommended" profile)
+# Install MCP servers: https://github.com/agiletec-inc/airis-mcp-gateway
+# See docs/mcp/mcp-integration-policy.md for details
 ```
 
 **Performance Comparison:**

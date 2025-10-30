@@ -6,37 +6,63 @@ SuperClaude FrameworkにおけるMCP (Model Context Protocol) サーバーの統
 
 ### Core MCP Servers
 
-#### Mindbase MCP
+#### Memory & Error Learning
+
+**ReflexionMemory (Built-in, Always Available)**
 ```yaml
-Name: mindbase
-Purpose: 会話履歴の長期保存と検索
-Category: Memory Management
-Auto-Managed: true (Claude Code標準機能)
-PM Agent Role: None (自動管理、触らない)
+Name: ReflexionMemory
+Purpose: エラー履歴の保存と学習
+Category: Memory Management (Built-in)
+Auto-Managed: true (内部実装)
+PM Agent Role: エラー時に自動使用
 
 Capabilities:
-  - 会話履歴の永続化
-  - セマンティック検索
-  - プロジェクト横断の知識共有
-  - 過去の会話からの学習
+  - 過去のエラーと解決策の記憶
+  - キーワードベースの類似エラー検索
+  - 再発防止のための学習
+  - プロジェクトスコープの記憶
 
-Lifecycle:
-  Start: 自動ロード
-  During: 自動保存
-  End: 自動保存
-  Cleanup: 自動（ユーザー設定による）
+Implementation:
+  Location: superclaude/core/pm_init/reflexion_memory.py
+  Storage: docs/memory/reflexion.jsonl (ローカルファイル)
+  Search: Keyword-based (50% overlap threshold)
+
+Note: これは外部MCPサーバーではなく、内部実装です
+```
+
+**Mindbase MCP (Optional Enhancement via airis-mcp-gateway)**
+```yaml
+Name: mindbase
+Purpose: 全会話履歴のセマンティック検索
+Category: Memory Management (Optional MCP)
+Auto-Managed: false (外部MCPサーバー - 要インストール)
+PM Agent Role: 利用可能な場合、Claudeが自動選択
+
+Capabilities:
+  - 全会話履歴の永続化 (PostgreSQL + pgvector)
+  - セマンティック検索 (qwen3-embedding:8b)
+  - プロジェクト横断の知識共有
+  - 過去の全会話からの学習
+
+Tools:
+  - mindbase_search: セマンティック検索
+  - mindbase_store: 会話保存
+  - mindbase_health: ヘルスチェック
+
+Installation:
+  Requires: airis-mcp-gateway with "recommended" profile
+  See: https://github.com/agiletec-inc/airis-mcp-gateway
+
+Profile Dependency:
+  - "recommended" profile: mindbase included (long-term projects)
+  - "minimal" profile: mindbase NOT included (lightweight, quick tasks)
 
 Usage Pattern:
-  - PM Agent: 使用しない（Claude Codeが自動管理）
-  - User: 透明（意識不要）
-  - Integration: 完全自動
+  - インストール + recommended profile の場合、Claudeが自動的に利用
+  - それ以外の場合、ReflexionMemoryを使用
+  - PM Agentは「過去のエラーを検索」と指示（ツール選択はClaude）
 
-Do NOT:
-  - 明示的にmindbase操作しない
-  - PM Agentでmindbase制御しない
-  - 手動でメモリ管理しない
-
-Reason: Claude Code標準機能として完全に自動管理される
+Note: Optional enhancement. SuperClaude works fully with ReflexionMemory alone.
 ```
 
 #### Serena MCP

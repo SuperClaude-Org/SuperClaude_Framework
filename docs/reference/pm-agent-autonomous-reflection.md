@@ -191,19 +191,15 @@ When: Error detected
 Token Budget: 0 tokens (cache lookup) → 1-2K tokens (new investigation)
 
 Process:
-  1. Check Past Errors (Smart Lookup):
-     IF mindbase available:
-       → mindbase.search_conversations(
-           query=error_message,
-           category="error",
-           limit=5
-         )
-       → Semantic search (500 tokens)
-
-     ELSE (mindbase unavailable):
-       → Grep docs/memory/solutions_learned.jsonl
-       → Grep docs/mistakes/ -r "error_message"
-       → Text-based search (0 tokens, file system only)
+  1. Check Past Errors (Automatic Tool Selection):
+     → Search conversation history for similar errors
+     → Claude automatically selects best available tool:
+       * mindbase_search (if airis-mcp-gateway installed)
+         - Semantic search across all conversations
+         - Higher recall, cross-project patterns
+       * ReflexionMemory (built-in, always available)
+         - Keyword search in reflexion.jsonl
+         - Fast, project-scoped error matching
 
   2. IF similar error found:
      ✅ "⚠️ 過去に同じエラー発生済み"
@@ -214,7 +210,7 @@ Process:
   3. ELSE (new error):
      → Root cause investigation (WebSearch, docs, patterns)
      → Document solution (future reference)
-     → Update docs/memory/solutions_learned.jsonl
+     → Store in ReflexionMemory for future sessions
 
   4. Self-Reflection:
      "Reflection:
@@ -225,9 +221,9 @@ Process:
       📝 Learning: Add env validation to startup checklist"
 
 Storage:
-  → docs/memory/solutions_learned.jsonl (ALWAYS)
+  → docs/memory/reflexion.jsonl (ReflexionMemory - ALWAYS)
   → docs/mistakes/[feature]-YYYY-MM-DD.md (failure analysis)
-  → mindbase (if available, enhanced searchability)
+  → mindbase (if airis-mcp-gateway installed, automatic storage)
 
 Result:
   ✅ <10% error recurrence rate (same error twice)

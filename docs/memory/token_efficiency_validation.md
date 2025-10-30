@@ -85,23 +85,24 @@
 
 ---
 
-## 🎯 mindbase Integration Incentive
+## 🎯 Error Learning & Memory Integration
 
-### Token Savings with mindbase
+### Token Savings with Error Learning
 
-**Layer 1 (Minimal Context)**:
-- Without mindbase: 800 tokens
-- With mindbase: 500 tokens
-- **Savings: 38%**
+**Built-in ReflexionMemory (Always Available)**:
+- Layer 1 (Minimal Context): 500-650 tokens (keyword search)
+- Layer 3 (Related Context): 3,500-4,000 tokens
+- **Savings: 20-35% vs. no memory**
 
-**Layer 3 (Related Context)**:
-- Without mindbase: 4,500 tokens
-- With mindbase: 3,000-4,000 tokens
-- **Savings: 20-33%**
+**Optional mindbase Enhancement (airis-mcp-gateway "recommended" profile)**:
+- Layer 1: 400-500 tokens (semantic search, better recall)
+- Layer 3: 3,000-3,500 tokens (cross-project patterns)
+- **Additional savings: 10-15% vs. ReflexionMemory**
 
 **Industry Benchmark**: 90% token reduction with vector database (CrewAI + Mem0)
 
-**User Incentive**: Clear performance benefit for users who set up mindbase MCP server
+**Note**: SuperClaude provides significant token savings with built-in ReflexionMemory.
+Mindbase offers incremental improvement via semantic search when installed.
 
 ---
 

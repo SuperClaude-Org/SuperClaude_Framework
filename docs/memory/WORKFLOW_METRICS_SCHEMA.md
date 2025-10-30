@@ -48,7 +48,7 @@ Each line is a complete JSON object representing one workflow execution.
 | Field | Type | Description | Example |
 |-------|------|-------------|---------|
 | `files_read` | integer | Number of files read | `1` |
-| `mindbase_used` | boolean | Whether mindbase MCP was used | `false` |
+| `error_search_tool` | string | Tool used for error search | `"mindbase_search"`, `"ReflexionMemory"`, `"none"` |
 | `sub_agents` | array | Delegated sub-agents | `["backend-architect", "quality-engineer"]` |
 | `user_feedback` | string | Inferred user satisfaction | `"satisfied"`, `"neutral"`, `"unsatisfied"` |
 | `notes` | string | Implementation notes | `"Used cached solution"` |

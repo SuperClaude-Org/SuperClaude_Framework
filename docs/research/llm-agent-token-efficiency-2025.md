@@ -280,7 +280,7 @@ Improved (Good):
 - Light tasks: 3,500 → 1,200 tokens (66% reduction)
 - Medium tasks: 7,000 → 4,500 tokens (36% reduction)
 
-### 6.2 Phase 2: mindbase Integration
+### 6.2 Phase 2: Enhanced Error Learning (ReflexionMemory + Optional mindbase)
 
 **Features**:
 - Semantic search for past solutions
