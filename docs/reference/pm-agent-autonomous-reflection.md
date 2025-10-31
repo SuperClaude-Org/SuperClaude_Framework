@@ -202,8 +202,8 @@ Process:
          - Fast, project-scoped error matching
 
   2. IF similar error found:
-     ✅ "⚠️ 過去に同じエラー発生済み"
-     ✅ "解決策: [past_solution]"
+     ✅ "⚠️ Same error occurred before"
+     ✅ "Solution: [past_solution]"
      ✅ Apply solution immediately
      → Skip lengthy investigation (HUGE token savings)
 

@@ -32,7 +32,7 @@ SuperClaude is a comprehensive framework for Claude Code that provides:
 
 ### Intent Classification System
 ```yaml
-Ultra-Light (100-500 tokens):   "進捗", "progress", "status" → Layer 1 only
+Ultra-Light (100-500 tokens):   "progress", "status", "update" → Layer 1 only
 Light (500-2K tokens):          "typo", "rename", "comment" → Layer 2 (target file)
 Medium (2-5K tokens):           "bug", "fix", "refactor" → Layer 3 (related files)
 Heavy (5-20K tokens):           "feature", "architecture" → Layer 4 (subsystem)

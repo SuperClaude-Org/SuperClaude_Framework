@@ -1,6 +1,6 @@
 # MCP Integration Policy
 
-SuperClaude FrameworkにおけるMCP (Model Context Protocol) サーバーの統合ポリシーと使用ガイドライン。
+Integration policy and usage guidelines for MCP (Model Context Protocol) servers in SuperClaude Framework.
 
 ## MCP Server Definitions
 
@@ -11,43 +11,43 @@ SuperClaude FrameworkにおけるMCP (Model Context Protocol) サーバーの統
 **ReflexionMemory (Built-in, Always Available)**
 ```yaml
 Name: ReflexionMemory
-Purpose: エラー履歴の保存と学習
+Purpose: Error history storage and learning
 Category: Memory Management (Built-in)
-Auto-Managed: true (内部実装)
-PM Agent Role: エラー時に自動使用
+Auto-Managed: true (internal implementation)
+PM Agent Role: Automatically used on errors
 
 Capabilities:
-  - 過去のエラーと解決策の記憶
-  - キーワードベースの類似エラー検索
-  - 再発防止のための学習
-  - プロジェクトスコープの記憶
+  - Memory of past errors and solutions
+  - Keyword-based similar error search
+  - Learning to prevent recurrence
+  - Project-scoped memory
 
 Implementation:
   Location: superclaude/core/pm_init/reflexion_memory.py
-  Storage: docs/memory/reflexion.jsonl (ローカルファイル)
+  Storage: docs/memory/reflexion.jsonl (local file)
   Search: Keyword-based (50% overlap threshold)
 
-Note: これは外部MCPサーバーではなく、内部実装です
+Note: This is an internal implementation, not an external MCP server
 ```
 
 **Mindbase MCP (Optional Enhancement via airis-mcp-gateway)**
 ```yaml
 Name: mindbase
-Purpose: 全会話履歴のセマンティック検索
+Purpose: Semantic search across all conversation history
 Category: Memory Management (Optional MCP)
-Auto-Managed: false (外部MCPサーバー - 要インストール)
-PM Agent Role: 利用可能な場合、Claudeが自動選択
+Auto-Managed: false (external MCP server - requires installation)
+PM Agent Role: Automatically selected by Claude when available
 
 Capabilities:
-  - 全会話履歴の永続化 (PostgreSQL + pgvector)
-  - セマンティック検索 (qwen3-embedding:8b)
-  - プロジェクト横断の知識共有
-  - 過去の全会話からの学習
+  - Persistence of all conversation history (PostgreSQL + pgvector)
+  - Semantic search (qwen3-embedding:8b)
+  - Cross-project knowledge sharing
+  - Learning from all past conversations
 
 Tools:
-  - mindbase_search: セマンティック検索
-  - mindbase_store: 会話保存
-  - mindbase_health: ヘルスチェック
+  - mindbase_search: Semantic search
+  - mindbase_store: Conversation storage
+  - mindbase_health: Health check
 
 Installation:
   Requires: airis-mcp-gateway with "recommended" profile
@@ -58,9 +58,9 @@ Profile Dependency:
   - "minimal" profile: mindbase NOT included (lightweight, quick tasks)
 
 Usage Pattern:
-  - インストール + recommended profile の場合、Claudeが自動的に利用
-  - それ以外の場合、ReflexionMemoryを使用
-  - PM Agentは「過去のエラーを検索」と指示（ツール選択はClaude）
+  - With installation + recommended profile: Claude automatically uses it
+  - Otherwise: Falls back to ReflexionMemory
+  - PM Agent instructs: "Search past errors" (Claude selects tool)
 
 Note: Optional enhancement. SuperClaude works fully with ReflexionMemory alone.
 ```
