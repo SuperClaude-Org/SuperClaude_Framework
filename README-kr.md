@@ -287,22 +287,22 @@ pip install --break-system-packages SuperClaude
 </td>
 <td valign="top">
 
-- 🎯 [**명령어 레퍼런스**](docs/user-guide/commands.md)  
+- 🎯 [**명령어 레퍼런스**](docs/user-guide-kr/commands.md)
   *전체 21개 슬래시 명령어*
 
-- 🤖 [**에이전트 가이드**](docs/user-guide/agents.md)  
+- 🤖 [**에이전트 가이드**](docs/user-guide-kr/agents.md)
   *14개 전문 에이전트*
 
-- 🎨 [**작동 모드**](docs/user-guide/modes.md)  
+- 🎨 [**작동 모드**](docs/user-guide-kr/modes.md)
   *5가지 적응형 모드*
 
-- 🚩 [**플래그 가이드**](docs/user-guide/flags.md)  
+- 🚩 [**플래그 가이드**](docs/user-guide-kr/flags.md)
   *동작 제어 매개변수*
 
-- 🔧 [**MCP 서버**](docs/user-guide/mcp-servers.md)  
+- 🔧 [**MCP 서버**](docs/user-guide-kr/mcp-servers.md)
   *6개 서버 통합*
 
-- 💼 [**세션 관리**](docs/user-guide/session-management.md)  
+- 💼 [**세션 관리**](docs/user-guide-kr/session-management.md)
   *상태 저장 및 복원*
 
 </td>
@@ -323,10 +323,10 @@ pip install --break-system-packages SuperClaude
 - ✨ [**모범 사례**](docs/reference/basic-examples.md)
   *전문가 팁과 패턴*
 
-- 📓 [**예제 모음**](docs/reference/examples-cookbook.md)  
+- 📓 [**예제 모음**](docs/reference/examples-cookbook.md)
   *실제 사용 예제*
 
-- 🔍 [**문제 해결**](docs/reference/troubleshooting.md)  
+- 🔍 [**문제 해결**](docs/reference/troubleshooting.md)
   *일반적인 문제와 수정*
 
 </td>

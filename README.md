@@ -47,6 +47,9 @@
   <a href="README-ja.md">
     <img src="https://img.shields.io/badge/🇯🇵_日本語-green" alt="日本語">
   </a>
+  <a href="README-kr.md">
+    <img src="https://img.shields.io/badge/🇰🇷_한국어-orange" alt="한국어">
+  </a>
 </p>
 
 <p align="center">
@@ -474,6 +477,7 @@ The Deep Research system intelligently coordinates multiple tools:
 
 </td>
 <td valign="top">
+
 - 📓 [**Examples Cookbook**](docs/reference/examples-cookbook.md)  
   *Real-world recipes*
 
