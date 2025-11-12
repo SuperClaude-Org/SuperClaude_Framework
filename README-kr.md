@@ -320,13 +320,10 @@ pip install --break-system-packages SuperClaude
 </td>
 <td valign="top">
 
-- ✨ [**모범 사례**](docs/reference/basic-examples.md)
-  *전문가 팁과 패턴*
-
-- 📓 [**예제 모음**](docs/reference/examples-cookbook.md)  
+- 📓 [**예제 모음**](docs/reference/examples-cookbook.md)
   *실제 사용 예제*
 
-- 🔍 [**문제 해결**](docs/reference/troubleshooting.md)  
+- 🔍 [**문제 해결**](docs/reference/troubleshooting.md)
   *일반적인 문제와 수정*
 
 </td>
