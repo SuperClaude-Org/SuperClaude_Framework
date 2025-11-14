@@ -172,7 +172,9 @@ def check_mcp_server_installed(server_name: str) -> bool:
         return False
 
 
-def prompt_for_api_key(server_name: str, env_var: str, description: str) -> Optional[str]:
+def prompt_for_api_key(
+    server_name: str, env_var: str, description: str
+) -> Optional[str]:
     """Prompt user for API key if needed."""
     click.echo(f"\n🔑 MCP server '{server_name}' requires an API key")
     click.echo(f"   Environment variable: {env_var}")
@@ -188,14 +190,14 @@ def prompt_for_api_key(server_name: str, env_var: str, description: str) -> Opti
         api_key = click.prompt(f"   Enter {env_var}", hide_input=True)
         return api_key
     else:
-        click.echo(f"   ⚠️  Proceeding without {env_var} - server may not function properly")
+        click.echo(
+            f"   ⚠️  Proceeding without {env_var} - server may not function properly"
+        )
         return None
 
 
 def install_mcp_server(
-    server_info: Dict,
-    scope: str = "user",
-    dry_run: bool = False
+    server_info: Dict, scope: str = "user", dry_run: bool = False
 ) -> bool:
     """
     Install a single MCP server using modern Claude Code API.
@@ -226,7 +228,7 @@ def install_mcp_server(
         api_key = prompt_for_api_key(
             server_name,
             api_key_env,
-            server_info.get("api_key_description", f"API key for {server_name}")
+            server_info.get("api_key_description", f"API key for {server_name}"),
         )
 
         if api_key:
@@ -259,13 +261,10 @@ def install_mcp_server(
         return True
 
     try:
-        click.echo(f"   Running: claude mcp add --transport {transport} {server_name} -- {command}")
-        result = _run_command(
-            cmd,
-            capture_output=True,
-            text=True,
-            timeout=120
+        click.echo(
+            f"   Running: claude mcp add --transport {transport} {server_name} -- {command}"
         )
+        result = _run_command(cmd, capture_output=True, text=True, timeout=120)
 
         if result.returncode == 0:
             click.echo(f"   ✅ Successfully installed: {server_name}")
@@ -309,7 +308,7 @@ def list_available_servers():
 def install_mcp_servers(
     selected_servers: Optional[List[str]] = None,
     scope: str = "user",
-    dry_run: bool = False
+    dry_run: bool = False,
 ) -> Tuple[bool, str]:
     """
     Install MCP servers for Claude Code.
@@ -346,8 +345,12 @@ def install_mcp_servers(
 
         server_options = []
         for key, info in MCP_SERVERS.items():
-            api_note = f" (requires {info['api_key_env']})" if "api_key_env" in info else ""
-            server_options.append(f"{info['name']:25} - {info['description']}{api_note}")
+            api_note = (
+                f" (requires {info['api_key_env']})" if "api_key_env" in info else ""
+            )
+            server_options.append(
+                f"{info['name']:25} - {info['description']}{api_note}"
+            )
 
         for i, option in enumerate(server_options, 1):
             click.echo(f"   {i}. {option}")
@@ -357,7 +360,7 @@ def install_mcp_servers(
 
         selection = click.prompt(
             "Select servers to install (comma-separated numbers, or 0 for all)",
-            default="0"
+            default="0",
         )
 
         if selection.strip() == "0":
@@ -366,7 +369,9 @@ def install_mcp_servers(
             try:
                 indices = [int(x.strip()) for x in selection.split(",")]
                 server_list = list(MCP_SERVERS.keys())
-                servers_to_install = [server_list[i-1] for i in indices if 0 < i <= len(server_list)]
+                servers_to_install = [
+                    server_list[i - 1] for i in indices if 0 < i <= len(server_list)
+                ]
             except (ValueError, IndexError):
                 return False, "Invalid selection"
 

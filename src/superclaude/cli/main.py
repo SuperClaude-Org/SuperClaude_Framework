@@ -91,11 +91,18 @@ def install(target: str, force: bool, list_only: bool):
 
 @main.command()
 @click.option("--servers", "-s", multiple=True, help="Specific MCP servers to install")
+@click.option("--list", "list_only", is_flag=True, help="List available MCP servers")
 @click.option(
-    "--list", "list_only", is_flag=True, help="List available MCP servers"
+    "--scope",
+    default="user",
+    type=click.Choice(["local", "project", "user"]),
+    help="Installation scope",
 )
-@click.option("--scope", default="user", type=click.Choice(["local", "project", "user"]), help="Installation scope")
-@click.option("--dry-run", is_flag=True, help="Show what would be installed without actually installing")
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    help="Show what would be installed without actually installing",
+)
 def mcp(servers, list_only, scope, dry_run):
     """
     Install and manage MCP servers for Claude Code
@@ -118,7 +125,7 @@ def mcp(servers, list_only, scope, dry_run):
     success, message = install_mcp_servers(
         selected_servers=list(servers) if servers else None,
         scope=scope,
-        dry_run=dry_run
+        dry_run=dry_run,
     )
 
     click.echo(message)

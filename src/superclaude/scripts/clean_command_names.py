@@ -54,20 +54,20 @@ def clean_name_attributes(content: str) -> Tuple[str, bool]:
     """
     # Pattern to match 'name: value' in frontmatter
     # Matches: name: value, name : value, NAME: value (case-insensitive)
-    name_pattern = re.compile(r'^\s*name\s*:\s*.*$', re.MULTILINE | re.IGNORECASE)
+    name_pattern = re.compile(r"^\s*name\s*:\s*.*$", re.MULTILINE | re.IGNORECASE)
 
     # Check if modification is needed
     if not name_pattern.search(content):
         return content, False
 
     # Remove name attributes
-    cleaned = name_pattern.sub('', content)
+    cleaned = name_pattern.sub("", content)
 
     # Clean up multiple consecutive newlines (max 2)
-    cleaned = re.sub(r'\n{3,}', '\n\n', cleaned)
+    cleaned = re.sub(r"\n{3,}", "\n\n", cleaned)
 
     # Remove trailing whitespace while preserving final newline
-    cleaned = cleaned.rstrip() + '\n' if cleaned.strip() else ''
+    cleaned = cleaned.rstrip() + "\n" if cleaned.strip() else ""
 
     return cleaned, True
 
@@ -91,7 +91,7 @@ def process_commands_directory(commands_dir: Path) -> int:
     error_count = 0
 
     print(f"🔍 Scanning: {commands_dir}")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     # Process all .md files
     for md_file in sorted(commands_dir.glob("*.md")):
@@ -99,14 +99,14 @@ def process_commands_directory(commands_dir: Path) -> int:
 
         try:
             # Read file content
-            content = md_file.read_text(encoding='utf-8')
+            content = md_file.read_text(encoding="utf-8")
 
             # Clean name attributes
             cleaned_content, was_modified = clean_name_attributes(content)
 
             if was_modified:
                 # Write cleaned content back
-                md_file.write_text(cleaned_content, encoding='utf-8')
+                md_file.write_text(cleaned_content, encoding="utf-8")
                 modified_count += 1
                 print(f"✅ Modified: {md_file.name}")
             else:
@@ -116,7 +116,7 @@ def process_commands_directory(commands_dir: Path) -> int:
             error_count += 1
             print(f"❌ Error:    {md_file.name} - {e}", file=sys.stderr)
 
-    print("="*60)
+    print("=" * 60)
     print("📊 Summary:")
     print(f"   • Processed: {processed_count} files")
     print(f"   • Modified:  {modified_count} files")
@@ -159,6 +159,7 @@ def main() -> int:
     except Exception as e:
         print(f"❌ Unexpected error: {e}", file=sys.stderr)
         import traceback
+
         traceback.print_exc()
         return 1
 
