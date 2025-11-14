@@ -12,7 +12,6 @@ import json
 import shutil
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_SRC = ROOT / "plugins" / "superclaude"
 DIST_ROOT = ROOT / "dist" / "plugins" / "superclaude"

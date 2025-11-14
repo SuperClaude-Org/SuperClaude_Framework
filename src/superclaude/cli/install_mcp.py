@@ -9,7 +9,6 @@ import os
 import platform
 import shlex
 import subprocess
-from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 import click
@@ -137,7 +136,7 @@ def check_prerequisites() -> Tuple[bool, List[str]]:
                     errors.append(
                         f"Node.js version {version} found, but version 18+ required"
                     )
-            except:
+            except (ValueError, IndexError):
                 pass
     except (subprocess.TimeoutExpired, FileNotFoundError):
         errors.append("Node.js not found - required for npm-based MCP servers")
@@ -394,6 +393,6 @@ def install_mcp_servers(
         return False, message
     else:
         message = f"\n✅ Successfully installed {installed_count} MCP server(s)!\n"
-        message += f"\nℹ️  Use 'claude mcp list' to see all installed servers"
-        message += f"\nℹ️  Use '/mcp' in Claude Code to check server status"
+        message += "\nℹ️  Use 'claude mcp list' to see all installed servers"
+        message += "\nℹ️  Use '/mcp' in Claude Code to check server status"
         return True, message

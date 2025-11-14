@@ -11,11 +11,12 @@ Usage:
         --metric tokens_used
 """
 
-import json
 import argparse
+import json
+import statistics
 from pathlib import Path
 from typing import Dict, List, Tuple
-import statistics
+
 from scipy import stats
 
 

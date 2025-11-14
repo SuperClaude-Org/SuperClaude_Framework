@@ -14,7 +14,6 @@ Exit Codes:
     1 - Error (directory not found or processing failed)
 """
 
-import os
 import re
 import sys
 from pathlib import Path
@@ -117,8 +116,8 @@ def process_commands_directory(commands_dir: Path) -> int:
             error_count += 1
             print(f"❌ Error:    {md_file.name} - {e}", file=sys.stderr)
 
-    print(f"{'='*60}")
-    print(f"📊 Summary:")
+    print("="*60)
+    print("📊 Summary:")
     print(f"   • Processed: {processed_count} files")
     print(f"   • Modified:  {modified_count} files")
     print(f"   • Errors:    {error_count} files")
@@ -151,7 +150,7 @@ def main() -> int:
             print("\n❌ Cleanup failed with errors", file=sys.stderr)
             return 1
 
-        print(f"\n✅ Cleanup completed successfully")
+        print("\n✅ Cleanup completed successfully")
         return 0
 
     except FileNotFoundError as e:

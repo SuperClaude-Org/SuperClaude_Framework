@@ -10,13 +10,13 @@ Usage:
     python scripts/analyze_workflow_metrics.py --task-type bug_fix
 """
 
-import json
 import argparse
-from pathlib import Path
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional
-from collections import defaultdict
+import json
 import statistics
+from collections import defaultdict
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Dict, List
 
 
 class WorkflowMetricsAnalyzer:
