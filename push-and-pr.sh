@@ -32,14 +32,19 @@ echo "📋 Verifying commits..."
 git log --oneline -4
 echo ""
 
-# Push branch to origin
-echo "📤 Pushing branch to origin..."
-if git push -u origin feature/codebase-assessment-nov-18; then
-    echo -e "${GREEN}✅ Branch pushed successfully!${NC}"
+# Push branch to fork
+echo "📤 Pushing branch to fork..."
+if git push -u fork feature/codebase-assessment-nov-18; then
+    echo -e "${GREEN}✅ Branch pushed successfully to fork!${NC}"
 else
-    echo -e "${RED}❌ Failed to push branch${NC}"
-    echo "GitHub may still be experiencing issues. Try again later."
-    exit 1
+    echo -e "${RED}❌ Failed to push branch to fork${NC}"
+    echo "Trying origin just in case..."
+    if git push -u origin feature/codebase-assessment-nov-18; then
+         echo -e "${GREEN}✅ Branch pushed successfully to origin!${NC}"
+    else
+         echo -e "${RED}❌ Failed to push to origin or fork${NC}"
+         exit 1
+    fi
 fi
 echo ""
 
