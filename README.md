@@ -2,6 +2,9 @@
 
 # 🚀 SuperClaude Framework
 
+[![Run in Smithery](https://smithery.ai/badge/skills/SuperClaude-Org)](https://smithery.ai/skills?ns=SuperClaude-Org&utm_source=github&utm_medium=badge)
+
+
 ### **Transform Claude Code into a Structured Development Platform**
 
 <p align="center">
