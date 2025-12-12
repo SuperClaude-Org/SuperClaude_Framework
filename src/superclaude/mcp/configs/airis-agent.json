@@ -1,0 +1,14 @@
+{
+  "airis-agent": {
+    "command": "docker",
+    "args": [
+      "run",
+      "--rm",
+      "-i",
+      "-v", "${PWD}:/workspace",
+      "--workdir", "/workspace",
+      "ghcr.io/agiletec-inc/airis-agent:latest",
+      "airis-agent-mcp"
+    ]
+  }
+}
