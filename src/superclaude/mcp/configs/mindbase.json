@@ -8,7 +8,7 @@
       "-e", "DATABASE_URL=${MINDBASE_DATABASE_URL:-postgresql://mindbase:mindbase@host.docker.internal:5432/mindbase}",
       "-e", "OLLAMA_URL=${OLLAMA_URL:-http://host.docker.internal:11434}",
       "-e", "EMBEDDING_MODEL=${EMBEDDING_MODEL:-nomic-embed-text}",
-      "ghcr.io/kazuph/mindbase-mcp:latest"
+      "ghcr.io/agiletec-inc/mindbase-mcp:latest"
     ],
     "env": {
       "MINDBASE_DATABASE_URL": "${MINDBASE_DATABASE_URL}",

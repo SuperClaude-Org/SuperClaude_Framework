@@ -48,4 +48,4 @@ services:
 ## Links
 
 - [GitHub Repository](https://github.com/kazuph/mindbase)
-- [Docker Image](https://ghcr.io/kazuph/mindbase-mcp)
+- [Docker Image](https://ghcr.io/agiletec-inc/mindbase-mcp)
