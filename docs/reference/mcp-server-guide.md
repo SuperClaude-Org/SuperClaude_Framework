@@ -16,6 +16,43 @@
 - **Morphllm**: Pattern-based code editing with token optimization
 - **Serena**: Semantic code understanding and project memory
 
+### Recommended: AIRIS MCP Gateway (Unified Installation)
+
+Instead of installing MCP servers individually, use **AIRIS MCP Gateway** for a unified experience:
+
+**Benefits:**
+- 25+ MCP servers in one endpoint
+- 90% token reduction at startup (lazy loading)
+- Zero-config experience with Settings UI
+- Includes: Tavily, Serena, Mindbase, Context7, Sequential, and more
+
+**Quick Install:**
+```bash
+# 1. Clone and start the gateway
+git clone https://github.com/agiletec-inc/airis-mcp-gateway.git
+cd airis-mcp-gateway
+cp .env.example .env
+docker compose up -d
+
+# 2. Register with Claude Code
+claude mcp add --transport http airis-mcp-gateway http://api.gateway.localhost:9400/api/v1/mcp
+
+# 3. Access Settings UI (optional)
+open http://ui.gateway.localhost:5273
+```
+
+**Requirements:**
+- Docker and Docker Compose
+- API keys for specific services (Tavily, etc.) - configure via Settings UI
+
+For detailed setup, see: https://github.com/agiletec-inc/airis-mcp-gateway
+
+---
+
+### Individual Server Installation (Alternative)
+
+If you prefer installing servers individually:
+
 **Server Requirements:**
 - Node.js 16.0.0 or higher
 - npm or yarn package manager

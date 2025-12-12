@@ -286,6 +286,20 @@ def list_available_servers():
     """List all available MCP servers."""
     click.echo("📋 Available MCP Servers:\n")
 
+    # Recommend AIRIS MCP Gateway first
+    click.echo("━━━ Recommended: Unified Gateway ━━━\n")
+    click.echo("   airis-mcp-gateway         ⭐ RECOMMENDED")
+    click.echo("      25+ MCP servers in one endpoint (90% token reduction)")
+    click.echo("      Includes: Tavily, Serena, Mindbase, Context7, Sequential, etc.")
+    click.echo()
+    click.echo("   Install:")
+    click.echo("      git clone https://github.com/agiletec-inc/airis-mcp-gateway.git")
+    click.echo("      cd airis-mcp-gateway && docker compose up -d")
+    click.echo("      claude mcp add --transport http airis-mcp-gateway \\")
+    click.echo("        http://api.gateway.localhost:9400/api/v1/mcp")
+    click.echo()
+    click.echo("━━━ Individual Servers (Alternative) ━━━\n")
+
     for server_key, server_info in MCP_SERVERS.items():
         name = server_info["name"]
         description = server_info["description"]
@@ -302,7 +316,8 @@ def list_available_servers():
         click.echo(f"      {description}{api_key_note}")
         click.echo()
 
-    click.echo(f"Total: {len(MCP_SERVERS)} servers available")
+    click.echo(f"Total: {len(MCP_SERVERS)} individual servers available")
+    click.echo("\n💡 Tip: Use airis-mcp-gateway for unified installation with token optimization")
 
 
 def install_mcp_servers(
