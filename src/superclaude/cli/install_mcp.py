@@ -78,6 +78,21 @@ MCP_SERVERS = {
         "command": "npx -y chrome-devtools-mcp@latest",
         "required": False,
     },
+    "airis-mcp-gateway": {
+        "name": "airis-mcp-gateway",
+        "description": "Unified MCP Gateway with 25+ servers (90% token reduction via lazy loading)",
+        "transport": "sse",
+        "url": "http://localhost:9400/sse",
+        "health_url": "http://localhost:9400/health",
+        "required": False,
+        "docker_based": True,
+        "setup_instructions": [
+            "1. Clone: git clone https://github.com/agiletec-inc/airis-mcp-gateway.git",
+            "2. Setup: cd airis-mcp-gateway && cp .env.example .env",
+            "3. Start: docker compose up -d",
+        ],
+        "homebrew_install": "brew tap agiletec-inc/tap && brew install airis-mcp-gateway",
+    },
 }
 
 
@@ -212,7 +227,6 @@ def install_mcp_server(
     """
     server_name = server_info["name"]
     transport = server_info["transport"]
-    command = server_info["command"]
 
     click.echo(f"📦 Installing MCP server: {server_name}")
 
@@ -220,6 +234,12 @@ def install_mcp_server(
     if check_mcp_server_installed(server_name):
         click.echo(f"   ✅ Already installed: {server_name}")
         return True
+
+    # Handle Docker-based servers (like airis-mcp-gateway)
+    if server_info.get("docker_based"):
+        return _install_docker_based_server(server_info, scope, dry_run)
+
+    command = server_info["command"]
 
     # Handle API key requirements
     env_args = []
@@ -279,6 +299,128 @@ def install_mcp_server(
         return False
     except Exception as e:
         click.echo(f"   ❌ Error installing {server_name}: {e}", err=True)
+        return False
+
+
+def _install_docker_based_server(
+    server_info: Dict, scope: str = "user", dry_run: bool = False
+) -> bool:
+    """
+    Install a Docker-based MCP server (like airis-mcp-gateway).
+
+    For Docker-based servers, we:
+    1. Check if the gateway is reachable (Docker running)
+    2. If reachable, register with Claude Code
+    3. If not reachable, show setup instructions
+
+    Args:
+        server_info: Server configuration dictionary
+        scope: Installation scope
+        dry_run: If True, only show what would be done
+
+    Returns:
+        True if successful, False otherwise
+    """
+    import urllib.request
+    import urllib.error
+
+    server_name = server_info["name"]
+    transport = server_info["transport"]
+    url = server_info["url"]
+    setup_instructions = server_info.get("setup_instructions", [])
+    homebrew_install = server_info.get("homebrew_install")
+
+    click.echo(f"\n   🐳 {server_name} is a Docker-based unified MCP gateway")
+    click.echo(f"   📊 Provides 90% token reduction via lazy loading (12,500 → 1,250 tokens)")
+
+    # Check if gateway is reachable
+    health_url = server_info.get("health_url") or url.replace("/sse", "/health").replace("/mcp", "/health")
+    gateway_running = False
+
+    try:
+        click.echo(f"   🔍 Checking if gateway is running at {health_url}...")
+        req = urllib.request.Request(health_url, method="GET")
+        with urllib.request.urlopen(req, timeout=5) as response:
+            if response.status == 200:
+                gateway_running = True
+                click.echo("   ✅ Gateway is running!")
+    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError):
+        click.echo("   ⚠️  Gateway not reachable (Docker may not be running)")
+
+    if gateway_running:
+        # Gateway is running, register with Claude Code
+        # Format: claude mcp add --transport http <name> <url>
+        cmd = ["claude", "mcp", "add", "--transport", transport]
+
+        if scope != "local":
+            cmd.extend(["--scope", scope])
+
+        cmd.extend([server_name, url])
+
+        if dry_run:
+            click.echo(f"   [DRY RUN] Would run: {' '.join(cmd)}")
+            return True
+
+        try:
+            click.echo(f"   Running: claude mcp add --transport {transport} {server_name} {url}")
+            result = _run_command(cmd, capture_output=True, text=True, timeout=120)
+
+            if result.returncode == 0:
+                click.echo(f"   ✅ Successfully registered: {server_name}")
+                click.echo(f"\n   📋 Included servers: tavily, context7, serena, mindbase, github, filesystem, and 20+ more")
+                click.echo(f"   🌐 Settings UI: http://ui.gateway.localhost:5273")
+                return True
+            else:
+                error_msg = result.stderr.strip() if result.stderr else "Unknown error"
+                click.echo(f"   ❌ Failed to register {server_name}: {error_msg}", err=True)
+                return False
+
+        except subprocess.TimeoutExpired:
+            click.echo(f"   ❌ Timeout registering {server_name}", err=True)
+            return False
+        except Exception as e:
+            click.echo(f"   ❌ Error registering {server_name}: {e}", err=True)
+            return False
+    else:
+        # Gateway not running, show setup instructions
+        click.echo(f"\n   📝 Setup Instructions for {server_name}:")
+        click.echo("   " + "-" * 50)
+
+        if homebrew_install:
+            click.echo(f"\n   Option A: Homebrew (recommended for macOS)")
+            click.echo(f"   $ {homebrew_install}")
+
+        click.echo(f"\n   Option B: Docker Compose")
+        for instruction in setup_instructions:
+            click.echo(f"   {instruction}")
+
+        click.echo("\n   After setup, run this command again to register the gateway.")
+        click.echo("   " + "-" * 50)
+
+        # Ask user if they want to proceed with manual registration anyway
+        if click.confirm("\n   Register anyway (gateway must be started manually)?", default=False):
+            cmd = ["claude", "mcp", "add", "--transport", transport]
+            if scope != "local":
+                cmd.extend(["--scope", scope])
+            cmd.extend([server_name, url])
+
+            if dry_run:
+                click.echo(f"   [DRY RUN] Would run: {' '.join(cmd)}")
+                return True
+
+            try:
+                result = _run_command(cmd, capture_output=True, text=True, timeout=120)
+                if result.returncode == 0:
+                    click.echo(f"   ✅ Registered (start gateway with 'docker compose up -d' before using)")
+                    return True
+                else:
+                    error_msg = result.stderr.strip() if result.stderr else "Unknown error"
+                    click.echo(f"   ❌ Failed: {error_msg}", err=True)
+                    return False
+            except Exception as e:
+                click.echo(f"   ❌ Error: {e}", err=True)
+                return False
+
         return False
 
 
