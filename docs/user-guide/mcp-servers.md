@@ -167,6 +167,71 @@ export TAVILY_API_KEY="tvly-your_api_key_here"
 - `--depth deep`: 20-40 sources, comprehensive analysis
 - `--depth exhaustive`: 40+ sources, academic-level research
 
+## Unified MCP Gateway (Alternative Setup)
+
+For users who want a simpler, unified setup that manages all MCP servers through a single endpoint, **AIRIS MCP Gateway** provides:
+
+- **Single SSE endpoint** instead of 8+ separate stdio connections
+- **HOT/COLD server management** for token optimization
+- **Lazy loading** - servers start only when needed
+- **Unified tool discovery** - all tools from one endpoint
+- **Web UI** for server management
+
+### Quick Setup
+
+```bash
+# One-command installation (no git clone required)
+curl -O https://raw.githubusercontent.com/agiletec-inc/airis-mcp-gateway/main/docker-compose.dist.yml
+docker compose -f docker-compose.dist.yml up -d
+
+# Configure Claude Code to use gateway
+claude mcp add airis-gateway -- npx -y mcp-remote http://localhost:9400/sse --allow-http
+```
+
+### Configuration
+
+Create `mcp-config.json` for server customization:
+```json
+{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"],
+      "enabled": true,
+      "mode": "cold"
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "enabled": true,
+      "mode": "cold"
+    },
+    "tavily": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://mcp.tavily.com/mcp/?tavilyApiKey=${TAVILY_API_KEY}"],
+      "enabled": true,
+      "mode": "cold"
+    }
+  }
+}
+```
+
+### HOT vs COLD Servers
+
+| Mode | Behavior | Best For |
+|------|----------|----------|
+| **HOT** | Always running, immediate response | Memory, session persistence |
+| **COLD** | Start on-demand, 1-5s startup | Web search, heavy tools |
+
+**Token Optimization**: HOT servers advertise all tools upfront. COLD servers only advertise when activated, reducing initial token cost.
+
+### More Information
+
+- **Repository**: [github.com/agiletec-inc/airis-mcp-gateway](https://github.com/agiletec-inc/airis-mcp-gateway)
+- **Documentation**: See gateway README for advanced configuration
+
+---
+
 ## Configuration
 
 **MCP Configuration File (`~/.claude.json`):**
