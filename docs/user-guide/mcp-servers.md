@@ -171,51 +171,32 @@ export TAVILY_API_KEY="tvly-your_api_key_here"
 
 For users who want a simpler, unified setup that manages all MCP servers through a single endpoint, **AIRIS MCP Gateway** provides:
 
-- **27+ AI tools** from 7 default servers (airis-agent, context7, fetch, memory, sequential-thinking, serena, tavily)
+- **50 tools** from 7 default servers (airis-agent, context7, fetch, memory, sequential-thinking, serena, tavily)
 - **Single SSE endpoint** instead of 8+ separate stdio connections
-- **HOT/COLD server management** for token optimization (75-90% reduction)
-- **Lazy loading** - servers start only when needed, auto-terminate after 120s idle
-- **Unified tool discovery** - all tools from one endpoint
+- **Lazy loading** - servers start only when needed, auto-terminate when idle
 
-### Quick Setup
+### Setup
 
-**Option 1: One-command installation (recommended)**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/agiletec-inc/airis-mcp-gateway/main/scripts/quick-install.sh | bash
-```
-
-**Option 2: Manual installation**
-```bash
+# 1. Clone and start
 git clone https://github.com/agiletec-inc/airis-mcp-gateway.git
 cd airis-mcp-gateway
 docker compose up -d
 
-# Register with Claude Code
+# 2. Register with Claude Code
 claude mcp add --scope user --transport sse airis-mcp-gateway http://localhost:9400/sse
 ```
 
-### Verify Installation
+### Verify
 
 ```bash
-# Check health
 curl http://localhost:9400/health
-
-# Check available tools
 curl http://localhost:9400/api/tools/combined | jq '.tools_count'
 ```
 
-### HOT vs COLD Servers
-
-| Mode | Behavior | Best For |
-|------|----------|----------|
-| **HOT** | Always running, immediate response | airis-agent, memory, gateway-control |
-| **COLD** | Start on-demand, 1-5s startup | tavily, context7, serena, playwright |
-
-**Token Optimization**: HOT servers advertise all tools upfront. COLD servers only advertise when activated, reducing initial token cost by 75-90%.
-
 ### Configuration
 
-Edit `mcp-config.json` to customize servers, then restart:
+Edit `mcp-config.json` to enable/disable servers, then restart:
 ```bash
 docker compose restart api
 ```
@@ -223,7 +204,6 @@ docker compose restart api
 ### More Information
 
 - **Repository**: [github.com/agiletec-inc/airis-mcp-gateway](https://github.com/agiletec-inc/airis-mcp-gateway)
-- **AIRIS Suite**: airis-agent (intelligence), mindbase (memory), airis-workspace (monorepo)
 
 ---
 
