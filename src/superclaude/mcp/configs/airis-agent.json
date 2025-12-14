@@ -1,13 +1,10 @@
 {
+  "_notice": "DEPRECATED: Use airis-mcp-gateway instead. See https://github.com/agiletec-inc/airis-mcp-gateway",
   "airis-agent": {
-    "command": "docker",
+    "command": "uvx",
     "args": [
-      "run",
-      "--rm",
-      "-i",
-      "-v", "${PWD}:/workspace",
-      "--workdir", "/workspace",
-      "ghcr.io/agiletec-inc/airis-agent:latest",
+      "--from",
+      "git+https://github.com/agiletec-inc/airis-agent",
       "airis-agent-mcp"
     ]
   }

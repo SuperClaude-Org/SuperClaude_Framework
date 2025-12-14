@@ -7,25 +7,21 @@ Airis Agent provides confidence checking, deep research, and repository indexing
 - **airis_confidence_check** - Validate decisions before implementation
 - **airis_deep_research** - Comprehensive research with web search
 - **airis_repo_index** - Index repository structure for better context
+- **airis_docs_optimize** - Optimize documentation structure
+- **airis_sync_manifest** - Sync manifest.toml with filesystem
 
 ## Installation
 
+**Recommended: Use AIRIS MCP Gateway** (includes airis-agent + 60 other tools)
+
 ```bash
-superclaude mcp --servers airis-agent
+git clone https://github.com/agiletec-inc/airis-mcp-gateway.git
+cd airis-mcp-gateway
+docker compose up -d
+claude mcp add --scope user --transport sse airis-mcp-gateway http://localhost:9400/sse
 ```
-
-## Requirements
-
-- Docker installed and running
-- (Optional) Workspace directory mounted at `/workspace`
-
-## Configuration
-
-The server runs as a Docker container from `ghcr.io/agiletec-inc/airis-agent:latest`.
-
-No additional configuration required for basic usage.
 
 ## Links
 
-- [GitHub Repository](https://github.com/agiletec-inc/airis-agent)
-- [Docker Image](https://ghcr.io/agiletec-inc/airis-agent)
+- [AIRIS MCP Gateway](https://github.com/agiletec-inc/airis-mcp-gateway) - Unified gateway (recommended)
+- [airis-agent Repository](https://github.com/agiletec-inc/airis-agent) - Standalone package

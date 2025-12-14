@@ -1,19 +1,13 @@
 {
+  "_notice": "DEPRECATED: Use airis-mcp-gateway instead. See https://github.com/agiletec-inc/airis-mcp-gateway",
   "mindbase": {
-    "command": "docker",
+    "command": "npx",
     "args": [
-      "run",
-      "--rm",
-      "-i",
-      "-e", "DATABASE_URL=${MINDBASE_DATABASE_URL:-postgresql://mindbase:mindbase@host.docker.internal:5432/mindbase}",
-      "-e", "OLLAMA_URL=${OLLAMA_URL:-http://host.docker.internal:11434}",
-      "-e", "EMBEDDING_MODEL=${EMBEDDING_MODEL:-nomic-embed-text}",
-      "ghcr.io/agiletec-inc/mindbase-mcp:latest"
+      "-y",
+      "mcp-remote",
+      "http://localhost:8001/sse",
+      "--allow-http"
     ],
-    "env": {
-      "MINDBASE_DATABASE_URL": "${MINDBASE_DATABASE_URL}",
-      "OLLAMA_URL": "${OLLAMA_URL}",
-      "EMBEDDING_MODEL": "${EMBEDDING_MODEL}"
-    }
+    "_comment": "Requires airis-mcp-gateway running with mindbase enabled"
   }
 }

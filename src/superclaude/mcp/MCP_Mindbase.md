@@ -4,48 +4,31 @@ MindBase provides semantic memory storage and retrieval using PostgreSQL with pg
 
 ## Tools
 
-- **store_memory** - Store memories with automatic embedding
-- **search_memories** - Semantic search across stored memories
-- **list_memories** - List all stored memories
-- **delete_memory** - Remove specific memories
+- **conversation_save** - Save conversations with automatic embedding
+- **conversation_get** - Retrieve conversations with filtering
+- **conversation_search** - Semantic search across conversations
+- **conversation_delete** - Remove specific conversations
+- **memory_write** - Store memories (markdown + DB)
+- **memory_read** - Read memories
+- **memory_list** - List all memories
+- **memory_search** - Semantic search across memories
+- **session_create** - Create session for organizing conversations
+- **session_start** - Start/resume a session
 
 ## Installation
 
+**Recommended: Use AIRIS MCP Gateway** (includes mindbase + 60 other tools)
+
 ```bash
-superclaude mcp --servers mindbase
+git clone https://github.com/agiletec-inc/airis-mcp-gateway.git
+cd airis-mcp-gateway
+docker compose up -d
+claude mcp add --scope user --transport sse airis-mcp-gateway http://localhost:9400/sse
 ```
 
-## Requirements
-
-- Docker installed and running
-- PostgreSQL with pgvector extension
-- Ollama running locally (for embeddings)
-
-## Configuration
-
-Set the following environment variables:
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `MINDBASE_DATABASE_URL` | PostgreSQL connection string | `postgresql://mindbase:mindbase@host.docker.internal:5432/mindbase` |
-| `OLLAMA_URL` | Ollama server URL | `http://host.docker.internal:11434` |
-| `EMBEDDING_MODEL` | Embedding model name | `nomic-embed-text` |
-
-## Quick Start with Docker Compose
-
-```yaml
-services:
-  mindbase-postgres:
-    image: pgvector/pgvector:pg17
-    environment:
-      POSTGRES_USER: mindbase
-      POSTGRES_PASSWORD: mindbase
-      POSTGRES_DB: mindbase
-    ports:
-      - "5432:5432"
-```
+MindBase is managed by Docker MCP Gateway via `airis-catalog.yaml`. PostgreSQL with pgvector is included.
 
 ## Links
 
-- [GitHub Repository](https://github.com/kazuph/mindbase)
-- [Docker Image](https://ghcr.io/agiletec-inc/mindbase-mcp)
+- [AIRIS MCP Gateway](https://github.com/agiletec-inc/airis-mcp-gateway) - Unified gateway (recommended)
+- [mindbase Repository](https://github.com/agiletec-inc/mindbase) - Standalone package
