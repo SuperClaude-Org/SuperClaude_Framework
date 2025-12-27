@@ -92,6 +92,12 @@ def _run_command(cmd: List[str], **kwargs) -> subprocess.CompletedProcess:
     Returns:
         CompletedProcess result
     """
+    # Ensure UTF-8 encoding on all platforms to handle Unicode output
+    if "encoding" not in kwargs:
+        kwargs["encoding"] = "utf-8"
+    if "errors" not in kwargs:
+        kwargs["errors"] = "replace"  # Replace undecodable bytes instead of raising
+
     if platform.system() == "Windows":
         # On Windows, wrap command in 'cmd /c' to properly handle commands like npx
         cmd = ["cmd", "/c"] + cmd
@@ -161,12 +167,16 @@ def check_mcp_server_installed(server_name: str) -> bool:
             ["claude", "mcp", "list"], capture_output=True, text=True, timeout=60
         )
 
-        if result.returncode != 0:
+        if result is None or result.returncode != 0:
+            return False
+
+        # Handle case where stdout might be None
+        output = result.stdout
+        if output is None:
             return False
 
         # Parse output to check if server is installed
-        output = result.stdout.lower()
-        return server_name.lower() in output
+        return server_name.lower() in output.lower()
 
     except (subprocess.TimeoutExpired, subprocess.SubprocessError):
         return False
