@@ -1,0 +1,11 @@
+{
+  "_notice": "DEPRECATED: Use airis-mcp-gateway instead. See https://github.com/agiletec-inc/airis-mcp-gateway",
+  "airis-agent": {
+    "command": "uvx",
+    "args": [
+      "--from",
+      "git+https://github.com/agiletec-inc/airis-agent",
+      "airis-agent-mcp"
+    ]
+  }
+}

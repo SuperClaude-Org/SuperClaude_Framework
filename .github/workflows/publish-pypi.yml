@@ -45,35 +45,35 @@ jobs:
     - name: Install build dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install build twine
+        python -m pip install build twine toml
     
     - name: Verify package structure
       run: |
         echo "📦 Checking package structure..."
         ls -la
         echo "🔍 Checking SuperClaude package..."
-        ls -la SuperClaude/
-        echo "🔍 Checking setup package..."
-        ls -la setup/
+        ls -la src/superclaude/
+        echo "🔍 Verifying src directory..."
+        ls -la src/
         
         # Verify version consistency
         echo "📋 Checking version consistency..."
         python -c "
         import toml
         import sys
-        sys.path.insert(0, '.')
-        
+        sys.path.insert(0, 'src')
+
         # Load pyproject.toml version
         with open('pyproject.toml', 'r') as f:
             pyproject = toml.load(f)
         pyproject_version = pyproject['project']['version']
-        
+
         # Load package version
-        from SuperClaude import __version__
-        
+        from superclaude import __version__
+
         print(f'pyproject.toml version: {pyproject_version}')
         print(f'Package version: {__version__}')
-        
+
         if pyproject_version != __version__:
             print('❌ Version mismatch!')
             sys.exit(1)
@@ -122,7 +122,7 @@ jobs:
         echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
         echo "| Target | ${{ github.event_name == 'release' && 'PyPI (Production)' || github.event.inputs.target || 'TestPyPI' }} |" >> $GITHUB_STEP_SUMMARY
         echo "| Trigger | ${{ github.event_name }} |" >> $GITHUB_STEP_SUMMARY
-        echo "| Version | $(python -c 'from SuperClaude import __version__; print(__version__)') |" >> $GITHUB_STEP_SUMMARY
+        echo "| Version | $(python -c 'import sys; sys.path.insert(0, \"src\"); from superclaude import __version__; print(__version__)') |" >> $GITHUB_STEP_SUMMARY
         echo "| Commit | ${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         
@@ -160,9 +160,9 @@ jobs:
         
         # Test basic import
         python -c "
-        import SuperClaude
-        print(f'✅ Successfully imported SuperClaude v{SuperClaude.__version__}')
-        
+        import superclaude
+        print(f'✅ Successfully imported SuperClaude v{superclaude.__version__}')
+
         # Test CLI entry point
         import subprocess
         result = subprocess.run(['SuperClaude', '--version'], capture_output=True, text=True)

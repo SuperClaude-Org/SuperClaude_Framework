@@ -1,0 +1,245 @@
+{
+  "metadata": {
+    "generated_at": "2025-10-29T00:00:00Z",
+    "version": "0.4.0",
+    "total_files": 196,
+    "python_loc": 3002,
+    "test_files": 7,
+    "documentation_files": 90
+  },
+  "entry_points": {
+    "cli": {
+      "command": "superclaude",
+      "source": "src/superclaude/cli/main.py",
+      "purpose": "CLI interface for SuperClaude operations"
+    },
+    "pytest_plugin": {
+      "auto_loaded": true,
+      "source": "src/superclaude/pytest_plugin.py",
+      "purpose": "PM Agent fixtures and test automation"
+    },
+    "skills": {
+      "confidence_check": {
+        "source": ".claude/skills/confidence-check/confidence.ts",
+        "purpose": "Pre-implementation confidence assessment"
+      }
+    }
+  },
+  "core_modules": {
+    "pm_agent": {
+      "path": "src/superclaude/pm_agent/",
+      "modules": {
+        "confidence": {
+          "file": "confidence.py",
+          "purpose": "Pre-execution confidence assessment",
+          "threshold": "≥90% required, 70-89% present alternatives, <70% ask questions",
+          "roi": "25-250x token savings"
+        },
+        "self_check": {
+          "file": "self_check.py",
+          "purpose": "Post-implementation evidence-based validation",
+          "pattern": "Assert → Verify → Report"
+        },
+        "reflexion": {
+          "file": "reflexion.py",
+          "purpose": "Error learning and prevention",
+          "features": ["Cross-session pattern matching", "Failure analysis"]
+        },
+        "token_budget": {
+          "file": "token_budget.py",
+          "purpose": "Token allocation and tracking",
+          "levels": {
+            "simple": 200,
+            "medium": 1000,
+            "complex": 2500
+          }
+        }
+      }
+    },
+    "execution": {
+      "path": "src/superclaude/execution/",
+      "modules": {
+        "parallel": {
+          "file": "parallel.py",
+          "pattern": "Wave → Checkpoint → Wave",
+          "performance": "3.5x faster than sequential"
+        },
+        "reflection": {
+          "file": "reflection.py",
+          "purpose": "Post-execution analysis and improvement"
+        },
+        "self_correction": {
+          "file": "self_correction.py",
+          "purpose": "Automated error detection and correction"
+        }
+      }
+    },
+    "cli": {
+      "path": "src/superclaude/cli/",
+      "modules": {
+        "main": {
+          "file": "main.py",
+          "exports": ["main()"],
+          "framework": "Click-based CLI"
+        },
+        "doctor": {
+          "file": "doctor.py",
+          "purpose": "Health check diagnostics"
+        },
+        "install_skill": {
+          "file": "install_skill.py",
+          "purpose": "Install SuperClaude skills to Claude Code",
+          "target": "~/.claude/skills/"
+        }
+      }
+    }
+  },
+  "configuration": {
+    "python_package": {
+      "file": "pyproject.toml",
+      "build_system": "hatchling (PEP 517)",
+      "python_version": ">=3.10",
+      "dependencies": {
+        "pytest": ">=7.0.0",
+        "click": ">=8.0.0",
+        "rich": ">=13.0.0"
+      }
+    },
+    "npm_wrapper": {
+      "file": "package.json",
+      "package": "@bifrost_inc/superclaude",
+      "version": "4.1.5",
+      "purpose": "Cross-platform installation wrapper"
+    },
+    "claude_code": {
+      "file": ".claude/settings.json",
+      "purpose": "Plugin and marketplace settings"
+    }
+  },
+  "documentation": {
+    "key_files": [
+      "CLAUDE.md",
+      "README.md",
+      "CONTRIBUTING.md",
+      "CHANGELOG.md",
+      "AGENTS.md"
+    ],
+    "user_guides": [
+      "docs/user-guide/commands.md",
+      "docs/user-guide/agents.md",
+      "docs/user-guide/flags.md",
+      "docs/user-guide/modes.md",
+      "docs/user-guide/session-management.md",
+      "docs/user-guide/mcp-servers.md"
+    ],
+    "developer_guides": [
+      "docs/developer-guide/contributing-code.md",
+      "docs/developer-guide/technical-architecture.md",
+      "docs/developer-guide/testing-debugging.md"
+    ],
+    "architecture": [
+      "docs/architecture/MIGRATION_TO_CLEAN_ARCHITECTURE.md",
+      "docs/architecture/PM_AGENT_COMPARISON.md",
+      "docs/architecture/CONTEXT_WINDOW_ANALYSIS.md"
+    ],
+    "research": [
+      "docs/research/llm-agent-token-efficiency-2025.md",
+      "docs/research/reflexion-integration-2025.md",
+      "docs/research/parallel-execution-complete-findings.md",
+      "docs/research/pm_agent_roi_analysis_2025-10-21.md"
+    ]
+  },
+  "tests": {
+    "framework": "pytest >=7.0.0",
+    "coverage_tool": "pytest-cov >=4.0.0",
+    "markers": [
+      "confidence_check",
+      "self_check",
+      "reflexion",
+      "unit",
+      "integration"
+    ],
+    "test_files": [
+      "tests/pm_agent/test_confidence_check.py",
+      "tests/pm_agent/test_self_check_protocol.py",
+      "tests/pm_agent/test_reflexion_pattern.py",
+      "tests/pm_agent/test_token_budget.py",
+      "tests/test_pytest_plugin.py",
+      "tests/conftest.py"
+    ],
+    "commands": {
+      "all_tests": "uv run pytest",
+      "specific_directory": "uv run pytest tests/pm_agent/ -v",
+      "by_marker": "uv run pytest -m confidence_check",
+      "with_coverage": "uv run pytest --cov=superclaude"
+    }
+  },
+  "dependencies": {
+    "core": {
+      "pytest": ">=7.0.0",
+      "click": ">=8.0.0",
+      "rich": ">=13.0.0"
+    },
+    "dev": {
+      "pytest-cov": ">=4.0.0",
+      "pytest-benchmark": ">=4.0.0",
+      "scipy": ">=1.10.0",
+      "ruff": ">=0.1.0",
+      "mypy": ">=1.0"
+    }
+  },
+  "quick_start": {
+    "installation": [
+      "uv pip install superclaude",
+      "pip install superclaude",
+      "make install"
+    ],
+    "usage": [
+      "superclaude --version",
+      "superclaude install-skill confidence-check",
+      "make doctor",
+      "make test"
+    ]
+  },
+  "git_workflow": {
+    "branch_structure": "master (production) ← integration (testing) ← feature/*, fix/*, docs/*",
+    "current_branch": "next"
+  },
+  "token_efficiency": {
+    "index_performance": {
+      "before": "58,000 tokens (reading all files every session)",
+      "after": "3,000 tokens (reading this index)",
+      "reduction": "94% (55,000 tokens saved per session)"
+    },
+    "pm_agent_roi": {
+      "confidence_check_cost": "100-200 tokens",
+      "savings": "5,000-50,000 tokens",
+      "roi": "25-250x token savings",
+      "break_even": "1 failed implementation prevented"
+    }
+  },
+  "project_stats": {
+    "python_source_lines": 3002,
+    "test_files_count": 7,
+    "documentation_files_count": 90,
+    "supported_python": ["3.10", "3.11", "3.12"],
+    "license": "MIT",
+    "contributors": 3
+  },
+  "mcp_integration": {
+    "servers": {
+      "tavily": "Web search (Deep Research)",
+      "context7": "Official documentation (prevent hallucination)",
+      "sequential": "Token-efficient reasoning (30-50% reduction)",
+      "serena": "Session persistence",
+      "mindbase": "Cross-session learning"
+    }
+  },
+  "project_principles": [
+    "Evidence-Based Development - Never guess, verify with official docs",
+    "Confidence-First Implementation - Check confidence BEFORE starting",
+    "Parallel-First Execution - Use Wave → Checkpoint → Wave (3.5x faster)",
+    "Token Efficiency - Optimize for minimal token usage",
+    "Test-Driven Development - Tests first, implementation second"
+  ]
+}

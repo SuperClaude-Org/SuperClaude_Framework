@@ -1,0 +1,312 @@
+name: README Quality Check
+
+on:
+  pull_request:
+    paths: 
+      - 'README*.md'
+      - 'Docs/**/*.md'
+  push:
+    branches: [main, master, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  readme-quality-check:
+    name: Multi-language README Quality Assessment
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests beautifulsoup4 pyyaml
+        
+    - name: Create quality checker script
+      run: |
+        cat > readme_checker.py << 'EOF'
+        #!/usr/bin/env python3
+        # -*- coding: utf-8 -*-
+        """
+        SuperClaude多语言README质量检查器
+        检查版本同步、链接有效性、结构一致性
+        """
+        
+        import os
+        import re
+        import requests
+        import json
+        from pathlib import Path
+        from urllib.parse import urljoin
+        
+        class READMEQualityChecker:
+            def __init__(self):
+                self.readme_files = ['README.md', 'README-zh.md', 'README-ja.md', 'README-kr.md']
+                self.results = {
+                    'structure_consistency': [],
+                    'link_validation': [],
+                    'translation_sync': [],
+                    'overall_score': 0
+                }
+                
+            def check_structure_consistency(self):
+                """检查结构一致性"""
+                print("🔍 检查结构一致性...")
+                
+                structures = {}
+                for file in self.readme_files:
+                    if os.path.exists(file):
+                        with open(file, 'r', encoding='utf-8') as f:
+                            content = f.read()
+                            # 提取标题结构
+                            headers = re.findall(r'^#{1,6}\s+(.+)$', content, re.MULTILINE)
+                            structures[file] = len(headers)
+                            
+                # 比较结构差异
+                line_counts = [structures.get(f, 0) for f in self.readme_files if f in structures]
+                if line_counts:
+                    max_diff = max(line_counts) - min(line_counts)
+                    consistency_score = max(0, 100 - (max_diff * 5))
+                    
+                    self.results['structure_consistency'] = {
+                        'score': consistency_score,
+                        'details': structures,
+                        'status': 'PASS' if consistency_score >= 90 else 'WARN'
+                    }
+                    
+                    print(f"✅ 结构一致性: {consistency_score}/100")
+                    for file, count in structures.items():
+                        print(f"   {file}: {count} headers")
+                        
+            def check_link_validation(self):
+                """检查链接有效性"""
+                print("🔗 检查链接有效性...")
+                
+                all_links = {}
+                broken_links = []
+                
+                for file in self.readme_files:
+                    if os.path.exists(file):
+                        with open(file, 'r', encoding='utf-8') as f:
+                            content = f.read()
+                            
+                        # 提取所有链接
+                        links = re.findall(r'\[([^\]]+)\]\(([^)]+)\)', content)
+                        all_links[file] = []
+                        
+                        for text, url in links:
+                            link_info = {'text': text, 'url': url, 'status': 'unknown'}
+                            
+                            # 检查本地文件链接
+                            if not url.startswith(('http://', 'https://', '#')):
+                                if os.path.exists(url):
+                                    link_info['status'] = 'valid'
+                                else:
+                                    link_info['status'] = 'broken'
+                                    broken_links.append(f"{file}: {url}")
+                            
+                            # HTTP链接检查（简化版）
+                            elif url.startswith(('http://', 'https://')):
+                                try:
+                                    # 只检查几个关键链接，避免过多请求
+                                    if any(domain in url for domain in ['github.com', 'pypi.org', 'npmjs.com']):
+                                        response = requests.head(url, timeout=10, allow_redirects=True)
+                                        link_info['status'] = 'valid' if response.status_code < 400 else 'broken'
+                                    else:
+                                        link_info['status'] = 'skipped'
+                                except:
+                                    link_info['status'] = 'error'
+                            else:
+                                link_info['status'] = 'anchor'
+                                
+                            all_links[file].append(link_info)
+                
+                # 计算链接健康度
+                total_links = sum(len(links) for links in all_links.values())
+                broken_count = len(broken_links)
+                link_score = max(0, 100 - (broken_count * 10)) if total_links > 0 else 100
+                
+                self.results['link_validation'] = {
+                    'score': link_score,
+                    'total_links': total_links,
+                    'broken_links': broken_count,
+                    'broken_list': broken_links[:10],  # 最多显示10个
+                    'status': 'PASS' if link_score >= 80 else 'FAIL'
+                }
+                
+                print(f"✅ 链接有效性: {link_score}/100")
+                print(f"   总链接数: {total_links}")
+                print(f"   损坏链接: {broken_count}")
+                
+            def check_translation_sync(self):
+                """检查翻译同步性"""
+                print("🌍 检查翻译同步性...")
+                
+                if not all(os.path.exists(f) for f in self.readme_files):
+                    print("⚠️  缺少某些README文件")
+                    self.results['translation_sync'] = {
+                        'score': 60,
+                        'status': 'WARN',
+                        'message': '缺少某些README文件'
+                    }
+                    return
+                
+                # 检查文件修改时间
+                mod_times = {}
+                for file in self.readme_files:
+                    mod_times[file] = os.path.getmtime(file)
+                    
+                # 计算时间差异（秒）
+                times = list(mod_times.values())
+                time_diff = max(times) - min(times)
+                
+                # 根据时间差评分（7天内修改认为是同步的）
+                sync_score = max(0, 100 - (time_diff / (7 * 24 * 3600) * 20))
+                
+                self.results['translation_sync'] = {
+                    'score': int(sync_score),
+                    'time_diff_days': round(time_diff / (24 * 3600), 2),
+                    'status': 'PASS' if sync_score >= 80 else 'WARN',
+                    'mod_times': {f: f"{os.path.getmtime(f):.0f}" for f in self.readme_files}
+                }
+                
+                print(f"✅ 翻译同步性: {int(sync_score)}/100")
+                print(f"   最大时间差: {round(time_diff / (24 * 3600), 1)} 天")
+                
+            def generate_report(self):
+                """生成质量报告"""
+                print("\n📊 生成质量报告...")
+                
+                # 计算总分
+                scores = [
+                    self.results['structure_consistency'].get('score', 0),
+                    self.results['link_validation'].get('score', 0),
+                    self.results['translation_sync'].get('score', 0)
+                ]
+                overall_score = sum(scores) // len(scores)
+                self.results['overall_score'] = overall_score
+                
+                # 生成GitHub Actions摘要
+                pipe = "|"
+                table_header = f"{pipe} 检查项目 {pipe} 分数 {pipe} 状态 {pipe} 详情 {pipe}"
+                table_separator = f"{pipe}----------|------|------|------|"
+                table_row1 = f"{pipe} 📐 结构一致性 {pipe} {self.results['structure_consistency'].get('score', 0)}/100 {pipe} {self.results['structure_consistency'].get('status', 'N/A')} {pipe} {len(self.results['structure_consistency'].get('details', {}))} 个文件 {pipe}"
+                table_row2 = f"{pipe} 🔗 链接有效性 {pipe} {self.results['link_validation'].get('score', 0)}/100 {pipe} {self.results['link_validation'].get('status', 'N/A')} {pipe} {self.results['link_validation'].get('broken_links', 0)} 个损坏链接 {pipe}"
+                table_row3 = f"{pipe} 🌍 翻译同步性 {pipe} {self.results['translation_sync'].get('score', 0)}/100 {pipe} {self.results['translation_sync'].get('status', 'N/A')} {pipe} {self.results['translation_sync'].get('time_diff_days', 0)} 天差异 {pipe}"
+                
+                summary_parts = [
+                    "## 📊 README质量检查报告",
+                    "",
+                    f"### 🏆 总体评分: {overall_score}/100",
+                    "",
+                    table_header,
+                    table_separator,
+                    table_row1,
+                    table_row2,
+                    table_row3,
+                    "",
+                    "### 📋 详细信息",
+                    "",
+                    "**结构一致性详情:**"
+                ]
+                summary = "\n".join(summary_parts)
+                
+                for file, count in self.results['structure_consistency'].get('details', {}).items():
+                    summary += f"\n- `{file}`: {count} 个标题"
+                
+                if self.results['link_validation'].get('broken_links'):
+                    summary += f"\n\n**损坏链接列表:**\n"
+                    for link in self.results['link_validation']['broken_list']:
+                        summary += f"\n- ❌ {link}"
+                
+                summary += f"\n\n### 🎯 建议\n"
+                
+                if overall_score >= 90:
+                    summary += "✅ 质量优秀！继续保持。"
+                elif overall_score >= 70:
+                    summary += "⚠️ 质量良好，有改进空间。"
+                else:
+                    summary += "🚨 需要改进！请检查上述问题。"
+                
+                # 写入GitHub Actions摘要
+                github_step_summary = os.environ.get('GITHUB_STEP_SUMMARY')
+                if github_step_summary:
+                    with open(github_step_summary, 'w', encoding='utf-8') as f:
+                        f.write(summary)
+                
+                # 保存详细结果
+                with open('readme-quality-report.json', 'w', encoding='utf-8') as f:
+                    json.dump(self.results, f, indent=2, ensure_ascii=False)
+                
+                print("✅ 报告已生成")
+                
+                # 根据分数决定退出码
+                return 0 if overall_score >= 70 else 1
+                
+            def run_all_checks(self):
+                """运行所有检查"""
+                print("🚀 开始README质量检查...\n")
+                
+                self.check_structure_consistency()
+                self.check_link_validation() 
+                self.check_translation_sync()
+                
+                exit_code = self.generate_report()
+                
+                print(f"\n🎯 检查完成！总分: {self.results['overall_score']}/100")
+                return exit_code
+
+        if __name__ == "__main__":
+            checker = READMEQualityChecker()
+            exit_code = checker.run_all_checks()
+            exit(exit_code)
+        EOF
+        
+    - name: Run README quality check
+      run: python readme_checker.py
+      
+    - name: Upload quality report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: readme-quality-report
+        path: readme-quality-report.json
+        retention-days: 30
+        
+    - name: Comment PR (if applicable)
+      if: github.event_name == 'pull_request' && always() && github.event.pull_request.head.repo.full_name == github.repository
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          
+          if (fs.existsSync('readme-quality-report.json')) {
+            const report = JSON.parse(fs.readFileSync('readme-quality-report.json', 'utf8'));
+            
+            const score = report.overall_score;
+            const emoji = score >= 90 ? '🏆' : score >= 70 ? '✅' : '⚠️';
+            
+            const comment = `${emoji} **README质量检查结果: ${score}/100**\n\n` +
+              `📐 结构一致性: ${report.structure_consistency?.score || 0}/100\n` +
+              `🔗 链接有效性: ${report.link_validation?.score || 0}/100\n` +
+              `🌍 翻译同步性: ${report.translation_sync?.score || 0}/100\n\n` +
+              `查看详细报告请点击 Actions 标签页。`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+          }

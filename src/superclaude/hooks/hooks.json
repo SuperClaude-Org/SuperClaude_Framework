@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./scripts/session-init.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

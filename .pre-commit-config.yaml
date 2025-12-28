@@ -1,0 +1,93 @@
+# SuperClaude Framework - Pre-commit Hooks
+# See https://pre-commit.com for more information
+
+repos:
+  # Basic file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: '\.md$'
+      - id: end-of-file-fixer
+      - id: check-yaml
+        args: ['--unsafe']  # Allow custom YAML tags
+      - id: check-json
+      - id: check-toml
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: mixed-line-ending
+        args: ['--fix=lf']
+
+  # Secret detection (critical for security)
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        args:
+          - '--baseline'
+          - '.secrets.baseline'
+        exclude: |
+          (?x)^(
+            .*\.lock$|
+            .*package-lock\.json$|
+            .*pnpm-lock\.yaml$|
+            .*\.min\.js$|
+            .*\.min\.css$
+          )$
+
+  # Additional secret patterns (from CLAUDE.md)
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: detect-private-key
+      - id: check-yaml
+        name: Check for hardcoded secrets
+        entry: |
+          bash -c '
+          if grep -rE "(sk_live_[a-zA-Z0-9]{24,}|pk_live_[a-zA-Z0-9]{24,}|sk_test_[a-zA-Z0-9]{24,}|pk_test_[a-zA-Z0-9]{24,}|SUPABASE_SERVICE_ROLE_KEY\s*=\s*['\''\"']eyJ|SUPABASE_ANON_KEY\s*=\s*['\''\"']eyJ|NEXT_PUBLIC_SUPABASE_ANON_KEY\s*=\s*['\''\"']eyJ|OPENAI_API_KEY\s*=\s*['\''\"']sk-|TWILIO_AUTH_TOKEN\s*=\s*['\''\"'][a-f0-9]{32}|INFISICAL_TOKEN\s*=\s*['\''\"']st\.|DATABASE_URL\s*=\s*['\''\"']postgres.*@.*:.*/.*(password|passwd))" "$@" 2>/dev/null; then
+            echo "🚨 BLOCKED: Hardcoded secrets detected!"
+            echo "Replace with placeholders: your_token_here, \${VAR_NAME}, etc."
+            exit 1
+          fi
+          '
+
+  # Conventional Commits validation
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v3.0.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args: []
+
+  # Markdown linting
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.38.0
+    hooks:
+      - id: markdownlint
+        args: ['--fix']
+        exclude: |
+          (?x)^(
+            CHANGELOG\.md|
+            .*node_modules.*|
+            .*\.min\.md$
+          )$
+
+  # YAML linting
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.33.0
+    hooks:
+      - id: yamllint
+        args: ['-d', '{extends: default, rules: {line-length: {max: 120}, document-start: disable}}']
+
+  # Shell script linting
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.9.0.6
+    hooks:
+      - id: shellcheck
+        args: ['--severity=warning']
+
+# Global settings
+default_stages: [commit]
+fail_fast: false
