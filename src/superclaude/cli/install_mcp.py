@@ -138,9 +138,13 @@ def install_airis_gateway(dry_run: bool = False) -> bool:
     """
     Install AIRIS MCP Gateway using Docker.
 
+    Installs to ~/.superclaude/airis-mcp-gateway/ to avoid polluting the host.
+
     Returns:
         True if successful, False otherwise
     """
+    from pathlib import Path
+
     click.echo("\n🚀 Installing AIRIS MCP Gateway (Recommended)")
     click.echo(
         "   This provides 60+ tools through a single endpoint with 98% token reduction.\n"
@@ -156,19 +160,32 @@ def install_airis_gateway(dry_run: bool = False) -> bool:
 
     click.echo("   ✅ Docker is available")
 
+    # Create dedicated installation directory
+    install_dir = Path.home() / ".superclaude" / "airis-mcp-gateway"
+    compose_file = install_dir / "docker-compose.yml"
+
     if dry_run:
-        click.echo("   [DRY RUN] Would download docker-compose.dist.yml")
-        click.echo(
-            "   [DRY RUN] Would run: docker compose -f docker-compose.dist.yml up -d"
-        )
+        click.echo(f"   [DRY RUN] Would create directory: {install_dir}")
+        click.echo("   [DRY RUN] Would download docker-compose.yml")
+        click.echo("   [DRY RUN] Would run: docker compose up -d")
         click.echo("   [DRY RUN] Would register with Claude Code")
         return True
+
+    # Create installation directory
+    install_dir.mkdir(parents=True, exist_ok=True)
+    click.echo(f"   📁 Installation directory: {install_dir}")
 
     # Download docker-compose file
     click.echo("   📥 Downloading docker-compose configuration...")
     try:
         result = _run_command(
-            ["curl", "-fsSL", "-O", AIRIS_GATEWAY["docker_compose_url"]],
+            [
+                "curl",
+                "-fsSL",
+                "-o",
+                str(compose_file),
+                AIRIS_GATEWAY["docker_compose_url"],
+            ],
             capture_output=True,
             text=True,
             timeout=60,
@@ -183,11 +200,20 @@ def install_airis_gateway(dry_run: bool = False) -> bool:
         click.echo(f"   ❌ Error downloading: {e}", err=True)
         return False
 
-    # Start the gateway
+    # Start the gateway from the installation directory
     click.echo("   🐳 Starting AIRIS MCP Gateway containers...")
     try:
         result = _run_command(
-            ["docker", "compose", "-f", "docker-compose.dist.yml", "up", "-d"],
+            [
+                "docker",
+                "compose",
+                "-f",
+                str(compose_file),
+                "--project-directory",
+                str(install_dir),
+                "up",
+                "-d",
+            ],
             capture_output=True,
             text=True,
             timeout=300,
@@ -233,9 +259,11 @@ def install_airis_gateway(dry_run: bool = False) -> bool:
         click.echo(f"   ⚠️  Registration error: {e}", err=True)
 
     click.echo("\n✅ AIRIS MCP Gateway installed successfully!")
+    click.echo(f"\n📁 Installed to: {install_dir}")
     click.echo("\n📖 Next steps:")
     click.echo("   • Health check: curl http://localhost:9400/health")
     click.echo("   • Web UI: http://localhost:9400")
+    click.echo(f"   • Manage: cd {install_dir} && docker compose logs -f")
     click.echo(f"   • Documentation: {AIRIS_GATEWAY['repository']}")
     return True
 
