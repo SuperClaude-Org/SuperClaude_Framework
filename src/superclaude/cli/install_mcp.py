@@ -142,19 +142,25 @@ def install_airis_gateway(dry_run: bool = False) -> bool:
         True if successful, False otherwise
     """
     click.echo("\n🚀 Installing AIRIS MCP Gateway (Recommended)")
-    click.echo("   This provides 60+ tools through a single endpoint with 98% token reduction.\n")
+    click.echo(
+        "   This provides 60+ tools through a single endpoint with 98% token reduction.\n"
+    )
 
     # Check Docker
     if not check_docker_available():
         click.echo("   ❌ Docker is required but not available.", err=True)
-        click.echo("   Please install Docker: https://docs.docker.com/get-docker/", err=True)
+        click.echo(
+            "   Please install Docker: https://docs.docker.com/get-docker/", err=True
+        )
         return False
 
     click.echo("   ✅ Docker is available")
 
     if dry_run:
         click.echo("   [DRY RUN] Would download docker-compose.dist.yml")
-        click.echo("   [DRY RUN] Would run: docker compose -f docker-compose.dist.yml up -d")
+        click.echo(
+            "   [DRY RUN] Would run: docker compose -f docker-compose.dist.yml up -d"
+        )
         click.echo("   [DRY RUN] Would register with Claude Code")
         return True
 
@@ -168,7 +174,10 @@ def install_airis_gateway(dry_run: bool = False) -> bool:
             timeout=60,
         )
         if result.returncode != 0:
-            click.echo(f"   ❌ Failed to download docker-compose file: {result.stderr}", err=True)
+            click.echo(
+                f"   ❌ Failed to download docker-compose file: {result.stderr}",
+                err=True,
+            )
             return False
     except Exception as e:
         click.echo(f"   ❌ Error downloading: {e}", err=True)
@@ -196,12 +205,20 @@ def install_airis_gateway(dry_run: bool = False) -> bool:
     click.echo("   📝 Registering with Claude Code...")
     try:
         cmd = [
-            "claude", "mcp", "add",
-            "--scope", "user",
-            "--transport", "sse",
+            "claude",
+            "mcp",
+            "add",
+            "--scope",
+            "user",
+            "--transport",
+            "sse",
             AIRIS_GATEWAY["name"],
             "--",
-            "npx", "-y", "mcp-remote", AIRIS_GATEWAY["endpoint"], "--allow-http",
+            "npx",
+            "-y",
+            "mcp-remote",
+            AIRIS_GATEWAY["endpoint"],
+            "--allow-http",
         ]
         result = _run_command(cmd, capture_output=True, text=True, timeout=60)
         if result.returncode != 0:
@@ -434,7 +451,9 @@ def list_available_servers():
         click.echo(f"      {description}{api_key_note}")
         click.echo()
 
-    click.echo(f"Total: {len(MCP_SERVERS)} individual servers + AIRIS Gateway available")
+    click.echo(
+        f"Total: {len(MCP_SERVERS)} individual servers + AIRIS Gateway available"
+    )
 
 
 def install_mcp_servers(
