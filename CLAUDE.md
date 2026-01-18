@@ -18,10 +18,10 @@ uv run python script.py          # Execute scripts
 
 ## 📂 Project Structure
 
-**Current v4.1.9 Architecture**: Python package with slash commands
+**Current v4.2.0 Architecture**: Python package with slash commands
 
 ```
-# Claude Code Configuration (v4.1.9)
+# Claude Code Configuration (v4.2.0)
 .claude/
 ├── settings.json        # User settings
 └── commands/            # Slash commands (installed via `superclaude install`)
@@ -115,7 +115,7 @@ Registered via `pyproject.toml` entry point, automatically available after insta
 - Automatic dependency analysis
 - Example: [Read files in parallel] → Analyze → [Edit files in parallel]
 
-### Slash Commands (v4.1.9)
+### Slash Commands (v4.2.0)
 
 - Install via: `pipx install superclaude && superclaude install`
 - Commands installed to: `~/.claude/commands/`
@@ -241,7 +241,7 @@ superclaude mcp  # Interactive install, gateway is default (requires Docker)
 
 ## 🚀 Development & Installation
 
-### Current Installation Method (v4.1.9)
+### Current Installation Method (v4.2.0)
 
 **Standard Installation**:
 ```bash
@@ -275,7 +275,7 @@ See `docs/plugin-reorg.md` for details.
 ## 📊 Package Information
 
 **Package name**: `superclaude`
-**Version**: 4.1.9
+**Version**: 4.2.0
 **Python**: >=3.10
 **Build system**: hatchling (PEP 517)
 

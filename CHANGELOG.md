@@ -7,36 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [4.2.0] - 2025-09-18
+## [4.2.0] - 2026-01-18
 ### Added
-- **Deep Research System** - Complete implementation of autonomous web research capabilities
-  - New `/sc:research` command for intelligent web research with DR Agent architecture
-  - `deep-research-agent` - 15th specialized agent for research orchestration
-  - `MODE_DeepResearch` - 7th behavioral mode for research workflows
-  - Tavily MCP integration (7th MCP server) for real-time web search
-  - Research configuration system (`RESEARCH_CONFIG.md`)
-  - Comprehensive workflow examples (`deep_research_workflows.md`)
-  - Three planning strategies: Planning-Only, Intent-to-Planning, Unified Intent-Planning
-  - Multi-hop reasoning with genealogy tracking for complex queries
-  - Case-based reasoning for learning from past research patterns
+- **AIRIS MCP Gateway** - Optional unified MCP solution with 60+ tools (#509)
+  - Single SSE endpoint at `localhost:9400`
+  - 98% token reduction through HOT/COLD tool management
+  - Requires Docker (optional - individual servers still supported)
+- **Airis Agent and MindBase MCP servers** - New individual server options (#497)
+- **Explicit command boundaries and handoff instructions** - All 30 commands now have clear scope definitions (#513)
+- **Complete command reference documentation** - Comprehensive docs for all slash commands (#512)
+
+### Fixed
+- UTF-8 encoding handling for MCP command output on all platforms (#507)
 
 ### Changed
-- Updated agent count from 14 to 15 (added deep-research-agent)
-- Updated mode count from 6 to 7 (added MODE_DeepResearch)
-- Updated MCP server count from 6 to 7 (added Tavily)
-- Updated command count from 24 to 25 (added /sc:research)
-- Enhanced MCP component with remote server support for Tavily
-- Added `_install_remote_mcp_server` method to handle remote MCP configurations
+- MCP installer now offers AIRIS Gateway as recommended option (with Docker)
+- Individual MCP servers remain fully supported for users without Docker
+- Command documentation improved with boundaries, triggers, and next-step guidance
 
-### Technical
-- Added Tavily to `server_docs_map` in `setup/components/mcp_docs.py`
-- Implemented remote MCP server handler in `setup/components/mcp.py`
-- Added `check_research_prerequisites()` function in `setup/utils/environment.py`
-- Created verification script `scripts/verify_research_integration.sh`
+## [4.1.9] - 2026-01-15
+### Added
+- **Framework Restoration** - Complete SuperClaude framework restored from commit d4a17fc
+- **30 Slash Commands** - All slash commands restored with comprehensive documentation
+- **install.sh Script** - Missing installation script added (#483)
+- **MCP Command** - New `superclaude mcp` command for MCP server management
+- **Tavily MCP Server** - Web search integration for deep research capabilities
+- **Chrome DevTools MCP** - Browser debugging and performance analysis
 
-### Requirements
-- `TAVILY_API_KEY` environment variable for web search functionality
-- Node.js and npm for Tavily MCP execution
+### Fixed
+- Package distribution now includes all plugin resources
+- Commands path resolution prioritizes package location
+- Commands and skills properly included in MANIFEST.in
+
+### Changed
+- Synchronized translated READMEs with main README structure
+- Added `__init__.py` to all packages for proper module resolution
 
 ## [4.1.5] - 2025-09-26
 ### Added

@@ -17,7 +17,7 @@
 <a href="https://github.com/SuperClaude-Org/SuperQwen_Framework" target="_blank">
   <img src="https://img.shields.io/badge/Try-SuperQwen_Framework-orange" alt="Try SuperQwen Framework"/>
 </a>
-  <img src="https://img.shields.io/badge/version-4.1.9-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-4.2.0-blue" alt="Version">
   <a href="https://github.com/SuperClaude-Org/SuperClaude_Framework/actions/workflows/test.yml">
     <img src="https://github.com/SuperClaude-Org/SuperClaude_Framework/actions/workflows/test.yml/badge.svg" alt="Tests">
   </a>
@@ -113,7 +113,7 @@ Claude Code is a product built and maintained by [Anthropic](https://www.anthrop
 > not yet available (planned for v5.0). For current installation
 > instructions, please follow the steps below for v4.x.
 
-### **Current Stable Version (v4.1.9)**
+### **Current Stable Version (v4.2.0)**
 
 SuperClaude currently uses slash commands.
 

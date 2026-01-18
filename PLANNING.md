@@ -23,7 +23,7 @@ SuperClaude Framework transforms Claude Code into a structured development platf
 
 ## 🏗️ **Architecture Overview**
 
-### **Current State (v4.1.9)**
+### **Current State (v4.2.0)**
 
 SuperClaude is a **Python package** with:
 - Pytest plugin (auto-loaded via entry points)
@@ -33,7 +33,7 @@ SuperClaude is a **Python package** with:
 - Optional slash commands (installed to ~/.claude/commands/)
 
 ```
-SuperClaude Framework v4.1.9
+SuperClaude Framework v4.2.0
 │
 ├── Core Package (src/superclaude/)
 │   ├── pytest_plugin.py          # Auto-loaded by pytest
@@ -237,7 +237,7 @@ Use SelfCheckProtocol to prevent hallucinations:
 ### **Version Management**
 
 1. **Version sources of truth**:
-   - Framework version: `VERSION` file (e.g., 4.1.9)
+   - Framework version: `VERSION` file (e.g., 4.2.0)
    - Python package version: `pyproject.toml` (e.g., 0.4.0)
    - NPM package version: `package.json` (should match VERSION)
 
@@ -338,17 +338,19 @@ Before releasing a new version:
 
 ## 🚀 **Roadmap**
 
-### **v4.1.9 (Current)**
+### **v4.2.0 (Current)**
 - ✅ Python package with pytest plugin
 - ✅ PM Agent patterns (confidence, self-check, reflexion)
 - ✅ Parallel execution framework
-- ✅ CLI tools
-- ✅ Optional slash commands
+- ✅ CLI tools and slash commands
+- ✅ AIRIS MCP Gateway (optional, requires Docker)
+- ✅ Explicit command boundaries and handoff instructions
+- ✅ Complete command reference documentation
 
-### **v4.2.0 (Next)**
+### **v4.3.0 (Next)**
 - [ ] Complete placeholder implementations in confidence.py
 - [ ] Add comprehensive test coverage (>80%)
-- [ ] Enhance MCP server integration
+- [ ] Enhanced MCP server integration
 - [ ] Improve documentation
 
 ### **v5.0 (Future)**

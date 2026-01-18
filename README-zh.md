@@ -5,7 +5,7 @@
 ### **将Claude Code转换为结构化开发平台**
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-4.1.9-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-4.2.0-blue" alt="Version">
   <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License">
   <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome">
 </p>
@@ -93,7 +93,7 @@ Claude Code是由[Anthropic](https://www.anthropic.com/)构建和维护的产品
 > 尚未可用（计划在v5.0中推出）。请按照以下v4.x的
 > 当前安装说明操作。
 
-### **当前稳定版本 (v4.1.9)**
+### **当前稳定版本 (v4.2.0)**
 
 SuperClaude目前使用斜杠命令。
 

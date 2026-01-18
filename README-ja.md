@@ -5,7 +5,7 @@
 ### **Claude Codeを構造化開発プラットフォームに変換**
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-4.1.9-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-4.2.0-blue" alt="Version">
   <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License">
   <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome">
 </p>
@@ -93,7 +93,7 @@ Claude Codeは[Anthropic](https://www.anthropic.com/)によって構築および
 > まだ利用できません（v5.0で予定）。v4.xの現在のインストール
 > 手順については、以下の手順に従ってください。
 
-### **現在の安定バージョン (v4.1.9)**
+### **現在の安定バージョン (v4.2.0)**
 
 SuperClaudeは現在スラッシュコマンドを使用しています。
 
