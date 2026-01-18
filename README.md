@@ -101,8 +101,11 @@ Claude Code is a product built and maintained by [Anthropic](https://www.anthrop
 | **[TASK.md](TASK.md)** | Current tasks, priorities, backlog | Daily, before starting work |
 | **[KNOWLEDGE.md](KNOWLEDGE.md)** | Accumulated insights, best practices, troubleshooting | When encountering issues, learning patterns |
 | **[CONTRIBUTING.md](CONTRIBUTING.md)** | Contribution guidelines, workflow | Before submitting PRs |
+| **[Commands Reference](docs/user-guide/commands.md)** | Complete reference for all 30 `/sc:*` commands with syntax, examples, workflows, and decision guides | Learning SuperClaude, choosing the right command |
 
 > **💡 Pro Tip**: Claude Code reads these files at session start to ensure consistent, high-quality development aligned with project standards.
+>
+> **📚 New to SuperClaude?** Start with [Commands Reference](docs/user-guide/commands.md) — it contains visual decision trees, detailed command comparisons, and workflow examples to help you understand which commands to use and when.
 
 ## ⚡ **Quick Installation**
 
