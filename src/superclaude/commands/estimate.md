@@ -85,3 +85,23 @@ Key behaviors:
 - Provide estimates without appropriate domain expertise and complexity assessment
 - Override historical benchmarks without clear justification and analysis
 
+## CRITICAL BOUNDARIES
+
+**STOP AFTER ESTIMATION**
+
+This command produces an ESTIMATION REPORT ONLY - no implementation.
+
+**Explicitly Will NOT**:
+- Execute work based on estimates
+- Create implementation timelines for execution
+- Start implementation tasks
+- Make commitments on behalf of user
+
+**Output**: Estimation report containing:
+- Time/effort breakdown
+- Complexity analysis
+- Confidence intervals
+- Risk assessment
+- Resource requirements
+
+**Next Step**: After estimation, user decides on timeline. Use `/sc:workflow` for planning or `/sc:implement` for execution.

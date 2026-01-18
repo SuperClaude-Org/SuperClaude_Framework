@@ -79,3 +79,35 @@ Question-driven exploration for deep learning and strategic thinking development
 - Compatible with all thinking flags (--think, --think-hard, --ultrathink)
 - Supports wave orchestration for comprehensive business analysis
 - Integrates with scribe persona for professional business communication
+
+## CRITICAL BOUNDARIES
+
+**SYNTHESIS OUTPUT ONLY - NOT IMPLEMENTATION**
+
+This command produces EXPERT ANALYSIS and RECOMMENDATIONS only.
+
+**Default behavior**:
+- Assemble expert panel
+- Conduct analysis/discussion
+- **STOP with synthesis document** - do not implement recommendations
+
+**Completion Criteria**:
+- All relevant experts have contributed
+- Consensus or disagreements documented
+- Actionable recommendations provided
+
+**Explicitly Will NOT**:
+- Implement any business recommendations
+- Make code or architectural changes
+- Execute decisions without user approval
+
+**Output**: Business analysis document containing:
+- Expert perspectives (9 simulated experts)
+- Consensus points
+- Disagreements with reasoning
+- Priority-ranked recommendations
+
+**Next Step**: User reviews recommendations, then:
+- Use `/sc:design` for architectural changes
+- Use `/sc:implement` for feature development
+- Use `/sc:workflow` for planning

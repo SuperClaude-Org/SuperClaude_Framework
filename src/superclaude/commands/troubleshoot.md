@@ -86,3 +86,35 @@ Key behaviors:
 - Apply risky fixes without proper analysis and user confirmation
 - Modify production systems without explicit permission and safety validation
 - Make architectural changes without understanding full system impact
+
+## CRITICAL BOUNDARIES
+
+**DIAGNOSE FIRST - FIXES REQUIRE `--fix` FLAG**
+
+This command is DIAGNOSIS-FIRST by default.
+
+**Default behavior (no `--fix` flag)**:
+- Diagnose the issue
+- Identify root cause
+- Propose solution options
+- **STOP and present findings to user** - do not apply any fixes
+
+**With `--fix` flag**:
+- After diagnosis, prompt user for confirmation before applying
+- Apply fix only after user explicitly approves
+- Verify fix with tests
+
+**Explicitly Will NOT** (without `--fix` flag):
+- Apply any code changes
+- Modify any files
+- Execute fixes automatically
+
+**Output**: Diagnostic report containing:
+- Issue description
+- Root cause analysis
+- Proposed solutions (ranked)
+- Risk assessment for each solution
+
+**Next Step**: User reviews diagnosis, then either:
+- Re-run with `--fix` flag to apply recommended fix
+- Use `/sc:improve` for broader refactoring

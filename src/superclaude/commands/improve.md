@@ -92,3 +92,22 @@ Key behaviors:
 - Make architectural changes without understanding full system impact
 - Override established coding standards or project-specific conventions
 
+## AUTO-FIX VS APPROVAL-REQUIRED
+
+**Auto-fix (applies automatically)**:
+- Style fixes (formatting, naming conventions)
+- Unused variable removal
+- Import organization
+- Simple type annotations
+
+**Approval Required (prompts user first)**:
+- Architectural changes
+- Logic refactoring
+- Function signature changes
+- Removing code used by public APIs
+- Changes affecting multiple files
+
+**Explicitly Will NOT** (without `--force` flag):
+- Make architectural decisions
+- Refactor code structure without confirmation
+- Remove functionality

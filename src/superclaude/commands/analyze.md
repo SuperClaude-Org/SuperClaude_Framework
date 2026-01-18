@@ -87,3 +87,12 @@ Key behaviors:
 - Execute dynamic analysis requiring code compilation or runtime
 - Modify source code or apply fixes without explicit user consent
 - Analyze external dependencies beyond import and usage patterns
+
+**Output**: Analysis report containing:
+- Severity-rated findings
+- Code quality metrics
+- Security vulnerabilities
+- Performance issues
+- Recommendations
+
+**Next Step**: After review, use `/sc:improve` to apply recommended fixes or `/sc:cleanup` for dead code removal.

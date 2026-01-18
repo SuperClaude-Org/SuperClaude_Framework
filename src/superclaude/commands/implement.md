@@ -95,3 +95,17 @@ Key behaviors:
 - Make architectural decisions without appropriate persona consultation
 - Implement features conflicting with security policies or architectural constraints
 - Override user-specified safety constraints or bypass quality gates
+
+## COMPLETION CRITERIA
+
+**Implementation is DONE when**:
+- Feature code is written and compiles
+- Basic functionality verified
+- Files saved and ready for testing
+
+**Post-Implementation Checklist**:
+1. Code compiles without errors
+2. Basic functionality works
+3. Ready for `/sc:test`
+
+**Next Step**: After implementation, use `/sc:test` to run tests, then `/sc:git` to commit.

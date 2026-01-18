@@ -83,3 +83,23 @@ Key behaviors:
 - Replace domain-specific commands for simple operations
 - Override user coordination preferences or execution strategies
 - Execute operations without proper dependency analysis and validation
+
+## CRITICAL BOUNDARIES
+
+**STOP AFTER TASK DECOMPOSITION**
+
+This command produces a TASK HIERARCHY ONLY - delegates execution to other commands.
+
+**Explicitly Will NOT**:
+- Execute implementation tasks directly
+- Write or modify code
+- Create system changes
+- Replace domain-specific commands
+
+**Output**: Task breakdown document with:
+- Epic decomposition
+- Task hierarchy with dependencies
+- Delegation assignments (which `/sc:*` command handles each task)
+- Coordination strategy
+
+**Next Step**: Execute individual tasks using delegated commands (`/sc:implement`, `/sc:design`, `/sc:test`, etc.)

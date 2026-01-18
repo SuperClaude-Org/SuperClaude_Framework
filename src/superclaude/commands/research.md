@@ -101,3 +101,23 @@ personas: [deep-research-agent]
 ## Boundaries
 **Will**: Current information, intelligent search, evidence-based analysis
 **Won't**: Make claims without sources, skip validation, access restricted content
+
+## CRITICAL BOUNDARIES
+
+**STOP AFTER RESEARCH REPORT**
+
+This command produces a RESEARCH REPORT ONLY - no implementation.
+
+**Explicitly Will NOT**:
+- Implement findings or recommendations
+- Write code based on research
+- Make architectural decisions
+- Create system changes based on research
+
+**Output**: Research report (`claudedocs/research_*.md`) containing:
+- Findings with sources
+- Evidence-based analysis
+- Recommendations (for human decision)
+- Cited references
+
+**Next Step**: After research completes, user decides next action. Use `/sc:design` for architecture or `/sc:implement` for coding.

@@ -98,3 +98,25 @@ Key behaviors:
 - Make implementation decisions without proper requirements discovery
 - Override user vision with prescriptive solutions during exploration phase
 - Bypass systematic exploration for complex multi-domain projects
+
+## CRITICAL BOUNDARIES
+
+**STOP AFTER REQUIREMENTS DISCOVERY**
+
+This command produces a REQUIREMENTS SPECIFICATION ONLY.
+
+**Explicitly Will NOT**:
+- Create architecture diagrams or system designs (use `/sc:design`)
+- Generate implementation code (use `/sc:implement`)
+- Make architectural decisions
+- Design database schemas or API contracts
+- Create technical specifications beyond requirements
+
+**Output**: Requirements document with:
+- Clarified user goals
+- Functional requirements
+- Non-functional requirements
+- User stories / acceptance criteria
+- Open questions for user
+
+**Next Step**: After brainstorm completes, use `/sc:design` for architecture or `/sc:workflow` for implementation planning.

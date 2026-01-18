@@ -205,6 +205,39 @@ src/superclaude/skills/confidence-check/SKILL.md  # Confidence check skill
 
 ---
 
+## 📊 Command Output Categories
+
+### Document-Only Commands (STOP after output)
+These commands produce documents/reports and DO NOT implement:
+- `/sc:brainstorm` → Requirements specification
+- `/sc:workflow` → Implementation plan
+- `/sc:spawn` → Task hierarchy
+- `/sc:research` → Research report
+- `/sc:estimate` → Estimation report
+- `/sc:design` → Architecture documents
+- `/sc:analyze` → Analysis report
+- `/sc:spec-panel` → Expert review document
+- `/sc:business-panel` → Business analysis document
+- `/sc:troubleshoot` → Diagnostic report (fixes require `--fix` flag + confirmation)
+
+### Execution Commands (IMPLEMENT changes)
+These commands execute changes:
+- `/sc:implement` → Writes code
+- `/sc:improve` → Applies improvements (auto-fix for style, approval for architecture)
+- `/sc:cleanup` → Removes dead code (auto-fix for unused imports, approval for referenced code)
+- `/sc:task` → Discrete task execution (stops when complete)
+- `/sc:test` → Runs tests
+- `/sc:build` → Builds project
+- `/sc:git` → Git operations
+
+### Key Behavior Notes
+- **Document-only commands** stop after producing their output and suggest next steps
+- **Execution commands** have clear completion criteria
+- **`/sc:troubleshoot`** is diagnose-first by default; use `--fix` flag to apply fixes
+- **`/sc:improve`** and **`/sc:cleanup`** auto-fix safe changes, prompt for risky ones
+
+---
+
 ## 📖 Detailed Description of Each Command
 
 ---

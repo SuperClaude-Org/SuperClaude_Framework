@@ -91,3 +91,22 @@ Key behaviors:
 - Remove code without thorough safety analysis and validation
 - Override project-specific cleanup exclusions or architectural constraints
 - Apply cleanup operations that compromise functionality or introduce bugs
+
+## AUTO-FIX VS APPROVAL-REQUIRED
+
+**Auto-fix (applies automatically)**:
+- Unused imports removal
+- Dead code with zero references
+- Empty blocks removal
+- Redundant type annotations
+
+**Approval Required (prompts user first)**:
+- Code with indirect references
+- Exports potentially used externally
+- Test fixtures/utilities
+- Configuration values
+
+**Safety Threshold**:
+- If code has ANY usage path, prompt user
+- If code affects public API, prompt user
+- If unsure, prompt user

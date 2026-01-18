@@ -426,3 +426,11 @@ Comprehensive analysis with full expert commentary, examples, and implementation
 - Modify specifications without explicit user consent and validation
 - Generate specifications from scratch without existing content or context
 - Provide legal or regulatory compliance guarantees beyond analysis guidance
+
+**Output**: Expert review document containing:
+- Multi-expert analysis (10 simulated experts)
+- Specific, actionable recommendations
+- Consensus points and disagreements
+- Priority-ranked improvements
+
+**Next Step**: After review, incorporate feedback into spec, then use `/sc:design` for architecture or `/sc:implement` for coding.

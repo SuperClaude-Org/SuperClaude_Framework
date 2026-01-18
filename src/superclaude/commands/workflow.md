@@ -94,4 +94,25 @@ Key behaviors:
 **Will Not:**
 - Execute actual implementation tasks beyond workflow planning and strategy
 - Override established development processes without proper analysis and validation
-- Generate workflows without comprehensive requirement analysis and dependency mapping 
+- Generate workflows without comprehensive requirement analysis and dependency mapping
+
+## CRITICAL BOUNDARIES
+
+**STOP AFTER PLAN CREATION**
+
+This command produces an IMPLEMENTATION PLAN ONLY - no code execution.
+
+**Explicitly Will NOT**:
+- Execute any implementation tasks
+- Write or modify code
+- Create files (except the workflow plan document)
+- Make architectural changes
+- Run builds or tests
+
+**Output**: Workflow plan document (`claudedocs/workflow_*.md`) containing:
+- Implementation phases
+- Task dependencies
+- Execution order
+- Checkpoints and validation steps
+
+**Next Step**: After workflow completes, use `/sc:implement` to execute the plan step by step.

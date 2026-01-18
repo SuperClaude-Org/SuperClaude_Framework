@@ -86,3 +86,11 @@ Key behaviors:
 - Generate actual implementation code (use /sc:implement for implementation)
 - Modify existing system architecture without explicit design approval
 - Create designs that violate established architectural constraints
+
+**Output**: Architecture documents containing:
+- System diagrams (component, sequence, data flow)
+- API specifications
+- Database schemas
+- Interface definitions
+
+**Next Step**: After design is approved, use `/sc:implement` to build the designed components.

@@ -87,3 +87,30 @@ Key behaviors:
 - Execute simple tasks that don't require advanced orchestration
 - Compromise quality standards for speed or convenience
 - Operate without proper validation and quality gates
+
+## CRITICAL BOUNDARIES
+
+**USER-INVOKED DISCRETE TASK EXECUTION**
+
+This command executes specific tasks when explicitly invoked by user.
+
+**Difference from /sc:pm**:
+- `/sc:pm` = session-level orchestration (background monitoring, continuous)
+- `/sc:task` = user-invoked discrete execution (explicit start/end)
+
+**Behavior**:
+- User invokes `/sc:task [description]`
+- Execute the specific task using multi-agent coordination
+- **STOP when task is complete** - do not continue to next tasks without user input
+
+**Completion Criteria**:
+- Task objective achieved
+- All sub-tasks marked completed in TodoWrite
+- Validation passed
+
+**Output**: Task completion report with:
+- What was accomplished
+- Files modified
+- Tests status (if applicable)
+
+**Next Step**: User decides next action. May invoke another `/sc:task` or use specific commands.
