@@ -1,6 +1,6 @@
 ---
-name: sc:validate-tests
-description: Validate tier classification behavior against YAML test specifications. Self-validation skill for /sc:task-unified command testing.
+name: sc-validate-tests
+description: Validate tier classification behavior against YAML test specifications. Self-validation skill for /sc-task-unified command testing.
 allowed-tools: Read, Glob, Grep, TodoWrite
 ---
 
