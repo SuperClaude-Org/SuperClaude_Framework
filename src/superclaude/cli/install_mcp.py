@@ -200,6 +200,43 @@ def install_airis_gateway(dry_run: bool = False) -> bool:
         click.echo(f"   ❌ Error downloading: {e}", err=True)
         return False
 
+    # Create mcp-config.json if it doesn't exist (required for Docker volume mount)
+    # Docker will create a directory instead of a file if the mount target doesn't exist
+    mcp_config_file = install_dir / "mcp-config.json"
+    if not mcp_config_file.exists():
+        click.echo("   📄 Creating mcp-config.json...")
+        try:
+            # Download example config from upstream
+            result = _run_command(
+                [
+                    "curl",
+                    "-fsSL",
+                    "-o",
+                    str(mcp_config_file),
+                    "https://raw.githubusercontent.com/agiletec-inc/airis-mcp-gateway/main/mcp-config.json.example",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
+            if result.returncode != 0:
+                # Fallback: create minimal config
+                click.echo("   ⚠️  Could not download example config, creating minimal config")
+                mcp_config_file.write_text('{"mcpServers": {}}')
+        except Exception:
+            # Fallback: create minimal config
+            mcp_config_file.write_text('{"mcpServers": {}}')
+    elif mcp_config_file.is_dir():
+        # Fix: mcp-config.json was incorrectly created as a directory
+        click.echo("   🔧 Fixing mcp-config.json (was directory, converting to file)...")
+        import shutil
+        shutil.rmtree(mcp_config_file)
+        mcp_config_file.write_text('{"mcpServers": {}}')
+
+    # Create profiles directory if it doesn't exist
+    profiles_dir = install_dir / "profiles"
+    profiles_dir.mkdir(exist_ok=True)
+
     # Start the gateway from the installation directory
     click.echo("   🐳 Starting AIRIS MCP Gateway containers...")
     try:
