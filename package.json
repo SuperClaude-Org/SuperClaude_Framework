@@ -1,15 +1,12 @@
 {
   "name": "@bifrost_inc/superclaude",
-  "version": "4.1.7",
+  "version": "4.1.9",
   "description": "SuperClaude Framework NPM wrapper - Official Node.js wrapper for the Python SuperClaude package. Enhances Claude Code with specialized commands and AI development tools.",
   "scripts": {
-    "postinstall": "node ./bin/install.js",
-    "update": "node ./bin/update.js",
     "lint": "eslint . --ext .js,.mjs,.cjs",
     "test": "echo \"No tests defined yet\" && exit 0"
   },
   "files": [
-    "bin/",
     "README.md",
     "LICENSE"
   ],
