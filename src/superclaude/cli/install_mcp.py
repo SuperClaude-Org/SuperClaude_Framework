@@ -20,6 +20,7 @@ AIRIS_GATEWAY = {
     "transport": "sse",
     "endpoint": "http://localhost:9400/sse",
     "docker_compose_url": "https://raw.githubusercontent.com/agiletec-inc/airis-mcp-gateway/main/docker-compose.dist.yml",
+    "mcp_config_url": "https://raw.githubusercontent.com/agiletec-inc/airis-mcp-gateway/main/config/mcp-config.template.json",
     "repository": "https://github.com/agiletec-inc/airis-mcp-gateway",
 }
 
@@ -200,6 +201,73 @@ def install_airis_gateway(dry_run: bool = False) -> bool:
         click.echo(f"   ❌ Error downloading: {e}", err=True)
         return False
 
+    # Download mcp-config.json (backend server definitions for the gateway)
+    mcp_config_file = install_dir / "mcp-config.json"
+    if not mcp_config_file.exists():
+        click.echo("   📥 Downloading MCP server configuration...")
+        try:
+            result = _run_command(
+                [
+                    "curl",
+                    "-fsSL",
+                    "-o",
+                    str(mcp_config_file),
+                    AIRIS_GATEWAY["mcp_config_url"],
+                ],
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
+            if result.returncode != 0:
+                click.echo(
+                    f"   ⚠️  Failed to download mcp-config.json: {result.stderr}",
+                    err=True,
+                )
+                # Create a minimal default config so the gateway can start
+                import json
+
+                default_config = {
+                    "mcpServers": {
+                        "memory": {
+                            "command": "npx",
+                            "args": ["-y", "@modelcontextprotocol/server-memory"],
+                            "env": {},
+                            "enabled": True,
+                            "mode": "hot",
+                            "description": "Session memory",
+                        }
+                    },
+                    "log": {"level": "info"},
+                }
+                mcp_config_file.write_text(json.dumps(default_config, indent=2))
+                click.echo("   ✅ Created minimal default mcp-config.json")
+            else:
+                # Disable servers that require containers not in docker-compose.dist.yml
+                import json
+
+                try:
+                    config = json.loads(mcp_config_file.read_text())
+                    servers_to_disable = ["airis-agent"]
+                    changed = False
+                    for server_name in servers_to_disable:
+                        if server_name in config.get("mcpServers", {}):
+                            config["mcpServers"][server_name]["enabled"] = False
+                            changed = True
+                    if changed:
+                        mcp_config_file.write_text(json.dumps(config, indent=2))
+                    click.echo("   ✅ MCP server configuration downloaded")
+                except (json.JSONDecodeError, KeyError):
+                    click.echo(
+                        "   ⚠️  Could not parse mcp-config.json, using as-is",
+                        err=True,
+                    )
+        except Exception as e:
+            click.echo(f"   ❌ Error downloading mcp-config.json: {e}", err=True)
+            # Create empty but valid config so Docker mount doesn't fail
+            mcp_config_file.write_text('{"mcpServers": {}}')
+    else:
+        click.echo("   ✅ MCP server configuration already exists")
+
     # Start the gateway from the installation directory
     click.echo("   🐳 Starting AIRIS MCP Gateway containers...")
     try:
@@ -228,6 +296,7 @@ def install_airis_gateway(dry_run: bool = False) -> bool:
     click.echo("   ✅ Gateway containers started")
 
     # Register with Claude Code
+    # SSE transport takes the URL directly (not via npx mcp-remote)
     click.echo("   📝 Registering with Claude Code...")
     try:
         cmd = [
@@ -239,12 +308,7 @@ def install_airis_gateway(dry_run: bool = False) -> bool:
             "--transport",
             "sse",
             AIRIS_GATEWAY["name"],
-            "--",
-            "npx",
-            "-y",
-            "mcp-remote",
             AIRIS_GATEWAY["endpoint"],
-            "--allow-http",
         ]
         result = _run_command(cmd, capture_output=True, text=True, timeout=60)
         if result.returncode != 0:
