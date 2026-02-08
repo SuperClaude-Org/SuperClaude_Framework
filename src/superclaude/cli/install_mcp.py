@@ -291,7 +291,9 @@ TAVILY_API_KEY=
 """
         env_file.write_text(env_content)
         click.echo(f"   ✅ Created .env file at {env_file}")
-        click.echo(f"   💡 Edit {env_file} to customize settings (e.g., add TAVILY_API_KEY)")
+        click.echo(
+            f"   💡 Edit {env_file} to customize settings (e.g., add TAVILY_API_KEY)"
+        )
     else:
         click.echo("   ✅ .env file already exists")
 
