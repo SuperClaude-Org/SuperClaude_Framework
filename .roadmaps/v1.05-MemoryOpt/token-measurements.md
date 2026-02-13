@@ -104,7 +104,43 @@
 
 ## Post-M3 (On-Demand + YAML Compression)
 
-_To be measured after M3 completion_
+**Measured**: 2026-02-13
+**Total**: 131,296 bytes (~32,824 tokens)
+**Cumulative savings**: 32,028 bytes (~8,007 tokens) — **19.6% reduction from baseline**
+**M3 savings**: 6,674 bytes (~1,668 tokens)
+
+### Changes Applied
+| File | Before | After | Saved | Technique |
+|------|--------|-------|-------|-----------|
+| CLAUDE.md | 1,925 | 1,942 | -17 (grew) | On-demand: removed 4 specialist @-refs |
+| RESEARCH_CONFIG.md | 9,607 | 4,559 | 5,048 (52.5%) | YAML→inline, verbose→tables, cross-refs |
+| BUSINESS_PANEL_EXAMPLES.md | 8,253 | 6,610 | 1,643 (19.9%) | YAML→tables, workflow compression |
+
+### On-Demand Files (4 files — no longer always-loaded via CLAUDE.md)
+
+| File | Bytes | ~Tokens |
+|------|-------|---------|
+| MODE_Business_Panel.md | 11,761 | 2,940 |
+| BUSINESS_SYMBOLS.md | 7,653 | 1,913 |
+| BUSINESS_PANEL_EXAMPLES.md | 6,610 | 1,652 |
+| RESEARCH_CONFIG.md | 4,559 | 1,139 |
+| **Subtotal** | **30,583** | **7,645** |
+
+### Summary
+
+| Category | Files | Bytes | ~Tokens | % of Total |
+|----------|-------|-------|---------|------------|
+| Core always-loaded | 8 | 80,287 | 20,071 | 61.2% |
+| On-demand | 4 | 30,583 | 7,645 | 23.3% |
+| Satellite | 9 | 18,484 | 4,621 | 14.1% |
+| Entry point | 1 | 1,942 | 485 | 1.5% |
+| **Grand Total** | **22** | **131,296** | **32,824** | **100%** |
+
+### Source File Updates (src/superclaude/core/)
+| File | Updated | Matches Live |
+|------|---------|-------------|
+| RESEARCH_CONFIG.md | ✅ | 4,559 bytes |
+| BUSINESS_PANEL_EXAMPLES.md | ✅ | 6,610 bytes |
 
 ## Post-M4 (Cross-File Consolidation)
 
