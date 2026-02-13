@@ -7,9 +7,10 @@
 # It performs the following steps:
 #   1. Checks prerequisites (Python 3.10+, UV package manager)
 #   2. Installs SuperClaude package in editable mode
-#   3. Installs 30 slash commands to ~/.claude/commands/
-#   4. Verifies installation
-#   5. Provides next steps guidance
+#   3. Installs core framework files to ~/.claude/
+#   4. Installs 30 slash commands to ~/.claude/commands/
+#   5. Verifies installation
+#   6. Provides next steps guidance
 #
 # Usage:
 #   ./install.sh            # Interactive installation
@@ -207,9 +208,9 @@ install_commands() {
         exit 1
     fi
 
-    print_info "Installing 30 slash commands to ~/.claude/commands/sc/"
+    print_info "Installing core framework files to ~/.claude/ and slash commands to ~/.claude/commands/sc/"
     if superclaude install; then
-        print_success "Slash commands installed successfully"
+        print_success "Framework and commands installed successfully"
     else
         print_error "Failed to install slash commands"
         print_info "Try running manually: superclaude install"
@@ -325,8 +326,8 @@ main() {
     install_package
     echo ""
 
-    # Phase 3: Install commands
-    print_header "⚙️  Phase 3: Installing Slash Commands"
+    # Phase 3: Install core framework + commands (handled by superclaude install)
+    print_header "⚙️  Phase 3: Installing Framework & Commands"
     install_commands
     echo ""
 

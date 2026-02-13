@@ -45,10 +45,10 @@ def main():
 )
 def install(target: str, force: bool, list_only: bool):
     """
-    Install SuperClaude commands to Claude Code
+    Install SuperClaude to Claude Code
 
-    Installs all slash commands (/sc:research, /sc:index-repo, etc.) to your
-    ~/.claude/commands/sc directory so you can use them in Claude Code.
+    Installs core framework files to ~/.claude/ and slash commands to
+    ~/.claude/commands/sc/ so you can use SuperClaude in Claude Code.
 
     Examples:
         superclaude install
@@ -61,31 +61,59 @@ def install(target: str, force: bool, list_only: bool):
         list_available_commands,
         list_installed_commands,
     )
+    from .install_core import (
+        install_core_files,
+        list_core_files,
+        list_installed_core_files,
+    )
 
     # List only mode
     if list_only:
+        # Core files
+        core_available = list_core_files()
+        core_installed = list_installed_core_files()
+
+        click.echo("📋 Core Framework Files:")
+        for name in core_available:
+            status = "✅ installed" if name in core_installed else "⬜ not installed"
+            click.echo(f"   {name:35} {status}")
+
+        click.echo(
+            f"\nCore: {len(core_available)} available, {len(core_installed)} installed"
+        )
+
+        # Commands
         available = list_available_commands()
         installed = list_installed_commands()
 
-        click.echo("📋 Available Commands:")
+        click.echo("\n📋 Slash Commands:")
         for cmd in available:
             status = "✅ installed" if cmd in installed else "⬜ not installed"
             click.echo(f"   /{cmd:20} {status}")
 
-        click.echo(f"\nTotal: {len(available)} available, {len(installed)} installed")
+        click.echo(
+            f"\nCommands: {len(available)} available, {len(installed)} installed"
+        )
         return
 
-    # Install commands
-    target_path = Path(target).expanduser()
-
-    click.echo(f"📦 Installing SuperClaude commands to {target_path}...")
+    # Step 1: Install core framework files to ~/.claude/
+    click.echo("📦 Installing core framework files to ~/.claude/...")
     click.echo()
 
-    success, message = install_commands(target_path=target_path, force=force)
+    core_success, core_message = install_core_files(force=force)
+    click.echo(core_message)
+    click.echo()
 
-    click.echo(message)
+    # Step 2: Install slash commands
+    target_path = Path(target).expanduser()
 
-    if not success:
+    click.echo(f"📦 Installing slash commands to {target_path}...")
+    click.echo()
+
+    cmd_success, cmd_message = install_commands(target_path=target_path, force=force)
+    click.echo(cmd_message)
+
+    if not core_success or not cmd_success:
         sys.exit(1)
 
 
@@ -142,27 +170,34 @@ def mcp(servers, list_only, scope, dry_run):
 )
 def update(target: str):
     """
-    Update SuperClaude commands to latest version
+    Update SuperClaude to latest version
 
-    Re-installs all slash commands to match the current package version.
-    This is a convenience command equivalent to 'install --force'.
+    Re-installs core framework files and slash commands to match
+    the current package version. Equivalent to 'install --force'.
 
     Example:
         superclaude update
         superclaude update --target /custom/path
     """
     from .install_commands import install_commands
+    from .install_core import install_core_files
 
-    target_path = Path(target).expanduser()
-
-    click.echo(f"🔄 Updating SuperClaude commands to version {__version__}...")
+    click.echo(f"🔄 Updating SuperClaude to version {__version__}...")
     click.echo()
 
-    success, message = install_commands(target_path=target_path, force=True)
+    # Update core framework files
+    click.echo("📦 Updating core framework files...")
+    core_success, core_message = install_core_files(force=True)
+    click.echo(core_message)
+    click.echo()
 
-    click.echo(message)
+    # Update slash commands
+    target_path = Path(target).expanduser()
+    click.echo("📦 Updating slash commands...")
+    cmd_success, cmd_message = install_commands(target_path=target_path, force=True)
+    click.echo(cmd_message)
 
-    if not success:
+    if not core_success or not cmd_success:
         sys.exit(1)
 
 
