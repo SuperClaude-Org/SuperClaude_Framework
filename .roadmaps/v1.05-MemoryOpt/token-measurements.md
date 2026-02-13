@@ -144,7 +144,27 @@
 
 ## Post-M4 (Cross-File Consolidation)
 
-_To be measured after M4 completion_
+**Measured**: 2026-02-13
+**Total**: 128,742 bytes (~32,185 tokens)
+**Cumulative savings**: 34,582 bytes (~8,645 tokens) — **21.2% reduction from baseline**
+**M4 savings**: 2,554 bytes (~638 tokens)
+
+### Changes Applied
+| File | Before | After | Saved | Technique |
+|------|--------|-------|-------|-----------|
+| RULES.md (live) | 14,168 | 12,201 | 1,967 (13.9%) | Removed Quick Reference duplication, merged Workspace Hygiene |
+| ORCHESTRATOR.md | 18,113 | 17,526 | 587 (3.2%) | YAML→inline for validation cycle, config settings |
+| RULES.md (src) | 16,132 | 14,165 | 1,967 (12.2%) | Same changes as live version |
+
+### Summary
+
+| Category | Files | Bytes | ~Tokens | % of Total |
+|----------|-------|-------|---------|------------|
+| Core always-loaded | 8 | 77,733 | 19,433 | 60.4% |
+| On-demand | 4 | 30,583 | 7,645 | 23.8% |
+| Satellite | 9 | 18,484 | 4,621 | 14.4% |
+| Entry point | 1 | 1,942 | 485 | 1.5% |
+| **Grand Total** | **22** | **128,742** | **32,185** | **100%** |
 
 ## Post-M5 (File Merging & Final)
 
