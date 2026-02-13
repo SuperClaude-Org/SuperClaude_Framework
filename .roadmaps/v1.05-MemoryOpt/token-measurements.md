@@ -168,4 +168,49 @@
 
 ## Post-M5 (File Merging & Final)
 
-_To be measured after M5 completion_
+**Measured**: 2026-02-13
+**Always-loaded context**: 80,827 bytes (~20,206 tokens)
+**Reduction from baseline**: 82,497 bytes (~20,624 tokens) — **50.5% reduction**
+
+### Changes Applied
+| File | Before | After | Saved | Technique |
+|------|--------|-------|-------|-----------|
+| CLAUDE.md | 1,942 | 1,709 | 233 | Removed 9 satellite @-references |
+| MODES.md | 10,442 | 11,827 | -1,385 (grew) | Merged 3 unique satellite modes |
+| 6 MODE_*.md | 13,906 (loaded) | 13,906 (not loaded) | 13,906 from context | Removed from always-loaded |
+| 3 MCP_*.md | 4,578 (loaded) | 4,578 (not loaded) | 4,578 from context | Removed from always-loaded |
+
+### Final Architecture
+
+| Category | Files | Bytes | ~Tokens | Loaded? |
+|----------|-------|-------|---------|---------|
+| Core always-loaded | 8 | 79,118 | 19,779 | ✅ Always |
+| Entry point | 1 | 1,709 | 427 | ✅ Always |
+| **Loaded subtotal** | **9** | **80,827** | **~20,206** | |
+| On-demand (skills) | 4 | 30,583 | 7,645 | ❌ Skill-activated |
+| Satellite (archived) | 9 | 18,484 | 4,621 | ❌ No longer loaded |
+| **Total on disk** | **22** | **129,894** | **~32,473** | |
+
+### Core File Breakdown (Always-Loaded)
+
+| File | Baseline | Final | Saved | % Reduced |
+|------|----------|-------|-------|-----------|
+| ORCHESTRATOR.md | 25,930 | 17,526 | 8,404 | 32.4% |
+| PERSONAS.md | 20,671 | 10,299 | 10,372 | 50.2% |
+| RULES.md | 14,168 | 12,201 | 1,967 | 13.9% |
+| MCP.md | 14,831 | 12,260 | 2,571 | 17.3% |
+| MODES.md | 13,829 | 11,827 | 2,002 | 14.5% |
+| COMMANDS.md | 8,807 | 7,600 | 1,207 | 13.7% |
+| FLAGS.md | 4,832 | 4,832 | 0 | 0% |
+| PRINCIPLES.md | 2,573 | 2,573 | 0 | 0% |
+| CLAUDE.md | 1,925 | 1,709 | 216 | 11.2% |
+
+### Cumulative Progress
+
+| Milestone | Total Loaded | Tokens | Reduction |
+|-----------|-------------|--------|-----------|
+| Baseline | 163,324 | ~40,831 | — |
+| Post-M2 | 137,970 | ~34,492 | 15.5% |
+| Post-M3 | 131,296 | ~32,824 | 19.6% |
+| Post-M4 | 128,742 | ~32,185 | 21.2% |
+| **Post-M5** | **80,827** | **~20,206** | **50.5%** |
