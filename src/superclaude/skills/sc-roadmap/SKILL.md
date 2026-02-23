@@ -64,6 +64,7 @@ All artifacts include YAML frontmatter for machine parseability.
 | `--no-validate` | | No | `false` | Skip validation. Sets `validation_status: SKIPPED` and `validation_score: 0.0` in frontmatter |
 | `--compliance` | `-c` | No | Auto-detect | Force compliance tier: strict, standard, light |
 | `--persona` | `-p` | No | Auto-select | Override primary persona |
+| `--dry-run` | | No | `false` | Execute Waves 0-2, skip Waves 3-4, output structured preview to console. No files written, no session persistence |
 
 **Agent spec format**: `model[:persona[:"instruction"]]` — model is required; persona and instruction are optional. Split on `,` for agent list, then `:` per agent (max 3 segments). Agent count: 2-10.
 
@@ -78,7 +79,7 @@ sc:roadmap executes in 5 waves (0-4). Each wave has entry criteria, behavioral i
 **Entry Criteria**: Specification file path provided, Claude Code session active.
 
 **Behavioral Instructions**:
-1. Validate all spec file(s) exist and are readable (Read tool)
+1. Validate all spec file(s) exist and are readable (Read tool). Edge cases: if file is empty (0 bytes), abort with `"Specification file is empty. Provide a non-empty spec."`. If file has <5 lines, warn but proceed.
 2. Validate output directory is writable; create if needed
 3. **Output collision check**: If output directory already contains roadmap artifacts (roadmap.md, extraction.md, test-strategy.md), append `-N` suffix to all output filenames (e.g., `roadmap-2.md`). Increment until no collision.
 4. Check template directory availability (4-tier: local → user → plugin → inline generation)
@@ -86,7 +87,7 @@ sc:roadmap executes in 5 waves (0-4). Each wave has entry criteria, behavioral i
 6. If `--multi-roadmap`: validate all model identifiers in `--agents` are recognized. Abort on unknown models.
 7. Log all fallback decisions
 
-**Exit Criteria**: All prerequisites validated. Emit: `"Wave 0 complete: prerequisites validated."`
+**Exit Criteria**: All prerequisites validated. Trigger `sc:save` with current session state. Emit: `"Wave 0 complete: prerequisites validated."`
 
 ### Wave 1A: Spec Consolidation (conditional)
 
@@ -104,14 +105,16 @@ sc:roadmap executes in 5 waves (0-4). Each wave has entry criteria, behavioral i
    - `status: failed` → abort roadmap generation with error
 4. Apply divergent-specs heuristic: convergence < 50% → emit warning
 
-**Exit Criteria**: Unified spec available. Emit: `"Wave 1A complete: spec consolidation finished (convergence: XX%)."`
+**Error propagation (combined mode)**: If Wave 1A fails (status: failed or aborted), do NOT proceed to Wave 2's multi-roadmap generation. Abort entirely — no partial combined mode.
+
+**Exit Criteria**: Unified spec available. Trigger `sc:save` with adversarial results. Emit: `"Wave 1A complete: spec consolidation finished (convergence: XX%)."`
 
 ### Wave 1B: Detection & Analysis
 
 **Refs Loaded**: Read `refs/extraction-pipeline.md` and apply the 8-step extraction pipeline. Read `refs/scoring.md` and apply the complexity scoring formula.
 
 **Behavioral Instructions**:
-1. Parse specification file (single spec or unified spec from Wave 1A)
+1. Parse specification file (single spec or unified spec from Wave 1A). If spec contains YAML frontmatter, validate it parses correctly. If malformed YAML, abort with `"Invalid YAML frontmatter in spec at line <N>: <parse error>. Fix the YAML syntax and retry."`
 2. If spec exceeds 500 lines: activate chunked extraction protocol from `refs/extraction-pipeline.md`
 3. Run the 8-step extraction pipeline from `refs/extraction-pipeline.md`
 4. **Write extraction.md** to output directory immediately (enables resumability, provides early user value)
@@ -119,8 +122,10 @@ sc:roadmap executes in 5 waves (0-4). Each wave has entry criteria, behavioral i
 6. Classify domains using the domain keyword dictionaries from `refs/extraction-pipeline.md`
 7. Activate personas based on domain distribution thresholds from `refs/scoring.md`
 8. If `--persona` flag provided, override auto-detected primary persona
+9. If `--interactive`: display auto-detected persona with confidence score, prompt user to confirm or override. If not `--interactive`: use auto-detected persona silently
+10. Edge case: if extraction produces 0 actionable requirements, abort with `"No actionable requirements found in specification. Verify the spec contains functional or non-functional requirements."`
 
-**Exit Criteria**: extraction.md written, complexity scored, personas activated. Emit: `"Wave 1B complete: extraction finished (XX requirements, complexity: X.XX). extraction.md written."`
+**Exit Criteria**: extraction.md written, complexity scored, personas activated. Trigger `sc:save` with extraction results. Emit: `"Wave 1B complete: extraction finished (XX requirements, complexity: X.XX). extraction.md written."`
 
 ### Wave 2: Planning & Template Selection
 
@@ -128,16 +133,18 @@ sc:roadmap executes in 5 waves (0-4). Each wave has entry criteria, behavioral i
 
 **Behavioral Instructions**:
 1. Run 4-tier template discovery from `refs/templates.md`: local → user → plugin [future: v5.0] → inline generation
-2. Score template compatibility using the algorithm from `refs/scoring.md`
+2. Score template compatibility using the algorithm from `refs/scoring.md`. If `--interactive`: display compatibility scores for all candidate templates, prompt user to confirm or select. If not `--interactive`: use highest-scoring template silently
 3. If `--multi-roadmap`: parse agent specs using the parsing algorithm from `refs/adversarial-integration.md` "Agent Specification Parsing" section. Expand model-only agents with the primary persona from Wave 1B. If agent count ≥5, orchestrator is added automatically. Invoke sc:adversarial for multi-roadmap generation per `refs/adversarial-integration.md` "Multi-Roadmap Generation" invocation pattern. Handle return contract per `refs/adversarial-integration.md` "Return Contract Consumption" section. The adversarial output replaces template-based generation.
 4. Otherwise: create milestone structure based on complexity class and domain distribution using the milestone count formula, domain mapping, and priority assignment rules from `refs/templates.md`
-5. Map dependencies between milestones using the dependency mapping rules from `refs/templates.md`. Verify no circular dependencies.
+5. Map dependencies between milestones using the dependency mapping rules from `refs/templates.md`. Validate the dependency graph is acyclic (DAG). If circular dependency detected, abort with `"Circular dependency detected in milestone plan: M<X> → M<Y> → ... → M<X>. Review milestone dependencies."`
 6. Compute effort estimates for each milestone using the effort estimation algorithm from `refs/templates.md`
 7. Record template selection decision in Decision Summary (template name or "inline", compatibility scores, rationale)
 
-**Exit Criteria**: Milestone structure with effort estimates determined. Emit: `"Wave 2 complete: N milestones planned."`
+**Exit Criteria**: Milestone structure with effort estimates determined. Trigger `sc:save` with milestone structure. Emit: `"Wave 2 complete: N milestones planned."` If `--dry-run`: output structured console preview (FR-018 format — spec info, complexity, persona, template, milestone structure with dependencies, domain distribution, estimated deliverables/risks, output paths) and STOP. Skip Waves 3-4. No files written, no session persistence.
 
 ### Wave 3: Generation
+
+**Skip condition**: If `--dry-run`, this wave is skipped entirely (preview was output at end of Wave 2).
 
 **Refs Loaded**: None (uses context already loaded from Waves 1B and 2). The body templates and frontmatter schemas are in `refs/templates.md` (loaded in Wave 2).
 
@@ -156,9 +163,11 @@ sc:roadmap executes in 5 waves (0-4). Each wave has entry criteria, behavioral i
 - Multi-spec: use `spec_sources: [<path1>, <path2>]` (never `spec_source`)
 - Exactly one of these fields present, never both, never neither
 
-**Exit Criteria**: roadmap.md + test-strategy.md written, extraction.md frontmatter updated. Emit: `"Wave 3 complete: roadmap.md + test-strategy.md generated."`
+**Exit Criteria**: roadmap.md + test-strategy.md written, extraction.md frontmatter updated. Trigger `sc:save` with generation state. Emit: `"Wave 3 complete: roadmap.md + test-strategy.md generated."`
 
 ### Wave 4: Validation (Multi-Agent)
+
+**Skip condition**: If `--dry-run`, this wave is skipped entirely. If `--no-validate`, skip per step 8 below.
 
 **Refs Loaded**: Read `refs/validation.md` for agent prompts and scoring thresholds.
 
@@ -172,7 +181,7 @@ sc:roadmap executes in 5 waves (0-4). Each wave has entry criteria, behavioral i
 7. **REVISE loop** (per FR-017): If 70-84%, follow the REVISE loop protocol from `refs/validation.md` "REVISE Loop" section: collect improvement recommendations from both agents, re-run Wave 3 → Wave 4 with recommendations as input. Max 2 iterations. If still REVISE after iteration 2: set `validation_status: PASS_WITH_WARNINGS`
 8. If `--no-validate`: skip entirely per `refs/validation.md` "No-Validate Behavior" section. Set `validation_status: SKIPPED` and `validation_score: 0.0`. No agents are dispatched. Emit: `"Wave 4 skipped: --no-validate flag set."`
 
-**Exit Criteria**: Validation complete. Emit: `"Wave 4 complete: validation score X.XX (STATUS)."` (or skip message if `--no-validate`)
+**Exit Criteria**: Validation complete. Trigger `sc:save` with validation results (final). Emit: `"Wave 4 complete: validation score X.XX (STATUS)."` (or skip message if `--no-validate`)
 
 ### Post-Wave: Completion
 
@@ -214,7 +223,7 @@ sc:roadmap supports three adversarial modes via sc:adversarial integration. Full
 `--multi-roadmap --agents` → Waves 0-1B standard → Wave 2 expands model-only agents with auto-detected persona → invokes `sc:adversarial --source --generate roadmap --agents` → unified roadmap → Waves 3-4 validate
 
 ### Combined Flow
-Both flags → Wave 1A consolidates specs → Wave 1B extracts → Wave 2 generates competing roadmaps → Waves 3-4 validate
+Both flags → Wave 1A consolidates specs → Wave 1B extracts → Wave 2 generates competing roadmaps → Waves 3-4 validate. Combined mode reports both adversarial pass completions: Wave 1A emits consolidation progress, Wave 2 emits multi-roadmap progress. If Wave 1A fails, Wave 2 is not attempted (error propagation — see Wave 1A exit criteria).
 
 ### Agent Count Rules
 - Range: 2-10 agents
@@ -267,7 +276,25 @@ All frontmatter follows the schemas defined in spec Section FR-002. Key rules:
 
 ### Session Persistence & Resumability
 
-sc:roadmap triggers `sc:save` at each wave boundary. If interrupted, resume from last completed wave via Serena memory. Spec-hash mismatch detection prevents stale extraction.
+sc:roadmap triggers `sc:save` at each wave boundary for cross-session resumability.
+
+**Save points**: After each wave completion, persist session state to Serena memory using key `sc-roadmap:<spec-name>:<timestamp>`. State accumulates progressively:
+- After Wave 0: spec paths, output dir, flags, collision suffix
+- After Wave 1A: adversarial results (unified spec path, convergence score)
+- After Wave 1B: extraction results, complexity score, persona selection
+- After Wave 2: template selection, milestone structure, dependency graph
+- After Wave 3: generation state (roadmap.md, test-strategy.md written)
+- After Wave 4: validation results (final)
+
+**Session schema** (`roadmap_session`): `spec_source`, `output_dir`, `flags`, `last_completed_wave` (0|1A|1B|2|3|4), `extraction_complete`, `complexity_score`, `primary_persona`, `template_selected`, `milestone_count`, `adversarial_results`, `validation_score`, plus spec file hash for mismatch detection.
+
+**Resume protocol**: When sc:roadmap is invoked and Serena memory contains a matching session (same `spec_source` + `output_dir`):
+1. Prompt user: `"Found incomplete roadmap session (last completed: Wave X). Resume? [Y/n]"`
+2. If yes: validate spec file hash — if mismatch, warn `"Spec file has changed since last session. Starting fresh to avoid stale extraction."` and start fresh (existing artifacts get `-N` suffix per collision protocol)
+3. If yes and hash matches: skip to wave after `last_completed_wave`, reload artifacts from disk
+4. If no: start fresh (existing artifacts get `-N` suffix per collision protocol)
+
+**Graceful degradation**: If Serena unavailable, proceed without persistence and write session state to `<output_dir>/.session-memory.md` as fallback. Warn user that cross-session resume is unavailable.
 
 ## 8. Boundaries
 
