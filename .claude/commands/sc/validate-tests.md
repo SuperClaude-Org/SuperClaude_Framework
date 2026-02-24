@@ -95,6 +95,26 @@ BY CATEGORY
   ...
 ```
 
+## Activation
+
+**MANDATORY**: Before executing any protocol steps, invoke:
+> Skill sc:validate-tests-protocol
+
+Do NOT proceed with protocol execution using only this command file.
+The full behavioral specification is in the protocol skill.
+
+## Boundaries
+
+**Will:**
+- Validate tier classification behavior against YAML test specifications
+- Apply the tier classification algorithm to test inputs and compare against expected results
+- Generate summary reports with pass/fail counts and failure details
+
+**Will Not:**
+- Modify test specification files
+- Change the classification algorithm itself
+- Skip test categories without explicit user request
+
 ## See Also
 
 - `/sc:task` - Unified task command

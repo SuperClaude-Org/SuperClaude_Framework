@@ -84,6 +84,14 @@ personas: [architect, analyzer, scribe]
   --depth deep --output .dev/releases/current/migration-v2/
 ```
 
+## Activation
+
+**MANDATORY**: Before executing any protocol steps, invoke:
+> Skill sc:adversarial-protocol
+
+Do NOT proceed with protocol execution using only this command file.
+The full behavioral specification is in the protocol skill.
+
 ## Boundaries
 
 **Will:**

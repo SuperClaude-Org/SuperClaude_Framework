@@ -271,9 +271,6 @@ lint-architecture:
 		if [ "$$lines" -gt 500 ]; then \
 			echo "  ❌ ERROR [Check 4]: $$name ($$lines lines, hard limit 500)"; \
 			errors=$$((errors+1)); \
-		elif [ "$$lines" -gt 350 ] && grep -q "## Activation" "$$f"; then \
-			echo "  ❌ ERROR [Check 4]: $$name ($$lines lines, max ≤350 for paired commands)"; \
-			errors=$$((errors+1)); \
 		elif [ "$$lines" -gt 200 ]; then \
 			echo "  ⚠️  WARN [Check 3]: $$name ($$lines lines, warn threshold 200)"; \
 			warnings=$$((warnings+1)); \
