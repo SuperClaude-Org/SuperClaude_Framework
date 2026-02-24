@@ -1,7 +1,7 @@
 ---
 name: sc:roadmap
 description: Generate comprehensive project roadmaps from specification documents
-allowed-tools: Read, Glob, Grep, Edit, Write, Bash, TodoWrite, Task
+allowed-tools: Read, Glob, Grep, Edit, Write, Bash, TodoWrite, Task, Skill
 ---
 
 # /sc:roadmap — Roadmap Generator
@@ -67,7 +67,11 @@ When the user requests roadmap generation from a specification file. Requires a 
 
 ## Activation
 
-Load and execute the full behavioral instructions from `src/superclaude/skills/sc-roadmap/SKILL.md`.
+**MANDATORY**: Before executing any protocol steps, invoke:
+> Skill sc:roadmap-protocol
+
+Do NOT proceed with protocol execution using only this command file.
+The full behavioral specification is in the protocol skill.
 
 ## Boundaries
 
