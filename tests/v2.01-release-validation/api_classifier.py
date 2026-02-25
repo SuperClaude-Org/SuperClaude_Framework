@@ -118,11 +118,24 @@ async def run_api_classification(
 
     Raises after MAX_RETRIES exhausted.
     """
+    # Embed a completion prompt that anchors the model to the exact
+    # header format and valid tier vocabulary.  temperature=0 ensures
+    # deterministic output.
     user_message = (
-        f'You are executing the /sc:task command. Follow the system prompt instructions EXACTLY.\n'
-        f'Classify this task and emit the classification header as your FIRST output:\n\n'
-        f'{test["prompt"]}'
+        f'/sc:task "{test["prompt"]}"\n\n'
+        f"Output ONLY the classification header block for this task. "
+        f"Use EXACTLY this format (the only valid TIER values are STRICT, STANDARD, LIGHT, or EXEMPT):\n\n"
+        f"<!-- SC:TASK-UNIFIED:CLASSIFICATION -->\n"
+        f"TIER: [STRICT or STANDARD or LIGHT or EXEMPT]\n"
+        f"CONFIDENCE: [0.00-1.00]\n"
+        f"KEYWORDS: [matched keywords]\n"
+        f"OVERRIDE: false\n"
+        f"RATIONALE: [one line]\n"
+        f"<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->"
     )
+
+    # No prefix needed — the model should emit the full header.
+    output_prefix = ""
 
     last_error: Exception | None = None
     for attempt in range(1, MAX_RETRIES + 1):
@@ -132,6 +145,7 @@ async def run_api_classification(
                 client.messages.create(
                     model=model_id,
                     max_tokens=1024,
+                    temperature=0.0,
                     system=system_prompt,
                     messages=[{"role": "user", "content": user_message}],
                 ),
@@ -139,8 +153,9 @@ async def run_api_classification(
             )
             elapsed = time.monotonic() - start
 
-            # Extract text from response content blocks
-            output_text = ""
+            # Extract text and prepend the header opening so the scorer
+            # can parse the full classification block.
+            output_text = output_prefix
             for block in response.content:
                 if block.type == "text":
                     output_text += block.text

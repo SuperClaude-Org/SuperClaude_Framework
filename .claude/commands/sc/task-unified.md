@@ -45,9 +45,13 @@ Key flags: `--strategy`, `--compliance`, `--verify`, `--skip-compliance`, `--for
 
 ## Classification (MANDATORY FIRST OUTPUT)
 
-**CRITICAL: Classification is TEXT-ONLY. Do NOT invoke ANY tools (Skill, Read, Grep, etc.) to perform classification. Emit the header below based SOLELY on the keyword rules in this section. Tool invocation begins AFTER classification.**
+**CRITICAL RULES:**
+1. **TEXT-ONLY**: Do NOT invoke ANY tools (Skill, Read, Grep, etc.) for classification. Tool invocation begins AFTER classification.
+2. **EXACT FORMAT**: Use the HTML comment block below EXACTLY. Do NOT use `**CLASSIFICATION: ...**` or any other format.
+3. **VALID TIERS ONLY**: The ONLY valid TIER values are: `STRICT`, `STANDARD`, `LIGHT`, `EXEMPT`. Values like "ITERATIVE", "SIMPLE", "IMPLEMENT", "COMPLEX" are INVALID and MUST NOT be used.
+4. **FIRST OUTPUT**: This header MUST be your very first output, before any other text.
 
-Before ANY other text, emit this exact header:
+Emit this EXACT header format (replace bracketed values only):
 ```
 <!-- SC:TASK-UNIFIED:CLASSIFICATION -->
 TIER: [STRICT|STANDARD|LIGHT|EXEMPT]
@@ -91,23 +95,52 @@ After emitting the classification header as text, proceed based on tier:
 - **STANDARD / STRICT**: Invoke the full protocol for tier-appropriate workflow:
   > Skill sc:task-unified-protocol
 
-## Examples
+## Classification Output Examples
 
-```bash
-# STRICT: security-critical implementation
-/sc:task "implement user authentication system" --strategy systematic --compliance strict
+**The ONLY valid tier values are: STRICT, STANDARD, LIGHT, EXEMPT. Do NOT invent other labels (e.g., "ITERATIVE", "IMPLEMENT", "SIMPLE" are INVALID).**
 
-# STANDARD: typical feature work
-/sc:task "add input validation to user endpoint"
+For `/sc:task "fix security vulnerability in auth module"`:
+```
+<!-- SC:TASK-UNIFIED:CLASSIFICATION -->
+TIER: STRICT
+CONFIDENCE: 0.95
+KEYWORDS: security, vulnerability, auth
+OVERRIDE: false
+RATIONALE: Security-critical change in authentication module
+<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->
+```
 
-# LIGHT: trivial change
-/sc:task "fix typo in error message" --compliance light
+For `/sc:task "explain how the routing middleware works"`:
+```
+<!-- SC:TASK-UNIFIED:CLASSIFICATION -->
+TIER: EXEMPT
+CONFIDENCE: 0.92
+KEYWORDS: explain, how
+OVERRIDE: false
+RATIONALE: Read-only explanation request, no code changes
+<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->
+```
 
-# EXEMPT: read-only exploration
-/sc:task "explain how the auth middleware works"
+For `/sc:task "fix typo in error message"`:
+```
+<!-- SC:TASK-UNIFIED:CLASSIFICATION -->
+TIER: LIGHT
+CONFIDENCE: 0.95
+KEYWORDS: typo, fix
+OVERRIDE: false
+RATIONALE: Trivial single-string correction
+<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->
+```
 
-# Override: force strict on auto-detected standard
-/sc:task "update logging format" --force-strict
+For `/sc:task "add pagination to user list endpoint"`:
+```
+<!-- SC:TASK-UNIFIED:CLASSIFICATION -->
+TIER: STANDARD
+CONFIDENCE: 0.85
+KEYWORDS: add, endpoint
+OVERRIDE: false
+RATIONALE: Typical feature addition, moderate scope
+<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->
 ```
 
 ## Boundaries

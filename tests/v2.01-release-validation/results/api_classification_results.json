@@ -1,69 +1,92 @@
 {
   "test_suite": "S5_api_classification",
-  "timestamp": "2026-02-25T07:43:26.231849+00:00",
-  "duration_s": 49.03,
+  "timestamp": "2026-02-25T07:58:11.213748+00:00",
+  "duration_s": 12.77,
   "models": [
+    "haiku",
     "sonnet"
   ],
   "system_prompt_file": "/config/workspace/SuperClaude_Framework/src/superclaude/commands/task-unified.md",
-  "system_prompt_chars": 5309,
+  "system_prompt_chars": 6407,
   "results": [
     {
       "test_id": "B1",
       "test_type": "api_classification",
-      "model": "sonnet",
-      "model_id": "claude-sonnet-4-6",
+      "model": "haiku",
+      "model_id": "claude-haiku-4-5-20251001",
       "prompt": "fix security vulnerability in auth module",
       "expected_tier": "STRICT",
-      "actual_tier": "",
-      "timestamp": "2026-02-25T07:42:52.636635+00:00",
-      "duration_s": 15.42,
+      "actual_tier": "STRICT",
+      "timestamp": "2026-02-25T07:57:59.641292+00:00",
+      "duration_s": 1.19,
       "scores": {
-        "header_present": 0.0,
-        "tier_correct": 0.0,
-        "confidence_adequate": 0.0,
+        "header_present": 1.0,
+        "tier_correct": 1.0,
+        "confidence_adequate": 1.0,
         "keywords_relevant": 1.0,
-        "weighted_total": 0.15,
-        "parsed": {}
+        "weighted_total": 1.0,
+        "parsed": {
+          "tier": "STRICT",
+          "confidence": 0.95,
+          "keywords": [
+            "security vulnerability",
+            "auth module",
+            "fix"
+          ],
+          "override": false,
+          "rationale": "Security vulnerability fixes require strict handling due to potential impact on system integrity and user safety.",
+          "partial_parse": false
+        }
       },
-      "score": 0.15,
-      "pass": false,
+      "score": 1.0,
+      "pass": true,
       "error": null,
-      "output_preview": "**CLASSIFICATION: ITERATIVE**\n\n*Rationale: Security vulnerability fix requires investigation, analysis of the specific vulnerability, implementing fixes, and verification \u2014 multiple steps with potential back-and-forth.*\n\n---\n\nLet me start by exploring the auth module to understand the codebase structure and identify the security vulnerability.\n\n<function_calls>\n<invoke name=\"Read\">\n<parameter name=\"file_path\">.</parameter>\n</invoke>\n</function_calls>\n<function_calls>\n<invoke name=\"Glob\">\n<parame"
+      "output_preview": "<!-- SC:TASK-UNIFIED:CLASSIFICATION -->\nTIER: STRICT\nCONFIDENCE: 0.95\nKEYWORDS: security vulnerability, auth module, fix\nOVERRIDE: false\nRATIONALE: Security vulnerability fixes require strict handling due to potential impact on system integrity and user safety.\n<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->"
     },
     {
       "test_id": "B2",
       "test_type": "api_classification",
-      "model": "sonnet",
-      "model_id": "claude-sonnet-4-6",
+      "model": "haiku",
+      "model_id": "claude-haiku-4-5-20251001",
       "prompt": "explain how the routing middleware works",
       "expected_tier": "EXEMPT",
-      "actual_tier": "",
-      "timestamp": "2026-02-25T07:43:09.549084+00:00",
-      "duration_s": 16.91,
+      "actual_tier": "LIGHT",
+      "timestamp": "2026-02-25T07:58:01.067793+00:00",
+      "duration_s": 1.43,
       "scores": {
-        "header_present": 0.0,
-        "tier_correct": 0.0,
-        "confidence_adequate": 0.0,
-        "keywords_relevant": 0.5,
-        "weighted_total": 0.075,
-        "parsed": {}
+        "header_present": 1.0,
+        "tier_correct": 0.5,
+        "confidence_adequate": 1.0,
+        "keywords_relevant": 1.0,
+        "weighted_total": 0.8,
+        "parsed": {
+          "tier": "LIGHT",
+          "confidence": 0.95,
+          "keywords": [
+            "[routing",
+            "middleware",
+            "technical explanation]"
+          ],
+          "override": false,
+          "rationale": "Request is a straightforward technical documentation question about routing middleware functionality with no security, safety, or policy concerns.",
+          "partial_parse": false
+        }
       },
-      "score": 0.075,
-      "pass": false,
+      "score": 0.8,
+      "pass": true,
       "error": null,
-      "output_preview": "**CLASSIFICATION: SIMPLE**\n**Mode: Direct Answer**\n**Persona: default**\n**No orchestration needed**\n\n---\n\n## How Routing Middleware Works\n\nRouting middleware sits between incoming requests and your application handlers, inspecting and directing traffic based on defined rules. Here's how it works:\n\n---\n\n### Core Concept\n\n```\nRequest \u2192 [Routing Middleware] \u2192 Matching Handler \u2192 Response\n```\n\nThe middleware intercepts every request, matches it against a route table, and dispatches it to the appropri"
+      "output_preview": "<!-- SC:TASK-UNIFIED:CLASSIFICATION -->\nTIER: LIGHT\nCONFIDENCE: 0.95\nKEYWORDS: [routing, middleware, technical explanation]\nOVERRIDE: false\nRATIONALE: Request is a straightforward technical documentation question about routing middleware functionality with no security, safety, or policy concerns.\n<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->"
     },
     {
       "test_id": "B3",
       "test_type": "api_classification",
-      "model": "sonnet",
-      "model_id": "claude-sonnet-4-6",
+      "model": "haiku",
+      "model_id": "claude-haiku-4-5-20251001",
       "prompt": "fix typo in error message",
       "expected_tier": "LIGHT",
       "actual_tier": "LIGHT",
-      "timestamp": "2026-02-25T07:43:13.045038+00:00",
-      "duration_s": 3.5,
+      "timestamp": "2026-02-25T07:58:02.073401+00:00",
+      "duration_s": 1.01,
       "scores": {
         "header_present": 1.0,
         "tier_correct": 1.0,
@@ -75,17 +98,155 @@
           "confidence": 0.95,
           "keywords": [
             "typo",
-            "error message"
+            "error message",
+            "fix"
           ],
           "override": false,
-          "rationale": "Fixing a typo in an error message is a trivial single-string change matching LIGHT tier keywords.",
+          "rationale": "Minor documentation/text correction with no security, safety, or compliance implications.",
           "partial_parse": false
         }
       },
       "score": 1.0,
       "pass": true,
       "error": null,
-      "output_preview": "<!-- SC:TASK-UNIFIED:CLASSIFICATION -->\nTIER: LIGHT\nCONFIDENCE: 0.95\nKEYWORDS: typo, error message\nOVERRIDE: false\nRATIONALE: Fixing a typo in an error message is a trivial single-string change matching LIGHT tier keywords.\n<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->\n\nSure! To fix the typo in the error message, I'll need a bit more information:\n\n1. **Which file** contains the error message with the typo?\n2. **What is the current (incorrect) text**, and **what should it say**?\n\nIf you can point me t"
+      "output_preview": "<!-- SC:TASK-UNIFIED:CLASSIFICATION -->\nTIER: LIGHT\nCONFIDENCE: 0.95\nKEYWORDS: typo, error message, fix\nOVERRIDE: false\nRATIONALE: Minor documentation/text correction with no security, safety, or compliance implications.\n<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->"
+    },
+    {
+      "test_id": "B4",
+      "test_type": "api_classification",
+      "model": "haiku",
+      "model_id": "claude-haiku-4-5-20251001",
+      "prompt": "add pagination to user list endpoint",
+      "expected_tier": "STANDARD",
+      "actual_tier": "LIGHT",
+      "timestamp": "2026-02-25T07:58:03.053308+00:00",
+      "duration_s": 0.98,
+      "scores": {
+        "header_present": 1.0,
+        "tier_correct": 0.5,
+        "confidence_adequate": 1.0,
+        "keywords_relevant": 1.0,
+        "weighted_total": 0.8,
+        "parsed": {
+          "tier": "LIGHT",
+          "confidence": 0.92,
+          "keywords": [
+            "pagination",
+            "endpoint",
+            "user list",
+            "feature development"
+          ],
+          "override": false,
+          "rationale": "Standard feature development task with clear scope and no security, compliance, or high-risk implications.",
+          "partial_parse": false
+        }
+      },
+      "score": 0.8,
+      "pass": true,
+      "error": null,
+      "output_preview": "<!-- SC:TASK-UNIFIED:CLASSIFICATION -->\nTIER: LIGHT\nCONFIDENCE: 0.92\nKEYWORDS: pagination, endpoint, user list, feature development\nOVERRIDE: false\nRATIONALE: Standard feature development task with clear scope and no security, compliance, or high-risk implications.\n<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->"
+    },
+    {
+      "test_id": "B1",
+      "test_type": "api_classification",
+      "model": "sonnet",
+      "model_id": "claude-sonnet-4-6",
+      "prompt": "fix security vulnerability in auth module",
+      "expected_tier": "STRICT",
+      "actual_tier": "STRICT",
+      "timestamp": "2026-02-25T07:58:05.211135+00:00",
+      "duration_s": 2.16,
+      "scores": {
+        "header_present": 1.0,
+        "tier_correct": 1.0,
+        "confidence_adequate": 1.0,
+        "keywords_relevant": 1.0,
+        "weighted_total": 1.0,
+        "parsed": {
+          "tier": "STRICT",
+          "confidence": 0.97,
+          "keywords": [
+            "security",
+            "vulnerability",
+            "auth",
+            "fix"
+          ],
+          "override": false,
+          "rationale": "Security vulnerability fix in authentication module requires strict oversight to prevent introducing new risks or weakening security controls.",
+          "partial_parse": false
+        }
+      },
+      "score": 1.0,
+      "pass": true,
+      "error": null,
+      "output_preview": "<!-- SC:TASK-UNIFIED:CLASSIFICATION -->\nTIER: STRICT\nCONFIDENCE: 0.97\nKEYWORDS: security, vulnerability, auth, fix\nOVERRIDE: false\nRATIONALE: Security vulnerability fix in authentication module requires strict oversight to prevent introducing new risks or weakening security controls.\n<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->"
+    },
+    {
+      "test_id": "B2",
+      "test_type": "api_classification",
+      "model": "sonnet",
+      "model_id": "claude-sonnet-4-6",
+      "prompt": "explain how the routing middleware works",
+      "expected_tier": "EXEMPT",
+      "actual_tier": "EXEMPT",
+      "timestamp": "2026-02-25T07:58:06.901474+00:00",
+      "duration_s": 1.69,
+      "scores": {
+        "header_present": 1.0,
+        "tier_correct": 1.0,
+        "confidence_adequate": 1.0,
+        "keywords_relevant": 1.0,
+        "weighted_total": 1.0,
+        "parsed": {
+          "tier": "EXEMPT",
+          "confidence": 0.97,
+          "keywords": [
+            "explain",
+            "how",
+            "works"
+          ],
+          "override": false,
+          "rationale": "Pure explanatory/educational request with no code generation, modification, or destructive actions involved.",
+          "partial_parse": false
+        }
+      },
+      "score": 1.0,
+      "pass": true,
+      "error": null,
+      "output_preview": "<!-- SC:TASK-UNIFIED:CLASSIFICATION -->\nTIER: EXEMPT\nCONFIDENCE: 0.97\nKEYWORDS: explain, how, works\nOVERRIDE: false\nRATIONALE: Pure explanatory/educational request with no code generation, modification, or destructive actions involved.\n<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->"
+    },
+    {
+      "test_id": "B3",
+      "test_type": "api_classification",
+      "model": "sonnet",
+      "model_id": "claude-sonnet-4-6",
+      "prompt": "fix typo in error message",
+      "expected_tier": "LIGHT",
+      "actual_tier": "LIGHT",
+      "timestamp": "2026-02-25T07:58:08.248574+00:00",
+      "duration_s": 1.35,
+      "scores": {
+        "header_present": 1.0,
+        "tier_correct": 1.0,
+        "confidence_adequate": 1.0,
+        "keywords_relevant": 1.0,
+        "weighted_total": 1.0,
+        "parsed": {
+          "tier": "LIGHT",
+          "confidence": 0.95,
+          "keywords": [
+            "typo",
+            "fix"
+          ],
+          "override": false,
+          "rationale": "Trivial single-string correction with no functional or security impact",
+          "partial_parse": false
+        }
+      },
+      "score": 1.0,
+      "pass": true,
+      "error": null,
+      "output_preview": "<!-- SC:TASK-UNIFIED:CLASSIFICATION -->\nTIER: LIGHT\nCONFIDENCE: 0.95\nKEYWORDS: typo, fix\nOVERRIDE: false\nRATIONALE: Trivial single-string correction with no functional or security impact\n<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->"
     },
     {
       "test_id": "B4",
@@ -94,33 +255,50 @@
       "model_id": "claude-sonnet-4-6",
       "prompt": "add pagination to user list endpoint",
       "expected_tier": "STANDARD",
-      "actual_tier": "",
-      "timestamp": "2026-02-25T07:43:26.231754+00:00",
-      "duration_s": 13.18,
+      "actual_tier": "STANDARD",
+      "timestamp": "2026-02-25T07:58:11.213589+00:00",
+      "duration_s": 2.96,
       "scores": {
-        "header_present": 0.0,
-        "tier_correct": 0.0,
-        "confidence_adequate": 0.0,
+        "header_present": 1.0,
+        "tier_correct": 1.0,
+        "confidence_adequate": 1.0,
         "keywords_relevant": 1.0,
-        "weighted_total": 0.15,
-        "parsed": {}
+        "weighted_total": 1.0,
+        "parsed": {
+          "tier": "STANDARD",
+          "confidence": 0.82,
+          "keywords": [
+            "endpoint",
+            "user list",
+            "pagination",
+            "API"
+          ],
+          "override": false,
+          "rationale": "Adding pagination to an API endpoint is a moderate-complexity feature change requiring implementation across multiple layers (query params, DB query, response format) with standard risk profile.",
+          "partial_parse": false
+        }
       },
-      "score": 0.15,
-      "pass": false,
+      "score": 1.0,
+      "pass": true,
       "error": null,
-      "output_preview": "**CLASSIFICATION: IMPLEMENT**\n*Simple feature addition with clear scope*\n\n---\n\n## Task Analysis\n\nAdding pagination to a user list endpoint. I'll explore the codebase first to understand the existing implementation.\n\n<function_calls>\n<invoke name=\"computer\">\n<parameter name=\"action\">screenshot</parameter>\n</invoke>\n</function_calls>\n<function_calls>\n<invoke name=\"Bash\">\n<parameter name=\"command\">find . -type f -name \"*.py\" -o -name \"*.js\" -o -name \"*.ts\" -o -name \"*.go\" -o -name \"*.rb\" | grep -v "
+      "output_preview": "<!-- SC:TASK-UNIFIED:CLASSIFICATION -->\nTIER: STANDARD\nCONFIDENCE: 0.82\nKEYWORDS: endpoint, user list, pagination, API\nOVERRIDE: false\nRATIONALE: Adding pagination to an API endpoint is a moderate-complexity feature change requiring implementation across multiple layers (query params, DB query, response format) with standard risk profile.\n<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->"
     }
   ],
   "summary": {
-    "total_tests": 4,
-    "total_pass": 1,
-    "pass_rate": 0.25,
-    "avg_score": 0.34375,
+    "total_tests": 8,
+    "total_pass": 8,
+    "pass_rate": 1.0,
+    "avg_score": 0.95,
     "per_model": {
+      "haiku": {
+        "tests": 4,
+        "pass": 4,
+        "avg_score": 0.9
+      },
       "sonnet": {
         "tests": 4,
-        "pass": 1,
-        "avg_score": 0.344
+        "pass": 4,
+        "avg_score": 1.0
       }
     }
   }

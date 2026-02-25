@@ -1,0 +1,19 @@
+{
+  "test_id": "W3",
+  "test_type": "wiring",
+  "sc": "SC-002",
+  "run": 1,
+  "model": "haiku",
+  "timestamp": "2026-02-25T07:48:57.259335+00:00",
+  "duration_ms": 57311,
+  "command": "/sc:validate-tests --all --summary",
+  "expected_protocol": "sc:validate-tests-protocol",
+  "scores": {
+    "skill_invoked": 0.0,
+    "protocol_flow": 0.0,
+    "no_raw_dump": 1.0,
+    "tool_engagement": 0.0,
+    "weighted_total": 0.15
+  },
+  "score": 0.15
+}

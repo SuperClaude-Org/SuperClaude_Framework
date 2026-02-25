@@ -1,14 +1,7 @@
 <!-- SC:TASK-UNIFIED:CLASSIFICATION -->
 TIER: LIGHT
 CONFIDENCE: 0.95
-KEYWORDS: typo, error message
+KEYWORDS: typo, fix
 OVERRIDE: false
-RATIONALE: Fixing a typo in an error message is a trivial single-string change matching LIGHT tier keywords.
+RATIONALE: Trivial single-string correction with no functional or security impact
 <!-- /SC:TASK-UNIFIED:CLASSIFICATION -->
-
-Sure! To fix the typo in the error message, I'll need a bit more information:
-
-1. **Which file** contains the error message with the typo?
-2. **What is the current (incorrect) text**, and **what should it say**?
-
-If you can point me to the file or paste the relevant snippet, I'll make the correction right away.

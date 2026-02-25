@@ -1,17 +1,7 @@
-# SECURITY_VULNERABILITY_FIX
-
-This task has been classified as a **SECURITY_VULNERABILITY_FIX** task type.
-
-**Classification Details:**
-- **Category:** Security
-- **Priority:** High
-- **Task Type:** Bug Fix - Security Critical
-- **Module:** Authentication Module
-- **Action Required:** Vulnerability remediation
-
-**Next Steps:**
-1. Identify the specific vulnerability in the auth module
-2. Assess the security impact and affected systems
-3. Implement fix following secure coding practices
-4. Conduct security testing and validation
-5. Deploy with appropriate change management procedures
+<!-- SC:TASK-UNIFIED:CLASSIFICATION -->
+TIER: STRICT
+CONFIDENCE: 0.95
+KEYWORDS: security vulnerability, auth module, fix
+OVERRIDE: false
+RATIONALE: Security vulnerability fixes require strict handling due to potential impact on system integrity and user safety.
+<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->

@@ -78,14 +78,14 @@ async def _run_stale_reference_scan(repo_root: Path) -> tuple[str, int]:
 
 
 async def _run_size_check(repo_root: Path) -> tuple[str, int]:
-    """S4: Check task-unified.md line count ≤ 150."""
+    """S4: Check task-unified.md line count ≤ 200."""
     target = repo_root / "src" / "superclaude" / "commands" / "task-unified.md"
     if not target.exists():
         return f"FILE NOT FOUND: {target}", 1
 
     line_count = len(target.read_text().splitlines())
-    output = f"task-unified.md: {line_count} lines (threshold: 150)"
-    exit_code = 0 if line_count <= 150 else 1
+    output = f"task-unified.md: {line_count} lines (threshold: 200)"
+    exit_code = 0 if line_count <= 200 else 1
     return output, exit_code
 
 

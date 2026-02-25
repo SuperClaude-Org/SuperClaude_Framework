@@ -1,44 +1,7 @@
-# TASK CLASSIFICATION: EXPLANATION REQUEST
-
----
-
-## Routing Middleware Explanation
-
-Routing middleware is a software component that processes incoming requests and directs them to appropriate handlers based on the request characteristics. Here's how it works:
-
-### Core Function
-Routing middleware matches incoming HTTP requests against defined routes and forwards them to the correct handler (controller, function, or endpoint).
-
-### Key Components
-
-**1. Route Definition**
-- Routes are typically defined as patterns (e.g., `/users/:id`, `/api/posts`)
-- Include HTTP methods (GET, POST, PUT, DELETE, etc.)
-- May specify middleware chains to execute before the handler
-
-**2. Request Matching**
-- Middleware examines the request path, method, and sometimes headers/query parameters
-- Compares against registered route patterns in order
-- Supports wildcards, parameters, and regex patterns
-
-**3. Parameter Extraction**
-- Captures dynamic segments (`:id`, `:slug`) from the URL
-- Makes them available to the handler via a params object
-- May also parse query strings and request bodies
-
-**4. Handler Invocation**
-- Once a match is found, the routing middleware calls the associated handler
-- Passes the request object and response object
-- May inject extracted parameters into the handler's scope
-
-### Execution Flow
-```
-Request → Route Matching → Parameter Extraction → Handler Execution → Response
-```
-
-### Common Patterns
-- **Hierarchical routing**: Nested route groups (`/api/v1/users`)
-- **Middleware chains**: Pre-handlers that run before the main handler (auth, validation)
-- **Next function**: Allows sequential middleware execution before reaching the final handler
-
-This architecture enables clean separation of concerns and scalable request handling.
+<!-- SC:TASK-UNIFIED:CLASSIFICATION -->
+TIER: LIGHT
+CONFIDENCE: 0.95
+KEYWORDS: [routing, middleware, technical explanation]
+OVERRIDE: false
+RATIONALE: Request is a straightforward technical documentation question about routing middleware functionality with no security, safety, or policy concerns.
+<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->

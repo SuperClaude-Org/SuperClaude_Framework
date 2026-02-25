@@ -1,0 +1,244 @@
+[
+  {
+    "test_id": "S1",
+    "test_name": "lint-architecture",
+    "test_type": "structural",
+    "sc": "SC-004",
+    "run": 1,
+    "model": null,
+    "timestamp": "2026-02-25T07:40:28.743394+00:00",
+    "duration_ms": 167,
+    "exit_code": 2,
+    "scores": {
+      "pass": false,
+      "weighted_total": 0.0
+    },
+    "score": 0.0
+  },
+  {
+    "test_id": "S2",
+    "test_name": "verify-sync",
+    "test_type": "structural",
+    "sc": "SC-005",
+    "run": 1,
+    "model": null,
+    "timestamp": "2026-02-25T07:40:28.705357+00:00",
+    "duration_ms": 129,
+    "exit_code": 0,
+    "scores": {
+      "pass": true,
+      "weighted_total": 1.0
+    },
+    "score": 1.0
+  },
+  {
+    "test_id": "S3",
+    "test_name": "stale-references",
+    "test_type": "structural",
+    "sc": "SC-009",
+    "run": 1,
+    "model": null,
+    "timestamp": "2026-02-25T07:40:28.591802+00:00",
+    "duration_ms": 15,
+    "exit_code": 0,
+    "scores": {
+      "pass": true,
+      "weighted_total": 1.0
+    },
+    "score": 1.0
+  },
+  {
+    "test_id": "S4",
+    "test_name": "task-unified-size",
+    "test_type": "structural",
+    "sc": "SC-010",
+    "run": 1,
+    "model": null,
+    "timestamp": "2026-02-25T07:40:28.576769+00:00",
+    "duration_ms": 0,
+    "exit_code": 0,
+    "scores": {
+      "pass": true,
+      "weighted_total": 1.0
+    },
+    "score": 1.0
+  },
+  {
+    "test_id": "S5",
+    "test_name": "frontmatter-completeness",
+    "test_type": "structural",
+    "sc": "SC-003",
+    "run": 1,
+    "model": null,
+    "timestamp": "2026-02-25T07:40:28.577009+00:00",
+    "duration_ms": 0,
+    "exit_code": 0,
+    "scores": {
+      "pass": true,
+      "found": 5,
+      "total": 5,
+      "weighted_total": 1.0
+    },
+    "score": 1.0
+  },
+  {
+    "test_id": "B1",
+    "test_type": "classification",
+    "sc": "SC-007",
+    "run": 1,
+    "model": "haiku",
+    "timestamp": "2026-02-25T07:40:51.433987+00:00",
+    "duration_ms": 22853,
+    "prompt": "fix security vulnerability in auth module",
+    "expected_tier": "STRICT",
+    "actual": {},
+    "scores": {
+      "header_present": 0.0,
+      "tier_correct": 0.0,
+      "confidence_adequate": 0.0,
+      "keywords_relevant": 1.0,
+      "weighted_total": 0.15,
+      "parsed": {}
+    },
+    "score": 0.15
+  },
+  {
+    "test_id": "B2",
+    "test_type": "classification",
+    "sc": "SC-007",
+    "run": 1,
+    "model": "haiku",
+    "timestamp": "2026-02-25T07:41:25.601470+00:00",
+    "duration_ms": 34166,
+    "prompt": "explain how the routing middleware works",
+    "expected_tier": "EXEMPT",
+    "actual": {},
+    "scores": {
+      "header_present": 0.0,
+      "tier_correct": 0.0,
+      "confidence_adequate": 0.0,
+      "keywords_relevant": 0.0,
+      "weighted_total": 0.0,
+      "parsed": {}
+    },
+    "score": 0.0
+  },
+  {
+    "test_id": "B3",
+    "test_type": "classification",
+    "sc": "SC-007",
+    "run": 1,
+    "model": "haiku",
+    "timestamp": "2026-02-25T07:42:48.300907+00:00",
+    "duration_ms": 82699,
+    "prompt": "fix typo in error message",
+    "expected_tier": "LIGHT",
+    "actual": {},
+    "scores": {
+      "header_present": 0.0,
+      "tier_correct": 0.0,
+      "confidence_adequate": 0.0,
+      "keywords_relevant": 0.0,
+      "weighted_total": 0.0,
+      "parsed": {}
+    },
+    "score": 0.0
+  },
+  {
+    "test_id": "B4",
+    "test_type": "classification",
+    "sc": "SC-007",
+    "run": 1,
+    "model": "haiku",
+    "timestamp": "2026-02-25T07:43:40.637575+00:00",
+    "duration_ms": 52336,
+    "prompt": "add pagination to user list endpoint",
+    "expected_tier": "STANDARD",
+    "actual": {},
+    "scores": {
+      "header_present": 0.0,
+      "tier_correct": 0.0,
+      "confidence_adequate": 0.0,
+      "keywords_relevant": 0.0,
+      "weighted_total": 0.0,
+      "parsed": {}
+    },
+    "score": 0.0
+  },
+  {
+    "test_id": "W1",
+    "test_type": "wiring",
+    "sc": "SC-002",
+    "run": 1,
+    "model": "haiku",
+    "timestamp": "2026-02-25T07:45:46.556958+00:00",
+    "duration_ms": 125918,
+    "command": "/sc:task \"implement JWT authentication system\"",
+    "expected_protocol": "sc:task-unified-protocol",
+    "scores": {
+      "skill_invoked": 1.0,
+      "protocol_flow": 0.625,
+      "no_raw_dump": 1.0,
+      "tool_engagement": 0.5,
+      "weighted_total": 0.79375
+    },
+    "score": 0.79375
+  },
+  {
+    "test_id": "W2",
+    "test_type": "wiring",
+    "sc": "SC-002",
+    "run": 1,
+    "model": "haiku",
+    "timestamp": "2026-02-25T07:47:59.947470+00:00",
+    "duration_ms": 133388,
+    "command": "/sc:adversarial --compare /tmp/v201_w2_umexssor/a.md,/tmp/v201_w2_umexssor/b.md --depth quick",
+    "expected_protocol": "sc:adversarial-protocol",
+    "scores": {
+      "skill_invoked": 0.0,
+      "protocol_flow": 0.0,
+      "no_raw_dump": 1.0,
+      "tool_engagement": 0.0,
+      "weighted_total": 0.15
+    },
+    "score": 0.15
+  },
+  {
+    "test_id": "W3",
+    "test_type": "wiring",
+    "sc": "SC-002",
+    "run": 1,
+    "model": "haiku",
+    "timestamp": "2026-02-25T07:48:57.259335+00:00",
+    "duration_ms": 57311,
+    "command": "/sc:validate-tests --all --summary",
+    "expected_protocol": "sc:validate-tests-protocol",
+    "scores": {
+      "skill_invoked": 0.0,
+      "protocol_flow": 0.0,
+      "no_raw_dump": 1.0,
+      "tool_engagement": 0.0,
+      "weighted_total": 0.15
+    },
+    "score": 0.15
+  },
+  {
+    "test_id": "W4",
+    "test_type": "wiring",
+    "sc": "SC-002",
+    "run": 1,
+    "model": "haiku",
+    "timestamp": "2026-02-25T07:50:40.453412+00:00",
+    "duration_ms": 103193,
+    "command": "/sc:roadmap @/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.01-Architecture-Refactor/sprint-spec.md",
+    "expected_protocol": "sc:roadmap-protocol",
+    "scores": {
+      "skill_invoked": 0.5,
+      "protocol_flow": 0.625,
+      "no_raw_dump": 1.0,
+      "tool_engagement": 0.5,
+      "weighted_total": 0.61875
+    },
+    "score": 0.61875
+  }
+]

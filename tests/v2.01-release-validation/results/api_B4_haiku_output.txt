@@ -1,31 +1,7 @@
-# Task Classification
-
-**Category:** Feature Enhancement / Bug Fix
-**Type:** Backend Development
-**Priority:** Medium
-**Effort:** Small to Medium
-**Component:** API Endpoint
-
----
-
-## Task Summary
-
-**Objective:** Implement pagination functionality for the user list endpoint
-
-**Key Requirements:**
-- Add pagination parameters (page, limit/per_page, offset, etc.)
-- Return paginated results with metadata
-- Include total count and navigation info
-- Maintain backward compatibility if needed
-
-**Expected Deliverables:**
-- Updated endpoint handler
-- Query parameter documentation
-- Response schema with pagination metadata
-- Tests for pagination logic
-
-**Acceptance Criteria:**
-- Endpoint accepts pagination parameters
-- Returns correct subset of users
-- Includes pagination metadata in response
-- Handles edge cases (invalid params, empty results)
+<!-- SC:TASK-UNIFIED:CLASSIFICATION -->
+TIER: LIGHT
+CONFIDENCE: 0.92
+KEYWORDS: pagination, endpoint, user list, feature development
+OVERRIDE: false
+RATIONALE: Standard feature development task with clear scope and no security, compliance, or high-risk implications.
+<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->
