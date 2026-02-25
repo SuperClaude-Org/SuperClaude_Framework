@@ -110,17 +110,16 @@ sc:roadmap executes in 5 waves (0-4). Each wave has entry criteria, behavioral i
 
 **Behavioral Instructions**:
 1. Parse agent specs (if combined mode) using the parsing algorithm from `refs/adversarial-integration.md` "Agent Specification Parsing" section
-2. Invoke `sc:adversarial-protocol` directly for multi-spec consolidation:
+2. Invoke Skill `sc:adversarial-protocol` for multi-spec consolidation:
    - **2a**: Build adversarial invocation arguments: `--compare <spec-list>` (comma-separated), propagate `--interactive` if set, propagate `--depth` mapping per Wave 0 decision
    - **2b**: Invoke: `Skill sc:adversarial-protocol` with arguments built in 2a
    - **2c**: Read return contract inline from Skill response. If response is empty or unparseable, use fallback `convergence_score: 0.5`
    - **2d**: Parse return contract fields from inline Skill response (no file read required)
    - **2e**: Route per return contract `status` field and `convergence_score`:
-     - `status: success` → proceed with `merged_output_path` as spec input for Wave 1B
-     - `status: partial` + score ≥ 0.6 → proceed with warning logged in extraction.md
-     - `status: partial` + score < 0.6 → if `--interactive`, prompt user; otherwise abort
-     - `status: failed` → abort roadmap generation
-   - **2f**: Apply divergent-specs heuristic: if `convergence_score` < 0.5 → emit warning to user
+     - `convergence_score >= 0.6` → PASS: proceed with `merged_output_path` as spec input for Wave 1B
+     - `convergence_score >= 0.5` → PARTIAL: proceed with warning logged in extraction.md; if `--interactive`, prompt user to confirm or abort
+     - `convergence_score < 0.5` → FAIL: abort roadmap generation with `"Adversarial pipeline failed (convergence: X.XX). Cannot produce reliable unified spec from divergent inputs."`
+   - **2f**: Apply divergent-specs heuristic: if `convergence_score` < 0.5 → emit warning to user (subsumed by FAIL routing in 2e; retained for explicit logging before abort)
 
 **Error propagation (combined mode)**: If Wave 1A fails (status: failed or aborted), do NOT proceed to Wave 2's multi-roadmap generation. Abort entirely — no partial combined mode.
 
@@ -155,7 +154,7 @@ sc:roadmap executes in 5 waves (0-4). Each wave has entry criteria, behavioral i
    - **3a**: Parse agent specs from `--agents` flag using the parsing algorithm from `refs/adversarial-integration.md` "Agent Specification Parsing" section. Output: agent list with model, persona, instruction per agent.
    - **3b**: Expand model-only agent specs: apply the primary persona auto-detected in Wave 1B to any agent spec that has no explicit persona. Output: fully-specified variant configurations.
    - **3c**: If `agent_count >= 3`: add `debate-orchestrator` agent to coordinate debate rounds and prevent combinatorial explosion. Threshold: 3 (not 5). Output: final agent list with optional orchestrator.
-   - **3d**: Invoke `sc:adversarial-protocol` directly via Skill tool:
+   - **3d**: Invoke Skill `sc:adversarial-protocol` directly:
      - Build arguments: `--source <unified-spec> --generate roadmap --agents <expanded-agent-list>`, propagate `--depth` and `--interactive`
      - Invoke: `Skill sc:adversarial-protocol` with the above arguments
      - sc:adversarial-protocol executes F1 (variant generation) → F2/3 (diff + debate) → F4/5 (base selection + merge)

@@ -3,6 +3,7 @@ name: cleanup-audit
 description: "Multi-pass read-only repository audit producing evidence-backed cleanup recommendations"
 category: utility
 complexity: high
+allowed-tools: Read, Glob, Grep, Bash, TodoWrite, Task, Write, Skill
 mcp-servers: [sequential, serena, context7]
 personas: [analyzer, architect, devops, qa, refactorer]
 ---

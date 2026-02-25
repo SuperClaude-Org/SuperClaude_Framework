@@ -1,0 +1,16 @@
+{
+  "test_id": "S3",
+  "test_name": "stale-references",
+  "test_type": "structural",
+  "sc": "SC-009",
+  "run": 1,
+  "model": null,
+  "timestamp": "2026-02-25T07:40:28.591802+00:00",
+  "duration_ms": 15,
+  "exit_code": 0,
+  "scores": {
+    "pass": true,
+    "weighted_total": 1.0
+  },
+  "score": 1.0
+}

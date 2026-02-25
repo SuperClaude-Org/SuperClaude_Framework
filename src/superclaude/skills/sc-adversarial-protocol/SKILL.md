@@ -1579,8 +1579,8 @@ return_contract:
         Return: Final merged_output_path is the comprehensive, multi-perspective roadmap.
 
     generic_integration: |
-      Any command can invoke sc:adversarial and consume the return contract:
-      1. Call sc:adversarial with appropriate flags
+      Any command can invoke Skill sc:adversarial-protocol and consume the return contract:
+      1. Invoke Skill sc:adversarial-protocol with appropriate flags
       2. Read return contract fields: merged_output_path, convergence_score, status
       3. If status == 'success': use merged_output_path as the final artifact
       4. If status == 'partial': use merged_output_path but flag unresolved_conflicts for review

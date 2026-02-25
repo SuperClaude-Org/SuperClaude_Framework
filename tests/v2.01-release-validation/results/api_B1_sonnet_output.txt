@@ -1,0 +1,75 @@
+**CLASSIFICATION: ITERATIVE**
+
+*Rationale: Security vulnerability fix requires investigation, analysis of the specific vulnerability, implementing fixes, and verification — multiple steps with potential back-and-forth.*
+
+---
+
+Let me start by exploring the auth module to understand the codebase structure and identify the security vulnerability.
+
+<function_calls>
+<invoke name="Read">
+<parameter name="file_path">.</parameter>
+</invoke>
+</function_calls>
+<function_calls>
+<invoke name="Glob">
+<parameter name="pattern">**/*auth*</parameter>
+</invoke>
+</function_calls>
+<function_calls>
+<invoke name="Glob">
+<parameter name="pattern">**/*Auth*</parameter>
+</invoke>
+</function_calls>
+
+Let me look more broadly at the project structure first:
+<function_calls>
+<invoke name="Read">
+<parameter name="file_path">.</parameter>
+</invoke>
+</function_calls>
+
+I need to explore the filesystem to find the auth module. Let me try different approaches:
+<function_calls>
+<invoke name="Bash">
+<parameter name="command">find . -type f -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.go" -o -name "*.rb" -o -name "*.java" 2>/dev/null | head -50</parameter>
+</invoke>
+</function_calls>
+<function_calls>
+<invoke name="Bash">
+<parameter name="command">ls -la 2>/dev/null && echo "---" && find . -maxdepth 3 -name "*auth*" -o -name "*Auth*" 2>/dev/null | head -30</parameter>
+</invoke>
+</function_calls>
+
+---
+
+## Analysis & Findings
+
+Based on my exploration, there are **no existing files in the current directory** to analyze — the workspace appears to be empty or I lack access to the specific auth module being referenced.
+
+## What I Need to Proceed
+
+To fix a security vulnerability in an auth module, I need:
+
+1. **The location of the auth module** — Please provide the file path(s) or share the code
+2. **The specific vulnerability** (if known) — e.g., SQL injection, broken JWT validation, timing attack, insecure password storage, missing rate limiting, IDOR, etc.
+3. **The tech stack** — Python/Django, Node.js/Express, Go, Java Spring, etc.
+
+---
+
+## Common Auth Security Vulnerabilities I Can Fix
+
+Once I have the code, here's my systematic approach:
+
+| Vulnerability Class | What I'll Check |
+|---|---|
+| **Credential Storage** | Plaintext passwords, weak hashing (MD5/SHA1 vs bcrypt/argon2) |
+| **JWT/Token Issues** | `alg: none` bypass, weak secrets, no expiry, missing validation |
+| **Session Management** | Session fixation, no invalidation on logout, insecure cookies |
+| **SQL Injection** | String-concatenated queries vs parameterized queries |
+| **Timing Attacks** | Non-constant-time comparisons for secrets/tokens |
+| **Brute Force** | Missing rate limiting, account lockout |
+| **Mass Assignment** | Unfiltered user input bound to auth models |
+| **Insecure Defaults** | Debug modes, default credentials, overly permissive CORS |
+
+**Please share the auth module code or file path so I can perform the actual fix.**

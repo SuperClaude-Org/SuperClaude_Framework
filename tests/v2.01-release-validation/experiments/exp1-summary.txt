@@ -1,0 +1,35 @@
+=== EXPERIMENT 1: No allowed-tools, max_turns=2 ===
+Working directory: /tmp/exp1-worktree
+Frontmatter check:
+---
+name: task
+description: "Unified task execution with intelligent workflow management, MCP compliance enforcement, and multi-agent delegation"
+category: special
+complexity: advanced
+mcp-servers: [sequential, context7, serena, playwright, magic, morphllm]
+personas: [architect, analyzer, qa, refactorer, frontend, backend, security, devops, python-expert, quality-engineer]
+version: "2.0.0"
+---
+
+
+--- B1: fix security vulnerability in auth module (expected: STRICT) ---
+  Duration: 14s, Exit code: 0
+  NO tier classification detected
+  Output size: 28 bytes
+
+--- B2: explain how the routing middleware works (expected: EXEMPT) ---
+  Duration: 12s, Exit code: 0
+  NO tier classification detected
+  Output size: 28 bytes
+
+--- B3: fix typo in error message (expected: LIGHT) ---
+  Duration: 13s, Exit code: 0
+  NO tier classification detected
+  Output size: 28 bytes
+
+--- B4: add pagination to user list endpoint (expected: STANDARD) ---
+  Duration: 10s, Exit code: 0
+  NO tier classification detected
+  Output size: 28 bytes
+
+=== EXPERIMENT 1 COMPLETE ===

@@ -1,0 +1,18 @@
+{
+  "test_id": "S5",
+  "test_name": "frontmatter-completeness",
+  "test_type": "structural",
+  "sc": "SC-003",
+  "run": 1,
+  "model": null,
+  "timestamp": "2026-02-25T07:40:28.577009+00:00",
+  "duration_ms": 0,
+  "exit_code": 0,
+  "scores": {
+    "pass": true,
+    "found": 5,
+    "total": 5,
+    "weighted_total": 1.0
+  },
+  "score": 1.0
+}

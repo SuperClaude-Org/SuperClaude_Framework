@@ -1,0 +1,116 @@
+**CLASSIFICATION: SIMPLE**
+**Mode: Direct Answer**
+**Persona: default**
+**No orchestration needed**
+
+---
+
+## How Routing Middleware Works
+
+Routing middleware sits between incoming requests and your application handlers, inspecting and directing traffic based on defined rules. Here's how it works:
+
+---
+
+### Core Concept
+
+```
+Request → [Routing Middleware] → Matching Handler → Response
+```
+
+The middleware intercepts every request, matches it against a route table, and dispatches it to the appropriate handler (or returns a 404 if no match is found).
+
+---
+
+### What Routing Middleware Does
+
+1. **Parses the Request**
+   - Extracts the **HTTP method** (GET, POST, PUT, DELETE, etc.)
+   - Extracts the **URL path** (e.g., `/users/42`)
+
+2. **Matches Against Route Table**
+   - Compares the request against registered routes
+   - Routes can be **static** (`/about`) or **dynamic** (`/users/:id`)
+   - Pattern matching is often done with regex or path-matching libraries
+
+3. **Extracts Route Parameters**
+   - Dynamic segments (`:id`, `*slug`) are parsed and made available
+   - e.g., `/users/42` → `{ id: "42" }`
+
+4. **Dispatches to Handler**
+   - Calls the matched handler function/controller
+   - If no match → passes to a 404 handler or next middleware
+
+---
+
+### Example (Express.js style)
+
+```javascript
+// Route registration
+app.get('/users/:id', (req, res) => {
+  res.send(`User: ${req.params.id}`);
+});
+
+// Under the hood, routing middleware does:
+function routingMiddleware(req, res, next) {
+  const route = routeTable.find(r =>
+    r.method === req.method && r.pattern.match(req.path)
+  );
+
+  if (route) {
+    req.params = route.extractParams(req.path);
+    route.handler(req, res, next);
+  } else {
+    next(); // pass to 404 handler
+  }
+}
+```
+
+---
+
+### Middleware Chain Context
+
+Routing middleware is typically placed **after** parsing middleware (body parser, auth, etc.) but **before** error handlers:
+
+```
+Request
+  ↓
+Body Parser Middleware     ← parse JSON/form data
+  ↓
+Auth Middleware            ← verify tokens
+  ↓
+**Routing Middleware**     ← match & dispatch ← YOU ARE HERE
+  ↓
+Route Handler              ← business logic
+  ↓
+Error Handler Middleware   ← catch errors
+  ↓
+Response
+```
+
+---
+
+### Key Behaviors
+
+| Feature | Description |
+|---|---|
+| **Order matters** | Routes are matched top-to-bottom; first match wins |
+| **Wildcards** | `*` or `(.*)` catch all unmatched paths |
+| **Method specificity** | GET `/users` and POST `/users` are separate routes |
+| **Middleware stacking** | Routes can have their own sub-middleware chains |
+| **Next()** | Calling `next()` skips to the next matching route |
+
+---
+
+### Framework-Specific Notes
+
+- **Express.js** — `express.Router()` creates modular route groups
+- **Fastify** — uses a radix-tree for faster route lookup
+- **Next.js** — file-system based routing (files = routes)
+- **React Router** — client-side routing; intercepts browser navigation
+- **ASP.NET** — attribute routing (`[Route("api/users/{id}")]`)
+
+---
+
+### Summary
+
+Routing middleware is essentially a **traffic controller**: it reads where a request is going (method + path), finds the right handler from a registry, populates parameters, and hands off control — all transparently before your business logic ever runs.

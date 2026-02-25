@@ -1,0 +1,127 @@
+{
+  "test_suite": "S5_api_classification",
+  "timestamp": "2026-02-25T07:43:26.231849+00:00",
+  "duration_s": 49.03,
+  "models": [
+    "sonnet"
+  ],
+  "system_prompt_file": "/config/workspace/SuperClaude_Framework/src/superclaude/commands/task-unified.md",
+  "system_prompt_chars": 5309,
+  "results": [
+    {
+      "test_id": "B1",
+      "test_type": "api_classification",
+      "model": "sonnet",
+      "model_id": "claude-sonnet-4-6",
+      "prompt": "fix security vulnerability in auth module",
+      "expected_tier": "STRICT",
+      "actual_tier": "",
+      "timestamp": "2026-02-25T07:42:52.636635+00:00",
+      "duration_s": 15.42,
+      "scores": {
+        "header_present": 0.0,
+        "tier_correct": 0.0,
+        "confidence_adequate": 0.0,
+        "keywords_relevant": 1.0,
+        "weighted_total": 0.15,
+        "parsed": {}
+      },
+      "score": 0.15,
+      "pass": false,
+      "error": null,
+      "output_preview": "**CLASSIFICATION: ITERATIVE**\n\n*Rationale: Security vulnerability fix requires investigation, analysis of the specific vulnerability, implementing fixes, and verification \u2014 multiple steps with potential back-and-forth.*\n\n---\n\nLet me start by exploring the auth module to understand the codebase structure and identify the security vulnerability.\n\n<function_calls>\n<invoke name=\"Read\">\n<parameter name=\"file_path\">.</parameter>\n</invoke>\n</function_calls>\n<function_calls>\n<invoke name=\"Glob\">\n<parame"
+    },
+    {
+      "test_id": "B2",
+      "test_type": "api_classification",
+      "model": "sonnet",
+      "model_id": "claude-sonnet-4-6",
+      "prompt": "explain how the routing middleware works",
+      "expected_tier": "EXEMPT",
+      "actual_tier": "",
+      "timestamp": "2026-02-25T07:43:09.549084+00:00",
+      "duration_s": 16.91,
+      "scores": {
+        "header_present": 0.0,
+        "tier_correct": 0.0,
+        "confidence_adequate": 0.0,
+        "keywords_relevant": 0.5,
+        "weighted_total": 0.075,
+        "parsed": {}
+      },
+      "score": 0.075,
+      "pass": false,
+      "error": null,
+      "output_preview": "**CLASSIFICATION: SIMPLE**\n**Mode: Direct Answer**\n**Persona: default**\n**No orchestration needed**\n\n---\n\n## How Routing Middleware Works\n\nRouting middleware sits between incoming requests and your application handlers, inspecting and directing traffic based on defined rules. Here's how it works:\n\n---\n\n### Core Concept\n\n```\nRequest \u2192 [Routing Middleware] \u2192 Matching Handler \u2192 Response\n```\n\nThe middleware intercepts every request, matches it against a route table, and dispatches it to the appropri"
+    },
+    {
+      "test_id": "B3",
+      "test_type": "api_classification",
+      "model": "sonnet",
+      "model_id": "claude-sonnet-4-6",
+      "prompt": "fix typo in error message",
+      "expected_tier": "LIGHT",
+      "actual_tier": "LIGHT",
+      "timestamp": "2026-02-25T07:43:13.045038+00:00",
+      "duration_s": 3.5,
+      "scores": {
+        "header_present": 1.0,
+        "tier_correct": 1.0,
+        "confidence_adequate": 1.0,
+        "keywords_relevant": 1.0,
+        "weighted_total": 1.0,
+        "parsed": {
+          "tier": "LIGHT",
+          "confidence": 0.95,
+          "keywords": [
+            "typo",
+            "error message"
+          ],
+          "override": false,
+          "rationale": "Fixing a typo in an error message is a trivial single-string change matching LIGHT tier keywords.",
+          "partial_parse": false
+        }
+      },
+      "score": 1.0,
+      "pass": true,
+      "error": null,
+      "output_preview": "<!-- SC:TASK-UNIFIED:CLASSIFICATION -->\nTIER: LIGHT\nCONFIDENCE: 0.95\nKEYWORDS: typo, error message\nOVERRIDE: false\nRATIONALE: Fixing a typo in an error message is a trivial single-string change matching LIGHT tier keywords.\n<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->\n\nSure! To fix the typo in the error message, I'll need a bit more information:\n\n1. **Which file** contains the error message with the typo?\n2. **What is the current (incorrect) text**, and **what should it say**?\n\nIf you can point me t"
+    },
+    {
+      "test_id": "B4",
+      "test_type": "api_classification",
+      "model": "sonnet",
+      "model_id": "claude-sonnet-4-6",
+      "prompt": "add pagination to user list endpoint",
+      "expected_tier": "STANDARD",
+      "actual_tier": "",
+      "timestamp": "2026-02-25T07:43:26.231754+00:00",
+      "duration_s": 13.18,
+      "scores": {
+        "header_present": 0.0,
+        "tier_correct": 0.0,
+        "confidence_adequate": 0.0,
+        "keywords_relevant": 1.0,
+        "weighted_total": 0.15,
+        "parsed": {}
+      },
+      "score": 0.15,
+      "pass": false,
+      "error": null,
+      "output_preview": "**CLASSIFICATION: IMPLEMENT**\n*Simple feature addition with clear scope*\n\n---\n\n## Task Analysis\n\nAdding pagination to a user list endpoint. I'll explore the codebase first to understand the existing implementation.\n\n<function_calls>\n<invoke name=\"computer\">\n<parameter name=\"action\">screenshot</parameter>\n</invoke>\n</function_calls>\n<function_calls>\n<invoke name=\"Bash\">\n<parameter name=\"command\">find . -type f -name \"*.py\" -o -name \"*.js\" -o -name \"*.ts\" -o -name \"*.go\" -o -name \"*.rb\" | grep -v "
+    }
+  ],
+  "summary": {
+    "total_tests": 4,
+    "total_pass": 1,
+    "pass_rate": 0.25,
+    "avg_score": 0.34375,
+    "per_model": {
+      "sonnet": {
+        "tests": 4,
+        "pass": 1,
+        "avg_score": 0.344
+      }
+    }
+  }
+}

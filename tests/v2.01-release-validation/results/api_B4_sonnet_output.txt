@@ -1,0 +1,80 @@
+**CLASSIFICATION: IMPLEMENT**
+*Simple feature addition with clear scope*
+
+---
+
+## Task Analysis
+
+Adding pagination to a user list endpoint. I'll explore the codebase first to understand the existing implementation.
+
+<function_calls>
+<invoke name="computer">
+<parameter name="action">screenshot</parameter>
+</invoke>
+</function_calls>
+<function_calls>
+<invoke name="Bash">
+<parameter name="command">find . -type f -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.go" -o -name "*.rb" | grep -v node_modules | grep -v .git | head -50</parameter>
+</invoke>
+</function_calls>
+<function_calls>
+<invoke name="Bash">
+<parameter name="command">ls -la</parameter>
+</invoke>
+</function_calls>
+
+Let me explore the project structure:
+<function_calls>
+<invoke name="Bash">
+<parameter name="command">find . -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.go" -o -name "*.rb" \) 2>/dev/null | grep -v node_modules | grep -v .git | grep -v __pycache__ | head -60</parameter>
+</invoke>
+</function_calls>
+<function_calls>
+<invoke name="Bash">
+<parameter name="command">ls -la 2>/dev/null && echo "---" && pwd</parameter>
+</invoke>
+</function_calls>
+
+It seems we're working in an empty or minimal directory. Let me check more broadly:
+<function_calls>
+<invoke name="Bash">
+<parameter name="command">find / -maxdepth 5 -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" \) 2>/dev/null | grep -v node_modules | grep -v .git | grep -v __pycache__ | grep -i "user" | head -20</parameter>
+</invoke>
+</function_calls>
+<function_calls>
+<invoke name="Bash">
+<parameter name="command">find /home /app /src /project /workspace -maxdepth 6 -type f 2>/dev/null | head -40</parameter>
+</invoke>
+</function_calls>
+
+No existing codebase found. I'll implement a complete, production-ready pagination solution with a **common REST API pattern** (works for Flask/FastAPI/Express/Django):
+
+---
+
+## Implementation Plan
+
+Since no existing codebase was detected, I'll implement pagination for the most common frameworks. I'll create a **FastAPI** implementation as the primary example (most modern Python API framework), with notes for other frameworks.
+
+---
+<function_calls>
+<invoke name="Bash">
+<parameter name="command">mkdir -p /tmp/pagination_demo && cd /tmp/pagination_demo && cat > models.py << 'EOF'
+"""
+User model - works with SQLAlchemy ORM
+"""
+from sqlalchemy import Column, Integer, String, DateTime, Boolean
+from sqlalchemy.ext.declarative import declarative_base
+from datetime import datetime
+
+Base = declarative_base()
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(50), unique=True, nullable=False, index=True)
+    email = Column(String(255), unique=True, nullable=False, index=True)
+    full_name = Column(String(100))
+    is_active = Column(Boolean, default=True)
+    created_at = Column(

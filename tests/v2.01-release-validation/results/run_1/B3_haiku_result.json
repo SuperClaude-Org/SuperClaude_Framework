@@ -1,0 +1,21 @@
+{
+  "test_id": "B3",
+  "test_type": "classification",
+  "sc": "SC-007",
+  "run": 1,
+  "model": "haiku",
+  "timestamp": "2026-02-25T07:42:48.300907+00:00",
+  "duration_ms": 82699,
+  "prompt": "fix typo in error message",
+  "expected_tier": "LIGHT",
+  "actual": {},
+  "scores": {
+    "header_present": 0.0,
+    "tier_correct": 0.0,
+    "confidence_adequate": 0.0,
+    "keywords_relevant": 0.0,
+    "weighted_total": 0.0,
+    "parsed": {}
+  },
+  "score": 0.0
+}

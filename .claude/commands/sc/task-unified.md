@@ -3,6 +3,7 @@ name: task
 description: "Unified task execution with intelligent workflow management, MCP compliance enforcement, and multi-agent delegation"
 category: special
 complexity: advanced
+allowed-tools: Read, Glob, Grep, Edit, Write, Bash, TodoWrite, Task, Skill
 mcp-servers: [sequential, context7, serena, playwright, magic, morphllm]
 personas: [architect, analyzer, qa, refactorer, frontend, backend, security, devops, python-expert, quality-engineer]
 version: "2.0.0"
@@ -27,23 +28,12 @@ A unified command with **orthogonal dimensions** that merges orchestration capab
 
 ## Triggers
 
-### Auto-Activation Patterns
-
 | Trigger Type | Condition | Confidence |
 |--------------|-----------|------------|
 | **Complexity Score** | Task complexity >0.6 with code modifications | 90% |
 | **Multi-file Scope** | Estimated affected files >2 | 85% |
 | **Security Domain** | Paths contain `auth/`, `security/`, `crypto/` | 95% |
 | **Refactoring Scope** | Keywords: refactor, remediate, multi-file | 90% |
-| **Test Remediation** | Keywords: fix tests, test failures | 88% |
-
-### Context Signals
-
-The command should be suggested when:
-- User describes a multi-step implementation task
-- Task involves code modifications with downstream impacts
-- Security or data integrity domains are involved
-- User explicitly requests compliance workflow
 
 ## Usage
 
@@ -51,94 +41,73 @@ The command should be suggested when:
 /sc:task [operation] [target] [flags]
 ```
 
-### Strategy Flags (Orchestration Dimension)
+Key flags: `--strategy`, `--compliance`, `--verify`, `--skip-compliance`, `--force-strict`, `--parallel`, `--delegate`. See protocol skill for full flag reference.
 
-| Flag | Description | Use Case |
-|------|-------------|----------|
-| `--strategy systematic` | Comprehensive, methodical execution | Large features, multi-domain work |
-| `--strategy agile` | Iterative, sprint-oriented execution | Feature backlog, incremental delivery |
-| `--strategy enterprise` | Governance-focused, compliance-heavy | Regulated environments, audit trails |
-| `--strategy auto` | Auto-detect based on scope (default) | Most tasks |
+## Classification (MANDATORY FIRST OUTPUT)
 
-### Compliance Flags (Quality Dimension)
+**CRITICAL: Classification is TEXT-ONLY. Do NOT invoke ANY tools (Skill, Read, Grep, etc.) to perform classification. Emit the header below based SOLELY on the keyword rules in this section. Tool invocation begins AFTER classification.**
 
-| Flag | Description | Use Case |
-|------|-------------|----------|
-| `--compliance strict` | Full MCP workflow enforcement | Multi-file, security, refactoring |
-| `--compliance standard` | Core rules enforcement | Single-file code changes |
-| `--compliance light` | Awareness only | Minor fixes, formatting |
-| `--compliance exempt` | No enforcement | Questions, exploration, docs |
-| `--compliance auto` | Auto-detect based on task (default) | Most tasks |
+Before ANY other text, emit this exact header:
+```
+<!-- SC:TASK-UNIFIED:CLASSIFICATION -->
+TIER: [STRICT|STANDARD|LIGHT|EXEMPT]
+CONFIDENCE: [0.00-1.00]
+KEYWORDS: [matched keywords or "none"]
+OVERRIDE: [true|false]
+RATIONALE: [one-line reason]
+<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->
+```
 
-### Execution Control Flags
+**Tier rules** (check in priority order; first matching tier wins; check --compliance override first):
 
-| Flag | Description |
-|------|-------------|
-| `--skip-compliance` | Escape hatch - skip all compliance enforcement |
-| `--force-strict` | Override auto-detection to STRICT |
-| `--parallel` | Enable parallel sub-agent execution |
-| `--delegate` | Enable sub-agent delegation |
-| `--reason "..."` | Required justification for tier override |
+1. **STRICT** (Priority 1 — safety-critical):
+   - Keywords: security, authentication, authorization, database, migration, refactor, breaking change, encrypt, token, session, oauth
+   - Context boosters: >2 estimated files (+0.3), security paths like auth/, security/, crypto/ (+0.4)
+   - Compound phrases: "fix security", "add authentication", "update database", "change api"
+   - Note: "quick security" → still STRICT (security always wins); "minor auth change" → still STRICT
 
-### Verification Flags
+2. **EXEMPT** (Priority 2 — non-code operations):
+   - Keywords: explain, search, commit, push, plan, discuss, brainstorm, what, how, why
+   - Context boosters: is_read_only (+0.4), is_git_operation (+0.5), all doc files (+0.5)
+   - Patterns: starts with "what/how/why/explain", docs-only paths (*.md, docs/)
 
-| Flag | Description |
-|------|-------------|
-| `--verify critical` | Full sub-agent verification |
-| `--verify standard` | Direct test execution only |
-| `--verify skip` | Skip verification (use with caution) |
-| `--verify auto` | Auto-select based on compliance tier (default) |
+3. **LIGHT** (Priority 3 — trivial changes):
+   - Keywords: typo, comment, whitespace, lint, docstring, formatting, spacing, minor
+   - Context boosters: single file (+0.1), <=50 lines estimated
+   - Compound phrases: "quick fix", "minor change", "fix typo", "refactor comment"
 
-## Behavioral Summary
+4. **STANDARD** (Priority 4 — default development):
+   - Keywords: implement, add, create, update, fix, build, modify, change
+   - Default tier when no higher-priority tier matches
 
-Automatically classifies tasks into 4 compliance tiers (STRICT/STANDARD/LIGHT/EXEMPT) using keyword detection, compound phrase analysis, and context boosters, then enforces tier-appropriate verification checklists. STRICT tier requires full pre-work context loading, downstream impact analysis, verification agent spawning, and adversarial review. STANDARD enforces core rules with manual verification acceptable. LIGHT and EXEMPT minimize or eliminate process overhead for trivial and read-only tasks respectively.
+If confidence <0.70, prompt user: "Override with `--compliance [tier]`"
 
-## Activation
+## Execution
 
-**MANDATORY**: Before executing any protocol steps, invoke:
-> Skill sc:task-unified-protocol
+After emitting the classification header as text, proceed based on tier:
 
-Do NOT proceed with protocol execution using only this command file.
-The full behavioral specification is in the protocol skill.
+- **EXEMPT**: Execute immediately — answer the question or perform the read-only operation. No Skill invocation needed.
+- **LIGHT**: Execute the change directly. No Skill invocation needed for trivial changes.
+- **STANDARD / STRICT**: Invoke the full protocol for tier-appropriate workflow:
+  > Skill sc:task-unified-protocol
 
 ## Examples
 
-### Systematic Feature Implementation
 ```bash
+# STRICT: security-critical implementation
 /sc:task "implement user authentication system" --strategy systematic --compliance strict
-# Auto-detects: STRICT (authentication keyword, multi-file expected)
-# Activates: architect, security, backend personas
-# Enforces: Full checklist, verification agent, adversarial review
-```
 
-### Standard Code Update
-```bash
+# STANDARD: typical feature work
 /sc:task "add input validation to user endpoint"
-# Auto-detects: STANDARD (add keyword, single component)
-# Enforces: Core rules, basic validation
-```
 
-### Quick Fix
-```bash
+# LIGHT: trivial change
 /sc:task "fix typo in error message" --compliance light
-# Explicit LIGHT tier
-# Enforces: Awareness only, proceed with judgment
-```
 
-### Exploration
-```bash
+# EXEMPT: read-only exploration
 /sc:task "explain how the auth middleware works"
-# Auto-detects: EXEMPT (explain keyword, read-only)
-# No enforcement, proceeds normally
-```
 
-### Override Examples
-```bash
+# Override: force strict on auto-detected standard
 /sc:task "update logging format" --force-strict
-# Forces STRICT even if auto-detected as STANDARD
-
-/sc:task "experimental change" --skip-compliance
-# Skips all compliance enforcement (escape hatch)
 ```
 
 ## Boundaries
@@ -156,12 +125,4 @@ The full behavioral specification is in the protocol skill.
 - Override user's explicit compliance choice
 - Proceed with <70% confidence without user confirmation
 - Execute unbounded batches (max 15 changes per batch)
-
-## Migration from Legacy Commands
-
-| Old Command | New Equivalent |
-|-------------|----------------|
-| `/sc:task create "feature" --strategy systematic` | `/sc:task "feature" --strategy systematic --compliance auto` |
-| `/sc:task-mcp "fix tests" --tier strict` | `/sc:task "fix tests" --compliance strict` |
-
-`/sc:task-mcp` is deprecated. Use `/sc:task --compliance [tier]` instead.
+- Use deprecated `/sc:task-mcp` (use `--compliance [tier]` instead)
