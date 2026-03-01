@@ -242,6 +242,41 @@ def install_airis_gateway(dry_run: bool = False) -> bool:
     profiles_dir = install_dir / "profiles"
     profiles_dir.mkdir(exist_ok=True)
 
+    # Create config/gateway-config.yaml if it doesn't exist (required for Docker volume mount)
+    config_dir = install_dir / "config"
+    config_dir.mkdir(exist_ok=True)
+    gateway_config_file = config_dir / "gateway-config.yaml"
+    if not gateway_config_file.exists():
+        click.echo("   📄 Creating config/gateway-config.yaml...")
+        try:
+            result = _run_command(
+                [
+                    "curl",
+                    "-fsSL",
+                    "-o",
+                    str(gateway_config_file),
+                    "https://raw.githubusercontent.com/agiletec-inc/airis-mcp-gateway/main/config/gateway-config.yaml",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
+            if result.returncode != 0:
+                click.echo(
+                    "   ⚠️  Could not download gateway-config.yaml, creating minimal config"
+                )
+                gateway_config_file.write_text('version: "1.0"\ncapabilities: {}')
+        except Exception:
+            gateway_config_file.write_text('version: "1.0"\ncapabilities: {}')
+    elif gateway_config_file.is_dir():
+        click.echo(
+            "   🔧 Fixing gateway-config.yaml (was directory, converting to file)..."
+        )
+        import shutil
+
+        shutil.rmtree(gateway_config_file)
+        gateway_config_file.write_text('version: "1.0"\ncapabilities: {}')
+
     # Start the gateway from the installation directory
     click.echo("   🐳 Starting AIRIS MCP Gateway containers...")
     try:
