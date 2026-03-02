@@ -351,5 +351,10 @@ def version():
     click.echo(f"SuperClaude version {__version__}")
 
 
+from superclaude.cli.sprint import sprint_group
+
+main.add_command(sprint_group, name="sprint")
+
+
 if __name__ == "__main__":
     main()

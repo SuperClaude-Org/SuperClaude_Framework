@@ -4,17 +4,9 @@ description: Unified task execution with intelligent workflow management, MCP co
 allowed-tools: Read, Glob, Grep, Edit, Write, Bash, TodoWrite, Task
 ---
 
-> **⚠️ MANDATORY FIRST OUTPUT**: You MUST output the classification header block below as your VERY FIRST output, before ANY text, questions, or analysis. This is NON-NEGOTIABLE for telemetry.
-
-```
-<!-- SC:TASK-UNIFIED:CLASSIFICATION -->
-TIER: [STRICT|STANDARD|LIGHT|EXEMPT]
-CONFIDENCE: [0.00-1.00]
-KEYWORDS: [comma-separated keywords or "none"]
-OVERRIDE: [true|false]
-RATIONALE: [one-line reason]
-<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->
-```
+> **NOTE**: Classification has already been performed by the `/sc:task` command before this skill was invoked. The classification header has already been emitted. Do NOT emit it again. This skill handles **execution only** for STANDARD and STRICT tier tasks.
+>
+> If for any reason no classification header was emitted before this skill was invoked, emit one now using ONLY the tier values STRICT, STANDARD, LIGHT, or EXEMPT (no other values are valid).
 
 # /sc:task-unified - Unified Task Execution with Compliance
 
@@ -45,80 +37,24 @@ Use `/sc:task` when:
 ## Usage
 
 ```bash
-/sc:task-unified [description]                           # Auto-detect all dimensions
-/sc:task-unified [description] --compliance strict       # Force STRICT tier
-/sc:task-unified [description] --compliance light        # Force LIGHT tier
-/sc:task-unified [description] --skip-compliance         # Bypass compliance (escape hatch)
-/sc:task-unified [description] --verify auto             # Auto-select verification
+/sc:task [description]                           # Auto-detect all dimensions
+/sc:task [description] --compliance strict       # Force STRICT tier
+/sc:task [description] --compliance light        # Force LIGHT tier
+/sc:task [description] --skip-compliance         # Bypass compliance (escape hatch)
+/sc:task [description] --verify auto             # Auto-select verification
 ```
 
 ## Behavioral Flow
 
-### 0. MANDATORY Classification Header (ALWAYS FIRST)
+### 0. Classification (Already Performed)
 
-**CRITICAL**: Before ANY other output (including questions, clarifications, or responses), you MUST output the machine-readable classification header in this EXACT format:
+Classification was handled by the `/sc:task` command before this skill was invoked. The tier has been determined and the classification header has been emitted. Proceed directly to execution based on the classified tier.
 
-```
-<!-- SC:TASK-UNIFIED:CLASSIFICATION -->
-TIER: [STRICT|STANDARD|LIGHT|EXEMPT]
-CONFIDENCE: [0.00-1.00]
-KEYWORDS: [comma-separated list or "none"]
-OVERRIDE: [true|false]
-RATIONALE: [brief one-line explanation]
-<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->
-```
-
-**Example outputs**:
-```
-<!-- SC:TASK-UNIFIED:CLASSIFICATION -->
-TIER: STRICT
-CONFIDENCE: 0.92
-KEYWORDS: authentication, security, password
-OVERRIDE: false
-RATIONALE: Security-critical change involving password handling
-<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->
-```
-
-```
-<!-- SC:TASK-UNIFIED:CLASSIFICATION -->
-TIER: LIGHT
-CONFIDENCE: 0.88
-KEYWORDS: typo, fix, documentation
-OVERRIDE: false
-RATIONALE: Trivial documentation change
-<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->
-```
-
-**Rules**:
-1. Output this header IMMEDIATELY as your first action
-2. Output it BEFORE asking clarifying questions
-3. Output it BEFORE any explanations or analysis
-4. Output it even if you will ask questions afterward
-5. Use the HTML comment wrapper for machine parsing
-6. Never skip this header - it enables A/B testing and telemetry
-
-### 1. Classification Phase
-
-Classify task into compliance tier using priority order: STRICT > EXEMPT > LIGHT > STANDARD
-
-**STRICT** (Priority 1): Security, data integrity, system-wide changes
-- Keywords: authentication, database, migration, refactor, breaking change, security, encrypt, token, session, oauth
-- Context: >2 files, security paths, API contracts
-- Compound phrases: "fix security", "add authentication", "update database", "change api"
-
-**EXEMPT** (Priority 2): Read-only, documentation, git operations
-- Keywords: explain, search, commit, push, plan, discuss, brainstorm, what, how, why
-- Context: is_read_only, is_documentation_only, is_git_operation
-- Patterns: "^what (is|are|does)", "^how (do|does|can|should)", "^explain"
-
-**LIGHT** (Priority 3): Trivial changes, formatting
-- Keywords: typo, comment, whitespace, lint, docstring, formatting, spacing, minor
-- Context: <=2 files, <=50 lines
-- Compound phrases: "quick fix", "minor change", "fix typo", "refactor comment"
-
-**STANDARD** (Priority 4): Default for typical development
-- Keywords: implement, add, create, update, fix, build, modify, change
-- Default tier when no other triggers match
+**Reference** — the tier keyword tables (for context only, do not re-classify):
+- **STRICT**: security, authentication, database, migration, refactor, breaking change, encrypt, token, session, oauth
+- **EXEMPT**: explain, search, commit, push, plan, discuss, brainstorm
+- **LIGHT**: typo, comment, whitespace, lint, docstring, formatting, minor
+- **STANDARD**: implement, add, create, update, fix, build, modify, change (default)
 
 ### 2. Confidence Display (Human-Readable)
 
