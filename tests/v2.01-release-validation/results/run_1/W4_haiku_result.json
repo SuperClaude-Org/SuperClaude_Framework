@@ -1,0 +1,19 @@
+{
+  "test_id": "W4",
+  "test_type": "wiring",
+  "sc": "SC-002",
+  "run": 1,
+  "model": "haiku",
+  "timestamp": "2026-02-25T07:50:40.453412+00:00",
+  "duration_ms": 103193,
+  "command": "/sc:roadmap @/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.01-Architecture-Refactor/sprint-spec.md",
+  "expected_protocol": "sc:roadmap-protocol",
+  "scores": {
+    "skill_invoked": 0.5,
+    "protocol_flow": 0.625,
+    "no_raw_dump": 1.0,
+    "tool_engagement": 0.5,
+    "weighted_total": 0.61875
+  },
+  "score": 0.61875
+}

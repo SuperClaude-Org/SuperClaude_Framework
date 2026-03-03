@@ -1,4 +1,4 @@
-.PHONY: install test test-plugin doctor verify clean lint format build-plugin sync-plugin-repo sync-dev verify-sync uninstall-legacy help
+.PHONY: install test test-plugin doctor verify clean lint format build-plugin sync-plugin-repo sync-dev verify-sync lint-architecture uninstall-legacy help
 
 # Installation (local source, editable) - RECOMMENDED
 install:
@@ -111,10 +111,6 @@ sync-dev:
 	@for skill_dir in src/superclaude/skills/*/; do \
 		skill_name=$$(basename "$$skill_dir"); \
 		case "$$skill_name" in __*) continue;; esac; \
-		cmd_name=$${skill_name#sc-}; \
-		if [ "$$cmd_name" != "$$skill_name" ] && [ -f "src/superclaude/commands/$$cmd_name.md" ]; then \
-			continue; \
-		fi; \
 		if [ -f "$$skill_dir/SKILL.md" ] || [ -f "$$skill_dir/skill.md" ]; then \
 			mkdir -p ".claude/skills/$$skill_name"; \
 			find "$$skill_dir" -type f ! -name '__init__.py' ! -path '*/__pycache__/*' -exec sh -c ' \
@@ -151,11 +147,6 @@ verify-sync:
 	for skill_dir in src/superclaude/skills/*/; do \
 		name=$$(basename "$$skill_dir"); \
 		case "$$name" in __*) continue;; esac; \
-		cmd_name=$${name#sc-}; \
-		if [ "$$cmd_name" != "$$name" ] && [ -f "src/superclaude/commands/$$cmd_name.md" ]; then \
-			echo "  ⏭️  $$name (served by /sc:$$cmd_name command)"; \
-			continue; \
-		fi; \
 		if [ ! -d ".claude/skills/$$name" ]; then \
 			echo "  ❌ MISSING in .claude/skills/: $$name"; \
 			drift=1; \
@@ -238,6 +229,111 @@ verify-sync:
 		exit 1; \
 	fi
 
+# Enforce architecture policy: commands, skills, naming conventions
+lint-architecture:
+	@echo "🔍 Checking architecture policy compliance..."
+	@errors=0; \
+	warnings=0; \
+	\
+	echo ""; \
+	echo "=== Check 1/2: Bidirectional Command ↔ Skill Links ==="; \
+	for f in src/superclaude/commands/*.md; do \
+		name=$$(basename "$$f" .md); \
+		case "$$name" in README) continue;; esac; \
+		if grep -q "## Activation" "$$f"; then \
+			skill_name="sc-$$name-protocol"; \
+			if [ ! -d "src/superclaude/skills/$$skill_name" ]; then \
+				echo "  ❌ ERROR [Check 1]: $$f has ## Activation but no matching skill directory: $$skill_name"; \
+				errors=$$((errors+1)); \
+			else \
+				echo "  ✅ [Check 1]: $$name → $$skill_name"; \
+			fi; \
+		fi; \
+	done; \
+	for d in src/superclaude/skills/sc-*-protocol/; do \
+		skill_base=$$(basename "$$d"); \
+		cmd_name=$$(echo "$$skill_base" | sed 's/^sc-//' | sed 's/-protocol$$//'); \
+		cmd_file="src/superclaude/commands/$$cmd_name.md"; \
+		if [ ! -f "$$cmd_file" ]; then \
+			echo "  ❌ ERROR [Check 2]: Skill $$skill_base has no matching command: $$cmd_file"; \
+			errors=$$((errors+1)); \
+		else \
+			echo "  ✅ [Check 2]: $$skill_base ← $$cmd_name.md"; \
+		fi; \
+	done; \
+	\
+	echo ""; \
+	echo "=== Check 3/4: Command Size Limits ==="; \
+	for f in src/superclaude/commands/*.md; do \
+		name=$$(basename "$$f"); \
+		case "$$name" in README.md) continue;; esac; \
+		lines=$$(wc -l < "$$f"); \
+		if [ "$$lines" -gt 500 ]; then \
+			echo "  ❌ ERROR [Check 4]: $$name ($$lines lines, hard limit 500)"; \
+			errors=$$((errors+1)); \
+		elif [ "$$lines" -gt 200 ]; then \
+			echo "  ⚠️  WARN [Check 3]: $$name ($$lines lines, warn threshold 200)"; \
+			warnings=$$((warnings+1)); \
+		fi; \
+	done; \
+	\
+	echo ""; \
+	echo "=== Check 6: Activation Section Present (for paired commands) ==="; \
+	for d in src/superclaude/skills/sc-*-protocol/; do \
+		skill_base=$$(basename "$$d"); \
+		cmd_name=$$(echo "$$skill_base" | sed 's/^sc-//' | sed 's/-protocol$$//'); \
+		cmd_file="src/superclaude/commands/$$cmd_name.md"; \
+		if [ -f "$$cmd_file" ]; then \
+			if grep -q "## Activation" "$$cmd_file"; then \
+				echo "  ✅ [Check 6]: $$cmd_name.md has ## Activation"; \
+			else \
+				echo "  ❌ ERROR [Check 6]: $$cmd_name.md missing ## Activation (paired with $$skill_base)"; \
+				errors=$$((errors+1)); \
+			fi; \
+		fi; \
+	done; \
+	\
+	echo ""; \
+	echo "=== Check 8: Skill Frontmatter Completeness ==="; \
+	for skill_md in src/superclaude/skills/sc-*-protocol/SKILL.md; do \
+		for field in "name:" "description:" "allowed-tools:"; do \
+			if ! grep -q "^$$field" "$$skill_md"; then \
+				echo "  ❌ ERROR [Check 8]: $$skill_md missing frontmatter field: $$field"; \
+				errors=$$((errors+1)); \
+			fi; \
+		done; \
+		echo "  ✅ [Check 8]: $$(dirname $$skill_md | xargs basename) frontmatter complete"; \
+	done; \
+	\
+	echo ""; \
+	echo "=== Check 9: Protocol Naming Consistency ==="; \
+	for skill_md in src/superclaude/skills/sc-*-protocol/SKILL.md; do \
+		name_field=$$(grep "^name:" "$$skill_md" | head -1 | sed 's/^name:[[:space:]]*//' | tr -d ' "'); \
+		if echo "$$name_field" | grep -q ".*-protocol$$"; then \
+			echo "  ✅ [Check 9]: $$name_field ends in -protocol"; \
+		else \
+			echo "  ❌ ERROR [Check 9]: $$(dirname $$skill_md | xargs basename) SKILL.md name field '$$name_field' does not end in -protocol"; \
+			errors=$$((errors+1)); \
+		fi; \
+	done; \
+	\
+	echo ""; \
+	echo "=== Checks 5/7: NEEDS DESIGN (skipped) ==="; \
+	echo "  ℹ️  Check 5 (inline protocol detection) — pending design"; \
+	echo "  ℹ️  Check 7 (activation references correct skill) — pending design"; \
+	\
+	echo ""; \
+	echo "=== Summary ==="; \
+	echo "  Errors:   $$errors"; \
+	echo "  Warnings: $$warnings"; \
+	if [ "$$errors" -gt 0 ]; then \
+		echo "  ❌ FAIL — $$errors error(s) found. Fix before proceeding."; \
+		exit 1; \
+	else \
+		echo "  ✅ PASS — architecture policy compliant ($$warnings warning(s))"; \
+		exit 0; \
+	fi
+
 # Show help
 help:
 	@echo "SuperClaude Framework - Available commands:"
@@ -257,6 +353,7 @@ help:
 	@echo "🔄 Component Sync:"
 	@echo "  make sync-dev        - Sync src/ → .claude/ for local development"
 	@echo "  make verify-sync     - Check src/ and .claude/ are in sync (CI-friendly)"
+	@echo "  make lint-architecture - Enforce architecture policy (6 of 10 checks)"
 	@echo ""
 	@echo "🔌 Plugin Packaging:"
 	@echo "  make build-plugin    - Build SuperClaude plugin artefacts into dist/"

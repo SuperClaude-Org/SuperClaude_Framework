@@ -3,6 +3,7 @@ name: cleanup-audit
 description: "Multi-pass read-only repository audit producing evidence-backed cleanup recommendations"
 category: utility
 complexity: high
+allowed-tools: Read, Glob, Grep, Bash, TodoWrite, Task, Write, Skill
 mcp-servers: [sequential, serena, context7]
 personas: [analyzer, architect, devops, qa, refactorer]
 ---
@@ -61,6 +62,14 @@ Runs Pass 3 cross-cutting comparison on infrastructure files (Docker, CI/CD, dep
 /sc:cleanup-audit --pass all --focus all
 ```
 Runs all 3 passes sequentially with quality gates between each pass. Pass 1 inventory feeds Pass 2 deep audit, which feeds Pass 3 cross-cutting sweep. Produces final consolidated report with executive summary, prioritized action items, and discovered issues registry.
+
+## Activation
+
+**MANDATORY**: Before executing any protocol steps, invoke:
+> Skill sc:cleanup-audit-protocol
+
+Do NOT proceed with protocol execution using only this command file.
+The full behavioral specification is in the protocol skill.
 
 ## Boundaries
 

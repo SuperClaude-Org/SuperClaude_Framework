@@ -1,7 +1,7 @@
 # Release Roadmap: v1.2-analyze-auggie - /sc:analyze Auggie MCP Integration
 
 ## Metadata
-- **Source Specification**: `.roadmaps/v1.2-analyze-auggie/sc-analyze-auggie-feature-spec.md`
+- **Source Specification**: `.dev/releases/current/v1.2-analyze-auggie/sc-analyze-auggie-feature-spec.md`
 - **Generated**: 2026-01-26
 - **Generator Version**: SuperClaude Roadmap Generator v1.0
 - **Item Count**: 15 features, 5 improvements, 4 docs, 4 tests

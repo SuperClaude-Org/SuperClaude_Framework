@@ -294,7 +294,7 @@ note: "CONSOLIDATED from original Tasks 3.1 + 3.2 + 3.3"
 **Verification**:
 ```bash
 # Show changes for review
-git diff --stat .roadmaps/v1.3-task-unified-accountability/tasklists/M5-quality-gap-additions.md
+git diff --stat .dev/releases/current/v1.3-task-unified-accountability/tasklists/M5-quality-gap-additions.md
 ```
 
 ---

@@ -1,0 +1,3 @@
+# D-0023
+
+VT1: Skill in allowed-tools. PASS. grep confirms Skill in both roadmap.md and SKILL.md.

@@ -1,0 +1,84 @@
+make: Entering directory '/config/workspace/SuperClaude_Framework'
+🔍 Verifying src/superclaude/ ↔ .claude/ sync...
+
+=== Skills ===
+  ✅ confidence-check
+  ✅ sc-adversarial-protocol
+  ✅ sc-cleanup-audit-protocol
+  ✅ sc-pm-protocol
+  ✅ sc-recommend-protocol
+  ✅ sc-review-translation-protocol
+  ✅ sc-roadmap-protocol
+  ✅ sc-task-unified-protocol
+  ✅ sc-validate-tests-protocol
+
+=== Agents ===
+  ✅ audit-analyzer.md
+  ✅ audit-comparator.md
+  ✅ audit-consolidator.md
+  ✅ audit-scanner.md
+  ✅ audit-validator.md
+  ✅ backend-architect.md
+  ✅ business-panel-experts.md
+  ✅ debate-orchestrator.md
+  ✅ deep-research-agent.md
+  ✅ deep-research.md
+  ✅ devops-architect.md
+  ✅ frontend-architect.md
+  ✅ learning-guide.md
+  ✅ merge-executor.md
+  ✅ performance-engineer.md
+  ✅ pm-agent.md
+  ✅ python-expert.md
+  ✅ quality-engineer.md
+  ✅ refactoring-expert.md
+  ✅ repo-index.md
+  ✅ requirements-analyst.md
+  ✅ root-cause-analyst.md
+  ✅ security-engineer.md
+  ✅ self-review.md
+  ✅ socratic-mentor.md
+  ✅ system-architect.md
+  ✅ technical-writer.md
+
+=== Commands ===
+  ✅ adversarial.md
+  ✅ agent.md
+  ✅ analyze.md
+  ✅ brainstorm.md
+  ✅ build.md
+  ✅ business-panel.md
+  ✅ cleanup-audit.md
+  ✅ cleanup.md
+  ✅ design.md
+  ✅ document.md
+  ✅ estimate.md
+  ✅ explain.md
+  ✅ git.md
+  ✅ help.md
+  ✅ implement.md
+  ✅ improve.md
+  ✅ index-repo.md
+  ✅ index.md
+  ✅ load.md
+  ✅ pm.md
+  ✅ recommend.md
+  ✅ reflect.md
+  ✅ research.md
+  ✅ review-translation.md
+  ✅ roadmap.md
+  ✅ save.md
+  ✅ sc.md
+  ✅ select-tool.md
+  ✅ spawn.md
+  ✅ spec-panel.md
+  ✅ task-mcp.md
+  ✅ task-unified.md
+  ✅ task.md
+  ✅ test.md
+  ✅ troubleshoot.md
+  ✅ validate-tests.md
+  ✅ workflow.md
+
+✅ All components in sync.
+make: Leaving directory '/config/workspace/SuperClaude_Framework'

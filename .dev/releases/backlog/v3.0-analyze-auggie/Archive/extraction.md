@@ -1,7 +1,7 @@
 # Extraction: v1.2-analyze-auggie - /sc:analyze Auggie MCP Integration
 
 ## Metadata
-- **Source Specification**: `.roadmaps/v1.2-analyze-auggie/sc-analyze-auggie-feature-spec.md`
+- **Source Specification**: `.dev/releases/current/v1.2-analyze-auggie/sc-analyze-auggie-feature-spec.md`
 - **Generated**: 2026-01-26
 - **Generator**: SuperClaude Roadmap Generator v1.0
 - **Spec Version**: 2.0.0

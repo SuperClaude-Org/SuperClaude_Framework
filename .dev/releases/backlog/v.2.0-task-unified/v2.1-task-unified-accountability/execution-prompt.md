@@ -1,9 +1,9 @@
 # Execution Instructions: v1.3-task-unified-accountability - Accountability Framework
 
 ## Context Loading (READ THESE FIRST)
-1. **Source specification**: `/config/workspace/SuperClaude/.roadmaps/v1.3-task-unified-accountability/SPEC-REVISED.md`
-2. **This roadmap**: `/config/workspace/SuperClaude/.roadmaps/v1.3-task-unified-accountability/roadmap.md`
-3. **Test strategy**: `/config/workspace/SuperClaude/.roadmaps/v1.3-task-unified-accountability/test-strategy.md`
+1. **Source specification**: `/config/workspace/SuperClaude/.dev/releases/current/v1.3-task-unified-accountability/SPEC-REVISED.md`
+2. **This roadmap**: `/config/workspace/SuperClaude/.dev/releases/current/v1.3-task-unified-accountability/roadmap.md`
+3. **Test strategy**: `/config/workspace/SuperClaude/.dev/releases/current/v1.3-task-unified-accountability/test-strategy.md`
 4. **Codebase overview**:
    - `src/superclaude/` - Python package source
    - `skills/sc-task-unified/` - Skill definition files
@@ -16,7 +16,7 @@
 2. Within milestones, respect dependency order (see dependency graph in roadmap.md)
 3. Complete ALL deliverables before the milestone checkpoint
 4. Run verification checkpoint before proceeding to the next milestone
-5. If verification fails → STOP and create an issue report in `.roadmaps/v1.3-task-unified-accountability/issues/`
+5. If verification fails → STOP and create an issue report in `.dev/releases/current/v1.3-task-unified-accountability/issues/`
 
 ## Task Execution Pattern (for each deliverable)
 
@@ -278,7 +278,7 @@ HALT execution and report if:
 ## Rollback Procedure
 
 If critical issue:
-1. Document issue in `.roadmaps/v1.3-task-unified-accountability/issues/ISSUE-NNN.md`
+1. Document issue in `.dev/releases/current/v1.3-task-unified-accountability/issues/ISSUE-NNN.md`
 2. Identify last known-good state: `git log --oneline -10`
 3. Report to human with:
    - Issue description
@@ -340,9 +340,9 @@ uv run mypy src/superclaude/accountability/
 ### Key Files
 | Purpose | Location |
 |---------|----------|
-| Specification | `.roadmaps/v1.3-task-unified-accountability/SPEC-REVISED.md` |
-| Roadmap | `.roadmaps/v1.3-task-unified-accountability/roadmap.md` |
-| Test Strategy | `.roadmaps/v1.3-task-unified-accountability/test-strategy.md` |
+| Specification | `.dev/releases/current/v1.3-task-unified-accountability/SPEC-REVISED.md` |
+| Roadmap | `.dev/releases/current/v1.3-task-unified-accountability/roadmap.md` |
+| Test Strategy | `.dev/releases/current/v1.3-task-unified-accountability/test-strategy.md` |
 | Source Code | `src/superclaude/accountability/` |
 | Tests | `tests/accountability/` |
 | Skill Definition | `skills/sc-task-unified/SKILL.md` |

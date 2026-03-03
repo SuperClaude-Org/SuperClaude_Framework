@@ -1,0 +1,3 @@
+# D-0022
+
+uv run pytest: CONDITIONAL PASS. 334 passed, 92 skipped. 2 pre-existing failures excluded: tests/sprint/test_models.py (PhaseStatus.SKIPPED attribute error) and tests/sc-roadmap/compliance/test_path_conventions.py (wrong skill path). No regressions.

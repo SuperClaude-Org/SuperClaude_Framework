@@ -446,7 +446,7 @@ checkpoints:
 ```
 
 ## Related Documentation
-- [SPEC-REVISED.md](../../.roadmaps/v1.3-task-unified-accountability/SPEC-REVISED.md) - Full specification
+- [SPEC-REVISED.md](../../.dev/releases/current/v1.3-task-unified-accountability/SPEC-REVISED.md) - Full specification
 - [SKILL.md](../../skills/sc-task-unified/SKILL.md) - Skill documentation
 - [Migration Guide](./v1.3-accountability.md) - Upgrade instructions
 ```

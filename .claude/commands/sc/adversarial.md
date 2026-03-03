@@ -1,0 +1,121 @@
+---
+name: adversarial
+description: "Structured adversarial debate, comparison, and merge pipeline for 2-10 artifacts"
+category: analysis
+complexity: advanced
+allowed-tools: Read, Glob, Grep, Edit, Write, Bash, TodoWrite, Task, Skill
+mcp-servers: [sequential, context7, serena]
+personas: [architect, analyzer, scribe]
+---
+
+# /sc:adversarial - Adversarial Debate & Merge Pipeline
+
+## Required Input
+- Mode A: `--compare file1,file2[,...,fileN]` (2-10 existing files)
+- Mode B: `--source <file> --generate <type> --agents <spec>[,...]` (generate + compare)
+
+## Usage
+
+```bash
+# Mode A: Compare existing files
+/sc:adversarial --compare file1.md,file2.md[,...,fileN.md] [options]
+
+# Mode B: Generate variants from source + compare
+/sc:adversarial --source source.md --generate <type> --agents <agent-spec>[,...] [options]
+```
+
+### Arguments
+
+**Mode A (Compare)**:
+- `--compare`: Comma-separated file paths (2-10 existing files)
+
+**Mode B (Generate + Compare)**:
+- `--source`: Source file for variant generation
+- `--generate`: Type of artifact to generate (roadmap, spec, design, etc.)
+- `--agents`: Agent specifications in `model[:persona[:"instruction"]]` format
+
+## Options
+
+| Flag | Short | Required | Default | Description |
+|------|-------|----------|---------|-------------|
+| `--compare` | `-c` | Mode A | - | Comma-separated file paths (2-10) |
+| `--source` | `-s` | Mode B | - | Source file for variant generation |
+| `--generate` | `-g` | Mode B | - | Type of artifact to generate |
+| `--agents` | `-a` | Mode B | - | Agent specs: `model[:persona[:"instruction"]]` |
+| `--depth` | `-d` | No | `standard` | Debate depth: quick, standard, deep |
+| `--convergence` | | No | `0.80` | Alignment threshold (0.50-0.99) |
+| `--interactive` | `-i` | No | `false` | Pause for user input at decision points |
+| `--output` | `-o` | No | Auto | Output directory for artifacts |
+| `--focus` | `-f` | No | All | Debate focus areas (comma-separated) |
+
+## Behavioral Summary
+
+5-step adversarial protocol: Step 1 (diff analysis across variants), Step 2 (structured adversarial debate with configurable depth), Step 3 (hybrid quantitative-qualitative scoring and base selection), Step 4 (refactoring plan generation), Step 5 (merge execution with provenance annotations). Produces 6 artifacts: diff-analysis.md, debate-transcript.md, base-selection.md, refactor-plan.md, merge-log.md, and the merged output.
+
+## Examples
+
+### Compare Two Roadmap Drafts
+```bash
+/sc:adversarial --compare draft-a.md,draft-b.md --depth standard
+```
+
+### Generate 3 Variants with Different Personas
+```bash
+/sc:adversarial --source auth-spec.md --generate roadmap \
+  --agents opus:architect,sonnet:security,opus:analyzer \
+  --depth deep --convergence 0.85
+```
+
+### Compare 5 Specs with Interactive Mode
+```bash
+/sc:adversarial --compare spec1.md,spec2.md,spec3.md,spec4.md,spec5.md \
+  --interactive --depth deep
+```
+
+### Quick Comparison with Focused Debate
+```bash
+/sc:adversarial --compare plan-a.md,plan-b.md \
+  --depth quick --focus structure,completeness
+```
+
+### Full Pipeline with Custom Output
+```bash
+/sc:adversarial --source migration-plan.md --generate roadmap \
+  --agents opus:architect:"prioritize backward compatibility",sonnet:security:"zero-trust" \
+  --depth deep --output .dev/releases/current/migration-v2/
+```
+
+## Activation
+
+**MANDATORY**: Before executing any protocol steps, invoke:
+> Skill sc:adversarial-protocol
+
+Do NOT proceed with protocol execution using only this command file.
+The full behavioral specification is in the protocol skill.
+
+## Boundaries
+
+**Will:**
+- Compare 2-10 artifacts through structured adversarial debate
+- Generate variant artifacts using different model/persona configurations
+- Produce transparent, documented merge decisions with full scoring breakdown
+- Execute refactoring plans to produce unified outputs with provenance annotations
+- Support configurable depth, convergence thresholds, and focus areas
+- Work as a generic tool invocable by any SuperClaude command
+
+**Will Not:**
+- Validate domain-specific correctness of merged output (calling command's responsibility)
+- Execute the merged output (planning/merge tool, not execution tool)
+- Manage git operations or version control
+- Make decisions without documented rationale
+- Operate with fewer than 2 variants (minimum for adversarial comparison)
+- Override user decisions in interactive mode
+
+## Related Commands
+
+| Command | Integration | Usage |
+|---------|-------------|-------|
+| `/sc:roadmap` | Multi-spec/multi-roadmap modes | `/sc:roadmap --specs spec1.md,spec2.md` |
+| `/sc:design` | Compare architectural designs | `/sc:adversarial --compare design-a.md,design-b.md` |
+| `/sc:spec-panel` | Augment panel with adversarial review | Invoke adversarial post-panel |
+| `/sc:improve` | Compare improvement approaches | Generate competing plans, merge best |

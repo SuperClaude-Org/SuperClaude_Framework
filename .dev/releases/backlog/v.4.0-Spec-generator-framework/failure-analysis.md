@@ -371,10 +371,10 @@ This bug slipped through because **five safety nets were absent**:
 
 ## Appendix: Evidence Artifacts
 
-- **Spec**: `.roadmaps/v1.0-mcp-installer/extraction.md`
-- **Roadmap**: `.roadmaps/v1.0-mcp-installer/roadmap.md`
-- **Tasklist**: `.roadmaps/v1.0-mcp-installer/tasklist.md`
-- **Test Strategy**: `.roadmaps/v1.0-mcp-installer/test-strategy.md`
+- **Spec**: `.dev/releases/current/v1.0-mcp-installer/extraction.md`
+- **Roadmap**: `.dev/releases/current/v1.0-mcp-installer/roadmap.md`
+- **Tasklist**: `.dev/releases/current/v1.0-mcp-installer/tasklist.md`
+- **Test Strategy**: `.dev/releases/current/v1.0-mcp-installer/test-strategy.md`
 - **Bug Location**: `src/superclaude/cli/install_mcp.py:229-259`
 - **Interface**: `src/superclaude/mcp/servers.py:264-270`
 - **Tests**: `tests/mcp/acceptance/test_api_keys.py`

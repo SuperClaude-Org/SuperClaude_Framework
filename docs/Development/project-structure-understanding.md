@@ -1,368 +1,368 @@
 # SuperClaude Framework - Project Structure Understanding
 
-> **Critical Understanding**: このプロジェクトとインストール後の環境の関係
+> **Critical Understanding**: The relationship between this project and the post-install environment
 
 ---
 
-## 🏗️ 2つの世界の区別
+## Distinguishing the Two Worlds
 
-### 1. このプロジェクト（Git管理・開発環境）
+### 1. This Project (Git-managed / Development Environment)
 
 **Location**: `~/github/SuperClaude_Framework/`
 
-**Role**: ソースコード・開発・テスト
+**Role**: Source code, development, and testing
 
 ```
 SuperClaude_Framework/
-├── setup/                  # インストーラーロジック
-│   ├── components/         # コンポーネント定義（何をインストールするか）
-│   ├── data/              # 設定データ（JSON/YAML）
-│   ├── cli/               # CLIインターフェース
-│   ├── utils/             # ユーティリティ関数
-│   └── services/          # サービスロジック
+├── setup/                  # Installer logic
+│   ├── components/         # Component definitions (what to install)
+│   ├── data/              # Configuration data (JSON/YAML)
+│   ├── cli/               # CLI interface
+│   ├── utils/             # Utility functions
+│   └── services/          # Service logic
 │
-├── superclaude/           # ランタイムロジック（実行時の動作）
-│   ├── core/             # コア機能
-│   ├── modes/            # 行動モード
-│   ├── agents/           # エージェント定義
-│   ├── mcp/              # MCPサーバー統合
-│   └── commands/         # コマンド実装
+├── superclaude/           # Runtime logic (execution behavior)
+│   ├── core/             # Core functionality
+│   ├── modes/            # Behavioral modes
+│   ├── agents/           # Agent definitions
+│   ├── mcp/              # MCP server integration
+│   └── commands/         # Command implementations
 │
-├── tests/                # テストコード
-├── docs/                 # 開発者向けドキュメント
-├── pyproject.toml        # Python設定
-└── package.json          # npm設定
+├── tests/                # Test code
+├── docs/                 # Developer documentation
+├── pyproject.toml        # Python configuration
+└── package.json          # npm configuration
 ```
 
 **Operations**:
-- ✅ ソースコード変更
-- ✅ Git コミット・PR
-- ✅ テスト実行
-- ✅ ドキュメント作成
-- ✅ バージョン管理
+- ✅ Source code changes
+- ✅ Git commits and PRs
+- ✅ Test execution
+- ✅ Documentation creation
+- ✅ Version management
 
 ---
 
-### 2. インストール後（ユーザー環境・Git管理外）
+### 2. Post-Install (User Environment / Outside Git Management)
 
 **Location**: `~/.claude/`
 
-**Role**: 実際に動作する設定・コマンド（ユーザー環境）
+**Role**: Configuration and commands that actually run (user environment)
 
 ```
 ~/.claude/
 ├── commands/
-│   └── sc/              # スラッシュコマンド（インストール後）
+│   └── sc/              # Slash commands (post-install)
 │       ├── pm.md
 │       ├── implement.md
 │       ├── test.md
 │       └── ... (26 commands)
 │
-├── CLAUDE.md            # グローバル設定（インストール後）
-├── *.md                 # モード定義（インストール後）
+├── CLAUDE.md            # Global configuration (post-install)
+├── *.md                 # Mode definitions (post-install)
 │   ├── MODE_Brainstorming.md
 │   ├── MODE_Orchestration.md
 │   └── ...
 │
-└── .claude.json         # Claude Code設定
+└── .claude.json         # Claude Code configuration
 ```
 
 **Operations**:
-- ✅ **読むだけ**（理解・確認用）
-- ✅ 動作確認
-- ⚠️ テスト時のみ一時変更（**必ず元に戻す！**）
-- ❌ 永続的な変更禁止（Git追跡不可）
+- ✅ **Read only** (for understanding and verification)
+- ✅ Behavior verification
+- ⚠️ Temporary changes only during testing (**must always be restored!**)
+- ❌ Permanent changes prohibited (cannot be Git-tracked)
 
 ---
 
-## 🔄 インストールフロー
+## Installation Flow
 
-### ユーザー操作
+### User Operations
 ```bash
-# 1. インストール
+# 1. Install
 pipx install SuperClaude
-# または
+# or
 npm install -g @bifrost_inc/superclaude
 
-# 2. セットアップ実行
+# 2. Run setup
 SuperClaude install
 ```
 
-### 内部処理（setup/が実行）
+### Internal Processing (executed by setup/)
 ```python
-# setup/components/*.py が実行される
+# setup/components/*.py is executed
 
-1. ~/.claude/ ディレクトリ作成
-2. commands/sc/ にスラッシュコマンド配置
-3. CLAUDE.md と各種 *.md 配置
-4. .claude.json 更新
-5. MCPサーバー設定
+1. Create ~/.claude/ directory
+2. Place slash commands in commands/sc/
+3. Place CLAUDE.md and various *.md files
+4. Update .claude.json
+5. MCP server configuration
 ```
 
-### 結果
-- **このプロジェクトのファイル** → **~/.claude/ にコピー**
-- ユーザーがClaude起動 → `~/.claude/` の設定が読み込まれる
-- `/sc:pm` 実行 → `~/.claude/commands/sc/pm.md` が展開される
+### Result
+- **Files from this project** → **Copied to ~/.claude/**
+- User launches Claude → Settings from `~/.claude/` are loaded
+- Execute `/sc:pm` → `~/.claude/commands/sc/pm.md` is expanded
 
 ---
 
-## 📝 開発ワークフロー
+## Development Workflow
 
-### ❌ 間違った方法
+### Incorrect Approach
 ```bash
-# Git管理外を直接変更
-vim ~/.claude/commands/sc/pm.md  # ← ダメ！履歴追えない
+# Directly modifying files outside Git management
+vim ~/.claude/commands/sc/pm.md  # ← Don't do this! History can't be tracked
 
-# 変更テスト
-claude  # 動作確認
+# Test changes
+claude  # Verify behavior
 
-# 変更が ~/.claude/ に残る
-# → 元に戻すの忘れる
-# → 設定がぐちゃぐちゃになる
-# → Gitで追跡できない
+# Changes remain in ~/.claude/
+# → Forget to revert
+# → Configuration becomes messy
+# → Cannot be tracked with Git
 ```
 
-### ✅ 正しい方法
+### Correct Approach
 
-#### Step 1: 既存実装を理解
+#### Step 1: Understand Existing Implementation
 ```bash
 cd ~/github/SuperClaude_Framework
 
-# インストールロジック確認
-Read setup/components/commands.py    # コマンドのインストール方法
-Read setup/components/modes.py       # モードのインストール方法
-Read setup/data/commands.json        # コマンド定義データ
+# Review install logic
+Read setup/components/commands.py    # How commands are installed
+Read setup/components/modes.py       # How modes are installed
+Read setup/data/commands.json        # Command definition data
 
-# インストール後の状態確認（理解のため）
+# Review post-install state (for understanding)
 ls ~/.claude/commands/sc/
-cat ~/.claude/commands/sc/pm.md      # 現在の仕様確認
+cat ~/.claude/commands/sc/pm.md      # Review current specification
 
-# 「なるほど、setup/components/commands.py でこう処理されて、
-#  ~/.claude/commands/sc/ に配置されるのね」
+# "I see, so setup/components/commands.py processes it like this,
+#  and it gets placed in ~/.claude/commands/sc/"
 ```
 
-#### Step 2: 改善案をドキュメント化
+#### Step 2: Document Improvement Proposals
 ```bash
 cd ~/github/SuperClaude_Framework
 
-# Git管理されているこのプロジェクト内で
+# Within this Git-managed project
 Write docs/Development/hypothesis-pm-improvement-YYYY-MM-DD.md
 
-# 内容例:
-# - 現状の問題
-# - 改善案
-# - 実装方針
-# - 期待される効果
+# Example content:
+# - Current problems
+# - Improvement proposals
+# - Implementation approach
+# - Expected outcomes
 ```
 
-#### Step 3: テストが必要な場合
+#### Step 3: When Testing is Needed
 ```bash
-# バックアップ作成（必須！）
+# Create backup (required!)
 cp ~/.claude/commands/sc/pm.md ~/.claude/commands/sc/pm.md.backup
 
-# 実験的変更
+# Experimental changes
 vim ~/.claude/commands/sc/pm.md
 
-# Claude起動して検証
+# Launch Claude and verify
 claude
-# ... 動作確認 ...
+# ... verify behavior ...
 
-# テスト完了後、必ず復元！！
+# After testing, always restore!!
 mv ~/.claude/commands/sc/pm.md.backup ~/.claude/commands/sc/pm.md
 ```
 
-#### Step 4: 本実装
+#### Step 4: Actual Implementation
 ```bash
 cd ~/github/SuperClaude_Framework
 
-# ソースコード側で変更
-Edit setup/components/commands.py    # インストールロジック修正
-Edit setup/data/commands/pm.md       # コマンド仕様修正
+# Make changes on the source code side
+Edit setup/components/commands.py    # Modify install logic
+Edit setup/data/commands/pm.md       # Modify command specification
 
-# テスト追加
+# Add tests
 Write tests/test_pm_command.py
 
-# テスト実行
+# Run tests
 pytest tests/test_pm_command.py -v
 
-# コミット（Git履歴に残る）
+# Commit (recorded in Git history)
 git add setup/ tests/
 git commit -m "feat: enhance PM command with autonomous workflow"
 ```
 
-#### Step 5: 動作確認
+#### Step 5: Verify Behavior
 ```bash
-# 開発版インストール
+# Development install
 cd ~/github/SuperClaude_Framework
 pip install -e .
 
-# または
+# or
 SuperClaude install --dev
 
-# 実際の環境でテスト
+# Test in actual environment
 claude
 /sc:pm "test request"
 ```
 
 ---
 
-## 🎯 重要なルール
+## Important Rules
 
-### Rule 1: Git管理の境界を守る
-- **変更**: このプロジェクト内のみ
-- **確認**: `~/.claude/` は読むだけ
-- **テスト**: バックアップ → 変更 → 復元
+### Rule 1: Respect the Git Management Boundary
+- **Changes**: Only within this project
+- **Verification**: `~/.claude/` is read-only
+- **Testing**: Backup → Change → Restore
 
-### Rule 2: テスト時は必ず復元
+### Rule 2: Always Restore After Testing
 ```bash
-# テスト前
+# Before testing
 cp original backup
 
-# テスト
-# ... 実験 ...
+# Testing
+# ... experiment ...
 
-# テスト後（必須！）
+# After testing (required!)
 mv backup original
 ```
 
-### Rule 3: ドキュメント駆動開発
-1. 理解 → docs/Development/ に記録
-2. 仮説 → docs/Development/hypothesis-*.md
-3. 実験 → docs/Development/experiment-*.md
-4. 成功 → docs/patterns/
-5. 失敗 → docs/mistakes/
+### Rule 3: Document-Driven Development
+1. Understanding → Record in docs/Development/
+2. Hypothesis → docs/Development/hypothesis-*.md
+3. Experiment → docs/Development/experiment-*.md
+4. Success → docs/patterns/
+5. Failure → docs/mistakes/
 
 ---
 
-## 📚 理解すべきファイル
+## Files to Understand
 
-### インストーラー側（setup/）
+### Installer Side (setup/)
 ```python
-# 優先度: 高
-setup/components/commands.py    # コマンドインストール
-setup/components/modes.py       # モードインストール
-setup/components/agents.py      # エージェント定義
-setup/data/commands/*.md        # コマンド仕様（ソース）
-setup/data/modes/*.md           # モード仕様（ソース）
+# Priority: High
+setup/components/commands.py    # Command installation
+setup/components/modes.py       # Mode installation
+setup/components/agents.py      # Agent definitions
+setup/data/commands/*.md        # Command specifications (source)
+setup/data/modes/*.md           # Mode specifications (source)
 
-# これらが ~/.claude/ に配置される
+# These are what get placed in ~/.claude/
 ```
 
-### ランタイム側（superclaude/）
+### Runtime Side (superclaude/)
 ```python
-# 優先度: 中
-superclaude/__main__.py         # CLIエントリーポイント
-superclaude/core/              # コア機能実装
-superclaude/agents/            # エージェントロジック
+# Priority: Medium
+superclaude/__main__.py         # CLI entry point
+superclaude/core/              # Core functionality implementation
+superclaude/agents/            # Agent logic
 ```
 
-### インストール後（~/.claude/）
+### Post-Install (~/.claude/)
 ```markdown
-# 優先度: 理解のため（変更不可）
-~/.claude/commands/sc/pm.md    # 実際に動くPM仕様
-~/.claude/MODE_*.md            # 実際に動くモード仕様
-~/.claude/CLAUDE.md            # 実際に読み込まれるグローバル設定
+# Priority: For understanding only (do not modify)
+~/.claude/commands/sc/pm.md    # Actual running PM specification
+~/.claude/MODE_*.md            # Actual running mode specifications
+~/.claude/CLAUDE.md            # Actual loaded global configuration
 ```
 
 ---
 
-## 🔍 デバッグ方法
+## Debugging Methods
 
-### インストール確認
+### Verify Installation
 ```bash
-# インストール済みコンポーネント確認
+# Check installed components
 SuperClaude install --list-components
 
-# インストール先確認
+# Check installation destination
 ls -la ~/.claude/commands/sc/
 ls -la ~/.claude/*.md
 ```
 
-### 動作確認
+### Verify Behavior
 ```bash
-# Claude起動
+# Launch Claude
 claude
 
-# コマンド実行
+# Execute command
 /sc:pm "test"
 
-# ログ確認（必要に応じて）
+# Check logs (as needed)
 tail -f ~/.claude/logs/*.log
 ```
 
-### トラブルシューティング
+### Troubleshooting
 ```bash
-# 設定が壊れた場合
-SuperClaude install --force    # 再インストール
+# If configuration is broken
+SuperClaude install --force    # Reinstall
 
-# 開発版に切り替え
+# Switch to development version
 cd ~/github/SuperClaude_Framework
 pip install -e .
 
-# 本番版に戻す
+# Return to production version
 pip uninstall superclaude
 pipx install SuperClaude
 ```
 
 ---
 
-## 💡 よくある間違い
+## Common Mistakes
 
-### 間違い1: Git管理外を変更
+### Mistake 1: Modifying Files Outside Git Management
 ```bash
-# ❌ WRONG
+# WRONG
 vim ~/.claude/commands/sc/pm.md
-git add ~/.claude/  # ← できない！Git管理外
+git add ~/.claude/  # ← Can't do this! Outside Git management
 ```
 
-### 間違い2: バックアップなしテスト
+### Mistake 2: Testing Without Backup
 ```bash
-# ❌ WRONG
+# WRONG
 vim ~/.claude/commands/sc/pm.md
-# テスト...
-# 元に戻すの忘れる → 設定ぐちゃぐちゃ
+# Testing...
+# Forget to revert → Configuration becomes messy
 ```
 
-### 間違い3: ソース確認せずに変更
+### Mistake 3: Making Changes Without Reviewing Source
 ```bash
-# ❌ WRONG
-「PMモード直したい」
-→ いきなり ~/.claude/ 変更
-→ ソースコード理解してない
-→ 再インストールで上書きされる
+# WRONG
+"I want to fix PM mode"
+→ Immediately modify ~/.claude/
+→ Don't understand the source code
+→ Gets overwritten on reinstall
 ```
 
-### 正解
+### Correct Approach
 ```bash
-# ✅ CORRECT
-1. setup/components/ でロジック理解
-2. docs/Development/ に改善案記録
-3. setup/ 側で変更・テスト
-4. Git コミット
-5. SuperClaude install --dev で動作確認
+# CORRECT
+1. Understand logic in setup/components/
+2. Record improvement proposals in docs/Development/
+3. Make changes and test in setup/ side
+4. Git commit
+5. Verify behavior with SuperClaude install --dev
 ```
 
 ---
 
-## 🚀 次のステップ
+## Next Steps
 
-このドキュメント理解後:
+After understanding this document:
 
-1. **setup/components/ 読解**
-   - インストールロジックの理解
-   - どこに何が配置されるか
+1. **Read setup/components/**
+   - Understand installation logic
+   - What gets placed where
 
-2. **既存仕様の把握**
-   - `~/.claude/commands/sc/pm.md` 確認（読むだけ）
-   - 現在の動作理解
+2. **Understand existing specifications**
+   - Review `~/.claude/commands/sc/pm.md` (read-only)
+   - Understand current behavior
 
-3. **改善提案作成**
-   - `docs/Development/hypothesis-*.md` 作成
-   - ユーザーレビュー
+3. **Create improvement proposals**
+   - Create `docs/Development/hypothesis-*.md`
+   - User review
 
-4. **実装・テスト**
-   - `setup/` 側で変更
-   - `tests/` でテスト追加
-   - Git管理下で開発
+4. **Implement and test**
+   - Make changes in `setup/` side
+   - Add tests in `tests/`
+   - Develop under Git management
 
-これで**何百回も同じ説明をしなくて済む**ようになる。
+This way, **we won't need to repeat the same explanation hundreds of times**.

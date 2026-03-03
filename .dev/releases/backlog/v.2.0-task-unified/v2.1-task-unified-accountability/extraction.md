@@ -1,7 +1,7 @@
 # Input Extraction: v1.3-task-unified-accountability
 
 ## Source Information
-- **Source Specification**: `/config/workspace/SuperClaude/.roadmaps/v1.3-task-unified-accountability/SPEC-REVISED.md`
+- **Source Specification**: `/config/workspace/SuperClaude/.dev/releases/current/v1.3-task-unified-accountability/SPEC-REVISED.md`
 - **Extracted**: 2026-01-26T14:45:00Z
 - **Generator Version**: v2.1
 

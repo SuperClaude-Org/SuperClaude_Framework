@@ -1,83 +1,80 @@
 ---
-name: roadmap
-description: "Generate comprehensive project roadmaps from specification documents"
-category: planning
-complexity: advanced
-mcp-servers: [sequential, context7, serena]
-personas: [architect, scribe, analyzer]
+name: sc:roadmap
+description: Generate comprehensive project roadmaps from specification documents
+allowed-tools: Read, Glob, Grep, Edit, Write, Bash, TodoWrite, Task, Skill
 ---
 
-# /sc:roadmap - Roadmap Generator
+# /sc:roadmap — Roadmap Generator
 
-## Required Input
-- Specification file: $ARGUMENTS
-- File exists: !`test -f ${ARGUMENTS%% *} && echo "YES" || echo "NO - file not found"`
-- File type: !`file --brief ${ARGUMENTS%% *} 2>/dev/null || echo "unknown"`
-- File size: !`wc -l < ${ARGUMENTS%% *} 2>/dev/null || echo "0"` lines
+## Trigger
+
+When the user requests roadmap generation from a specification file. Requires a specification file path as mandatory input.
 
 ## Usage
+
 ```
-/sc:roadmap <spec-file-path> [--template feature|quality|docs|security|performance|migration] [--depth quick|standard|deep] [--output <dir>]
+/sc:roadmap <spec-file-path> [options]
+/sc:roadmap --specs <spec1.md,spec2.md,...> [options]
+/sc:roadmap <spec-file-path> --multi-roadmap --agents <agent-specs> [options]
 ```
 
-### Arguments
-- **spec-file-path**: (MANDATORY) Path to specification document (.md, .txt, .yaml, .json)
-- **--template**: Template type for roadmap generation (default: auto-detect from spec content)
-- **--depth**: Analysis depth - `quick` (overview), `standard` (full), `deep` (with validation)
-- **--output**: Output directory (default: `.dev/releases/current/<spec-name>/`)
-- **--dry-run**: Preview roadmap structure without generating files
-- **--compliance**: Force compliance tier (`strict`, `standard`, `light`)
+## Flags
 
-## Behavioral Summary
-
-5-wave orchestration: Wave 0 (prerequisite validation and spec parsing), Wave 1 (domain analysis and template selection), Wave 2 (milestone extraction and dependency mapping), Wave 3 (tasklist generation with effort estimates), Wave 4 (multi-agent validation and quality gates). Requires specification file as mandatory input. Outputs milestone-based roadmap package to `.dev/releases/current/` directory with tasklists, dependency graphs, and risk assessments.
+| Flag | Short | Required | Default | Description |
+|------|-------|----------|---------|-------------|
+| `<spec-file-path>` | | Yes (single-spec) | - | Path to specification document |
+| `--specs` | | Yes (multi-spec) | - | Comma-separated spec file paths (2-10) |
+| `--template` | `-t` | No | Auto-detect | Template type: feature, quality, docs, security, performance, migration |
+| `--output` | `-o` | No | `.dev/releases/current/<spec-name>/` | Output directory |
+| `--depth` | `-d` | No | `standard` | Analysis depth: quick, standard, deep |
+| `--multi-roadmap` | | No | `false` | Enable multi-roadmap adversarial generation |
+| `--agents` | `-a` | With --multi-roadmap | - | Agent specs: `model[:persona[:"instruction"]]` |
+| `--interactive` | `-i` | No | `false` | User approval at adversarial decision points |
+| `--validate` | `-v` | No | `true` | Enable multi-agent validation (Wave 4) |
+| `--no-validate` | | No | `false` | Skip validation. Sets validation_status: SKIPPED |
+| `--compliance` | `-c` | No | Auto-detect | Compliance tier: strict, standard, light |
+| `--persona` | `-p` | No | Auto-select | Override primary persona |
+| `--dry-run` | | No | `false` | Preview structure without writing files |
 
 ## Examples
 
-### Generate Roadmap from Feature Spec
-```
+```bash
+# Basic single-spec
 /sc:roadmap specs/auth-system.md
-```
-Parses the specification, auto-detects domain (security), selects appropriate template, and generates a complete roadmap package with milestones, tasklists, and validation results.
 
-### Deep Analysis with Security Template
-```
+# Deep analysis with security template
 /sc:roadmap specs/migration-plan.md --template security --depth deep
-```
-Runs deep analysis with security-focused template. Includes threat modeling milestones and compliance validation gates.
 
-### Quick Preview
+# Consolidate 3 specs into one roadmap
+/sc:roadmap --specs specs/frontend.md,specs/backend.md,specs/security.md
+
+# Generate 3 competing roadmaps (model-only — all use auto-detected persona)
+/sc:roadmap specs/v2-prd.md --multi-roadmap --agents opus,sonnet,gpt52
+
+# Generate with explicit personas
+/sc:roadmap specs/v2-prd.md --multi-roadmap --agents opus:architect,sonnet:security,opus:analyzer
+
+# Mixed: some with persona, some model-only
+/sc:roadmap specs/v2-prd.md --multi-roadmap --agents opus:architect,sonnet,gpt52:security
+
+# Full combined mode with interactive approval
+/sc:roadmap --specs specs/v2-prd.md,specs/v2-addendum.md \
+  --multi-roadmap --agents opus:architect,sonnet:security --interactive --depth deep
+
+# Custom output directory
+/sc:roadmap specs/auth.md --output .dev/releases/current/v2.0-auth/
 ```
-/sc:roadmap specs/quick-fix.md --dry-run
-```
-Shows roadmap structure and milestone breakdown without writing files.
+
+## Activation
+
+**MANDATORY**: Before executing any protocol steps, invoke:
+> Skill sc:roadmap-protocol
+
+Do NOT proceed with protocol execution using only this command file.
+The full behavioral specification is in the protocol skill.
 
 ## Boundaries
 
-**Will:**
-- Parse specification documents and extract actionable requirements
-- Generate milestone-based roadmaps with dependency mapping and effort estimates
-- Validate roadmap completeness using multi-agent quality gates
-- Write roadmap artifacts to `.dev/releases/current/` directory
+**Will do**: Generate structured roadmaps from spec files; invoke sc:adversarial for multi-spec/multi-roadmap; apply multi-agent validation; create milestone-based roadmaps with dependency graphs and risk registers; persist session state for cross-session resumability.
 
-**Will Not:**
-- Execute without a specification file — input is mandatory
-- Generate roadmaps from ad-hoc descriptions without documented requirements
-- Modify the source specification file
-- Implement the roadmap tasks — output is planning artifacts only
-
-## CRITICAL BOUNDARIES
-
-**SPECIFICATION-DRIVEN ROADMAP GENERATION**
-
-**Explicitly Requires**:
-- A valid specification file path as first argument
-- File must exist and be readable
-
-**Output**: Roadmap artifacts written to `.dev/releases/current/<spec-name>/` directory:
-- Milestone breakdown with dependency graph
-- Per-milestone tasklists with effort estimates
-- Risk assessment and mitigation strategies
-- Validation report (if --depth deep or --validate)
-
-**Next Step**: Review generated roadmap, then use `/sc:task` to begin executing milestones.
+**Will not do**: Generate tasklists or execution prompts; execute implementation; trigger downstream commands automatically; generate roadmaps without spec input; write outside designated output directories; modify source specifications.

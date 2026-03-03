@@ -1,3 +1,13 @@
+---
+name: validate-tests
+description: "Validate tier classification behavior against YAML test specifications"
+category: testing
+complexity: moderate
+allowed-tools: Read, Glob, Grep, Bash, TodoWrite, Task, Skill
+mcp-servers: [sequential]
+personas: [qa, analyzer]
+---
+
 # /sc:validate-tests - Behavioral Test Validation
 
 Validate tier classification behavior against YAML test specifications.
@@ -60,7 +70,7 @@ Validate tier classification behavior against YAML test specifications.
 
 ## Classification Algorithm
 
-Reference: `skills/sc-validate-tests/classification-algorithm.yaml`
+Reference: `skills/sc-validate-tests-protocol/classification-algorithm.yaml`
 
 ### Priority Order
 ```
@@ -95,8 +105,28 @@ BY CATEGORY
   ...
 ```
 
+## Activation
+
+**MANDATORY**: Before executing any protocol steps, invoke:
+> Skill sc:validate-tests-protocol
+
+Do NOT proceed with protocol execution using only this command file.
+The full behavioral specification is in the protocol skill.
+
+## Boundaries
+
+**Will:**
+- Validate tier classification behavior against YAML test specifications
+- Apply the tier classification algorithm to test inputs and compare against expected results
+- Generate summary reports with pass/fail counts and failure details
+
+**Will Not:**
+- Modify test specification files
+- Change the classification algorithm itself
+- Skip test categories without explicit user request
+
 ## See Also
 
 - `/sc:task` - Unified task command
-- `skills/sc-task-unified/SKILL.md` - Task skill definition
-- `skills/sc-validate-tests/SKILL.md` - Full validation skill spec
+- `skills/sc-task-unified-protocol/SKILL.md` - Task skill definition
+- `skills/sc-validate-tests-protocol/SKILL.md` - Full validation skill spec

@@ -141,7 +141,7 @@ The v3.0 specification adds these phases:
 ### 4.3 Phase Gate Requirements
 
 **Between Phase 1 and 2:**
-> PAUSE for user confirmation: "Extraction complete. [N] items identified. Review `.roadmaps/[version]/extraction.md` before proceeding?"
+> PAUSE for user confirmation: "Extraction complete. [N] items identified. Review `.dev/releases/current/[version]/extraction.md` before proceeding?"
 
 **Between Phase 3 and 4:**
 > PAUSE for user confirmation: "Roadmap construction complete. [N] milestones with [M] total deliverables."
@@ -155,7 +155,7 @@ The v3.0 specification adds these phases:
 
 ### 5.1 Required Artifacts (4 Core)
 
-All artifacts written under `.roadmaps/[version]/`:
+All artifacts written under `.dev/releases/current/[version]/`:
 
 | Artifact | Description | Key Sections |
 |----------|-------------|--------------|
@@ -384,7 +384,7 @@ Before passing to roadmap generator, spec-panel should ensure:
 ### 9.1 Output Directory Structure
 
 ```
-.roadmaps/
+.dev/releases/current/
   [version]/
     v1/                         # Draft version
       extraction.md

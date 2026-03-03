@@ -1,0 +1,7 @@
+<!-- SC:TASK-UNIFIED:CLASSIFICATION -->
+TIER: LIGHT
+CONFIDENCE: 0.95
+KEYWORDS: typo, fix
+OVERRIDE: false
+RATIONALE: Trivial single-string correction with no functional or security impact
+<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->

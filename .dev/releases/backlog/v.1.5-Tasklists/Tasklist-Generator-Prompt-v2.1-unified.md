@@ -53,12 +53,12 @@ Even though you must output **one markdown document**, you must include **explic
 ### 3.1 Tasklist Root (deterministic)
 Determine `TASKLIST_ROOT` using this order:
 
-1. If the roadmap text contains a substring matching `.roadmaps/<segment>/` (first match), set:
-   `TASKLIST_ROOT = .roadmaps/<segment>/`
+1. If the roadmap text contains a substring matching `.dev/releases/current/<segment>/` (first match), set:
+   `TASKLIST_ROOT = .dev/releases/current/<segment>/`
 2. Else if the roadmap text contains a version token matching `v<digits>(.<digits>)+` (first match), set:
-   `TASKLIST_ROOT = .roadmaps/<version-token>/`
+   `TASKLIST_ROOT = .dev/releases/current/<version-token>/`
 3. Else:
-   `TASKLIST_ROOT = .roadmaps/v0.0-unknown/`
+   `TASKLIST_ROOT = .dev/releases/current/v0.0-unknown/`
 
 ### 3.2 Standard artifact paths (must appear in output)
 Within `TASKLIST_ROOT`, reference these paths exactly:

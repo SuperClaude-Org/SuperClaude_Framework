@@ -1,0 +1,7 @@
+<!-- SC:TASK-UNIFIED:CLASSIFICATION -->
+TIER: STRICT
+CONFIDENCE: 0.97
+KEYWORDS: security, vulnerability, auth, fix
+OVERRIDE: false
+RATIONALE: Security vulnerability fix in authentication module requires strict oversight to prevent introducing new risks or weakening security controls.
+<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->

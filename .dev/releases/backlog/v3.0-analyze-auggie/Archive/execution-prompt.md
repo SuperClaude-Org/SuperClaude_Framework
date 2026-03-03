@@ -1,7 +1,7 @@
 # Execution Prompt: v1.2-analyze-auggie - /sc:analyze Auggie MCP Integration
 
 ## Metadata
-- **Roadmap Source**: `.roadmaps/v1.2-analyze-auggie/roadmap.md`
+- **Roadmap Source**: `.dev/releases/current/v1.2-analyze-auggie/roadmap.md`
 - **Generated**: 2026-01-26
 - **Generator**: SuperClaude Roadmap Generator v1.0
 - **Compliance Tier**: STRICT (multi-file, MCP integration, security-related)
@@ -47,7 +47,7 @@ For each milestone:
 
 1. **Load Context**
    ```
-   /sc:load .roadmaps/v1.2-analyze-auggie/tasklists/M{N}-*.md
+   /sc:load .dev/releases/current/v1.2-analyze-auggie/tasklists/M{N}-*.md
    ```
 
 2. **Create TodoWrite Tasks**

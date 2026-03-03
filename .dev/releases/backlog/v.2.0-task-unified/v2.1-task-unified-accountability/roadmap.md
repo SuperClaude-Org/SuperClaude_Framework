@@ -1,7 +1,7 @@
 # Release Roadmap: v1.3-task-unified-accountability - Accountability Framework
 
 ## Metadata
-- **Source Specification**: `/config/workspace/SuperClaude/.roadmaps/v1.3-task-unified-accountability/SPEC-REVISED.md`
+- **Source Specification**: `/config/workspace/SuperClaude/.dev/releases/current/v1.3-task-unified-accountability/SPEC-REVISED.md`
 - **Generated**: 2026-01-26T14:50:00Z
 - **Generator Version**: v2.1
 - **Primary Persona**: Backend — 69% of items are BACKEND work

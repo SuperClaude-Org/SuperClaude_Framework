@@ -3,7 +3,7 @@
 **Last Updated**: 2025-10-14
 **Version**: 4.1.5
 
-## 📋 Table of Contents
+## Table of Contents
 
 1. [System Overview](#system-overview)
 2. [Core Architecture](#core-architecture)
@@ -76,13 +76,13 @@ Output Generation
 ├── MODE_*.md                   # 7 behavioral modes
 ├── MCP_*.md                    # 8 MCP server integrations
 ├── agents/                     # 16 specialized agents
-│   ├── pm-agent.md            # 🆕 Meta-layer orchestrator
+│   ├── pm-agent.md            # Meta-layer orchestrator
 │   ├── backend-architect.md
 │   ├── frontend-architect.md
 │   ├── security-engineer.md
 │   └── ... (13 more)
 └── commands/sc/               # 26 workflow commands
-    ├── pm.md                  # 🆕 PM Agent command
+    ├── pm.md                  # PM Agent command
     ├── implement.md
     ├── analyze.md
     └── ... (23 more)
@@ -126,7 +126,7 @@ PM Agent operates as a **meta-layer** above all other components:
 1. **Session Lifecycle Management**
    - Auto-activation at session start
    - Context restoration from Serena MCP memory
-   - User report generation (前回/進捗/今回/課題)
+   - User report generation (Previous/Progress/Current/Issues)
 
 2. **PDCA Cycle Execution**
    - Plan: Hypothesis generation
@@ -252,22 +252,22 @@ Session End:
 ```
 ┌─────────────┐
 │    Plan     │ → write_memory("plan", goal)
-│   (仮説)    │ → docs/temp/hypothesis-YYYY-MM-DD.md
+│ (Hypothesis)│ → docs/temp/hypothesis-YYYY-MM-DD.md
 └──────┬──────┘
        ↓
 ┌─────────────┐
 │     Do      │ → TodoWrite tracking
-│   (実験)    │ → write_memory("checkpoint", progress)
+│ (Experiment)│ → write_memory("checkpoint", progress)
 └──────┬──────┘ → docs/temp/experiment-YYYY-MM-DD.md
        ↓
 ┌─────────────┐
 │   Check     │ → think_about_task_adherence()
-│   (評価)    │ → think_about_whether_you_are_done()
+│ (Evaluate)  │ → think_about_whether_you_are_done()
 └──────┬──────┘ → docs/temp/lessons-YYYY-MM-DD.md
        ↓
 ┌─────────────┐
 │    Act      │ → Success: docs/patterns/[name].md
-│   (改善)    │ → Failure: docs/mistakes/mistake-*.md
+│  (Improve)  │ → Failure: docs/mistakes/mistake-*.md
 └──────┬──────┘ → Update CLAUDE.md
        ↓
    [Repeat]
@@ -324,10 +324,10 @@ Session Start:
 └──────┬───────┘
        ↓
 ┌──────────────┐
-│    User      │ 前回: [summary]
-│   Report     │ 進捗: [status]
-└──────────────┘ 今回: [actions]
-                 課題: [blockers]
+│    User      │ Previous: [summary]
+│   Report     │ Progress: [status]
+└──────────────┘ Current: [actions]
+                 Issues: [blockers]
 ```
 
 ### Implementation Data Flow
@@ -520,7 +520,7 @@ SuperClaude's architecture is elegantly simple: **structured context files** tha
 - Systematic knowledge management
 - Seamless orchestration of specialist agents
 
-This architecture enables SuperClaude to function as a **最高司令官 (Supreme Commander)** that orchestrates all development activities while continuously learning and improving from every interaction.
+This architecture enables SuperClaude to function as a **Supreme Commander** that orchestrates all development activities while continuously learning and improving from every interaction.
 
 ---
 

@@ -1,0 +1,35 @@
+<!-- SC:TASK-UNIFIED:CLASSIFICATION -->
+TIER: STRICT
+CONFIDENCE: 0.95
+KEYWORDS: implement, JWT, authentication, token
+OVERRIDE: false
+RATIONALE: Security-critical request to implement an authentication system using JWTs
+<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->
+
+**Tier: STRICT** [█████████░] 95%
+
+Classified as STRICT:
+- Keywords matched: authentication, JWT, token, implement
+- Confidence score: 0.95
+- Considered alternatives: STANDARD (0.32), EXEMPT (0.05), LIGHT (0.01)
+
+## Blocker: scope + edit restrictions
+In this repository, there’s no existing JWT/auth implementation to extend (my searches only found JWT mentions in docs/tests, not in runtime code). Also, your global instructions currently say I **may only modify documents within `docs/generated/`**—which makes “implement JWT authentication system” (code + tests) impossible without an explicit exception from you.
+
+## Clarify what you want to build
+Which of these do you mean?
+
+1) **Implement real JWT auth in this repo’s Python code** (would require editing `src/superclaude/**` + adding tests under `tests/**`).  
+   - If yes: please explicitly confirm I’m allowed to modify code outside `docs/generated/` for this task.
+
+2) **Documentation-only**: add a JWT auth “how-to / reference design” under `docs/generated/` (no code changes).  
+   - If yes: tell me the target stack (FastAPI/Django/Flask/Node/etc.) so the doc is correct.
+
+3) **This is just a /sc:task-unified classification test scenario** (i.e., you’re validating the protocol output, not asking for actual auth code).  
+   - If yes: say so and what artifact you want updated (but note: updating tests/specs would also be outside `docs/generated/` unless you allow it).
+
+Reply with **1/2/3**, and if **(1)** also answer:
+- Target framework (FastAPI/Django/etc.)
+- Token type(s): access-only vs access+refresh
+- Signing algorithm: HS256 (shared secret) vs RS256/EdDSA (keypair/JWKS)
+- Where tokens are stored client-side (cookie vs header) and expected lifetimes

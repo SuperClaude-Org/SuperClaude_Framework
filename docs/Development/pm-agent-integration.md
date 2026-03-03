@@ -6,13 +6,13 @@
 
 ---
 
-## 📋 Overview
+## Overview
 
 This guide provides step-by-step procedures for integrating PM Agent mode as SuperClaude's always-active meta-layer with session lifecycle management, PDCA self-evaluation, and systematic knowledge management.
 
 ---
 
-## 🎯 Integration Goals
+## Integration Goals
 
 1. **Session Lifecycle**: Auto-activation at session start with context restoration
 2. **PDCA Engine**: Automated Plan-Do-Check-Act cycle execution
@@ -21,7 +21,7 @@ This guide provides step-by-step procedures for integrating PM Agent mode as Sup
 
 ---
 
-## 📐 Architecture Integration
+## Architecture Integration
 
 ### PM Agent Position
 
@@ -44,7 +44,7 @@ See: [ARCHITECTURE.md](./ARCHITECTURE.md) for full system architecture
 
 ---
 
-## 🔧 Phase 2: Core Implementation
+## Phase 2: Core Implementation
 
 ### File Structure
 
@@ -56,9 +56,9 @@ superclaude/
 │   └── pm-agent.md                     # ✅ Already updated
 └── Core/
     ├── __init__.py                     # Module initialization
-    ├── session_lifecycle.py            # 🆕 Session management
-    ├── pdca_engine.py                  # 🆕 PDCA automation
-    └── memory_ops.py                   # 🆕 Memory operations
+    ├── session_lifecycle.py            # New: Session management
+    ├── pdca_engine.py                  # New: PDCA automation
+    └── memory_ops.py                   # New: Memory operations
 ```
 
 ### Implementation Order
@@ -69,7 +69,7 @@ superclaude/
 
 ---
 
-## 1️⃣ memory_ops.py Implementation
+## 1. memory_ops.py Implementation
 
 ### Purpose
 Wrapper for Serena MCP memory operations with error handling and fallback.
@@ -108,7 +108,7 @@ pytest tests/test_memory_ops.py -v
 
 ---
 
-## 2️⃣ session_lifecycle.py Implementation
+## 2. session_lifecycle.py Implementation
 
 ### Purpose
 Auto-activation at session start, context restoration, user report generation.
@@ -130,7 +130,7 @@ class SessionLifecycle:
         # 5. generate_user_report()
 
     def generate_user_report() -> str:
-        """Generate user report (前回/進捗/今回/課題)"""
+        """Generate user report (Previous/Progress/Current/Issues)"""
 
     def on_session_end():
         """Hook for session end (checkpoint save)"""
@@ -141,10 +141,10 @@ class SessionLifecycle:
 
 ### User Report Format
 ```
-前回: [last session summary]
-進捗: [current progress status]
-今回: [planned next actions]
-課題: [blockers or issues]
+Previous: [last session summary]
+Progress: [current progress status]
+Current: [planned next actions]
+Issues: [blockers or issues]
 ```
 
 ### Integration Points
@@ -160,7 +160,7 @@ pytest tests/test_session_lifecycle.py -v
 
 ---
 
-## 3️⃣ pdca_engine.py Implementation
+## 3. pdca_engine.py Implementation
 
 ### Purpose
 Automate PDCA cycle execution with documentation generation.
@@ -174,24 +174,24 @@ class PDCAEngine:
     """PDCA cycle automation"""
 
     def plan_phase(goal: str):
-        """Generate hypothesis (仮説)"""
+        """Generate hypothesis (Plan)"""
         # 1. write_memory("plan", goal)
         # 2. Create docs/temp/hypothesis-YYYY-MM-DD.md
 
     def do_phase():
-        """Track experimentation (実験)"""
+        """Track experimentation (Do)"""
         # 1. TodoWrite tracking
         # 2. write_memory("checkpoint", progress) every 30min
         # 3. Update docs/temp/experiment-YYYY-MM-DD.md
 
     def check_phase():
-        """Self-evaluation (評価)"""
+        """Self-evaluation (Check)"""
         # 1. think_about_task_adherence()
         # 2. think_about_whether_you_are_done()
         # 3. Create docs/temp/lessons-YYYY-MM-DD.md
 
     def act_phase():
-        """Knowledge extraction (改善)"""
+        """Knowledge extraction (Act)"""
         # 1. Success → docs/patterns/[pattern-name].md
         # 2. Failure → docs/mistakes/mistake-YYYY-MM-DD.md
         # 3. Update CLAUDE.md if global pattern
@@ -254,7 +254,7 @@ pytest tests/test_pdca_engine.py -v
 
 ---
 
-## 🔌 Phase 3: Serena MCP Integration
+## Phase 3: Serena MCP Integration
 
 ### Prerequisites
 ```bash
@@ -306,7 +306,7 @@ python -m SuperClaude.Core.memory_ops --test
 
 ---
 
-## 📁 Phase 4: Documentation Strategy
+## Phase 4: Documentation Strategy
 
 ### Directory Structure
 ```
@@ -315,9 +315,9 @@ docs/
 │   ├── hypothesis-YYYY-MM-DD.md
 │   ├── experiment-YYYY-MM-DD.md
 │   └── lessons-YYYY-MM-DD.md
-├── patterns/           # Formal patterns (永久保存)
+├── patterns/           # Formal patterns (permanent storage)
 │   └── [pattern-name].md
-└── mistakes/          # Mistake records (永久保存)
+└── mistakes/          # Mistake records (permanent storage)
     └── mistake-YYYY-MM-DD.md
 ```
 
@@ -341,7 +341,7 @@ python scripts/migrate_to_mistakes.py
 
 ---
 
-## 🚀 Phase 5: Auto-Activation (Research Needed)
+## Phase 5: Auto-Activation (Research Needed)
 
 ### Research Questions
 1. How does Claude Code handle initialization?
@@ -361,7 +361,7 @@ def on_claude_code_start():
 
 ---
 
-## ✅ Implementation Checklist
+## Implementation Checklist
 
 ### Phase 2: Core Implementation
 - [ ] Implement `memory_ops.py`
@@ -394,7 +394,7 @@ def on_claude_code_start():
 
 ---
 
-## 🧪 Testing Strategy
+## Testing Strategy
 
 ### Unit Tests
 ```bash
@@ -420,7 +420,7 @@ tests/integration/
 
 ---
 
-## 📊 Success Criteria
+## Success Criteria
 
 ### Functional
 - [ ] PM Agent activates at session start
@@ -441,7 +441,7 @@ tests/integration/
 
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -462,7 +462,7 @@ tests/integration/
 
 ---
 
-## 📚 References
+## References
 
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture
 - [ROADMAP.md](./ROADMAP.md) - Development roadmap
