@@ -38,7 +38,7 @@
 | 2 | T01.02 complete | Yes | `probe-results.md` contains `## Constraint Semantics` with `SAME_NAME_BLOCKED` |
 | 3 | T01.03 complete | Yes | `prereq-validation.md` exists with 6 check results, overall `PREREQS_PASS` |
 | 4 | T01.04 complete | Yes | `sprint-variant.md` exists with `PRIMARY_VARIANT` and routing instructions |
-| 5 | User acknowledgment | **PENDING** | Awaiting user confirmation in session |
+| 5 | User acknowledgment | **CONFIRMED** | User acknowledged PRIMARY_VARIANT 2026-03-03 |
 | 6 | No PREREQS_FAIL unresolved | Yes | All 6 checks passed |
 
 ---
@@ -55,14 +55,14 @@
 
 | Item | Type | Target Phase | Owner |
 |---|---|---|---|
-| User acknowledgment of variant | gate requirement | Phase 2 start | User |
+| none | | | |
 
 ---
 
 ## Go / No-Go Decision for Next Phase
 
-- [ ] Go — all deliverables accepted, no blocking carry-forward items
-- [x] No-Go — reason: **Awaiting user acknowledgment of PRIMARY_VARIANT selection (gate condition #5)**
+- [x] Go — all deliverables accepted, no blocking carry-forward items
+- [ ] No-Go
 
 **Authorized by**: Claude Code session
 **Next phase file**: `TASKLIST_ROOT/phase-2-tasklist.md`

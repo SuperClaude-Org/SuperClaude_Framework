@@ -1,0 +1,3 @@
+# D-0020
+
+make verify-sync: CONDITIONAL PASS. All sprint-modified skills sync correctly. Pre-existing drift: sc-forensic-qa-protocol (unrelated to sprint scope).

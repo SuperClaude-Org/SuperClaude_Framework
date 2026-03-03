@@ -1,0 +1,8 @@
+return_contract:
+  merged_output_path: "./merged-output.md"
+  artifacts_dir: "./"
+  base_variant: "opus:architect"
+  unresolved_conflicts: 0
+  fallback_mode: false
+  failure_stage: null
+  invocation_method: "skill-direct"

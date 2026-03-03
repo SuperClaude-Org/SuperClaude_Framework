@@ -1,0 +1,10 @@
+return_contract:
+  status: "success"
+  merged_output_path: "./does-not-exist.md"
+  convergence_score: 0.85
+  artifacts_dir: "./"
+  base_variant: "opus:architect"
+  unresolved_conflicts: 0
+  fallback_mode: false
+  failure_stage: null
+  invocation_method: "skill-direct"

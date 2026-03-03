@@ -75,13 +75,29 @@ All artifacts include YAML frontmatter for machine parseability.
 | `--no-validate` | | No | `false` | Skip validation. Sets `validation_status: SKIPPED` and `validation_score: 0.0` in frontmatter |
 | `--compliance` | `-c` | No | Auto-detect | Force compliance tier: strict, standard, light |
 | `--persona` | `-p` | No | Auto-select | Override primary persona |
+| `--resume-from` | | No | - | Path to pre-existing adversarial output directory. Skips sc:adversarial Skill invocation; consumes return contract from specified directory. Requires `--specs` or `--multi-roadmap`. Incompatible with `--dry-run`. |
 | `--dry-run` | | No | `false` | Execute Waves 0-2, skip Waves 3-4, output structured preview to console. No files written, no session persistence |
 
 **Agent spec format**: `model[:persona[:"instruction"]]` — model is required; persona and instruction are optional. Split on `,` for agent list, then `:` per agent (max 3 segments). Agent count: 2-10.
 
 ## 4. Wave Architecture
 
-> **Verb → Tool Mapping**: "Invoke Skill" = `Skill` tool (valid from both command context AND skill context per D-0001 reversal). "Dispatch Task agent" = `Task` tool (used for parallelization, not for skill invocation). "Load ref" = Read tool. Never use bare "Invoke" without a tool binding.
+### Execution Vocabulary
+
+Every verb used in Waves 0–4 maps to exactly one Claude Code tool. Never use bare verbs without this binding.
+
+| Verb | Tool | Scope |
+|------|------|-------|
+| Invoke Skill | `Skill` | Cross-skill invocation (valid from both command and skill context per D-0001 reversal) |
+| Dispatch Task agent | `Task` | Parallelized sub-agent work (NOT for skill invocation) |
+| Read / Load ref | `Read` | File reads, ref loading, artifact inspection |
+| Write artifact | `Write` | Creating new files (roadmap.md, extraction.md, test-strategy.md) |
+| Validate | `Read` + `Bash` | File existence checks, prerequisite validation, DAG cycle detection |
+| Parse | (inline) | In-memory parsing of YAML, flags, agent specs — no tool, pure logic |
+| Score | (inline) | In-memory computation of complexity, compatibility, convergence — no tool, pure logic |
+| Edit | `Edit` | Modifying existing files (frontmatter updates, collision suffix application) |
+
+**Rule**: Never use bare "Invoke" without specifying the tool. All verbs in wave instructions MUST resolve to an entry in this glossary.
 
 sc:roadmap executes in 5 waves (0-4). Each wave has entry criteria, behavioral instructions, and exit criteria. Refs are loaded **on-demand per wave** to prevent context bloat.
 
@@ -98,7 +114,12 @@ sc:roadmap executes in 5 waves (0-4). Each wave has entry criteria, behavioral i
 4. Check template directory availability (4-tier: local → user → plugin → inline generation)
 5. If `--specs` or `--multi-roadmap` flags present: verify `src/superclaude/skills/sc-adversarial-protocol/SKILL.md` exists. If not, abort: `"sc:adversarial skill not installed. Required for --specs/--multi-roadmap flags. Install via: superclaude install"`
 6. If `--multi-roadmap`: validate all model identifiers in `--agents` are recognized. Abort on unknown models.
-7. Log all fallback decisions
+7. If `--resume-from` present:
+   - Verify `--specs` or `--multi-roadmap` is also present. If neither: abort with `"--resume-from requires --specs or --multi-roadmap."`
+   - Verify `--dry-run` is NOT present. If present: abort with `"--resume-from is incompatible with --dry-run."`
+   - Verify the specified directory exists. If not: abort with `"--resume-from directory not found: <path>"`
+   - Verify `return-contract.yaml` exists in the directory. If not: abort with `"return-contract.yaml not found in --resume-from directory: <path>"`
+8. Log all fallback decisions
 
 **Exit Criteria**: All prerequisites validated. Trigger `sc:save` with current session state. Emit: `"Wave 0 complete: prerequisites validated."`
 
@@ -110,7 +131,8 @@ sc:roadmap executes in 5 waves (0-4). Each wave has entry criteria, behavioral i
 
 **Behavioral Instructions**:
 1. Parse agent specs (if combined mode) using the parsing algorithm from `refs/adversarial-integration.md` "Agent Specification Parsing" section
-2. Invoke Skill `sc:adversarial-protocol` for multi-spec consolidation:
+2. If `--resume-from` present: skip Skill invocation (steps 2a-2d). Read return contract from `<resume-from-dir>/return-contract.yaml` via Read tool. Proceed to step 2e with file-based contract.
+3. Invoke Skill `sc:adversarial-protocol` for multi-spec consolidation:
    - **2a**: Build adversarial invocation arguments: `--compare <spec-list>` (comma-separated), propagate `--interactive` if set, propagate `--depth` mapping per Wave 0 decision
    - **2b**: Invoke: `Skill sc:adversarial-protocol` with arguments built in 2a
    - **2c**: Read return contract inline from Skill response. If response is empty or unparseable, use fallback `convergence_score: 0.5`
@@ -141,7 +163,7 @@ sc:roadmap executes in 5 waves (0-4). Each wave has entry criteria, behavioral i
 9. If `--interactive`: display auto-detected persona with confidence score, prompt user to confirm or override. If not `--interactive`: use auto-detected persona silently
 10. Edge case: if extraction produces 0 actionable requirements, abort with `"No actionable requirements found in specification. Verify the spec contains functional or non-functional requirements."`
 
-**Exit Criteria**: extraction.md written, complexity scored, personas activated. Trigger `sc:save` with extraction results. Emit: `"Wave 1B complete: extraction finished (XX requirements, complexity: X.XX). extraction.md written."`
+**Exit Criteria**: extraction.md written, complexity scored, personas activated. Include `pipeline_diagnostics` block in extraction.md frontmatter per the schema in `refs/templates.md` "extraction.md Frontmatter" section. Populate `prereq_checks` from Wave 0 results carried in pipeline state. If adversarial mode is not active, omit the `contract_validation` sub-block entirely. Trigger `sc:save` with extraction results. Emit: `"Wave 1B complete: extraction finished (XX requirements, complexity: X.XX). extraction.md written."`
 
 ### Wave 2: Planning & Template Selection
 
@@ -151,6 +173,7 @@ sc:roadmap executes in 5 waves (0-4). Each wave has entry criteria, behavioral i
 1. Run 4-tier template discovery from `refs/templates.md`: local → user → plugin [future: v5.0] → inline generation
 2. Score template compatibility using the algorithm from `refs/scoring.md`. If `--interactive`: display compatibility scores for all candidate templates, prompt user to confirm or select. If not `--interactive`: use highest-scoring template silently
 3. If `--multi-roadmap`: execute the SKILL-DIRECT adversarial invocation protocol (sub-steps 3a–3f):
+   - If `--resume-from` present: skip steps 3a-3d. Read return contract from `<resume-from-dir>/return-contract.yaml` via Read tool. Proceed to step 3e with file-based contract.
    - **3a**: Parse agent specs from `--agents` flag using the parsing algorithm from `refs/adversarial-integration.md` "Agent Specification Parsing" section. Output: agent list with model, persona, instruction per agent.
    - **3b**: Expand model-only agent specs: apply the primary persona auto-detected in Wave 1B to any agent spec that has no explicit persona. Output: fully-specified variant configurations.
    - **3c**: If `agent_count >= 3`: add `debate-orchestrator` agent to coordinate debate rounds and prevent combinatorial explosion. Threshold: 3 (not 5). Output: final agent list with optional orchestrator.
@@ -161,11 +184,17 @@ sc:roadmap executes in 5 waves (0-4). Each wave has entry criteria, behavioral i
      - Output: structured return contract returned inline as Skill response
    - **3e**: Consume return contract (inline Skill return value):
      - **Empty/malformed response guard**: If Skill response is empty or unparseable → use fallback `convergence_score: 0.5` (Partial path by design)
+     - **YAML parse error handling**: If Skill response contains structured data that fails YAML parsing, treat as `status: failed, failure_stage: transport`. Log the parse error verbatim.
+     - **Missing-file guard**: After extracting `merged_output_path`, verify the file exists on disk (Read tool). If missing → treat as `status: failed, failure_stage: transport, convergence_score: 0.0`. Log: `"merged_output_path '<path>' does not exist on disk."`
      - **3-status routing**:
        - IF `convergence_score >= 0.6` → PASS: use `merged_output_path` as roadmap source; the adversarial output replaces template-based generation
-       - ELIF `convergence_score >= 0.5` → PARTIAL: use `merged_output_path` with warning in roadmap.md frontmatter (`adversarial_status: partial`)
+       - ELIF `convergence_score >= 0.5` → PARTIAL: use `merged_output_path` with warning in roadmap.md frontmatter (`adversarial_status: partial`). If `fallback_mode: true` in return contract, emit additional warning: `"Adversarial result produced via fallback — review quality manually."`
        - ELSE (`convergence_score < 0.5`) → FAIL: abort with `"Adversarial pipeline failed (convergence: X.XX). Cannot produce reliable roadmap from divergent variants."`
    - **3f**: SKILL-DIRECT is the primary path. The adversarial output from 3d is the roadmap source. No secondary template fallback applies; if 3d/3e return FAIL, abort roadmap generation entirely.
+   - **Fallback Protocol** (defense-in-depth for 3d invocation failures):
+     - **F1 — Skill tool error**: If `Skill sc:adversarial-protocol` returns a tool-level error (not a status response), log the error verbatim and retry once with reduced payload (omit `--interactive`, use `--depth quick`). If retry succeeds, route to 3e. If retry fails, proceed to F2/3.
+     - **F2/F3 — Invocation failure**: If F1 retry also fails, abandon Skill invocation. Emit WARNING: `"Skill invocation failed after retry. Falling back to template-based roadmap generation."` Set `fallback_mode: true` in pipeline state. Proceed to step 4 (template-based milestone creation) instead of using adversarial output.
+     - **F4/F5 — Terminal fallback**: If template-based generation (step 4) also encounters a critical error, log full context and abort roadmap generation with: `"Both adversarial and template-based generation failed. Manual intervention required."` Write `fallback_mode: true` to any partial artifacts produced.
 4. Otherwise: create milestone structure based on complexity class and domain distribution using the milestone count formula, domain mapping, and priority assignment rules from `refs/templates.md`
 5. Map dependencies between milestones using the dependency mapping rules from `refs/templates.md`. Validate the dependency graph is acyclic (DAG). If circular dependency detected, abort with `"Circular dependency detected in milestone plan: M<X> → M<Y> → ... → M<X>. Review milestone dependencies."`
 6. Compute effort estimates for each milestone using the effort estimation algorithm from `refs/templates.md`
@@ -186,7 +215,7 @@ sc:roadmap executes in 5 waves (0-4). Each wave has entry criteria, behavioral i
    - Reference concrete milestone names from the just-generated roadmap.md
    - Encode continuous parallel validation philosophy
    - Define stop-and-fix thresholds per severity level
-3. **Step 3**: Generate `extraction.md` YAML frontmatter using the schema from `refs/templates.md` "extraction.md Frontmatter" section (body was written in Wave 1B; this step adds/updates frontmatter only)
+3. **Step 3**: Generate `extraction.md` YAML frontmatter using the schema from `refs/templates.md` "extraction.md Frontmatter" section (body was written in Wave 1B; this step adds/updates frontmatter only). If adversarial mode was used in Wave 1A or Wave 2: populate the `contract_validation` sub-block of `pipeline_diagnostics` in extraction.md frontmatter using the return contract values consumed in Wave 1A Step 2e or Wave 2 Step 3e. Set `fallback_activated: true` if any fallback protocol (F1-F5) was triggered during this pipeline run.
 4. **Sequencing constraint**: roadmap.md MUST be fully generated before test-strategy.md begins (test-strategy.md references specific milestone IDs)
 
 **Frontmatter rules** (enforced across all 3 artifacts):
@@ -355,22 +384,31 @@ sc:roadmap produces no machine-readable return contract file (it is a terminal c
 
 **Return contract transport**: Inline Skill response (structured data returned directly by `sc:adversarial-protocol` upon completion).
 
-**Fields consumed by sc:roadmap** (from sc:adversarial-protocol inline return value):
+**Fields consumed by sc:roadmap** (from sc:adversarial-protocol inline return value — 9 fields, matching producer schema):
 
 | Field | Type | Used In | Action |
 |-------|------|---------|--------|
 | `status` | `success\|partial\|failed` | Wave 1A Step 2e, Wave 2 Step 3e | Primary routing decision |
-| `convergence_score` | `float 0.0-1.0` | Wave 1A Step 2e, Wave 2 Step 3e | Secondary routing threshold (≥0.6 PASS, ≥0.5 PARTIAL, <0.5 FAIL) |
-| `merged_output_path` | `path\|null` | Wave 1A Step 2e, Wave 2 Step 3e | Path to consolidated spec or roadmap |
-| `fallback_mode` | `bool` | Wave 1A, Wave 2 logging | Logged in extraction.md |
+| `convergence_score` | `float 0.0-1.0\|null` | Wave 1A Step 2e, Wave 2 Step 3e | Secondary routing threshold (≥0.6 PASS, ≥0.5 PARTIAL, <0.5 FAIL) |
+| `merged_output_path` | `string\|null` | Wave 1A Step 2e, Wave 2 Step 3e | Path to consolidated spec or roadmap |
+| `artifacts_dir` | `string` | Wave 1A, Wave 2 | Recorded in frontmatter for traceability |
+| `base_variant` | `string\|null` | Wave 2 Step 3e | Recorded in frontmatter (multi-roadmap mode only) |
+| `unresolved_conflicts` | `integer` | Wave 1A, Wave 2 | If >0, logged as warning in extraction.md |
+| `fallback_mode` | `boolean` | Wave 1A, Wave 2 logging | If true, emit differentiated warning in extraction.md |
+| `failure_stage` | `string\|null` | Wave 1A, Wave 2 | Logged for debugging when status is `failed` |
 | `invocation_method` | `enum` | Wave 1A, Wave 2 logging | Logged for observability |
-| `unresolved_conflicts` | `list[string]` | Wave 1A, Wave 2 | Listed in roadmap.md decision summary if non-empty |
 
 **Consumer defaults** (if field absent):
 ```yaml
-convergence_score: 0.5    # Forces Partial path
-status: "failed"          # Triggers abort
-merged_output_path: null  # No output available
+status: "failed"              # Triggers abort
+convergence_score: 0.5        # Forces Partial path
+merged_output_path: null      # No output available
+artifacts_dir: null            # Inferred from --output flag
+base_variant: null             # Not available
+unresolved_conflicts: 0        # Assume none
+fallback_mode: false           # Assume primary path
+failure_stage: null            # Unknown
+invocation_method: "skill-direct"  # Default method
 ```
 
 ## Agent Delegation

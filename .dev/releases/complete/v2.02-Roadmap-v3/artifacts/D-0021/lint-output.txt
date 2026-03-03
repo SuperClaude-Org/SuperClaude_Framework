@@ -1,0 +1,3 @@
+# D-0021
+
+make lint: CONDITIONAL PASS. No lint errors in sprint-modified files (all .md). 46 pre-existing lint errors in test files (unrelated to sprint scope).

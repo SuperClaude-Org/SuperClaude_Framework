@@ -412,6 +412,19 @@ risks_identified: <count>
 dependencies_identified: <count>
 success_criteria_count: <count>
 extraction_mode: <standard|chunked>                  # "chunked (N chunks)" if chunked
+pipeline_diagnostics:
+  prereq_checks:
+    spec_validated: true                               # Wave 0: spec file(s) exist and readable
+    output_collision_resolved: false                    # Wave 0: collision suffix applied
+    adversarial_skill_present: true|na                  # Wave 0: sc:adversarial SKILL.md exists (na if not needed)
+    tier1_templates_found: 0                            # Wave 2: count of Tier 1 template matches
+  contract_validation:                                  # Present only if adversarial mode used; omit if not
+    fields_received: 9                                  # Count of non-null fields in return contract
+    fields_defaulted: []                                # List of field names where consumer defaults applied
+    convergence_score: 0.72                             # Raw score from return contract
+    routing_decision: pass|partial|fail                 # Threshold decision applied
+    file_guard_passed: true                             # merged_output_path verified on disk
+  fallback_activated: false                             # Any fallback protocol (F1-F5) triggered
 ---
 ```
 

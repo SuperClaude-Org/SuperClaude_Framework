@@ -72,11 +72,13 @@ When agent count ≥ 3, sc:roadmap automatically adds an orchestrator agent to c
 
 ## Invocation Patterns
 
+All invocations use the `Skill` tool (per Execution Vocabulary). Arguments are passed as a string to the Skill tool's `args` parameter.
+
 ### Multi-Spec Consolidation (Wave 1A)
 
 **Invocation format**:
 ```
-sc:adversarial --compare <spec-files> --depth <roadmap-depth> --output <roadmap-output-dir> [--interactive]
+Skill sc:adversarial-protocol args: "--compare <spec-files> --depth <roadmap-depth> --output <roadmap-output-dir> [--interactive]"
 ```
 
 **Parameter mapping**:
@@ -86,8 +88,8 @@ sc:adversarial --compare <spec-files> --depth <roadmap-depth> --output <roadmap-
 - `--interactive`: Present only when sc:roadmap's `--interactive` flag is set
 
 **Depth mapping** (controls debate rounds):
-| sc:roadmap --depth | sc:adversarial --depth | Debate Rounds |
-|--------------------|------------------------|---------------|
+| sc:roadmap `--depth` | Propagated `--depth` | Debate Rounds |
+|----------------------|----------------------|---------------|
 | quick | quick | 1 |
 | standard | standard | 2 |
 | deep | deep | 3 |
@@ -95,17 +97,17 @@ sc:adversarial --compare <spec-files> --depth <roadmap-depth> --output <roadmap-
 **Example invocations**:
 ```
 # Standard depth, 3 specs
-sc:adversarial --compare spec1.md,spec2.md,spec3.md --depth standard --output .dev/releases/current/auth-system/
+Skill sc:adversarial-protocol args: "--compare spec1.md,spec2.md,spec3.md --depth standard --output .dev/releases/current/auth-system/"
 
 # Deep depth with interactive approval
-sc:adversarial --compare spec1.md,spec2.md --depth deep --output .dev/releases/current/auth-system/ --interactive
+Skill sc:adversarial-protocol args: "--compare spec1.md,spec2.md --depth deep --output .dev/releases/current/auth-system/ --interactive"
 ```
 
 ### Multi-Roadmap Generation (Wave 2)
 
 **Invocation format**:
 ```
-sc:adversarial --source <spec-or-unified-spec> --generate roadmap --agents <expanded-agent-specs> --depth <roadmap-depth> --output <roadmap-output-dir> [--interactive]
+Skill sc:adversarial-protocol args: "--source <spec-or-unified-spec> --generate roadmap --agents <expanded-agent-specs> --depth <roadmap-depth> --output <roadmap-output-dir> [--interactive]"
 ```
 
 **Parameter mapping**:
@@ -119,54 +121,115 @@ sc:adversarial --source <spec-or-unified-spec> --generate roadmap --agents <expa
 **Example invocations**:
 ```
 # 3 agents, standard depth (after persona expansion to "security")
-sc:adversarial --source spec.md --generate roadmap --agents opus:security,sonnet:security,gpt52:security --depth standard --output .dev/releases/current/auth-system/
+Skill sc:adversarial-protocol args: "--source spec.md --generate roadmap --agents opus:security,sonnet:security,gpt52:security --depth standard --output .dev/releases/current/auth-system/"
 
 # 5+ agents triggers orchestrator (orchestrator added automatically by sc:adversarial)
-sc:adversarial --source spec.md --generate roadmap --agents opus:architect,sonnet:security,gpt52:backend,haiku:frontend,gemini:performance --depth deep --output .dev/releases/current/platform/ --interactive
+Skill sc:adversarial-protocol args: "--source spec.md --generate roadmap --agents opus:architect,sonnet:security,gpt52:backend,haiku:frontend,gemini:performance --depth deep --output .dev/releases/current/platform/ --interactive"
 ```
 
 ### Combined Mode
 
 When both `--specs` and `--multi-roadmap --agents` are present:
-1. Wave 1A: Invoke multi-spec consolidation → produces unified spec
+1. Wave 1A: Invoke Skill `sc:adversarial-protocol` for multi-spec consolidation → produces unified spec
 2. Wave 1B: Extract from unified spec (standard pipeline)
-3. Wave 2: Invoke multi-roadmap generation with unified spec as `--source`
+3. Wave 2: Invoke Skill `sc:adversarial-protocol` for multi-roadmap generation with unified spec as `--source`
 
 The unified spec from Wave 1A becomes the `--source` input for Wave 2's multi-roadmap invocation.
 
 ---
 
+## --resume-from Interaction
+
+The `--resume-from` flag allows sc:roadmap to bypass sc:adversarial Skill invocation and consume a pre-existing return contract from a specified directory. This enables testing of consumer-side error handling without requiring a live adversarial pipeline.
+
+### Flag Validation Rules
+
+Validated in Wave 0 (step 7):
+1. **Requires adversarial mode**: `--specs` or `--multi-roadmap` must also be present. If neither: abort with `"--resume-from requires --specs or --multi-roadmap."`
+2. **Incompatible with --dry-run**: If `--dry-run` present: abort with `"--resume-from is incompatible with --dry-run."`
+3. **Directory must exist**: Specified path must be a valid directory. If not: abort with `"--resume-from directory not found: <path>"`
+4. **Contract must exist**: `return-contract.yaml` must exist in the directory. If not: abort with `"return-contract.yaml not found in --resume-from directory: <path>"`
+
+### Consumption Path
+
+When `--resume-from` is active, the return contract is consumed via the **file-fallback path** (same as line 164 of this document). Specifically:
+- **Wave 1A** (if `--specs` present): Skip steps 2a-2d (Skill invocation). Read `<resume-from-dir>/return-contract.yaml` via Read tool. Proceed to step 2e with file-based contract.
+- **Wave 2** (if `--multi-roadmap` present): Skip steps 3a-3d. Read `<resume-from-dir>/return-contract.yaml` via Read tool. Proceed to step 3e with file-based contract.
+
+The Tier 1 Artifact Existence Gate still applies — all 4 checks are executed against the `--resume-from` directory before contract parsing.
+
+### Session Persistence Behavior
+
+When `--resume-from` is active, skipped waves are not recorded in session persistence. The `last_completed_wave` field reflects only waves that actually executed. This means resuming a `--resume-from` session will re-read the fixture directory (idempotent).
+
+### Incompatibilities
+
+| Flag | Interaction |
+|------|------------|
+| `--dry-run` | Incompatible — abort in Wave 0 |
+| `--interactive` | Compatible — interactive prompts still fire for convergence thresholds |
+| `--depth` | Ignored when `--resume-from` active (no Skill invocation to propagate depth to) |
+| `--agents` | Parsed and validated but not used for Skill invocation (agents are relevant for frontmatter recording only) |
+
+---
+
+## Post-Adversarial Artifact Existence Gate (Tier 1)
+
+**Position**: Execute this gate BEFORE parsing any return contract data. This ensures the adversarial pipeline produced usable artifacts before attempting YAML consumption.
+
+**Checks** (execute in order; fail-fast on any check failure):
+
+| # | Check | Path | Failure Treatment |
+|---|-------|------|-------------------|
+| 1 | Adversarial output directory exists | `<artifacts_dir>/` | Treat as `status: failed, failure_stage: transport`. Log: `"Adversarial artifacts directory not found at <artifacts_dir>/"` |
+| 2 | diff-analysis.md exists | `<artifacts_dir>/diff-analysis.md` | Treat as `status: partial, failure_stage: debate`. Log: `"diff-analysis.md missing — debate may not have completed."` |
+| 3 | merged-output.md exists | `<artifacts_dir>/merged-output.md` | Treat as `status: partial, failure_stage: merge`. Log: `"merged-output.md missing — merge may not have completed."` |
+| 4 | return-contract.yaml exists | `<artifacts_dir>/return-contract.yaml` | Treat as `status: failed, failure_stage: transport`. Log: `"return-contract.yaml missing — cannot consume adversarial results."` |
+
+**Path variables**: `<artifacts_dir>` is the adversarial output directory passed via the return contract or inferred from the `--output` flag as `<output_dir>/adversarial/`.
+
+If all 4 checks pass, proceed to Return Contract Consumption below.
+
+---
+
 ## Return Contract Consumption
 
-sc:adversarial returns a structured result. sc:roadmap consumes the following fields. Note: the return contract schema itself is defined in SC-ADVERSARIAL-SPEC.md; this section documents only how sc:roadmap uses each field.
+sc:adversarial returns a structured result as an inline Skill response. sc:roadmap reads the return contract and consumes the following fields. The return contract schema is defined in sc:adversarial-protocol SKILL.md "Return Contract (MANDATORY)" section; this section documents how sc:roadmap consumes each field.
+
+**Read instruction**: After the Tier 1 gate passes, read the inline Skill return value. If consuming from a file fallback, read `<artifacts_dir>/return-contract.yaml` via the Read tool.
+
+**Schema version validation**: Verify the return contract contains all 9 expected fields. If any field is missing, apply the consumer defaults below. Log a warning for each missing field.
 
 ### Return Fields
 
-| Field | Type | Usage in sc:roadmap |
-|-------|------|---------------------|
-| `status` | `success` \| `partial` \| `failed` | Routes to handling branch (see below) |
-| `merged_output_path` | string (file path) | Used as input for subsequent waves |
-| `convergence_score` | float (0.0-1.0) | Recorded in roadmap.md frontmatter; used for threshold routing |
-| `artifacts_dir` | string (directory path) | Recorded in roadmap.md frontmatter for traceability |
-| `unresolved_conflicts` | integer | If >0, logged as warning in extraction.md |
-| `base_variant` | string (model:persona) | Recorded in roadmap.md frontmatter (multi-roadmap mode only) |
+| Field | Type | Consumer Default | Usage in sc:roadmap |
+|-------|------|-----------------|---------------------|
+| `status` | `success` \| `partial` \| `failed` | `"failed"` | Routes to handling branch (see Status Routing below) |
+| `merged_output_path` | `string\|null` | `null` | Used as input for subsequent waves |
+| `convergence_score` | `float 0.0-1.0\|null` | `0.5` (forces Partial path) | Recorded in roadmap.md frontmatter; used for threshold routing |
+| `artifacts_dir` | `string` | (inferred from `--output`) | Recorded in roadmap.md frontmatter for traceability |
+| `base_variant` | `string\|null` | `null` | Recorded in roadmap.md frontmatter (multi-roadmap mode only) |
+| `unresolved_conflicts` | `integer` | `0` | If >0, logged as warning in extraction.md |
+| `fallback_mode` | `boolean` | `false` | If true, emit differentiated warning (see below) |
+| `failure_stage` | `string\|null` | `null` | Logged for debugging when status is `failed` |
+| `invocation_method` | `enum` | `"skill-direct"` | Logged in extraction.md for observability |
 
 ### Status Routing
 
 ```
 status == "success"
   → Use merged_output_path as input for subsequent waves
-  → Record convergence_score and artifacts_dir in frontmatter
+  → Record convergence_score, artifacts_dir, base_variant in frontmatter
   → Proceed normally
 
 status == "partial"
   → Check convergence_score:
-    ≥ 60%:
+    ≥ 0.6 (60%):
       → Proceed with warning logged in extraction.md:
         "Adversarial consolidation partial (convergence: XX%). Some conflicts unresolved."
-      → Record convergence_score and artifacts_dir in frontmatter
+      → Record convergence_score, artifacts_dir, base_variant in frontmatter
       → Use merged_output_path as input
-    < 60%:
+    < 0.6 (60%):
       → If --interactive flag set:
         → Prompt user: "Adversarial convergence is XX% (below 60% threshold).
            Proceed anyway? [Y/n]"
@@ -179,11 +242,21 @@ status == "partial"
 status == "failed"
   → Abort roadmap generation
   → Error message includes:
-    - "sc:adversarial failed. Roadmap generation aborted."
+    - "sc:adversarial failed (failure_stage: <failure_stage>). Roadmap generation aborted."
     - unresolved_conflicts count (if present)
     - artifacts_dir (if present, for debugging)
     - Recommendation: "Review adversarial artifacts at <artifacts_dir> for details."
 ```
+
+### Fallback Mode Warning
+
+When `fallback_mode == true` (regardless of status), emit a differentiated warning:
+```
+> **Warning**: Adversarial result was produced via fallback path (not primary Skill invocation).
+> Quality may be reduced. Review the merged output manually before proceeding.
+```
+
+This warning is additional to any status-based handling and is logged in extraction.md.
 
 ### Unresolved Conflicts Handling
 
@@ -191,6 +264,36 @@ When `unresolved_conflicts > 0` (regardless of status), log warning in extractio
 ```
 > **Warning**: Adversarial consolidation produced N unresolved conflicts.
 > Review artifacts at <artifacts_dir> for conflict details.
+```
+
+### Example Return Contract
+
+```yaml
+# Success case
+return_contract:
+  merged_output_path: ".dev/releases/current/auth-system/adversarial/merged-output.md"
+  convergence_score: 0.82
+  artifacts_dir: ".dev/releases/current/auth-system/adversarial/"
+  status: "success"
+  base_variant: "opus:architect"
+  unresolved_conflicts: 0
+  fallback_mode: false
+  failure_stage: null
+  invocation_method: "skill-direct"
+```
+
+```yaml
+# Failure case
+return_contract:
+  merged_output_path: null
+  convergence_score: null
+  artifacts_dir: ".dev/releases/current/auth-system/adversarial/"
+  status: "failed"
+  base_variant: null
+  unresolved_conflicts: 0
+  fallback_mode: false
+  failure_stage: "debate"
+  invocation_method: "skill-direct"
 ```
 
 ---
@@ -282,8 +385,8 @@ The `--interactive` flag on sc:roadmap propagates to sc:adversarial invocations 
 
 | sc:roadmap invocation | Propagation |
 |----------------------|-------------|
-| `--specs` (Wave 1A) | `--interactive` appended to `sc:adversarial --compare` invocation |
-| `--multi-roadmap` (Wave 2) | `--interactive` appended to `sc:adversarial --source --generate` invocation |
+| `--specs` (Wave 1A) | `--interactive` appended to `Skill sc:adversarial-protocol` args for `--compare` invocation |
+| `--multi-roadmap` (Wave 2) | `--interactive` appended to `Skill sc:adversarial-protocol` args for `--source --generate` invocation |
 | Combined mode | `--interactive` appended to both invocations |
 
 **Behavioral impact**:

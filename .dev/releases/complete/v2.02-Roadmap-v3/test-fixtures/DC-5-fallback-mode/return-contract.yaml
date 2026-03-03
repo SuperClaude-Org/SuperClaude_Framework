@@ -1,0 +1,10 @@
+return_contract:
+  status: "success"
+  merged_output_path: "./merged-output.md"
+  convergence_score: 0.75
+  artifacts_dir: "./"
+  base_variant: "sonnet:security"
+  unresolved_conflicts: 0
+  fallback_mode: true
+  failure_stage: null
+  invocation_method: "file-fallback"

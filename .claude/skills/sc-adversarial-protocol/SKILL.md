@@ -336,18 +336,40 @@ error_handling:
     return: "Surviving variant as-is with warning"
 ```
 
-## Return Contract (FR-007)
+## Return Contract (MANDATORY)
+
+**This is the final pipeline step.** sc:adversarial MUST write this return contract on every invocation, including failures. When a field's value cannot be determined (pipeline aborted before reaching that step), use `null`.
 
 When invoked by another command, sc:adversarial returns:
 
 ```yaml
 return_contract:
-  merged_output_path: "<path to merged file>"
-  convergence_score: "<final convergence percentage>"
-  artifacts_dir: "<path to adversarial/ directory>"
-  status: "success | partial | failed"
-  unresolved_conflicts: ["<list of unresolved items>"]
+  merged_output_path: "<path to merged file>"       # null if merge not reached
+  convergence_score: 0.75                            # float 0.0-1.0, null if debate not reached
+  artifacts_dir: "<path to adversarial/ directory>"  # always set (created at pipeline start)
+  status: "success"                                  # success | partial | failed
+  base_variant: "opus:architect"                     # model:persona that won debate, null if not reached
+  unresolved_conflicts: 2                            # integer count of unresolved diff points, 0 on success
+  fallback_mode: false                               # true if pipeline used fallback path
+  failure_stage: null                                # null on success; "variant_generation" | "debate" | "merge" | "validation" | "transport"
+  invocation_method: "skill-direct"                  # "skill-direct" | "task-agent" | "manual"
 ```
+
+**Write-on-failure**: If the pipeline aborts at any stage, sc:adversarial MUST still write the return contract with `status: "failed"`, the `failure_stage` set to the step that failed, and all unreached fields set to `null`. This ensures the caller can always consume the contract.
+
+**Field definitions**:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `merged_output_path` | `string\|null` | Path to merged output file; null if merge not reached |
+| `convergence_score` | `float\|null` | Final convergence score 0.0-1.0; null if debate not reached |
+| `artifacts_dir` | `string` | Path to adversarial/ directory (always set) |
+| `status` | `enum` | `success` (all steps pass), `partial` (completed with warnings), `failed` (aborted) |
+| `base_variant` | `string\|null` | Model:persona that won adversarial debate; null if debate not reached |
+| `unresolved_conflicts` | `integer` | Count of unresolved diff points; 0 on full success |
+| `fallback_mode` | `boolean` | True if pipeline used any fallback path |
+| `failure_stage` | `string\|null` | Null on success; identifies the stage that caused failure |
+| `invocation_method` | `enum` | How this invocation was triggered: `skill-direct`, `task-agent`, or `manual` |
 
 ## Agent Delegation
 
@@ -799,7 +821,6 @@ advocate_instantiation:
       - qa → focus on edge cases, test coverage, failure scenarios
 
   task_dispatch_config:
-    subagent_type: "general-purpose"
     model: "{parsed_model}"
     max_turns: 5
     prompt: "{generated_prompt}"
@@ -1408,7 +1429,6 @@ merge_execution:
   dispatch:
     agent: "merge-executor (defined in agents/merge-executor.md)"
     via: "Task tool"
-    subagent_type: "general-purpose"
     model: "opus or sonnet (highest available)"
     input:
       base_variant: "Full text of selected base variant"
