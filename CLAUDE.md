@@ -6,6 +6,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **CRITICAL**: This project uses **UV** for all Python operations. Never use `python -m`, `pip install`, or `python script.py` directly.
 
+### UV Setup (if not installed)
+
+```bash
+# macOS / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows (PowerShell)
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# Verify installation
+uv --version
+```
+
 ### Required Commands
 
 ```bash
@@ -16,12 +29,21 @@ uv pip install package           # Install dependencies
 uv run python script.py          # Execute scripts
 ```
 
+### Fallback (without UV)
+
+If UV is not available, you can use standard Python commands:
+```bash
+python -m pytest                 # Instead of: uv run pytest
+pip install package              # Instead of: uv pip install package
+python script.py                 # Instead of: uv run python script.py
+```
+
 ## 📂 Project Structure
 
-**Current v4.2.0 Architecture**: Python package with slash commands
+**Current v4.1.9 Architecture**: Python package with slash commands
 
 ```
-# Claude Code Configuration (v4.2.0)
+# Claude Code Configuration (v4.1.9)
 .claude/
 ├── settings.json        # User settings
 └── commands/            # Slash commands (installed via `superclaude install`)
@@ -115,7 +137,7 @@ Registered via `pyproject.toml` entry point, automatically available after insta
 - Automatic dependency analysis
 - Example: [Read files in parallel] → Analyze → [Edit files in parallel]
 
-### Slash Commands (v4.2.0)
+### Slash Commands (v4.1.9)
 
 - Install via: `pipx install superclaude && superclaude install`
 - Commands installed to: `~/.claude/commands/`
@@ -218,6 +240,53 @@ Use **Wave → Checkpoint → Wave** pattern (3.5x faster). Example: `[Read file
 - Complex (feature): 2,500 tokens
 - Confidence check ROI: spend 100-200 to save 5,000-50,000
 
+## 🏗️ Architecture Boundaries (CRITICAL)
+
+### superclaude = Client Only
+
+**superclaude はクライアント。コアロジックを実装しない。**
+
+```
+airis-agent (コアロジック)
+    ↓ MCP / API
+superclaude (呼び出すだけ)
+```
+
+### superclaude に置いていいもの
+
+- CLI / UX（コマンド、引数、対話UI）
+- 設定ファイル生成、テンプレート展開
+- MCP / HTTP の呼び出しラッパー
+- エラーハンドリング、リトライ、ログ
+- pytest fixtures（airis-agent MCP を呼ぶだけ）
+
+### airis-agent に置くべきもの（絶対こっち）
+
+- confidence の判定ロジック（探索、スコアリング、判定）
+- reflexion の中核（Mindbase検索、類似度計算、要約、意思決定）
+- コードベース検索、テックスタック検出
+- "ナレッジが増える / 賢くなる" 系は全部こっち
+
+### なぜこの分離が重要か
+
+1. **運用コスト**: 賢さをクライアントに分散させると、運用コストが爆発する
+2. **一貫性**: 複数クライアント（superclaude, IDE拡張, Web UI）で同じロジックを使える
+3. **テスト容易性**: コアロジックを単体でテストできる
+4. **進化**: airis-agent を改善すれば全クライアントが恩恵を受ける
+
+### 違反例（やってはいけない）
+
+```python
+# ❌ BAD: superclaude に判定ロジックを実装
+class ConfidenceChecker:
+    def _search_codebase(self, ...):  # これは airis-agent の仕事
+        ...
+
+# ✅ GOOD: superclaude は MCP を呼ぶだけ
+class ConfidenceChecker:
+    def assess(self, context):
+        return self.mcp_client.call("airis-agent", "confidence_check", context)
+
 ## 🔧 MCP Server Integration
 
 **Recommended**: Use **airis-mcp-gateway** for unified MCP management.
@@ -241,7 +310,7 @@ superclaude mcp  # Interactive install, gateway is default (requires Docker)
 
 ## 🚀 Development & Installation
 
-### Current Installation Method (v4.2.0)
+### Current Installation Method (v4.1.9)
 
 **Standard Installation**:
 ```bash
@@ -275,7 +344,7 @@ See `docs/plugin-reorg.md` for details.
 ## 📊 Package Information
 
 **Package name**: `superclaude`
-**Version**: 4.2.0
+**Version**: 4.1.9
 **Python**: >=3.10
 **Build system**: hatchling (PEP 517)
 

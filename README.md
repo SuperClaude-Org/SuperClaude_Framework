@@ -17,7 +17,7 @@
 <a href="https://github.com/SuperClaude-Org/SuperQwen_Framework" target="_blank">
   <img src="https://img.shields.io/badge/Try-SuperQwen_Framework-orange" alt="Try SuperQwen Framework"/>
 </a>
-  <img src="https://img.shields.io/badge/version-4.2.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-4.1.9-blue" alt="Version">
   <a href="https://github.com/SuperClaude-Org/SuperClaude_Framework/actions/workflows/test.yml">
     <img src="https://github.com/SuperClaude-Org/SuperClaude_Framework/actions/workflows/test.yml/badge.svg" alt="Tests">
   </a>
@@ -101,11 +101,8 @@ Claude Code is a product built and maintained by [Anthropic](https://www.anthrop
 | **[TASK.md](TASK.md)** | Current tasks, priorities, backlog | Daily, before starting work |
 | **[KNOWLEDGE.md](KNOWLEDGE.md)** | Accumulated insights, best practices, troubleshooting | When encountering issues, learning patterns |
 | **[CONTRIBUTING.md](CONTRIBUTING.md)** | Contribution guidelines, workflow | Before submitting PRs |
-| **[Commands Reference](docs/user-guide/commands.md)** | Complete reference for all 30 `/sc:*` commands with syntax, examples, workflows, and decision guides | Learning SuperClaude, choosing the right command |
 
 > **💡 Pro Tip**: Claude Code reads these files at session start to ensure consistent, high-quality development aligned with project standards.
->
-> **📚 New to SuperClaude?** Start with [Commands Reference](docs/user-guide/commands.md) — it contains visual decision trees, detailed command comparisons, and workflow examples to help you understand which commands to use and when.
 
 ## ⚡ **Quick Installation**
 
@@ -113,7 +110,25 @@ Claude Code is a product built and maintained by [Anthropic](https://www.anthrop
 > not yet available (planned for v5.0). For current installation
 > instructions, please follow the steps below for v4.x.
 
-### **Current Stable Version (v4.2.0)**
+### **Prerequisites**
+
+**UV** (recommended for development):
+```bash
+# macOS / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows (PowerShell)
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# Verify installation
+uv --version
+```
+
+> **Note**: UV is optional for basic usage but required for development.
+> UV provides faster dependency resolution and virtual environment management.
+> If UV is not installed, standard Python commands (`python`, `pip`) can be used instead.
+
+### **Current Stable Version (v4.1.9)**
 
 SuperClaude currently uses slash commands.
 
