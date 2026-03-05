@@ -351,7 +351,7 @@ class TestClaudeProcessEdgeCases:
         env = proc.build_env()
         # PATH must be inherited
         assert "PATH" in env
-        assert env["CLAUDECODE"] == ""
+        assert "CLAUDECODE" not in env
 
 
 # ---------------------------------------------------------------------------
@@ -439,16 +439,17 @@ class TestExecutorTimeoutPath:
             config.output_file(phase).write_text("working...\n")
             return _TimeoutPopen()
 
-        # We need the deadline to expire quickly. Override time.time to fast-forward.
-        real_time = __import__("time").time
+        # We need the deadline to expire quickly. Override time.monotonic to fast-forward.
+        # The executor uses time.monotonic() for deadline enforcement (not time.time).
+        real_monotonic = __import__("time").monotonic
         call_counter = [0]
 
-        def fast_time():
+        def fast_monotonic():
             call_counter[0] += 1
             # After 3 calls, return a value past the deadline
             if call_counter[0] > 3:
-                return real_time() + 999999  # far past deadline
-            return real_time()
+                return real_monotonic() + 999999  # far past deadline
+            return real_monotonic()
 
         with (
             patch("superclaude.cli.sprint.process.subprocess.Popen", side_effect=popen_factory),
@@ -456,7 +457,7 @@ class TestExecutorTimeoutPath:
             patch("superclaude.cli.sprint.process.os.getpgid", return_value=77777),
             patch("superclaude.cli.sprint.process.os.killpg"),
             patch("superclaude.cli.sprint.notify._notify"),
-            patch("superclaude.cli.sprint.executor.time.time", side_effect=fast_time),
+            patch("superclaude.cli.sprint.executor.time.monotonic", side_effect=fast_monotonic),
             patch("superclaude.cli.sprint.executor.time.sleep"),
             patch("superclaude.cli.sprint.executor.SprintLogger") as mock_logger_cls,
         ):
@@ -641,8 +642,8 @@ class TestValidatePhasesEdgeCases:
             Phase(number=1, file=tmp_path / "missing1.md"),
             Phase(number=2, file=tmp_path / "missing2.md"),
         ]
-        msgs = validate_phases(phases, start=1, end=2)
-        errors = [m for m in msgs if m.startswith("ERROR")]
+        buckets = validate_phases(phases, start=1, end=2)
+        errors = buckets["errors"]
         assert len(errors) == 2
         assert "Phase 1" in errors[0]
         assert "Phase 2" in errors[1]
@@ -657,8 +658,8 @@ class TestValidatePhasesEdgeCases:
         ]
         (tmp_path / "p1.md").write_text("content")
         # p3.md does not exist, but end=1 so it's outside range
-        msgs = validate_phases(phases, start=1, end=1)
-        errors = [m for m in msgs if m.startswith("ERROR")]
+        buckets = validate_phases(phases, start=1, end=1)
+        errors = buckets["errors"]
         assert len(errors) == 0
 
     def test_load_sprint_config_raises_on_missing_phase_file(self, tmp_path):
@@ -739,6 +740,13 @@ class TestTmuxModule:
         with patch("superclaude.cli.sprint.tmux.shutil.which", return_value=None):
             assert is_tmux_available() is False
 
+    def test_find_running_session_returns_none_when_tmux_missing(self):
+        """find_running_session() returns None immediately when tmux is not installed."""
+        from superclaude.cli.sprint.tmux import find_running_session
+
+        with patch("superclaude.cli.sprint.tmux.shutil.which", return_value=None):
+            assert find_running_session() is None
+
     def test_is_tmux_available_false_when_inside_tmux(self):
         """is_tmux_available() returns False when TMUX env var is set (nested)."""
         from superclaude.cli.sprint.tmux import is_tmux_available
@@ -757,7 +765,10 @@ class TestTmuxModule:
         fake_result.returncode = 0
         fake_result.stdout = "other-session\nanother\n"
 
-        with patch("superclaude.cli.sprint.tmux.subprocess.run", return_value=fake_result):
+        with (
+            patch("superclaude.cli.sprint.tmux.shutil.which", return_value="/usr/bin/tmux"),
+            patch("superclaude.cli.sprint.tmux.subprocess.run", return_value=fake_result),
+        ):
             result = find_running_session()
 
         assert result is None
@@ -770,7 +781,10 @@ class TestTmuxModule:
         fake_result.returncode = 0
         fake_result.stdout = "other-session\nsc-sprint-abcd1234\nanother\n"
 
-        with patch("superclaude.cli.sprint.tmux.subprocess.run", return_value=fake_result):
+        with (
+            patch("superclaude.cli.sprint.tmux.shutil.which", return_value="/usr/bin/tmux"),
+            patch("superclaude.cli.sprint.tmux.subprocess.run", return_value=fake_result),
+        ):
             result = find_running_session()
 
         assert result == "sc-sprint-abcd1234"

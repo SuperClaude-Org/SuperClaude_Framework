@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Optional
 
 from rich.console import Console
@@ -12,6 +13,7 @@ from rich.progress import BarColumn, Progress, TextColumn
 from rich.table import Table
 from rich.text import Text
 
+from .debug_logger import debug_log
 from .models import (
     MonitorState,
     Phase,
@@ -19,6 +21,8 @@ from .models import (
     SprintConfig,
     SprintResult,
 )
+
+_dbg = logging.getLogger("superclaude.sprint.debug.tui")
 
 STATUS_STYLES = {
     PhaseStatus.PASS: "bold green",
@@ -29,6 +33,7 @@ STATUS_STYLES = {
     PhaseStatus.ERROR: "bold red",
     PhaseStatus.RUNNING: "bold yellow",
     PhaseStatus.PENDING: "dim",
+    PhaseStatus.SKIPPED: "dim strikethrough",
 }
 
 STATUS_ICONS = {
@@ -40,6 +45,7 @@ STATUS_ICONS = {
     PhaseStatus.ERROR: "[red]ERROR[/]",
     PhaseStatus.RUNNING: "[yellow]RUNNING[/]",
     PhaseStatus.PENDING: "[dim]pending[/]",
+    PhaseStatus.SKIPPED: "[dim]skipped[/]",
 }
 
 
@@ -57,6 +63,7 @@ class SprintTUI:
 
     def start(self) -> Live:
         """Start the Live display and return it for the executor to use."""
+        debug_log(_dbg, "tui_start")
         self._live = Live(
             self._render(),
             console=self.console,
@@ -68,6 +75,7 @@ class SprintTUI:
 
     def stop(self):
         """Stop the Live display."""
+        debug_log(_dbg, "tui_stop")
         if self._live:
             self._live.stop()
 
@@ -88,9 +96,17 @@ class SprintTUI:
         if self._live and not self._live_failed:
             try:
                 self._live.update(self._render())
+                debug_log(
+                    _dbg,
+                    "tui_update",
+                    events_received=monitor_state.events_received,
+                    stall_status=monitor_state.stall_status,
+                    last_event_time=round(monitor_state.last_event_time, 1),
+                )
             except Exception as exc:
                 import sys
                 self._live_failed = True
+                debug_log(_dbg, "tui_live_failed", error=str(exc), error_type=type(exc).__name__)
                 print(f"[TUI] Display error (continuing sprint): {exc}", file=sys.stderr)
 
     def _render(self) -> Panel:

@@ -6,7 +6,7 @@ import json
 
 from rich.console import Console
 
-from .models import PhaseResult, SprintConfig, SprintResult
+from .models import PhaseResult, PhaseStatus, SprintConfig, SprintResult
 
 
 class SprintLogger:
@@ -87,7 +87,7 @@ class SprintLogger:
 
     def write_phase_result(self, result: PhaseResult):
         """Log a phase completion."""
-        # JSONL
+        # JSONL (all severities)
         self._jsonl(
             {
                 "event": "phase_complete",
@@ -105,25 +105,35 @@ class SprintLogger:
             }
         )
 
-        # Markdown (append row)
-        row = (
-            f"| Phase {result.phase.number} "
-            f"| {result.status.value} "
-            f"| {result.started_at.isoformat()} "
-            f"| {result.finished_at.isoformat()} "
-            f"| {result.duration_display} "
-            f"| {result.exit_code} |"
-        )
-        with open(self.config.execution_log_md, "a") as f:
-            f.write(row + "\n")
+        # Markdown (INFO/WARN/ERROR only; DEBUG omitted)
+        if result.status != PhaseStatus.PASS_NO_SIGNAL:
+            row = (
+                f"| Phase {result.phase.number} "
+                f"| {result.status.value} "
+                f"| {result.started_at.isoformat()} "
+                f"| {result.finished_at.isoformat()} "
+                f"| {result.duration_display} "
+                f"| {result.exit_code} |"
+            )
+            with open(self.config.execution_log_md, "a") as f:
+                f.write(row + "\n")
 
-        # Screen output for important events
-        if result.status.is_failure:
+        # Screen severity routing
+        # DEBUG -> JSONL only (PASS_NO_SIGNAL)
+        # INFO  -> screen + JSONL (PASS/PASS_NO_REPORT)
+        # WARN  -> highlighted stderr + JSONL (HALT/TIMEOUT)
+        # ERROR -> highlighted stderr + JSONL + bell (ERROR)
+        if result.status == PhaseStatus.ERROR:
             self._screen_error(
                 f"Phase {result.phase.number}: {result.status.value} "
                 f"({result.duration_display})"
             )
-        elif result.status.is_success:
+        elif result.status in (PhaseStatus.HALT, PhaseStatus.TIMEOUT):
+            self._screen_warn(
+                f"Phase {result.phase.number}: {result.status.value} "
+                f"({result.duration_display})"
+            )
+        elif result.status in (PhaseStatus.PASS, PhaseStatus.PASS_NO_REPORT):
             self._screen_info(
                 f"Phase {result.phase.number}: {result.status.value} "
                 f"({result.duration_display})"

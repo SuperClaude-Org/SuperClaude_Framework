@@ -1,7 +1,8 @@
 """Sprint data models — enums, dataclasses, and pure-data types.
 
-All other sprint modules depend on these types. This file has zero
-external dependencies beyond the stdlib.
+All other sprint modules depend on these types. Pipeline base types
+(PipelineConfig, Step, StepResult, StepStatus) are imported from
+superclaude.cli.pipeline for inheritance.
 """
 
 from __future__ import annotations
@@ -12,6 +13,13 @@ from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
 from typing import Optional
+
+from superclaude.cli.pipeline.models import (
+    PipelineConfig,
+    Step,
+    StepResult,
+    StepStatus,
+)
 
 
 class PhaseStatus(Enum):
@@ -25,9 +33,7 @@ class PhaseStatus(Enum):
     HALT = "halt"
     TIMEOUT = "timeout"
     ERROR = "error"
-    # SKIPPED removed — was never returned by _determine_phase_status and
-    # created an orphaned terminal state that was neither success nor failure,
-    # causing SprintOutcome.ERROR if accidentally used.
+    SKIPPED = "skipped"
 
     @property
     def is_terminal(self) -> bool:
@@ -38,6 +44,7 @@ class PhaseStatus(Enum):
             PhaseStatus.HALT,
             PhaseStatus.TIMEOUT,
             PhaseStatus.ERROR,
+            PhaseStatus.SKIPPED,
         )
 
     @property
@@ -80,12 +87,18 @@ class Phase:
 
 
 @dataclass
-class SprintConfig:
-    """Complete configuration for a sprint execution."""
+class SprintConfig(PipelineConfig):
+    """Complete configuration for a sprint execution.
 
-    index_path: Path
-    release_dir: Path
-    phases: list[Phase]
+    Inherits shared fields from PipelineConfig (work_dir, dry_run,
+    max_turns, model, permission_flag, debug). Sprint-specific fields
+    are defined here. The ``release_dir`` field maps to ``work_dir``
+    via __post_init__ for backward compatibility.
+    """
+
+    index_path: Path = field(default_factory=lambda: Path("."))
+    release_dir: Path = field(default_factory=lambda: Path("."))
+    phases: list[Phase] = field(default_factory=list)
     start_phase: int = 1
     end_phase: int = 0  # 0 = auto-detect (last phase)
     max_turns: int = 50
@@ -93,6 +106,21 @@ class SprintConfig:
     dry_run: bool = False
     permission_flag: str = "--dangerously-skip-permissions"
     tmux_session_name: str = ""
+    # Diagnostic fields (all default to pre-change behavior)
+    debug: bool = False
+    stall_timeout: int = 0  # 0 = disabled
+    stall_action: str = "warn"  # "warn" or "kill"
+    phase_timeout: int = 0  # 0 = disabled
+
+    def __post_init__(self):
+        # Sync release_dir to PipelineConfig.work_dir so both access paths
+        # return the same value.
+        object.__setattr__(self, "work_dir", self.release_dir)
+
+    @property
+    def debug_log_path(self) -> Path:
+        """Path to the debug log file within the results directory."""
+        return self.results_dir / "debug.log"
 
     @property
     def results_dir(self) -> Path:
@@ -123,14 +151,28 @@ class SprintConfig:
 
 
 @dataclass
-class PhaseResult:
-    """Outcome of executing a single phase."""
+class SprintStep(Step):
+    """A pipeline step specialised for sprint phase execution.
 
-    phase: Phase
-    status: PhaseStatus
-    exit_code: int
-    started_at: datetime
-    finished_at: datetime
+    Extends pipeline.Step with sprint-specific fields.
+    """
+
+    phase_number: int = 0
+
+
+@dataclass
+class PhaseResult(StepResult):
+    """Outcome of executing a single phase.
+
+    Inherits from pipeline.StepResult for shared timing fields.
+    Sprint-specific fields (phase, exit_code, etc.) are defined here.
+    """
+
+    phase: Phase = field(default_factory=lambda: Phase(number=0, file=Path(".")))
+    status: PhaseStatus = PhaseStatus.PENDING
+    exit_code: int = 0
+    started_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    finished_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     output_bytes: int = 0
     error_bytes: int = 0
     last_task_id: str = ""
@@ -193,11 +235,18 @@ class SprintResult:
 
 @dataclass
 class MonitorState:
-    """Real-time state extracted by the sidecar monitor thread."""
+    """Real-time state extracted by the sidecar monitor thread.
+
+    With stream-json output, liveness is tracked via ``last_event_time``
+    (updated on each parsed NDJSON line) rather than raw byte growth.
+    """
 
     output_bytes: int = 0
     output_bytes_prev: int = 0
     last_growth_time: float = field(default_factory=time.monotonic)
+    last_event_time: float = field(default_factory=time.monotonic)
+    phase_started_at: float = field(default_factory=time.monotonic)
+    events_received: int = 0
     last_task_id: str = ""
     last_tool_used: str = ""
     files_changed: int = 0
@@ -207,9 +256,17 @@ class MonitorState:
 
     @property
     def stall_status(self) -> str:
-        if self.stall_seconds > 60:
+        now = time.monotonic()
+        if self.events_received == 0:
+            # No events yet — subprocess is starting up
+            if now - self.phase_started_at > 120:
+                return "STALLED"
+            return "waiting..."
+        # Events have been flowing — check time since last event
+        since_last = now - self.last_event_time
+        if since_last > 120:
             return "STALLED"
-        if self.stall_seconds > 30:
+        if since_last > 30:
             return "thinking..."
         return "active"
 

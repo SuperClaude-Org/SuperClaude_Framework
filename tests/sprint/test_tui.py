@@ -96,22 +96,28 @@ class TestSprintTUI:
         assert "Foundation" in output
 
     def test_render_stall_thinking(self):
+        import time
+
         config = _make_config()
         tui = SprintTUI(config, console=Console(file=StringIO(), width=80))
 
         sr = SprintResult(config=config)
-        ms = MonitorState(stall_seconds=35.0)
+        now = time.monotonic()
+        ms = MonitorState(events_received=10, last_event_time=now - 35.0)
 
         tui.update(sr, ms, config.phases[0])
         output = _render_to_string(tui)
         assert "thinking" in output
 
     def test_render_stall_stalled(self):
+        import time
+
         config = _make_config()
         tui = SprintTUI(config, console=Console(file=StringIO(), width=80))
 
         sr = SprintResult(config=config)
-        ms = MonitorState(stall_seconds=65.0)
+        now = time.monotonic()
+        ms = MonitorState(events_received=10, last_event_time=now - 125.0)
 
         tui.update(sr, ms, config.phases[0])
         output = _render_to_string(tui)

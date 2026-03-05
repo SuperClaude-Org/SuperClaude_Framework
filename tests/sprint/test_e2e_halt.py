@@ -10,6 +10,8 @@ import json
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 from superclaude.cli.sprint.executor import execute_sprint
 from superclaude.cli.sprint.models import (
     Phase,
@@ -97,14 +99,14 @@ class TestE2EHalt:
         factory = _popen_factory_fail_phase2(config)
 
         with (
+            patch("superclaude.cli.sprint.executor.shutil.which", return_value="/usr/bin/claude"),
             patch("superclaude.cli.sprint.process.subprocess.Popen", side_effect=factory),
             patch("superclaude.cli.sprint.process.os.setpgrp"),
             patch("superclaude.cli.sprint.notify._notify"),
         ):
-            try:
+            with pytest.raises(SystemExit) as exc:
                 execute_sprint(config)
-            except SystemExit:
-                pass
+            assert exc.value.code == 1
 
         # Read JSONL to verify
         jsonl_path = config.execution_log_jsonl
@@ -118,6 +120,7 @@ class TestE2EHalt:
         factory = _popen_factory_fail_phase2(config)
 
         with (
+            patch("superclaude.cli.sprint.executor.shutil.which", return_value="/usr/bin/claude"),
             patch("superclaude.cli.sprint.process.subprocess.Popen", side_effect=factory),
             patch("superclaude.cli.sprint.process.os.setpgrp"),
             patch("superclaude.cli.sprint.notify._notify"),
@@ -143,6 +146,7 @@ class TestE2EHalt:
         factory = _popen_factory_fail_phase2(config)
 
         with (
+            patch("superclaude.cli.sprint.executor.shutil.which", return_value="/usr/bin/claude"),
             patch("superclaude.cli.sprint.process.subprocess.Popen", side_effect=factory),
             patch("superclaude.cli.sprint.process.os.setpgrp"),
             patch("superclaude.cli.sprint.notify._notify"),
@@ -161,6 +165,7 @@ class TestE2EHalt:
         factory = _popen_factory_fail_phase2(config)
 
         with (
+            patch("superclaude.cli.sprint.executor.shutil.which", return_value="/usr/bin/claude"),
             patch("superclaude.cli.sprint.process.subprocess.Popen", side_effect=factory),
             patch("superclaude.cli.sprint.process.os.setpgrp"),
             patch("superclaude.cli.sprint.notify._notify"),
@@ -178,6 +183,7 @@ class TestE2EHalt:
         factory = _popen_factory_fail_phase2(config)
 
         with (
+            patch("superclaude.cli.sprint.executor.shutil.which", return_value="/usr/bin/claude"),
             patch("superclaude.cli.sprint.process.subprocess.Popen", side_effect=factory),
             patch("superclaude.cli.sprint.process.os.setpgrp"),
             patch("superclaude.cli.sprint.notify._notify"),

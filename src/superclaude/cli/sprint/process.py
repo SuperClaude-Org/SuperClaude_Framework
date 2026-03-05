@@ -1,36 +1,48 @@
-"""Sprint process management — subprocess lifecycle and signal handling."""
+"""Sprint process management — subprocess lifecycle and signal handling.
+
+ClaudeProcess extends pipeline.process.ClaudeProcess with sprint-specific
+constructor (config, phase) and build_prompt(). subprocess and os are
+imported at module level for test-patch compatibility.
+SignalHandler remains sprint-specific.
+"""
 
 from __future__ import annotations
 
+import logging
 import os
 import signal
 import subprocess
 from typing import Optional
 
+from superclaude.cli.pipeline.process import ClaudeProcess as _PipelineClaudeProcess
+
+from .debug_logger import debug_log
 from .models import Phase, SprintConfig
 
+_dbg = logging.getLogger("superclaude.sprint.debug.process")
 
-class ClaudeProcess:
-    """Manages a single claude -p subprocess with signal handling.
 
-    Key design decisions:
-    - Uses process groups (os.setpgrp) so we can kill the entire
-      child tree on shutdown.
-    - CLAUDECODE= env prefix prevents nested session detection.
-    - stdout/stderr redirected to files for the monitor to read.
-    - Timeout computed from max_turns * 120s + 300s buffer.
+class ClaudeProcess(_PipelineClaudeProcess):
+    """Sprint-specific claude process extending the pipeline base.
+
+    Preserves the sprint (config, phase) constructor, build_prompt(),
+    and debug logging while inheriting command building from pipeline.
     """
 
     def __init__(self, config: SprintConfig, phase: Phase):
         self.config = config
         self.phase = phase
-        self._process: Optional[subprocess.Popen] = None
-        self._stdout_fh = None
-        self._stderr_fh = None
-
-    @property
-    def timeout_seconds(self) -> int:
-        return self.config.max_turns * 120 + 300
+        prompt = self.build_prompt()
+        super().__init__(
+            prompt=prompt,
+            output_file=config.output_file(phase),
+            error_file=config.error_file(phase),
+            max_turns=config.max_turns,
+            model=config.model,
+            permission_flag=config.permission_flag,
+            timeout_seconds=config.max_turns * 120 + 300,
+            output_format="stream-json",
+        )
 
     def build_prompt(self) -> str:
         """Build the /sc:task-unified prompt for this phase."""
@@ -76,48 +88,41 @@ class ClaudeProcess:
             f"- Focus only on the tasks defined in the phase file"
         )
 
-    def build_command(self) -> list[str]:
-        """Build the claude CLI command."""
-        cmd = [
-            "claude",
-            "--print",
-            self.config.permission_flag,
-            "--no-session-persistence",
-            "--max-turns",
-            str(self.config.max_turns),
-            "--output-format",
-            "text",
-            "-p",
-            self.build_prompt(),
-        ]
-        if self.config.model:
-            cmd.extend(["--model", self.config.model])
-        return cmd
-
-    def build_env(self) -> dict[str, str]:
-        """Build environment for the child process."""
-        env = os.environ.copy()
-        env["CLAUDECODE"] = ""  # prevent nested session detection
-        return env
-
     def start(self) -> subprocess.Popen:
-        """Launch the claude process."""
+        """Launch the claude process with sprint debug logging."""
         output_file = self.config.output_file(self.phase)
         error_file = self.config.error_file(self.phase)
 
-        # Ensure results directory exists
         output_file.parent.mkdir(parents=True, exist_ok=True)
 
         self._stdout_fh = open(output_file, "w")
         self._stderr_fh = open(error_file, "w")
 
-        self._process = subprocess.Popen(
-            self.build_command(),
-            stdout=self._stdout_fh,
-            stderr=self._stderr_fh,
-            env=self.build_env(),
-            preexec_fn=os.setpgrp,  # new process group for clean kill
+        popen_kwargs = {
+            "stdin": subprocess.DEVNULL,
+            "stdout": self._stdout_fh,
+            "stderr": self._stderr_fh,
+            "env": self.build_env(),
+        }
+        if hasattr(os, "setpgrp"):
+            popen_kwargs["preexec_fn"] = os.setpgrp
+
+        self._process = subprocess.Popen(self.build_command(), **popen_kwargs)
+
+        debug_log(
+            _dbg,
+            "spawn",
+            pid=self._process.pid,
+            cmd=str(self.build_command()[:3]),
+            phase=self.phase.number,
         )
+        debug_log(
+            _dbg,
+            "files_opened",
+            stdout=str(output_file),
+            stderr=str(error_file),
+        )
+
         return self._process
 
     def wait(self) -> int:
@@ -126,7 +131,7 @@ class ClaudeProcess:
             self._process.wait(timeout=self.timeout_seconds)
         except subprocess.TimeoutExpired:
             self.terminate()
-            return 124  # match bash timeout exit code
+            return 124
 
         self._close_handles()
         return self._process.returncode if self._process.returncode is not None else -1
@@ -137,26 +142,40 @@ class ClaudeProcess:
             self._close_handles()
             return
 
-        pgid = os.getpgid(self._process.pid)
+        use_pgroup = all(hasattr(os, attr) for attr in ("getpgid", "killpg"))
+        pgid = os.getpgid(self._process.pid) if use_pgroup else None
 
-        # Phase 1: SIGTERM to the process group
         try:
-            os.killpg(pgid, signal.SIGTERM)
+            if use_pgroup and pgid is not None:
+                os.killpg(pgid, signal.SIGTERM)
+            else:
+                self._process.terminate()
+            debug_log(_dbg, "signal_sent", signal="SIGTERM", pid=self._process.pid)
         except ProcessLookupError:
             self._close_handles()
             return
 
-        # Phase 2: Wait up to 10 seconds
         try:
             self._process.wait(timeout=10)
         except subprocess.TimeoutExpired:
-            # Phase 3: SIGKILL
             try:
-                os.killpg(pgid, signal.SIGKILL)
+                if use_pgroup and pgid is not None:
+                    os.killpg(pgid, signal.SIGKILL)
+                else:
+                    self._process.kill()
+                debug_log(_dbg, "signal_sent", signal="SIGKILL", pid=self._process.pid)
                 self._process.wait(timeout=5)
             except (ProcessLookupError, subprocess.TimeoutExpired):
                 pass
 
+        rc = self._process.returncode
+        debug_log(
+            _dbg,
+            "exit",
+            pid=self._process.pid,
+            code=rc,
+            was_timeout=(rc == 124 or getattr(self, "_timed_out", False)),
+        )
         self._close_handles()
 
     def _close_handles(self):

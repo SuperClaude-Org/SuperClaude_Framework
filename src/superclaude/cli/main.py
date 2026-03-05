@@ -355,6 +355,10 @@ from superclaude.cli.sprint import sprint_group
 
 main.add_command(sprint_group, name="sprint")
 
+from superclaude.cli.roadmap import roadmap_group
+
+main.add_command(roadmap_group, name="roadmap")
+
 
 if __name__ == "__main__":
     main()

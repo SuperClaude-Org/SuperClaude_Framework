@@ -1,15 +1,25 @@
-"""Sidecar output monitor — daemon thread that watches output files."""
+"""Sidecar output monitor — daemon thread that watches output files.
+
+Parses stream-json (NDJSON) output from ``claude --print --output-format stream-json``.
+Each line is a JSON object with a ``type`` field.  The monitor extracts task IDs,
+tool names, and file-change signals from these events to drive the TUI.
+"""
 
 from __future__ import annotations
 
+import json
+import logging
 import re
 import threading
 import time
 from pathlib import Path
 
+from .debug_logger import debug_log
 from .models import MonitorState
 
-# Patterns to extract from claude output
+_dbg = logging.getLogger("superclaude.sprint.debug.monitor")
+
+# Patterns to extract from stringified event content
 TASK_ID_PATTERN = re.compile(r"T\d{2}\.\d{2}")
 TOOL_PATTERN = re.compile(
     r"\b(Read|Edit|MultiEdit|Write|Grep|Glob|Bash|TodoWrite|TodoRead|Task)\b"
@@ -20,11 +30,11 @@ FILES_CHANGED_PATTERN = re.compile(
 
 
 class OutputMonitor:
-    """Background thread that watches an output file and extracts signals.
+    """Background thread that watches a stream-json output file.
 
-    The monitor does not hold the file open. It stat()s and reads only
-    the new bytes since the last poll. This is safe even when the file
-    is being written by a child process.
+    Reads incremental bytes, splits on newlines, and parses each complete
+    line as JSON.  Partial lines are buffered across poll cycles so no
+    data is lost when a write straddles a poll boundary.
     """
 
     def __init__(self, output_path: Path, poll_interval: float = 0.5):
@@ -34,12 +44,14 @@ class OutputMonitor:
         self._stop_event = threading.Event()
         self._thread: threading.Thread | None = None
         self._last_read_pos: int = 0
+        self._line_buffer: str = ""
         self._seen_files: set[str] = set()
 
     def start(self):
         """Start the monitor thread."""
         self._stop_event.clear()
         self._last_read_pos = 0
+        self._line_buffer = ""
         self._seen_files.clear()
         self.state = MonitorState()
         self._thread = threading.Thread(
@@ -59,6 +71,7 @@ class OutputMonitor:
         """Reset for a new phase (new output file)."""
         self.output_path = new_output_path
         self._last_read_pos = 0
+        self._line_buffer = ""
         self._seen_files.clear()
         self.state = MonitorState()
 
@@ -79,14 +92,22 @@ class OutputMonitor:
         self.state.output_bytes = size
 
         if size > self._last_read_pos:
-            # New data available -- read incremental chunk
-            self.state.last_growth_time = now
-            self.state.stall_seconds = 0.0  # reset stall on growth
-            new_text = self._read_new_bytes(size)
-            self._extract_signals(new_text)
+            # New data available — read incremental chunk
+            chunk = self._read_new_chunk(size)
+            if chunk:
+                self._process_chunk(chunk, now)
         else:
-            # No growth -- update stall counter
-            self.state.stall_seconds = now - self.state.last_growth_time
+            # No growth — update stall counter
+            self.state.stall_seconds = now - self.state.last_event_time
+
+        debug_log(
+            _dbg,
+            "output_file_stat",
+            path=str(self.output_path),
+            size=size,
+            events_received=self.state.events_received,
+            last_event_time=round(self.state.last_event_time, 1),
+        )
 
         # Growth rate: exponential moving average
         delta = self.state.output_bytes - self.state.output_bytes_prev
@@ -96,7 +117,7 @@ class OutputMonitor:
             + (1 - alpha) * self.state.growth_rate_bps
         )
 
-    def _read_new_bytes(self, current_size: int) -> str:
+    def _read_new_chunk(self, current_size: int) -> str:
         """Read only the bytes added since last poll."""
         try:
             with open(self.output_path, errors="replace") as f:
@@ -107,23 +128,71 @@ class OutputMonitor:
         except (OSError, UnicodeDecodeError):
             return ""
 
-    def _extract_signals(self, text: str):
-        """Extract task IDs, tool names, file paths from new output text."""
+    def _process_chunk(self, chunk: str, now: float):
+        """Split chunk into lines, parse complete NDJSON lines, buffer partials."""
+        # Prepend any leftover partial line from previous poll
+        data = self._line_buffer + chunk
+        lines = data.split("\n")
+
+        # Last element is either "" (if chunk ended with \n) or a partial line
+        self._line_buffer = lines[-1]
+
+        # Process all complete lines (everything except the last split element)
+        for line in lines[:-1]:
+            line = line.strip()
+            if not line:
+                continue
+
+            # Update liveness on every complete line
+            self.state.last_growth_time = now
+            self.state.last_event_time = now
+            self.state.stall_seconds = 0.0
+            self.state.events_received += 1
+            self.state.lines_total += 1
+
+            # Try to parse as JSON
+            try:
+                event = json.loads(line)
+            except (json.JSONDecodeError, ValueError):
+                # Not valid JSON — still counts as a line for liveness,
+                # but try text-mode signal extraction as fallback
+                self._extract_signals_from_text(line)
+                continue
+
+            self._extract_signals_from_event(event)
+
+    def _extract_signals_from_event(self, event: dict):
+        """Extract task IDs, tool names, file paths from a parsed NDJSON event."""
+        event_type = event.get("type", "")
+        debug_log(_dbg, "ndjson_line_parsed", event_type=event_type, parsed=True)
+
+        # Tool use events: extract tool name directly
+        if event_type == "tool_use":
+            tool = event.get("tool", "")
+            if tool:
+                self.state.last_tool_used = tool
+
+        # Stringify the event for regex-based signal extraction
+        # This catches task IDs and file changes regardless of event structure
+        text = json.dumps(event, default=str)
+        self._extract_signals_from_text(text)
+
+    def _extract_signals_from_text(self, text: str):
+        """Extract task IDs, tool names, file paths from text using regex."""
         # Last task ID (take the last match)
         task_matches = TASK_ID_PATTERN.findall(text)
         if task_matches:
             self.state.last_task_id = task_matches[-1]
+            debug_log(_dbg, "signal_extracted", signal_type="task_id", value=task_matches[-1])
 
-        # Last tool used
+        # Last tool used (only if not already set by structured extraction)
         tool_matches = TOOL_PATTERN.findall(text)
         if tool_matches:
             self.state.last_tool_used = tool_matches[-1]
+            debug_log(_dbg, "signal_extracted", signal_type="tool_name", value=tool_matches[-1])
 
         # Files changed (accumulate unique paths)
         file_matches = FILES_CHANGED_PATTERN.findall(text)
         for f in file_matches:
             self._seen_files.add(f)
         self.state.files_changed = len(self._seen_files)
-
-        # Line count
-        self.state.lines_total += text.count("\n")

@@ -8,6 +8,8 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+from .debug_logger import debug_log, setup_debug_logger
+from .diagnostics import DiagnosticCollector, FailureClassifier, ReportGenerator
 from .logging_ import SprintLogger
 from .models import (
     MonitorState,
@@ -22,6 +24,9 @@ from .notify import notify_phase_complete, notify_sprint_complete
 from .process import ClaudeProcess, SignalHandler
 from .tmux import update_tail_pane
 from .tui import SprintTUI
+
+# Debug logger name for executor-specific events
+_DBG_NAME = "superclaude.sprint.debug.executor"
 
 
 def execute_sprint(config: SprintConfig):
@@ -44,6 +49,10 @@ def execute_sprint(config: SprintConfig):
 
     signal_handler = SignalHandler()
     signal_handler.install()
+
+    setup_debug_logger(config)
+    import logging as _logging
+    _dbg = _logging.getLogger(_DBG_NAME)
 
     logger = SprintLogger(config)
     tui = SprintTUI(config)
@@ -78,11 +87,15 @@ def execute_sprint(config: SprintConfig):
             deadline = time.monotonic() + proc_manager.timeout_seconds
             logger.write_phase_start(phase, started_at)
 
+            debug_log(_dbg, "PHASE_BEGIN", phase=phase.number, file=str(phase.file))
+
             tui.update(sprint_result, monitor.state, phase)
 
             # Poll loop: wait for process to finish while updating TUI
             # Enforces monotonic timeout via deadline check.
             _timed_out = False
+            _stall_acted = False  # single-fire guard for watchdog
+            _poll_start = time.monotonic()
             while proc_manager._process.poll() is None:
                 if signal_handler.shutdown_requested:
                     proc_manager.terminate()
@@ -92,6 +105,62 @@ def execute_sprint(config: SprintConfig):
                     _timed_out = True
                     proc_manager.terminate()
                     break
+
+                ms = monitor.state
+                _elapsed = time.monotonic() - _poll_start
+
+                debug_log(
+                    _dbg,
+                    "poll_tick",
+                    phase=phase.number,
+                    pid=proc_manager._process.pid,
+                    poll_result="running",
+                    elapsed=round(_elapsed, 1),
+                    output_bytes=ms.output_bytes,
+                    growth_rate=round(ms.growth_rate_bps, 1),
+                    stall_seconds=round(ms.stall_seconds, 1),
+                    stall_status=ms.stall_status,
+                )
+
+                # --- Watchdog: stall timeout check ---
+                if (
+                    config.stall_timeout > 0
+                    and ms.stall_seconds > config.stall_timeout
+                    and ms.events_received > 0  # don't trigger during startup
+                    and not _stall_acted
+                ):
+                    _stall_acted = True
+                    debug_log(
+                        _dbg,
+                        "watchdog_triggered",
+                        phase=phase.number,
+                        action=config.stall_action,
+                        stall_seconds=round(ms.stall_seconds, 1),
+                        pid=proc_manager._process.pid,
+                    )
+                    if config.stall_action == "kill":
+                        import sys
+                        print(
+                            f"[WATCHDOG] Stall detected ({ms.stall_seconds:.0f}s > "
+                            f"{config.stall_timeout}s) — killing phase {phase.number}",
+                            file=sys.stderr,
+                        )
+                        _timed_out = True
+                        proc_manager.terminate()
+                        break
+                    else:
+                        # warn action: log and continue
+                        import sys
+                        print(
+                            f"[WATCHDOG] Stall detected ({ms.stall_seconds:.0f}s > "
+                            f"{config.stall_timeout}s) — warning for phase {phase.number}",
+                            file=sys.stderr,
+                        )
+
+                # Reset single-fire guard when output resumes
+                if _stall_acted and ms.stall_seconds == 0.0:
+                    _stall_acted = False
+
                 # Update TUI at ~2 Hz (monitor thread handles data extraction)
                 # Wrap in try/except so a display glitch cannot abort the sprint
                 try:
@@ -104,12 +173,20 @@ def execute_sprint(config: SprintConfig):
             # Safely read exit code: returncode may be None if terminate raced.
             # Use _timed_out flag instead of assigning directly to returncode.
             raw_rc = proc_manager._process.returncode
-            if _timed_out and (raw_rc is None or raw_rc == 0):
+            if _timed_out:
                 exit_code = 124
             else:
                 exit_code = raw_rc if raw_rc is not None else -1
             monitor.stop()
             finished_at = datetime.now(timezone.utc)
+            _phase_dur = (finished_at - started_at).total_seconds()
+            debug_log(
+                _dbg,
+                "PHASE_END",
+                phase=phase.number,
+                exit_code=exit_code,
+                duration=round(_phase_dur, 1),
+            )
 
             # If shutdown was requested during the poll loop, classify as
             # INTERRUPTED rather than letting _determine_phase_status see
@@ -144,6 +221,15 @@ def execute_sprint(config: SprintConfig):
             )
             sprint_result.phase_results.append(phase_result)
 
+            debug_log(
+                _dbg,
+                "phase_complete",
+                phase=phase.number,
+                status=status.value,
+                exit_code=exit_code,
+                duration=round(_phase_dur, 1),
+            )
+
             # Log and notify
             logger.write_phase_result(phase_result)
             notify_phase_complete(phase_result)
@@ -152,6 +238,25 @@ def execute_sprint(config: SprintConfig):
 
             # Decide: continue or halt?
             if status.is_failure:
+                # Collect diagnostics for the failed phase
+                try:
+                    collector = DiagnosticCollector(config)
+                    bundle = collector.collect(phase, phase_result, monitor.state)
+                    classifier = FailureClassifier()
+                    bundle.category = classifier.classify(bundle)
+                    reporter = ReportGenerator()
+                    diag_path = config.results_dir / f"phase-{phase.number}-diagnostic.md"
+                    reporter.write(bundle, diag_path)
+                    debug_log(
+                        _dbg,
+                        "diagnostic_report",
+                        phase=phase.number,
+                        category=bundle.category.value,
+                        path=str(diag_path),
+                    )
+                except Exception as _diag_exc:
+                    debug_log(_dbg, "diagnostic_error", phase=phase.number, error=str(_diag_exc))
+
                 sprint_result.outcome = SprintOutcome.HALTED
                 sprint_result.halt_phase = phase.number
                 break
