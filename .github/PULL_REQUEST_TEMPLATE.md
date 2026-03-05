@@ -1,52 +1,51 @@
 # Pull Request
 
-## 概要
+## Summary
 
-<!-- このPRの目的を簡潔に説明 -->
+<!-- Briefly explain the purpose of this PR -->
 
-## 変更内容
+## Changes
 
-<!-- 主な変更点をリストアップ -->
+<!-- List the major changes -->
 -
+## Related Issues
 
-## 関連Issue
-
-<!-- 関連するIssue番号があれば記載 -->
+<!-- Include related issue numbers, if any -->
 Closes #
 
-## チェックリスト
+## Checklist
 
 ### Git Workflow
-- [ ] 外部貢献の場合: Fork → topic branch → upstream PR の流れに従った
-- [ ] コラボレーターの場合: topic branch使用（main直コミットしていない）
-- [ ] `git rebase upstream/main` 済み（コンフリクトなし）
-- [ ] コミットメッセージは Conventional Commits に準拠（`feat:`, `fix:`, `docs:` など）
+- [ ] For external contributions: Followed the flow of fork → topic branch → upstream PR.
+- [ ] For collaborators: Used a topic branch (not directly committed to main).
+- [ ] `git rebase upstream/main` completed (no conflicts).
+- [ ] Commit messages conform to Conventional Commits (`feat:`, `fix:`, `docs:`, etc.).
 
 ### Code Quality
-- [ ] 変更は1目的に限定（巨大PRでない、目安: ~200行差分以内）
-- [ ] 既存のコード規約・パターンに従っている
-- [ ] 新機能/修正には適切なテストを追加
-- [ ] Lint/Format/Typecheck すべてパス
-- [ ] CI/CD パイプライン成功（グリーン状態）
+- [ ] Changes are limited to a single purpose (not a large PR, guideline: ~200 lines of difference).
+- [ ] Follows existing code conventions and patterns.
+- [ ] Add appropriate tests for new features/fixes.
+- [ ] Lint/Format/Typecheck all pass.
+- [ ] CI/CD pipeline successful (green status).
 
 ### Security
-- [ ] シークレット・認証情報をコミットしていない
-- [ ] `.gitignore` で必要なファイルを除外済み
-- [ ] 破壊的変更なし／ある場合は `!` 付きコミット + MIGRATION.md 記載
+- [ ] Secrets and authentication information not committed.
+- [ ] Necessary files excluded with `.gitignore`.
+- [ ] No breaking changes, or if there are, commit with `!` and include in MIGRATION.md.
 
 ### Documentation
-- [ ] 必要に応じてドキュメントを更新（README, CLAUDE.md, docs/など）
-- [ ] 複雑なロジックにコメント追加
-- [ ] APIの変更がある場合は適切に文書化
+- [ ] Update documentation as needed (README, CLAUDE.md, docs/, etc.).
+- [ ] Add comments to complex logic.
+- [ ] Properly document API changes.
 
-## テスト方法
+## Testing Methods
 
-<!-- このPRの動作確認方法 -->
+<!-- How to verify this PR works -->
 
-## スクリーンショット（該当する場合）
+## Screenshots (if applicable)
 
-<!-- UIの変更がある場合はスクリーンショットを添付 -->
+<!-- Attach screenshots if there are UI changes -->
 
-## 備考
+## Notes
 
-<!-- レビュワーに伝えたいこと、技術的な判断の背景など -->
+<!-- What you want to communicate to reviewers, background to technical decisions, etc. -->
