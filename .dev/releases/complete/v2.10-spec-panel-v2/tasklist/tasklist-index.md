@@ -10,7 +10,7 @@
 | TASKLIST_ROOT | `.dev/releases/current/v2.09-spec-panel-v2/tasklist/` |
 | Total Phases | 5 |
 | Total Tasks | 25 |
-| Total Deliverables | 42 |
+| Total Deliverables | 39 |
 | Complexity Class | MEDIUM |
 | Primary Persona | scribe |
 | Consulting Personas | qa, architect |
