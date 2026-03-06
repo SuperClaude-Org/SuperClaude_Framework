@@ -6,6 +6,7 @@ import hashlib
 import os
 import shlex
 import shutil
+import signal
 import subprocess
 import time
 from pathlib import Path
@@ -31,6 +32,8 @@ def session_name(release_dir: Path) -> str:
 
 def find_running_session() -> str | None:
     """Find any running sc-sprint-* session."""
+    if shutil.which("tmux") is None:
+        return None
     result = subprocess.run(
         ["tmux", "list-sessions", "-F", "#{session_name}"],
         capture_output=True,
@@ -137,6 +140,13 @@ def _build_foreground_command(config: SprintConfig) -> list[str]:
         cmd.extend(["--model", config.model])
     if config.tmux_session_name:
         cmd.extend(["--tmux-session-name", config.tmux_session_name])
+    # Diagnostic flags
+    if config.debug:
+        cmd.append("--debug")
+    if config.stall_timeout > 0:
+        cmd.extend(["--stall-timeout", str(config.stall_timeout)])
+    if config.stall_action != "warn":
+        cmd.extend(["--stall-action", config.stall_action])
     return cmd
 
 
@@ -183,8 +193,38 @@ def kill_sprint(force: bool = False):
     if force:
         subprocess.run(["tmux", "kill-session", "-t", name])
     else:
-        # Send SIGTERM to the sprint process, wait, then kill session
-        subprocess.run(["tmux", "send-keys", "-t", f"{name}:0.0", "C-c"])
-        click.echo(f"Sent interrupt to {name}. Waiting 10s for graceful shutdown...")
+        # Non-force escalation: SIGTERM -> wait -> SIGKILL via pane PID.
+        pane_pid_result = subprocess.run(
+            ["tmux", "display-message", "-p", "-t", f"{name}:0.0", "#{pane_pid}"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        pane_pid = int(pane_pid_result.stdout.strip()) if pane_pid_result.returncode == 0 and pane_pid_result.stdout.strip().isdigit() else None
+
+        if pane_pid is not None:
+            try:
+                os.kill(pane_pid, signal.SIGTERM)
+                click.echo(f"Sent SIGTERM to {name} pane pid {pane_pid}. Waiting 10s...")
+            except ProcessLookupError:
+                click.echo(f"Sprint process already exited for {name}. Cleaning session...")
+        else:
+            # Fallback when pane pid is unavailable
+            subprocess.run(["tmux", "send-keys", "-t", f"{name}:0.0", "C-c"], check=False)
+            click.echo(f"Sent interrupt to {name}. Waiting 10s for graceful shutdown...")
+
         time.sleep(10)
-        subprocess.run(["tmux", "kill-session", "-t", name], check=False)
+
+        has_session = subprocess.run(
+            ["tmux", "has-session", "-t", name],
+            check=False,
+            capture_output=True,
+            text=True,
+        ).returncode == 0
+        if has_session:
+            if pane_pid is not None:
+                try:
+                    os.kill(pane_pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+            subprocess.run(["tmux", "kill-session", "-t", name], check=False)

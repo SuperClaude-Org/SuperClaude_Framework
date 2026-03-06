@@ -48,6 +48,11 @@ class TestCLIContract:
         assert "--dangerously-skip-permissions" in result.output
         assert "--allow-hierarchical-permissions" in result.output
 
+    def test_hidden_internal_option_not_exposed(self):
+        result = self.runner.invoke(sprint_group, ["run", "--help"])
+        assert result.exit_code == 0
+        assert "--tmux-session-name" not in result.output
+
     def test_attach_help(self):
         result = self.runner.invoke(sprint_group, ["attach", "--help"])
         assert result.exit_code == 0

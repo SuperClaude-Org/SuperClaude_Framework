@@ -589,6 +589,26 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ---
 
+## 🔧 **Anthropic Skill Creator**
+
+This repo includes Anthropic's official [skill-creator](https://github.com/anthropics/skills/tree/main/skills/skill-creator) as a Claude Code skill, pulled in via git submodule.
+
+### Setup After Cloning
+
+```bash
+# Clone with submodules
+git clone --recurse-submodules https://github.com/SuperClaude-Org/SuperClaude_Framework.git
+
+# Or, if you already cloned without submodules:
+git submodule update --init
+```
+
+The skill is available at `.claude/skills/skill-creator/` (symlink → `.vendor/anthropic-skills/skills/skill-creator/`). Claude Code loads it automatically as a project-local skill.
+
+> **Note (Windows)**: Symlinks require Developer Mode or admin privileges. If symlinks aren't working, copy `.vendor/anthropic-skills/skills/skill-creator/` to `.claude/skills/skill-creator/` manually.
+
+---
+
 ## 📋 **All 30 Commands**
 
 <details>

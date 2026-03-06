@@ -4,6 +4,7 @@ Covers all 7 types (PhaseStatus, SprintOutcome, Phase, SprintConfig,
 PhaseResult, SprintResult, MonitorState) and their property methods.
 """
 
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -370,27 +371,44 @@ class TestMonitorState:
         assert ms.stall_seconds == 0.0
 
     def test_stall_status_active(self):
-        ms = MonitorState(stall_seconds=10.0)
+        now = time.monotonic()
+        ms = MonitorState(events_received=10, last_event_time=now - 10.0)
         assert ms.stall_status == "active"
 
     def test_stall_status_thinking(self):
-        ms = MonitorState(stall_seconds=35.0)
+        now = time.monotonic()
+        ms = MonitorState(events_received=10, last_event_time=now - 35.0)
         assert ms.stall_status == "thinking..."
 
     def test_stall_status_stalled(self):
-        ms = MonitorState(stall_seconds=65.0)
+        now = time.monotonic()
+        ms = MonitorState(events_received=10, last_event_time=now - 125.0)
         assert ms.stall_status == "STALLED"
 
     def test_stall_status_boundary_30(self):
-        ms = MonitorState(stall_seconds=30.0)
+        now = time.monotonic()
+        # Use 29s to avoid race between setting last_event_time and reading it
+        ms = MonitorState(events_received=10, last_event_time=now - 29.0)
         assert ms.stall_status == "active"
 
-    def test_stall_status_boundary_60(self):
-        ms = MonitorState(stall_seconds=60.0)
+    def test_stall_status_boundary_thinking(self):
+        now = time.monotonic()
+        ms = MonitorState(events_received=10, last_event_time=now - 60.0)
         assert ms.stall_status == "thinking..."
 
-    def test_stall_status_boundary_61(self):
-        ms = MonitorState(stall_seconds=61.0)
+    def test_stall_status_boundary_stalled(self):
+        now = time.monotonic()
+        ms = MonitorState(events_received=10, last_event_time=now - 121.0)
+        assert ms.stall_status == "STALLED"
+
+    def test_stall_status_waiting_no_events(self):
+        now = time.monotonic()
+        ms = MonitorState(events_received=0, phase_started_at=now - 10.0)
+        assert ms.stall_status == "waiting..."
+
+    def test_stall_status_waiting_no_events_stalled(self):
+        now = time.monotonic()
+        ms = MonitorState(events_received=0, phase_started_at=now - 130.0)
         assert ms.stall_status == "STALLED"
 
     def test_output_size_display_bytes(self):

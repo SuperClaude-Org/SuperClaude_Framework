@@ -1,0 +1,596 @@
+"""Roadmap executor -- orchestrates the 8-step roadmap pipeline.
+
+Builds the step list with parallel generate group, defines
+``roadmap_run_step`` as the StepRunner, and delegates to
+``execute_pipeline()`` from the pipeline module.
+
+Context isolation: each subprocess receives only its prompt and --file inputs.
+No --continue, --session, or --resume flags are passed (FR-003, FR-023).
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import logging
+import sys
+import time
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Callable
+
+from ..pipeline.deliverables import decompose_deliverables
+from ..pipeline.executor import execute_pipeline
+from ..pipeline.models import Deliverable, PipelineConfig, Step, StepResult, StepStatus
+from ..pipeline.process import ClaudeProcess
+from .gates import (
+    DEBATE_GATE,
+    DIFF_GATE,
+    EXTRACT_GATE,
+    GENERATE_A_GATE,
+    GENERATE_B_GATE,
+    MERGE_GATE,
+    SCORE_GATE,
+    TEST_STRATEGY_GATE,
+)
+from .models import RoadmapConfig
+from .prompts import (
+    build_debate_prompt,
+    build_diff_prompt,
+    build_extract_prompt,
+    build_generate_prompt,
+    build_merge_prompt,
+    build_score_prompt,
+    build_test_strategy_prompt,
+)
+
+_log = logging.getLogger("superclaude.roadmap.executor")
+
+# Threshold above which inline embedding falls back to --file flags
+_EMBED_SIZE_LIMIT = 100 * 1024  # 100 KB
+
+
+def _embed_inputs(input_paths: list[Path]) -> str:
+    """Read input files and return their contents as fenced code blocks.
+
+    Each file is wrapped in a fenced block with a ``# <path>`` header.
+    Returns an empty string when *input_paths* is empty (no-op).
+    """
+    if not input_paths:
+        return ""
+
+    blocks: list[str] = []
+    for p in input_paths:
+        content = Path(p).read_text(encoding="utf-8")
+        blocks.append(f"# {p}\n```\n{content}\n```")
+    return "\n\n".join(blocks)
+
+
+def roadmap_run_step(
+    step: Step,
+    config: PipelineConfig,
+    cancel_check: Callable[[], bool],
+) -> StepResult:
+    """Execute a single roadmap step as a Claude subprocess.
+
+    Builds argv with context isolation, launches process, waits with
+    timeout, and returns StepResult.
+    """
+    started_at = datetime.now(timezone.utc)
+
+    if config.dry_run:
+        _log.info("[dry-run] Would execute step '%s'", step.id)
+        return StepResult(
+            step=step,
+            status=StepStatus.PASS,
+            attempt=1,
+            started_at=started_at,
+            finished_at=datetime.now(timezone.utc),
+        )
+
+    # Inline embedding: read input files into the prompt instead of --file flags
+    embedded = _embed_inputs(step.inputs)
+    if embedded and len(embedded.encode("utf-8")) <= _EMBED_SIZE_LIMIT:
+        effective_prompt = step.prompt + "\n\n" + embedded
+        extra_args: list[str] = []
+    elif embedded:
+        _log.warning(
+            "Step '%s': embedded inputs exceed %d bytes, falling back to --file flags",
+            step.id,
+            _EMBED_SIZE_LIMIT,
+        )
+        effective_prompt = step.prompt
+        extra_args = [
+            arg
+            for input_path in step.inputs
+            for arg in ("--file", str(input_path))
+        ]
+    else:
+        effective_prompt = step.prompt
+        extra_args = []
+
+    proc = ClaudeProcess(
+        prompt=effective_prompt,
+        output_file=step.output_file,
+        error_file=step.output_file.with_suffix(".err"),
+        max_turns=config.max_turns,
+        model=step.model or config.model,
+        permission_flag=config.permission_flag,
+        timeout_seconds=step.timeout_seconds,
+        output_format="text",
+        extra_args=extra_args,
+    )
+
+    proc.start()
+
+    # Poll for cancellation while waiting
+    while proc._process is not None and proc._process.poll() is None:
+        if cancel_check():
+            proc.terminate()
+            return StepResult(
+                step=step,
+                status=StepStatus.CANCELLED,
+                attempt=1,
+                gate_failure_reason="Cancelled by external signal",
+                started_at=started_at,
+                finished_at=datetime.now(timezone.utc),
+            )
+        time.sleep(1)
+
+    exit_code = proc.wait()
+    finished_at = datetime.now(timezone.utc)
+
+    if exit_code == 124:
+        return StepResult(
+            step=step,
+            status=StepStatus.TIMEOUT,
+            attempt=1,
+            gate_failure_reason=f"Step '{step.id}' timed out after {step.timeout_seconds}s",
+            started_at=started_at,
+            finished_at=finished_at,
+        )
+
+    if exit_code != 0:
+        return StepResult(
+            step=step,
+            status=StepStatus.FAIL,
+            attempt=1,
+            gate_failure_reason=f"Step '{step.id}' exited with code {exit_code}",
+            started_at=started_at,
+            finished_at=finished_at,
+        )
+
+    # Process completed successfully; gate check happens in execute_pipeline
+    return StepResult(
+        step=step,
+        status=StepStatus.PASS,
+        attempt=1,
+        started_at=started_at,
+        finished_at=finished_at,
+    )
+
+
+def _build_steps(config: RoadmapConfig) -> list[Step | list[Step]]:
+    """Build the 8-step pipeline with parallel generate group.
+
+    Returns a list where each element is either a single Step (sequential)
+    or a list[Step] (parallel group).
+    """
+    out = config.output_dir
+
+    # Agent specs
+    agent_a = config.agents[0]
+    agent_b = config.agents[1] if len(config.agents) > 1 else config.agents[0]
+
+    # Output paths
+    extraction = out / "extraction.md"
+    roadmap_a = out / f"roadmap-{agent_a.id}.md"
+    roadmap_b = out / f"roadmap-{agent_b.id}.md"
+    diff_file = out / "diff-analysis.md"
+    debate_file = out / "debate-transcript.md"
+    score_file = out / "base-selection.md"
+    merge_file = out / "roadmap.md"
+    test_strat = out / "test-strategy.md"
+
+    steps: list[Step | list[Step]] = [
+        # Step 1: Extract
+        Step(
+            id="extract",
+            prompt=build_extract_prompt(config.spec_file),
+            output_file=extraction,
+            gate=EXTRACT_GATE,
+            timeout_seconds=300,
+            inputs=[config.spec_file],
+            retry_limit=1,
+        ),
+        # Steps 2a+2b: Generate (parallel)
+        [
+            Step(
+                id=f"generate-{agent_a.id}",
+                prompt=build_generate_prompt(agent_a, extraction),
+                output_file=roadmap_a,
+                gate=GENERATE_A_GATE,
+                timeout_seconds=900,
+                inputs=[extraction],
+                retry_limit=1,
+                model=agent_a.model,
+            ),
+            Step(
+                id=f"generate-{agent_b.id}",
+                prompt=build_generate_prompt(agent_b, extraction),
+                output_file=roadmap_b,
+                gate=GENERATE_B_GATE,
+                timeout_seconds=900,
+                inputs=[extraction],
+                retry_limit=1,
+                model=agent_b.model,
+            ),
+        ],
+        # Step 3: Diff
+        Step(
+            id="diff",
+            prompt=build_diff_prompt(roadmap_a, roadmap_b),
+            output_file=diff_file,
+            gate=DIFF_GATE,
+            timeout_seconds=300,
+            inputs=[roadmap_a, roadmap_b],
+            retry_limit=1,
+        ),
+        # Step 4: Debate
+        Step(
+            id="debate",
+            prompt=build_debate_prompt(diff_file, roadmap_a, roadmap_b, config.depth),
+            output_file=debate_file,
+            gate=DEBATE_GATE,
+            timeout_seconds=600,
+            inputs=[diff_file, roadmap_a, roadmap_b],
+            retry_limit=1,
+        ),
+        # Step 5: Score
+        Step(
+            id="score",
+            prompt=build_score_prompt(debate_file, roadmap_a, roadmap_b),
+            output_file=score_file,
+            gate=SCORE_GATE,
+            timeout_seconds=300,
+            inputs=[debate_file, roadmap_a, roadmap_b],
+            retry_limit=1,
+        ),
+        # Step 6: Merge
+        Step(
+            id="merge",
+            prompt=build_merge_prompt(score_file, roadmap_a, roadmap_b, debate_file),
+            output_file=merge_file,
+            gate=MERGE_GATE,
+            timeout_seconds=600,
+            inputs=[score_file, roadmap_a, roadmap_b, debate_file],
+            retry_limit=1,
+        ),
+        # Step 7: Test Strategy
+        Step(
+            id="test-strategy",
+            prompt=build_test_strategy_prompt(merge_file, extraction),
+            output_file=test_strat,
+            gate=TEST_STRATEGY_GATE,
+            timeout_seconds=300,
+            inputs=[merge_file, extraction],
+            retry_limit=1,
+        ),
+    ]
+
+    return steps
+
+
+def _format_halt_output(results: list[StepResult], config: RoadmapConfig) -> str:
+    """Format HALT diagnostic output per spec section 6.2."""
+    failed = [r for r in results if r.status in (StepStatus.FAIL, StepStatus.TIMEOUT)]
+    passed = [r for r in results if r.status == StepStatus.PASS]
+    cancelled = [r for r in results if r.status == StepStatus.CANCELLED]
+
+    if not failed:
+        return ""
+
+    fail = failed[-1]
+    step = fail.step
+
+    # Calculate file details if output exists
+    file_info = ""
+    if step and step.output_file.exists():
+        content = step.output_file.read_text(encoding="utf-8")
+        byte_count = len(content.encode("utf-8"))
+        line_count = len(content.splitlines())
+        file_info = f"  Output size: {byte_count} bytes ({line_count} lines)\n"
+    elif step:
+        file_info = "  Output file: not created\n"
+
+    elapsed = f"{fail.duration_seconds:.0f}s"
+
+    lines = [
+        f"ERROR: Roadmap pipeline halted at step '{step.id}' (attempt {fail.attempt}/2)",
+        f"  Gate failure: {fail.gate_failure_reason}",
+        f"  Output file: {step.output_file}",
+        file_info.rstrip(),
+        f"  Step timeout: {step.timeout_seconds}s | Elapsed: {elapsed}",
+        "",
+        f"Completed steps: {', '.join(f'{r.step.id} (PASS, attempt {r.attempt})' for r in passed) or 'none'}",
+        f"Failed step:     {step.id} ({fail.status.value}, attempt {fail.attempt})",
+    ]
+
+    # Collect skipped steps
+    all_step_ids = _get_all_step_ids(config)
+    executed_ids = {r.step.id for r in results}
+    skipped_ids = [sid for sid in all_step_ids if sid not in executed_ids]
+    if cancelled:
+        skipped_ids = [r.step.id for r in cancelled] + skipped_ids
+
+    if skipped_ids:
+        lines.append(f"Skipped steps:   {', '.join(skipped_ids)}")
+
+    lines.extend([
+        "",
+        "To retry from this step:",
+        f"  superclaude roadmap run {config.spec_file} --resume",
+        "",
+        "To inspect the failing output:",
+        f"  cat {step.output_file}",
+    ])
+
+    return "\n".join(lines)
+
+
+def _get_all_step_ids(config: RoadmapConfig) -> list[str]:
+    """Get all step IDs in pipeline order."""
+    agent_a = config.agents[0]
+    agent_b = config.agents[1] if len(config.agents) > 1 else config.agents[0]
+    return [
+        "extract",
+        f"generate-{agent_a.id}",
+        f"generate-{agent_b.id}",
+        "diff",
+        "debate",
+        "score",
+        "merge",
+        "test-strategy",
+    ]
+
+
+def _print_step_start(step: Step) -> None:
+    """Print progress output when a step starts."""
+    print(f"[roadmap] Starting step: {step.id}", flush=True)
+
+
+def _print_step_complete(step: Step, result: StepResult) -> None:
+    """Print progress output when a step completes."""
+    duration = f"{result.duration_seconds:.0f}s"
+    if result.status == StepStatus.PASS:
+        print(
+            f"[roadmap] Step {step.id}  PASS (attempt {result.attempt}, {duration})",
+            flush=True,
+        )
+    else:
+        print(
+            f"[roadmap] Step {step.id}  {result.status.value} (attempt {result.attempt}, {duration})",
+            flush=True,
+        )
+        if result.gate_failure_reason:
+            print(f"           Reason: {result.gate_failure_reason}", flush=True)
+
+
+def _dry_run_output(steps: list[Step | list[Step]]) -> None:
+    """Print step plan and gate criteria for --dry-run."""
+    step_num = 0
+    for entry in steps:
+        if isinstance(entry, list):
+            for s in entry:
+                step_num += 1
+                _print_step_plan(step_num, s, parallel=True)
+        else:
+            step_num += 1
+            _print_step_plan(step_num, entry)
+
+
+def _print_step_plan(num: int, step: Step, parallel: bool = False) -> None:
+    """Print a single step's plan entry."""
+    par_label = " (parallel)" if parallel else ""
+    print(f"Step {num}{par_label}: {step.id}")
+    print(f"  Output: {step.output_file}")
+    print(f"  Timeout: {step.timeout_seconds}s")
+    if step.model:
+        print(f"  Model: {step.model}")
+    if step.gate:
+        print(f"  Gate tier: {step.gate.enforcement_tier}")
+        print(f"  Gate min_lines: {step.gate.min_lines}")
+        if step.gate.required_frontmatter_fields:
+            print(f"  Gate frontmatter: {', '.join(step.gate.required_frontmatter_fields)}")
+        if step.gate.semantic_checks:
+            checks = [c.name for c in step.gate.semantic_checks]
+            print(f"  Semantic checks: {', '.join(checks)}")
+    print()
+
+
+def _save_state(config: RoadmapConfig, results: list[StepResult]) -> None:
+    """Write .roadmap-state.json to output_dir via atomic tmp + os.replace()."""
+    state_file = config.output_dir / ".roadmap-state.json"
+    spec_hash = hashlib.sha256(config.spec_file.read_bytes()).hexdigest()
+
+    state = {
+        "schema_version": 1,
+        "spec_file": str(config.spec_file),
+        "spec_hash": spec_hash,
+        "agents": [{"model": a.model, "persona": a.persona} for a in config.agents],
+        "depth": config.depth,
+        "last_run": datetime.now(timezone.utc).isoformat(),
+        "steps": {
+            r.step.id: {
+                "status": r.status.value,
+                "attempt": r.attempt,
+                "output_file": str(r.step.output_file),
+                "started_at": r.started_at.isoformat(),
+                "completed_at": r.finished_at.isoformat(),
+            }
+            for r in results
+            if r.step
+        },
+    }
+
+    write_state(state, state_file)
+
+
+def write_state(state: dict, path: Path) -> None:
+    """Write state dict to path atomically via tmp file + os.replace()."""
+    import os as _os
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(".tmp")
+    tmp.write_text(json.dumps(state, indent=2), encoding="utf-8")
+    _os.replace(str(tmp), str(path))
+
+
+def read_state(path: Path) -> dict | None:
+    """Read state from path with graceful recovery on missing/malformed files."""
+    if not path.exists():
+        return None
+    try:
+        text = path.read_text(encoding="utf-8")
+        if not text.strip():
+            return None
+        return json.loads(text)
+    except (json.JSONDecodeError, OSError):
+        return None
+
+
+def apply_decomposition_pass(deliverables: list[Deliverable]) -> list[Deliverable]:
+    """Post-generation decomposition pass for the roadmap pipeline.
+
+    Runs after deliverable generation, before output formatting.
+    Splits behavioral deliverables into Implement/Verify pairs.
+
+    Idempotent: running twice produces identical results because
+    already-decomposed deliverables (IDs ending .a/.b) are skipped.
+
+    Preserves milestone-internal ordering: deliverables within each
+    milestone maintain their relative order after decomposition.
+    """
+    return decompose_deliverables(deliverables)
+
+
+def execute_roadmap(config: RoadmapConfig, resume: bool = False) -> None:
+    """Execute the roadmap generation pipeline.
+
+    Builds the step list, handles --dry-run and --resume, then
+    delegates to execute_pipeline() with roadmap_run_step.
+    """
+    config.output_dir.mkdir(parents=True, exist_ok=True)
+
+    steps = _build_steps(config)
+
+    # --dry-run: print plan and exit
+    if config.dry_run:
+        _dry_run_output(steps)
+        return
+
+    # --resume: check which steps already pass their gates
+    if resume:
+        from ..pipeline.gates import gate_passed
+
+        steps = _apply_resume(steps, config, gate_passed)
+
+    # Execute pipeline
+    results = execute_pipeline(
+        steps=steps,
+        config=config,
+        run_step=roadmap_run_step,
+        on_step_start=_print_step_start,
+        on_step_complete=_print_step_complete,
+    )
+
+    # Save state
+    _save_state(config, results)
+
+    # Check for failures
+    failures = [r for r in results if r.status in (StepStatus.FAIL, StepStatus.TIMEOUT)]
+    if failures:
+        halt_msg = _format_halt_output(results, config)
+        print(halt_msg, file=sys.stderr)
+        sys.exit(1)
+
+    print(f"\n[roadmap] Pipeline complete: {len(results)} steps passed", flush=True)
+
+
+def _apply_resume(
+    steps: list[Step | list[Step]],
+    config: RoadmapConfig,
+    gate_fn: Callable,
+) -> list[Step | list[Step]]:
+    """Apply --resume logic: skip steps whose outputs already pass gates.
+
+    Also checks for stale spec detection.
+    """
+    state_file = config.output_dir / ".roadmap-state.json"
+    state = read_state(state_file)
+    force_extract = False
+    if state is not None:
+        saved_hash = state.get("spec_hash", "")
+        current_hash = hashlib.sha256(config.spec_file.read_bytes()).hexdigest()
+        if saved_hash and saved_hash != current_hash:
+            print(
+                f"WARNING: spec-file has changed since last run.\n"
+                f"  Last hash: {saved_hash[:12]}...\n"
+                f"  Current:   {current_hash[:12]}...\n"
+                f"Forcing re-run of extract step.",
+                file=sys.stderr,
+                flush=True,
+            )
+            force_extract = True
+
+    skipped = 0
+    result: list[Step | list[Step]] = []
+    found_failure = False
+
+    for entry in steps:
+        if found_failure:
+            # After first failing step, include all remaining steps
+            result.append(entry)
+            continue
+
+        if isinstance(entry, list):
+            # Parallel group: check all steps
+            all_pass = True
+            for s in entry:
+                if s.gate:
+                    passed, _reason = gate_fn(s.output_file, s.gate)
+                    if not passed:
+                        all_pass = False
+                        break
+                else:
+                    all_pass = False
+                    break
+            if all_pass:
+                skipped += len(entry)
+                print(f"[roadmap] Skipping {', '.join(s.id for s in entry)} (gates pass)", flush=True)
+            else:
+                found_failure = True
+                result.append(entry)
+        else:
+            # Force re-run of extract on stale spec
+            if force_extract and entry.id == "extract":
+                found_failure = True
+                result.append(entry)
+                continue
+
+            if entry.gate:
+                passed, _reason = gate_fn(entry.output_file, entry.gate)
+                if passed:
+                    skipped += 1
+                    print(f"[roadmap] Skipping {entry.id} (gate passes)", flush=True)
+                    continue
+            found_failure = True
+            result.append(entry)
+
+    if skipped > 0:
+        print(f"[roadmap] Skipped {skipped} steps (gates pass)", flush=True)
+
+    if not result:
+        print("[roadmap] All steps already pass gates. Nothing to do.", flush=True)
+
+    return result

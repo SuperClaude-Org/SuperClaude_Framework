@@ -1,0 +1,10 @@
+return_contract:
+  merged_output_path: "/config/workspace/SuperClaude_Framework/.dev/benchmark/adversarial-output/variant-a-vs-b/merged-adversarial-analysis.md"
+  convergence_score: 0.6364
+  artifacts_dir: "/config/workspace/SuperClaude_Framework/.dev/benchmark/adversarial-output/variant-a-vs-b/adversarial"
+  status: "success"
+  base_variant: "original:variant-2"
+  unresolved_conflicts: 4
+  fallback_mode: false
+  failure_stage: null
+  invocation_method: "skill-direct"

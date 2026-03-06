@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "spec_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/2.09-adversarial-v2/05-adversarial2.0-final-refactor-spec.md",
+  "spec_hash": "88c491d9bc4259382ed99cb99b4c074dcaa8a65e51ad0b05e4e23a108ae80bde",
+  "agents": [
+    {
+      "model": "opus",
+      "persona": "architect"
+    }
+  ],
+  "depth": "standard",
+  "last_run": "2026-03-05T19:32:40.435634+00:00",
+  "steps": {
+    "extract": {
+      "status": "FAIL",
+      "attempt": 2,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/benchmark/round-1/tier-a/run-1/extraction.md",
+      "started_at": "2026-03-05T19:32:39.433369+00:00",
+      "completed_at": "2026-03-05T19:32:40.435181+00:00"
+    }
+  }
+}

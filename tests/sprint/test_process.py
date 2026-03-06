@@ -1,7 +1,9 @@
 """Tests for sprint process management — command construction, env, signals."""
 
+import builtins
 import signal
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 from superclaude.cli.sprint.models import Phase, SprintConfig
 from superclaude.cli.sprint.process import ClaudeProcess, SignalHandler
@@ -31,7 +33,7 @@ class TestClaudeProcess:
         assert "--print" in cmd
         assert "--no-session-persistence" in cmd
         assert "--output-format" in cmd
-        assert "text" in cmd
+        assert "stream-json" in cmd
         assert "--max-turns" in cmd
         assert "50" in cmd
 
@@ -54,12 +56,11 @@ class TestClaudeProcess:
         cmd = proc.build_command()
         assert "--model" not in cmd
 
-    def test_build_env_claudecode(self):
+    def test_build_env_claudecode_removed(self):
         config = _make_config()
         proc = ClaudeProcess(config, config.phases[0])
         env = proc.build_env()
-        assert "CLAUDECODE" in env
-        assert env["CLAUDECODE"] == ""
+        assert "CLAUDECODE" not in env
 
     def test_build_prompt_contains_task_unified(self):
         config = _make_config()
@@ -83,6 +84,50 @@ class TestClaudeProcess:
         config = _make_config(max_turns=100)
         proc = ClaudeProcess(config, config.phases[0])
         assert proc.timeout_seconds == 12300
+
+
+class TestClaudeProcessPlatformFallback:
+    def test_start_without_setpgrp_fallback(self, tmp_path):
+        config = _make_config(
+            release_dir=tmp_path,
+            phases=[Phase(number=1, file=tmp_path / "phase-1-tasklist.md")],
+        )
+        config.phases[0].file.write_text("# Phase 1\n")
+        proc = ClaudeProcess(config, config.phases[0])
+
+        fake_process = MagicMock()
+        with (
+            patch("superclaude.cli.pipeline.process.hasattr", side_effect=lambda obj, name: False if obj.__name__ == "os" and name == "setpgrp" else builtins.hasattr(obj, name)),
+            patch("superclaude.cli.pipeline.process.subprocess.Popen", return_value=fake_process) as mock_popen,
+        ):
+            proc.start()
+
+        kwargs = mock_popen.call_args.kwargs
+        assert "preexec_fn" not in kwargs
+
+    def test_terminate_non_unix_fallback_calls_process_methods(self, tmp_path):
+        config = _make_config(
+            release_dir=tmp_path,
+            phases=[Phase(number=1, file=tmp_path / "phase-1-tasklist.md")],
+        )
+        config.phases[0].file.write_text("# Phase 1\n")
+        proc = ClaudeProcess(config, config.phases[0])
+
+        fake_process = MagicMock()
+        fake_process.pid = 43210
+        fake_process.poll.return_value = None
+        proc._process = fake_process
+
+        with patch(
+            "superclaude.cli.pipeline.process.hasattr",
+            side_effect=lambda obj, name: False
+            if obj.__name__ == "os" and name in {"getpgid", "killpg"}
+            else builtins.hasattr(obj, name),
+        ):
+            proc.terminate()
+
+        fake_process.terminate.assert_called_once()
+        fake_process.wait.assert_called()
 
 
 class TestSignalHandler:

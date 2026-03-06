@@ -110,10 +110,10 @@ class TestGracefulShutdown:
                 slow_proc._terminated = True  # poll() now returns -15
 
         with (
-            patch("superclaude.cli.sprint.process.subprocess.Popen", side_effect=popen_factory),
-            patch("superclaude.cli.sprint.process.os.setpgrp"),
-            patch("superclaude.cli.sprint.process.os.getpgid", return_value=99999),
-            patch("superclaude.cli.sprint.process.os.killpg"),
+            patch("superclaude.cli.pipeline.process.subprocess.Popen", side_effect=popen_factory),
+            patch("superclaude.cli.pipeline.process.os.setpgrp"),
+            patch("superclaude.cli.pipeline.process.os.getpgid", return_value=99999),
+            patch("superclaude.cli.pipeline.process.os.killpg"),
             patch("superclaude.cli.sprint.notify._notify"),
             patch("superclaude.cli.sprint.executor.update_tail_pane"),
             patch("superclaude.cli.sprint.executor.time.sleep", side_effect=fake_sleep),
@@ -175,9 +175,9 @@ class TestGracefulShutdown:
         captured_results = []
 
         with (
-            patch("superclaude.cli.sprint.process.subprocess.Popen",
+            patch("superclaude.cli.pipeline.process.subprocess.Popen",
                   side_effect=lambda *a, **kw: _FailPopen()),
-            patch("superclaude.cli.sprint.process.os.setpgrp"),
+            patch("superclaude.cli.pipeline.process.os.setpgrp"),
             patch("superclaude.cli.sprint.notify._notify"),
             patch("superclaude.cli.sprint.executor.SprintLogger") as mock_logger_cls,
         ):
@@ -217,11 +217,11 @@ class TestGracefulShutdown:
         timer = threading.Timer(0.3, send_sigterm)
 
         with (
-            patch("superclaude.cli.sprint.process.subprocess.Popen",
+            patch("superclaude.cli.pipeline.process.subprocess.Popen",
                   side_effect=popen_factory),
-            patch("superclaude.cli.sprint.process.os.setpgrp"),
-            patch("superclaude.cli.sprint.process.os.getpgid", return_value=99999),
-            patch("superclaude.cli.sprint.process.os.killpg"),
+            patch("superclaude.cli.pipeline.process.os.setpgrp"),
+            patch("superclaude.cli.pipeline.process.os.getpgid", return_value=99999),
+            patch("superclaude.cli.pipeline.process.os.killpg"),
             patch("superclaude.cli.sprint.notify._notify"),
             patch("superclaude.cli.sprint.executor.update_tail_pane"),
             patch("superclaude.cli.sprint.executor.SprintLogger") as mock_logger_cls,
@@ -308,10 +308,10 @@ class TestGracefulShutdown:
         timer = threading.Timer(0.5, send_sigint)
 
         with (
-            patch("superclaude.cli.sprint.process.subprocess.Popen", side_effect=popen_factory),
-            patch("superclaude.cli.sprint.process.os.setpgrp"),
-            patch("superclaude.cli.sprint.process.os.getpgid", return_value=11111),
-            patch("superclaude.cli.sprint.process.os.killpg"),
+            patch("superclaude.cli.pipeline.process.subprocess.Popen", side_effect=popen_factory),
+            patch("superclaude.cli.pipeline.process.os.setpgrp"),
+            patch("superclaude.cli.pipeline.process.os.getpgid", return_value=11111),
+            patch("superclaude.cli.pipeline.process.os.killpg"),
             patch("superclaude.cli.sprint.notify._notify"),
             patch("superclaude.cli.sprint.executor.update_tail_pane"),
             patch("superclaude.cli.sprint.executor.SprintLogger") as mock_logger_cls,

@@ -18,21 +18,21 @@ class TestSkillPathConvention:
     """Verify skill is at correct SuperClaude path."""
 
     def test_source_skill_path(self):
-        """Source skill should be at src/superclaude/skills/sc-roadmap/SKILL.md."""
+        """Source skill should be at src/superclaude/skills/sc-roadmap-protocol/SKILL.md."""
         expected = os.path.join(
             os.path.dirname(__file__),
             "..", "..", "..",
-            "src", "superclaude", "skills", "sc-roadmap", "SKILL.md",
+            "src", "superclaude", "skills", "sc-roadmap-protocol", "SKILL.md",
         )
         expected = os.path.normpath(expected)
         assert os.path.exists(expected), f"Source SKILL.md not found at: {expected}"
 
     def test_installed_skill_path(self):
-        """Installed skill should be at .claude/skills/sc-roadmap/SKILL.md."""
+        """Installed skill should be at .claude/skills/sc-roadmap-protocol/SKILL.md."""
         expected = os.path.join(
             os.path.dirname(__file__),
             "..", "..", "..",
-            ".claude", "skills", "sc-roadmap", "SKILL.md",
+            ".claude", "skills", "sc-roadmap-protocol", "SKILL.md",
         )
         expected = os.path.normpath(expected)
         # May not exist if sync hasn't been run

@@ -114,6 +114,12 @@ markers = [
     "self_check: Post-implementation validation",
     "reflexion: Error learning and prevention",
     "complexity: Task complexity level (simple, medium, complex)",
+    "diagnostic: Sprint diagnostic framework tests",
+    "diagnostic_l0: Level 0 - Pipeline smoke tests",
+    "diagnostic_l1: Level 1 - Component tests",
+    "diagnostic_l2: Level 2 - Integration tests",
+    "diagnostic_l3: Level 3 - System tests",
+    "diagnostic_negative: Negative / failure mode tests",
 ]
 
 [tool.coverage.run]

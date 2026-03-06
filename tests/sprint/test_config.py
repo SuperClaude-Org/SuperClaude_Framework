@@ -28,23 +28,36 @@ class TestPhaseFilePattern:
             ("phase-2-tasklist.md", 2),
             ("p1-tasklist.md", 1),
             ("p3-tasklist.md", 3),
-            ("Phase_1_tasklist.md", 1),
-            ("Phase_4_tasklist.md", 4),
-            ("tasklist-P1.md", 1),
+            ("phase_1_tasklist.md", 1),
+            ("phase_4_tasklist.md", 4),
+            ("tasklist-p1.md", 1),
             ("tasklist-p2.md", 2),
-            ("phase1-tasklist.md", 1),
         ],
     )
     def test_matches_naming_conventions(self, filename, expected_num):
         m = PHASE_FILE_PATTERN.search(filename)
         assert m is not None, f"Pattern did not match: {filename}"
-        num = int(m.group(1) or m.group(2))
+        num = int(next(g for g in m.groups() if g is not None))
         assert num == expected_num
 
     def test_no_match_irrelevant_files(self):
         assert PHASE_FILE_PATTERN.search("README.md") is None
         assert PHASE_FILE_PATTERN.search("tasklist.md") is None
         assert PHASE_FILE_PATTERN.search("notes.txt") is None
+
+    @pytest.mark.parametrize(
+        "filename",
+        [
+            "phase1-tasklist.md",
+            "phase-1_tasklist.md",
+            "tasklist-p-1.md",
+            "tasklist_phase_1.md",
+            "phase-1-tasklist-extra.md",
+            "xphase-1-tasklist.md",
+        ],
+    )
+    def test_rejects_near_match_non_canonical_forms(self, filename):
+        assert PHASE_FILE_PATTERN.search(filename) is None
 
 
 # ---------------------------------------------------------------------------
@@ -147,8 +160,8 @@ class TestValidatePhases:
         for p in phases:
             p.file.write_text("content")
 
-        msgs = validate_phases(phases, start=1, end=2)
-        assert msgs == []
+        buckets = validate_phases(phases, start=1, end=2)
+        assert buckets == {"errors": [], "warnings": []}
 
     def test_missing_file(self, tmp_path):
         phases = [
@@ -156,10 +169,11 @@ class TestValidatePhases:
         ]
         # Don't create the file
 
-        msgs = validate_phases(phases, start=1, end=1)
-        assert len(msgs) == 1
-        assert "ERROR" in msgs[0]
-        assert "missing" in msgs[0]
+        buckets = validate_phases(phases, start=1, end=1)
+        assert len(buckets["errors"]) == 1
+        assert "ERROR" in buckets["errors"][0]
+        assert "missing" in buckets["errors"][0]
+        assert buckets["warnings"] == []
 
     def test_gap_detection(self, tmp_path):
         phases = [
@@ -170,11 +184,12 @@ class TestValidatePhases:
         for p in phases:
             p.file.write_text("content")
 
-        msgs = validate_phases(phases, start=1, end=4)
-        assert len(msgs) == 1
-        assert "WARN" in msgs[0]
-        assert "Gap" in msgs[0]
-        assert "Phase 2 -> Phase 4" in msgs[0]
+        buckets = validate_phases(phases, start=1, end=4)
+        assert buckets["errors"] == []
+        assert len(buckets["warnings"]) == 1
+        assert "WARN" in buckets["warnings"][0]
+        assert "Gap" in buckets["warnings"][0]
+        assert "Phase 2 -> Phase 4" in buckets["warnings"][0]
 
 
 # ---------------------------------------------------------------------------

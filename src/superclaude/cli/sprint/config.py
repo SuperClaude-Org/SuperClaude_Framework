@@ -9,12 +9,16 @@ import click
 
 from .models import Phase, SprintConfig
 
-# Matches: phase-1-tasklist.md, p1-tasklist.md, phase1-tasklist.md,
-# Phase_1_tasklist.md, tasklist-P1.md, tasklist-p1.md
+# Canonical phase filename conventions (case-insensitive):
+# 1) phase-1-tasklist.md
+# 2) p1-tasklist.md
+# 3) phase_1_tasklist.md
+# 4) tasklist-p1.md
 PHASE_FILE_PATTERN = re.compile(
-    r"(?:phase|p)[-_]?(\d+)[-_]tasklist[^\s|)]*\.md"
-    r"|"
-    r"tasklist[-_](?:phase|p)[-_]?(\d+)[^\s|)]*\.md",
+    r"(?<![A-Za-z0-9])(?:phase-(\d+)-tasklist\.md"
+    r"|p(\d+)-tasklist\.md"
+    r"|phase_(\d+)_tasklist\.md"
+    r"|tasklist-p(\d+)\.md)(?![A-Za-z0-9])",
     re.IGNORECASE,
 )
 
@@ -33,7 +37,7 @@ def discover_phases(index_path: Path) -> list[Phase]:
     # Strategy 1: parse index file
     index_text = index_path.read_text(errors="replace")
     for match in PHASE_FILE_PATTERN.finditer(index_text):
-        num = int(match.group(1) or match.group(2))
+        num = int(next(g for g in match.groups() if g is not None))
         filename = match.group(0)
         filepath = index_dir / filename
         if filepath.exists() and num not in phases:
@@ -46,7 +50,7 @@ def discover_phases(index_path: Path) -> list[Phase]:
                 continue
             m = PHASE_FILE_PATTERN.search(f.name)
             if m:
-                num = int(m.group(1) or m.group(2))
+                num = int(next(g for g in m.groups() if g is not None))
                 if num not in phases:
                     phases[num] = Phase(number=num, file=f)
 
@@ -71,28 +75,29 @@ def validate_phases(
     phases: list[Phase],
     start: int,
     end: int,
-) -> list[str]:
+) -> dict[str, list[str]]:
     """Validate phase files exist and check for gaps.
 
-    Returns list of warning/error messages.
+    Returns separated buckets with keys: errors, warnings.
     """
-    messages = []
+    errors: list[str] = []
+    warnings: list[str] = []
     active = [p for p in phases if start <= p.number <= end]
 
     # Check files exist
     for p in active:
         if not p.file.exists():
-            messages.append(f"ERROR: Phase {p.number} file missing: {p.file}")
+            errors.append(f"ERROR: Phase {p.number} file missing: {p.file}")
 
     # Check for gaps
     numbers = [p.number for p in active]
     for i in range(1, len(numbers)):
         if numbers[i] != numbers[i - 1] + 1:
-            messages.append(
+            warnings.append(
                 f"WARN: Gap in sequence: Phase {numbers[i-1]} -> Phase {numbers[i]}"
             )
 
-    return messages
+    return {"errors": errors, "warnings": warnings}
 
 
 def load_sprint_config(
@@ -103,6 +108,9 @@ def load_sprint_config(
     model: str = "",
     dry_run: bool = False,
     permission_flag: str = "--dangerously-skip-permissions",
+    debug: bool = False,
+    stall_timeout: int = 0,
+    stall_action: str = "warn",
 ) -> SprintConfig:
     """Load and validate a complete sprint configuration."""
     index_path = Path(index_path).resolve()
@@ -113,8 +121,8 @@ def load_sprint_config(
     phases = discover_phases(index_path)
     if not phases:
         raise click.ClickException(
-            "No phase files discovered. Expected filenames like: "
-            "phase-1-tasklist.md, p1-tasklist.md, tasklist-P1.md"
+            "No phase files discovered. Expected canonical filenames like: "
+            "phase-1-tasklist.md, p1-tasklist.md, phase_1_tasklist.md, tasklist-p1.md"
         )
 
     # Enrich phases with names
@@ -126,16 +134,16 @@ def load_sprint_config(
         end_phase = max(p.number for p in phases)
 
     # Validate
-    messages = validate_phases(phases, start_phase, end_phase)
-    errors = [m for m in messages if m.startswith("ERROR")]
+    validation = validate_phases(phases, start_phase, end_phase)
+    errors = validation["errors"]
+    warnings = validation["warnings"]
     if errors:
         for e in errors:
             click.echo(e, err=True)
         raise click.ClickException(f"{len(errors)} phase file(s) missing.")
 
-    for m in messages:
-        if m.startswith("WARN"):
-            click.echo(m, err=True)
+    for w in warnings:
+        click.echo(w, err=True)
 
     config = SprintConfig(
         index_path=index_path,
@@ -147,6 +155,9 @@ def load_sprint_config(
         model=model,
         dry_run=dry_run,
         permission_flag=permission_flag,
+        debug=debug,
+        stall_timeout=stall_timeout,
+        stall_action=stall_action,
     )
 
     # Validate that the requested range yields at least one active phase

@@ -86,6 +86,25 @@ def sprint_group():
     hidden=True,
     help="Internal: tmux session name for tail pane updates (set by launch_in_tmux)",
 )
+@click.option(
+    "--debug",
+    "debug_mode",
+    is_flag=True,
+    default=False,
+    help="Enable debug logging to results/debug.log",
+)
+@click.option(
+    "--stall-timeout",
+    type=int,
+    default=0,
+    help="Stall timeout in seconds (0 = disabled, default: 0)",
+)
+@click.option(
+    "--stall-action",
+    type=click.Choice(["warn", "kill"]),
+    default="warn",
+    help="Action on stall detection (default: warn)",
+)
 def run(
     index_path: Path,
     start_phase: int,
@@ -96,6 +115,9 @@ def run(
     no_tmux: bool,
     permission_flag: str,
     tmux_session_name: str,
+    debug_mode: bool,
+    stall_timeout: int,
+    stall_action: str,
 ):
     """Execute a sprint from a tasklist index.
 
@@ -120,6 +142,9 @@ def run(
         model=model or os.environ.get("CLAUDE_MODEL", ""),
         dry_run=dry_run,
         permission_flag=permission_flag,
+        debug=debug_mode,
+        stall_timeout=stall_timeout,
+        stall_action=stall_action,
     )
 
     # Thread tmux session name into config when relaunched by launch_in_tmux
