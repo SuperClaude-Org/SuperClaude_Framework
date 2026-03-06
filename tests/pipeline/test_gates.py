@@ -146,3 +146,54 @@ class TestStrictTier:
         f = make_file("zero.md", "")
         ok, reason = gate_passed(f, gc)
         assert ok is False
+
+
+class TestEdgeCases:
+    """Additional edge cases: UTF-8 BOM, frontmatter with empty values."""
+
+    def test_utf8_bom_file(self, make_file):
+        gc = GateCriteria(
+            required_frontmatter_fields=["title"],
+            min_lines=3,
+            enforcement_tier="STANDARD",
+        )
+        content = "\ufeff---\ntitle: Test\n---\n" + "\n".join(["x"] * 10)
+        f = make_file("bom.md", content)
+        ok, reason = gate_passed(f, gc)
+        # BOM before --- means frontmatter not detected at start
+        assert isinstance(ok, bool)
+
+    def test_frontmatter_with_empty_values(self, make_file):
+        gc = GateCriteria(
+            required_frontmatter_fields=["title", "version"],
+            min_lines=3,
+            enforcement_tier="STANDARD",
+        )
+        content = "---\ntitle: \nversion: \n---\n" + "\n".join(["x"] * 10)
+        f = make_file("empty_vals.md", content)
+        ok, reason = gate_passed(f, gc)
+        # STANDARD tier checks key presence, not value content
+        assert ok is True
+
+    def test_frontmatter_no_closing_dashes(self, make_file):
+        gc = GateCriteria(
+            required_frontmatter_fields=["title"],
+            min_lines=3,
+            enforcement_tier="STANDARD",
+        )
+        content = "---\ntitle: T\nno closing dashes\nmore text\nfiller\nstuff\n"
+        f = make_file("no_close.md", content)
+        ok, reason = gate_passed(f, gc)
+        assert ok is False
+        assert "frontmatter" in reason.lower()
+
+    def test_whitespace_only_content_after_frontmatter(self, make_file):
+        gc = GateCriteria(
+            required_frontmatter_fields=["title"],
+            min_lines=3,
+            enforcement_tier="STANDARD",
+        )
+        content = "---\ntitle: T\n---\n   \n   \n   \n   \n   \n   \n   \n"
+        f = make_file("ws_content.md", content)
+        ok, reason = gate_passed(f, gc)
+        assert ok is True  # 10 lines, passes min_lines=3

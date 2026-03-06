@@ -93,8 +93,8 @@ class TestE2ESuccess:
 
         with (
             patch("superclaude.cli.sprint.executor.shutil.which", return_value="/usr/bin/claude"),
-            patch("superclaude.cli.sprint.process.subprocess.Popen", side_effect=factory),
-            patch("superclaude.cli.sprint.process.os.setpgrp"),
+            patch("superclaude.cli.pipeline.process.subprocess.Popen", side_effect=factory),
+            patch("superclaude.cli.pipeline.process.os.setpgrp"),
             patch("superclaude.cli.sprint.notify._notify"),
         ):
             # Should not raise SystemExit since all pass
@@ -110,8 +110,8 @@ class TestE2ESuccess:
 
         with (
             patch("superclaude.cli.sprint.executor.shutil.which", return_value="/usr/bin/claude"),
-            patch("superclaude.cli.sprint.process.subprocess.Popen", side_effect=factory),
-            patch("superclaude.cli.sprint.process.os.setpgrp"),
+            patch("superclaude.cli.pipeline.process.subprocess.Popen", side_effect=factory),
+            patch("superclaude.cli.pipeline.process.os.setpgrp"),
             patch("superclaude.cli.sprint.notify._notify"),
         ):
             execute_sprint(config)
@@ -151,8 +151,8 @@ class TestE2ESuccess:
 
         with (
             patch("superclaude.cli.sprint.executor.shutil.which", return_value="/usr/bin/claude"),
-            patch("superclaude.cli.sprint.process.subprocess.Popen", side_effect=factory),
-            patch("superclaude.cli.sprint.process.os.setpgrp"),
+            patch("superclaude.cli.pipeline.process.subprocess.Popen", side_effect=factory),
+            patch("superclaude.cli.pipeline.process.os.setpgrp"),
             patch("superclaude.cli.sprint.notify._notify"),
         ):
             execute_sprint(config)
@@ -168,8 +168,8 @@ class TestE2ESuccess:
 
         with (
             patch("superclaude.cli.sprint.executor.shutil.which", return_value="/usr/bin/claude"),
-            patch("superclaude.cli.sprint.process.subprocess.Popen", side_effect=factory),
-            patch("superclaude.cli.sprint.process.os.setpgrp"),
+            patch("superclaude.cli.pipeline.process.subprocess.Popen", side_effect=factory),
+            patch("superclaude.cli.pipeline.process.os.setpgrp"),
             patch("superclaude.cli.sprint.notify._notify"),
         ):
             execute_sprint(config)
@@ -195,8 +195,8 @@ class TestE2ESuccess:
 
         with (
             patch("superclaude.cli.sprint.executor.shutil.which", return_value="/usr/bin/claude"),
-            patch("superclaude.cli.sprint.process.subprocess.Popen", side_effect=factory),
-            patch("superclaude.cli.sprint.process.os.setpgrp"),
+            patch("superclaude.cli.pipeline.process.subprocess.Popen", side_effect=factory),
+            patch("superclaude.cli.pipeline.process.os.setpgrp"),
             patch("superclaude.cli.sprint.notify._notify"),
         ):
             execute_sprint(config)
@@ -210,8 +210,8 @@ class TestE2ESuccess:
 
         with (
             patch("superclaude.cli.sprint.executor.shutil.which", return_value="/usr/bin/claude"),
-            patch("superclaude.cli.sprint.process.subprocess.Popen", side_effect=factory),
-            patch("superclaude.cli.sprint.process.os.setpgrp"),
+            patch("superclaude.cli.pipeline.process.subprocess.Popen", side_effect=factory),
+            patch("superclaude.cli.pipeline.process.os.setpgrp"),
             patch("superclaude.cli.sprint.notify._notify"),
         ):
             execute_sprint(config)

@@ -116,8 +116,8 @@ class TestHaltAndResume:
         captured_results = []
 
         with (
-            patch("superclaude.cli.sprint.process.subprocess.Popen", side_effect=factory),
-            patch("superclaude.cli.sprint.process.os.setpgrp"),
+            patch("superclaude.cli.pipeline.process.subprocess.Popen", side_effect=factory),
+            patch("superclaude.cli.pipeline.process.os.setpgrp"),
             patch("superclaude.cli.sprint.notify._notify"),
             patch("superclaude.cli.sprint.executor.SprintLogger") as mock_logger_cls,
         ):
@@ -140,8 +140,8 @@ class TestHaltAndResume:
         captured_results = []
 
         with (
-            patch("superclaude.cli.sprint.process.subprocess.Popen", side_effect=factory),
-            patch("superclaude.cli.sprint.process.os.setpgrp"),
+            patch("superclaude.cli.pipeline.process.subprocess.Popen", side_effect=factory),
+            patch("superclaude.cli.pipeline.process.os.setpgrp"),
             patch("superclaude.cli.sprint.notify._notify"),
             patch("superclaude.cli.sprint.executor.SprintLogger") as mock_logger_cls,
         ):
@@ -164,8 +164,8 @@ class TestHaltAndResume:
         captured_results = []
 
         with (
-            patch("superclaude.cli.sprint.process.subprocess.Popen", side_effect=factory),
-            patch("superclaude.cli.sprint.process.os.setpgrp"),
+            patch("superclaude.cli.pipeline.process.subprocess.Popen", side_effect=factory),
+            patch("superclaude.cli.pipeline.process.os.setpgrp"),
             patch("superclaude.cli.sprint.notify._notify"),
             patch("superclaude.cli.sprint.executor.SprintLogger") as mock_logger_cls,
         ):
@@ -190,8 +190,8 @@ class TestHaltAndResume:
         captured_results = []
 
         with (
-            patch("superclaude.cli.sprint.process.subprocess.Popen", side_effect=factory),
-            patch("superclaude.cli.sprint.process.os.setpgrp"),
+            patch("superclaude.cli.pipeline.process.subprocess.Popen", side_effect=factory),
+            patch("superclaude.cli.pipeline.process.os.setpgrp"),
             patch("superclaude.cli.sprint.notify._notify"),
             patch("superclaude.cli.sprint.executor.SprintLogger") as mock_logger_cls,
         ):
@@ -217,8 +217,8 @@ class TestHaltAndResume:
         captured_results = []
 
         with (
-            patch("superclaude.cli.sprint.process.subprocess.Popen", side_effect=factory),
-            patch("superclaude.cli.sprint.process.os.setpgrp"),
+            patch("superclaude.cli.pipeline.process.subprocess.Popen", side_effect=factory),
+            patch("superclaude.cli.pipeline.process.os.setpgrp"),
             patch("superclaude.cli.sprint.notify._notify"),
             patch("superclaude.cli.sprint.executor.SprintLogger") as mock_logger_cls,
         ):

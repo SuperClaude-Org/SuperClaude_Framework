@@ -158,3 +158,36 @@ class TestCancelCheck:
         results = execute_pipeline(steps=steps, config=cfg, run_step=runner, cancel_check=cancel)
         # First step completes, second sees cancel
         assert len(results) <= 2
+
+
+class TestRetryExhaustion:
+    def test_retry_exhaustion_triggers_halt(self, tmp_path):
+        """All retries fail gate -> result is FAIL with correct attempt count -> pipeline halts."""
+        cfg = PipelineConfig(work_dir=tmp_path)
+        gate = GateCriteria(required_frontmatter_fields=["title"], min_lines=5)
+        step1 = Step(id="s1", prompt="p", output_file=tmp_path / "s1.md", gate=gate, timeout_seconds=60, retry_limit=2)
+        step2 = Step(id="s2", prompt="p", output_file=tmp_path / "s2.md", gate=None, timeout_seconds=60)
+
+        runner, calls = _make_runner(write_output=False)
+        results = execute_pipeline(steps=[step1, step2], config=cfg, run_step=runner)
+
+        # retry_limit=2 means original + 2 retries = 3 attempts
+        assert len(results) == 1  # halted, s2 never ran
+        assert results[0].status == StepStatus.FAIL
+        assert results[0].attempt == 3
+        assert calls == ["s1", "s1", "s1"]
+
+    def test_all_steps_pass_no_retry(self, tmp_path):
+        """When all steps pass, no retries happen and all complete."""
+        cfg = PipelineConfig(work_dir=tmp_path)
+        gate = GateCriteria(required_frontmatter_fields=["title"], min_lines=5)
+        steps = [
+            Step(id="s1", prompt="p", output_file=tmp_path / "o1.md", gate=gate, timeout_seconds=60, retry_limit=2),
+            Step(id="s2", prompt="p", output_file=tmp_path / "o2.md", gate=gate, timeout_seconds=60, retry_limit=2),
+        ]
+        runner, calls = _make_runner()
+        results = execute_pipeline(steps=steps, config=cfg, run_step=runner)
+        assert len(results) == 2
+        assert all(r.status == StepStatus.PASS for r in results)
+        assert all(r.attempt == 1 for r in results)
+        assert calls == ["s1", "s2"]

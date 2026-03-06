@@ -275,8 +275,8 @@ class TestExecuteSprintIntegrationCoverage:
         captured = []
         with (
             patch("superclaude.cli.sprint.executor.shutil.which", return_value="/usr/bin/claude"),
-            patch("superclaude.cli.sprint.process.subprocess.Popen", side_effect=_factory),
-            patch("superclaude.cli.sprint.process.os.setpgrp"),
+            patch("superclaude.cli.pipeline.process.subprocess.Popen", side_effect=_factory),
+            patch("superclaude.cli.pipeline.process.os.setpgrp"),
             patch("superclaude.cli.sprint.notify._notify"),
             patch("superclaude.cli.sprint.executor.SprintLogger") as logger_cls,
         ):
@@ -315,8 +315,8 @@ class TestExecuteSprintIntegrationCoverage:
         captured = []
         with (
             patch("superclaude.cli.sprint.executor.shutil.which", return_value="/usr/bin/claude"),
-            patch("superclaude.cli.sprint.process.subprocess.Popen", side_effect=_factory),
-            patch("superclaude.cli.sprint.process.os.setpgrp"),
+            patch("superclaude.cli.pipeline.process.subprocess.Popen", side_effect=_factory),
+            patch("superclaude.cli.pipeline.process.os.setpgrp"),
             patch("superclaude.cli.sprint.notify._notify"),
             patch("superclaude.cli.sprint.executor.SprintLogger") as logger_cls,
         ):
@@ -361,10 +361,10 @@ class TestExecuteSprintIntegrationCoverage:
         captured = []
         with (
             patch("superclaude.cli.sprint.executor.shutil.which", return_value="/usr/bin/claude"),
-            patch("superclaude.cli.sprint.process.subprocess.Popen", side_effect=_factory),
-            patch("superclaude.cli.sprint.process.os.setpgrp"),
-            patch("superclaude.cli.sprint.process.os.getpgid", return_value=1003),
-            patch("superclaude.cli.sprint.process.os.killpg"),
+            patch("superclaude.cli.pipeline.process.subprocess.Popen", side_effect=_factory),
+            patch("superclaude.cli.pipeline.process.os.setpgrp"),
+            patch("superclaude.cli.pipeline.process.os.getpgid", return_value=1003),
+            patch("superclaude.cli.pipeline.process.os.killpg"),
             patch("superclaude.cli.sprint.notify._notify"),
             patch("superclaude.cli.sprint.executor.time.monotonic", side_effect=_fast_monotonic),
             patch("superclaude.cli.sprint.executor.time.sleep"),
@@ -423,10 +423,10 @@ class TestExecuteSprintIntegrationCoverage:
         captured = []
         with (
             patch("superclaude.cli.sprint.executor.shutil.which", return_value="/usr/bin/claude"),
-            patch("superclaude.cli.sprint.process.subprocess.Popen", side_effect=_factory),
-            patch("superclaude.cli.sprint.process.os.setpgrp"),
-            patch("superclaude.cli.sprint.process.os.getpgid", return_value=1004),
-            patch("superclaude.cli.sprint.process.os.killpg"),
+            patch("superclaude.cli.pipeline.process.subprocess.Popen", side_effect=_factory),
+            patch("superclaude.cli.pipeline.process.os.setpgrp"),
+            patch("superclaude.cli.pipeline.process.os.getpgid", return_value=1004),
+            patch("superclaude.cli.pipeline.process.os.killpg"),
             patch("superclaude.cli.sprint.notify._notify"),
             patch("superclaude.cli.sprint.executor.SignalHandler", _TrackingSignalHandler),
             patch("superclaude.cli.sprint.executor.time.sleep", side_effect=_sleep),

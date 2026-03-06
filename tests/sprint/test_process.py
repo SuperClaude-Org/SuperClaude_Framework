@@ -97,8 +97,8 @@ class TestClaudeProcessPlatformFallback:
 
         fake_process = MagicMock()
         with (
-            patch("superclaude.cli.sprint.process.hasattr", side_effect=lambda obj, name: False if obj.__name__ == "os" and name == "setpgrp" else builtins.hasattr(obj, name)),
-            patch("superclaude.cli.sprint.process.subprocess.Popen", return_value=fake_process) as mock_popen,
+            patch("superclaude.cli.pipeline.process.hasattr", side_effect=lambda obj, name: False if obj.__name__ == "os" and name == "setpgrp" else builtins.hasattr(obj, name)),
+            patch("superclaude.cli.pipeline.process.subprocess.Popen", return_value=fake_process) as mock_popen,
         ):
             proc.start()
 
@@ -119,7 +119,7 @@ class TestClaudeProcessPlatformFallback:
         proc._process = fake_process
 
         with patch(
-            "superclaude.cli.sprint.process.hasattr",
+            "superclaude.cli.pipeline.process.hasattr",
             side_effect=lambda obj, name: False
             if obj.__name__ == "os" and name in {"getpgid", "killpg"}
             else builtins.hasattr(obj, name),
