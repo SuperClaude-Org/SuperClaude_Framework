@@ -1,0 +1,115 @@
+name: Pull Sync from Framework
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  sync-and-isolate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Plugin Repository (Target)
+        uses: actions/checkout@v4
+        with:
+          path: plugin-repo
+
+      - name: Check for Framework updates
+        id: check-updates
+        run: |
+          FRAMEWORK_HEAD=$(git ls-remote https://github.com/SuperClaude-Org/SuperClaude_Framework HEAD | cut -f1)
+          echo "Current framework HEAD: $FRAMEWORK_HEAD"
+          echo "framework-head=$FRAMEWORK_HEAD" >> $GITHUB_OUTPUT
+
+          LAST_SYNCED=""
+          if [ -f "plugin-repo/docs/.framework-sync-commit" ]; then
+            LAST_SYNCED=$(cat plugin-repo/docs/.framework-sync-commit)
+            echo "Last synced commit: $LAST_SYNCED"
+          else
+            echo "No previous sync state - will run sync"
+          fi
+
+          if [ "$FRAMEWORK_HEAD" = "$LAST_SYNCED" ] && [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
+            echo "✅ Framework is up to date - skipping sync"
+            echo "has-updates=false" >> $GITHUB_OUTPUT
+          else
+            echo "🔄 Framework has updates - proceeding with sync"
+            echo "has-updates=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Checkout Framework Repository (Source)
+        if: steps.check-updates.outputs.has-updates == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: SuperClaude-Org/SuperClaude_Framework
+          path: framework-src
+
+      - name: Set up Python
+        if: steps.check-updates.outputs.has-updates == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Run Transformation & Sync Logic
+        if: steps.check-updates.outputs.has-updates == 'true'
+        run: |
+          cd plugin-repo
+          python3 scripts/sync_from_framework.py
+
+      - name: Verify protected files are unchanged
+        if: steps.check-updates.outputs.has-updates == 'true'
+        working-directory: plugin-repo
+        run: |
+          # 修正: plugin.json はスクリプトによってMCPマージとして更新されるため、リストから削除しました
+          PROTECTED=(
+            "README.md" "README-ja.md" "README-zh.md"
+            "BACKUP_GUIDE.md" "MIGRATION_GUIDE.md" "SECURITY.md"
+            "CLAUDE.md" "LICENSE" ".gitignore"
+            ".claude-plugin/marketplace.json"
+            "core/" "modes/"
+          )
+          VIOLATIONS=()
+          for path in "${PROTECTED[@]}"; do
+            if git diff --name-only HEAD -- "$path" | grep -q .; then
+              VIOLATIONS+=("$path")
+            fi
+          done
+          if [ ${#VIOLATIONS[@]} -gt 0 ]; then
+            echo "🚨 PROTECTION VIOLATION: sync modified Plugin-owned files:"
+            for v in "${VIOLATIONS[@]}"; do echo "  • $v"; done
+            echo ""
+            echo "Fix: check SYNC_MAPPINGS in scripts/sync_from_framework.py"
+            exit 1
+          fi
+          echo "🔒 Protection check passed — no Plugin-owned files were modified"
+
+      - name: Save framework sync state
+        if: steps.check-updates.outputs.has-updates == 'true'
+        run: |
+          echo "${{ steps.check-updates.outputs.framework-head }}" > plugin-repo/docs/.framework-sync-commit
+          echo "✅ Saved framework commit: ${{ steps.check-updates.outputs.framework-head }}"
+
+      - name: Commit and Push Changes
+        if: steps.check-updates.outputs.has-updates == 'true'
+        working-directory: plugin-repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # 修正: ルートの plugin.json を追加（MCPの更新をコミットするため）
+          git add commands/ agents/ .claude-plugin/plugin.json plugin.json
+          
+          # 修正: .gitignoreによる除外を確実に回避するため -f オプションを付与
+          if [ -f "docs/.framework-sync-commit" ]; then
+            git add -f docs/.framework-sync-commit
+          fi
+
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: automated sync and namespace isolation from framework [$(date +'%Y-%m-%d %H:%M')]"
+            git push origin main
+          else
+            echo "No changes detected."
+          fi
