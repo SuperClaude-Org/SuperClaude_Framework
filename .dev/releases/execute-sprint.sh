@@ -11,7 +11,7 @@
 # Options:
 #   --start N        Start from phase N (default: 1)
 #   --end N          End at phase N (default: last discovered)
-#   --max-turns N    Max agent turns per phase (default: 50)
+#   --max-turns N    Max agent turns per phase (default: 100)
 #   --model MODEL    Claude model to use (default: from env or opus)
 #   --dry-run        Show discovered phases without executing
 #   --allow-hierarchical-permissions
@@ -44,7 +44,7 @@ log_phase() { echo -e "\n${BOLD}═══ $* ═══${NC}\n"; }
 # ── Defaults ────────────────────────────────────────────────────────
 START_PHASE=1
 END_PHASE=0  # 0 = auto-detect from discovered phases
-MAX_TURNS=50
+MAX_TURNS=100
 MODEL="${CLAUDE_MODEL:-}"
 DRY_RUN=false
 PERM_FLAG="--dangerously-skip-permissions"
