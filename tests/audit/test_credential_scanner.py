@@ -16,8 +16,8 @@ from superclaude.cli.audit.credential_scanner import (
 # Test fixture: 3 real secrets + 3 template placeholders
 FIXTURE_CONTENT = """# Config file
 AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
-api_key = "sk_live_abcdefghijklmnopqrstuvwx"
-password = "SuperSecret1234567"
+api_key = "FAKEAPIKEY"
+password = "FAKEPASSWORD"
 
 # Templates (should be excluded)
 password = ${DB_PASSWORD}
