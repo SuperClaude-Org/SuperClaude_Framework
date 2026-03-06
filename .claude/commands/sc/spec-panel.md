@@ -17,7 +17,7 @@ personas: [technical-writer, system-architect, quality-engineer]
 
 ## Usage
 ```
-/sc:spec-panel [specification_content|@file] [--mode discussion|critique|socratic] [--experts "name1,name2"] [--focus requirements|architecture|testing|compliance] [--iterations N] [--format standard|structured|detailed]
+/sc:spec-panel [specification_content|@file] [--mode discussion|critique|socratic] [--experts "name1,name2"] [--focus requirements|architecture|testing|compliance|correctness] [--iterations N] [--format standard|structured|detailed]
 ```
 
 ## Behavioral Flow
@@ -87,6 +87,23 @@ Key behaviors:
 - **Methodology**: Specification workshops, three amigos, quality conversation facilitation
 - **Critique Focus**: "Did the whole team participate in creating this specification? Are quality expectations clearly defined?"
 
+### Adversarial Testing Expert
+
+**James Whittaker** - Adversarial Testing Pioneer
+- **Domain**: Attack surface analysis, boundary exploitation, degenerate input generation, guard condition probing
+- **Methodology**: Systematic attack-based testing using five attack methodologies to expose specification gaps before implementation
+- **Attack Methodologies**:
+  - **FR-2.1 Zero/Empty Attack**: For every input, argument, and collection in the specification: what happens when the value is zero, empty, null, or negative? Probe every guard condition and default value assumption with degenerate inputs.
+  - **FR-2.2 Divergence Attack**: Where does the specification define behavior that diverges based on a condition? For each branch: what if the condition evaluates to the boundary between branches? What if both branches could apply simultaneously?
+  - **FR-2.3 Sentinel Collision Attack**: Identify every sentinel value, magic number, reserved constant, and special-case flag. What happens when a legitimate input collides with a sentinel value? Does the specification distinguish user data from control signals?
+  - **FR-2.4 Sequence Attack**: For every multi-step process, pipeline, or state machine: what happens when steps execute out of order, are repeated, or are skipped? Does the specification enforce ordering invariants, and if so, what breaks them?
+  - **FR-2.5 Accumulation Attack**: For every counter, collection, buffer, or aggregate: what happens at accumulation boundaries (overflow, underflow, maximum capacity)? Does the specification define behavior at resource exhaustion points?
+- **Critique Focus**: "I can break this specification by [attack]. The invariant at [location] fails when [condition]. Concrete attack: [scenario with state trace]."
+- **Output Format** (FR-3): Each finding uses the template: "I can break this specification by **[attack methodology name]**. The invariant at **[section/requirement location]** fails when **[specific triggering condition]**. Concrete attack: **[step-by-step scenario with before/after state trace]**." Severity classification uses existing panel system: CRITICAL (specification is provably wrong), MAJOR (specification is ambiguous or incomplete under attack), MINOR (specification could be clearer but behavior is inferrable).
+- **Activation**: Active in every panel review; positioned after Fowler and Nygard in review sequence to leverage architectural and resilience context
+- **Review Order**: 11 (after Fowler at 4 and Nygard at 5)
+- **Scope Boundary**: Focuses exclusively on specification correctness through adversarial probing. Does NOT cover resilience patterns or operational failure modes (Nygard's domain) or testing strategy, coverage, or quality practices (Crispin's domain).
+
 ### Modern Software Experts
 
 **Kelsey Hightower** - Cloud Native Expert
@@ -100,6 +117,22 @@ Key behaviors:
 - **Technical Writer Persona**: Activated for professional specification writing and documentation quality
 - **System Architect Persona**: Activated for architectural analysis and system design validation
 - **Quality Engineer Persona**: Activated for quality assessment and testing strategy validation
+
+## Expert Review Sequence
+
+The panel reviews specifications in the following fixed order. Each expert builds on the context established by previous reviewers.
+
+1. **Karl Wiegers** - Requirements quality foundation
+2. **Gojko Adzic** - Specification by example and testability
+3. **Alistair Cockburn** - Use case and stakeholder analysis
+4. **Martin Fowler** - Architecture and interface design
+5. **Michael Nygard** - Reliability and failure mode analysis
+6. **James Whittaker** - Adversarial attack-based specification probing (leverages Fowler's architectural context and Nygard's resilience analysis)
+7. **Sam Newman** - Service boundaries and API evolution
+8. **Gregor Hohpe** - Integration patterns and data flow
+9. **Lisa Crispin** - Testing strategy and acceptance criteria
+10. **Janet Gregory** - Specification workshops and quality practices
+11. **Kelsey Hightower** - Cloud-native and operational concerns
 
 ## Analysis Modes
 
@@ -227,6 +260,46 @@ KELSEY HIGHTOWER: "What operational and monitoring capabilities does this specif
 - Audit trail and compliance verification
 - Risk assessment and mitigation strategies
 
+### Correctness Focus (`--focus correctness`)
+**Expert Panel**: Nygard (lead), Fowler, Adzic, Crispin, Whittaker
+**Analysis Areas**:
+- Execution correctness of stateful specifications
+- State variable lifecycle and invariant preservation
+- Guard condition completeness and boundary behavior
+- Pipeline data flow integrity and count conservation
+- Degenerate input handling and edge case coverage
+
+**Mandatory Outputs**:
+- State Variable Registry (see FR-15.1 template below)
+- Guard Condition Boundary Table (always produced, not trigger-gated, when `--focus correctness` is active)
+- Pipeline Flow Diagram (produced when pipelines are present, annotated with counts at each stage)
+
+**Auto-Suggestion**: Panel recommends `--focus correctness` when specification introduces 3+ mutable state variables, contains guard conditions with numeric thresholds, or describes pipeline/filter operations. Suggestion is advisory-only (recommendation in output, not forced activation). Target false positive rate <30% per NFR-8; measurement deferred to Gate B (T05.02).
+
+#### Modified Expert Behaviors Under Correctness Focus
+
+The following behavior shifts are **additive** -- they extend each expert's standard methodology when `--focus correctness` is active. Standard behaviors remain unchanged.
+
+**FR-14.1 Wiegers (Correctness Shift)**: Identifies implicit state assumptions in requirements. For each requirement referencing mutable state, Wiegers flags whether the initial value, valid range, and invariant are explicitly specified or assumed.
+
+**FR-14.2 Fowler (Correctness Shift)**: Annotates data flow with count divergence analysis. For each transformation, Fowler documents input count, output count, and whether the specification accounts for count differences (filtering, aggregation, fan-out).
+
+**FR-14.3 Nygard (Correctness Shift)**: Extends guard boundary analysis to include zero/empty cases. For every guard condition, Nygard verifies the specification defines behavior for zero, empty, null, and negative inputs -- not just typical and maximum values.
+
+**FR-14.4 Adzic (Correctness Shift)**: Produces state-annotated Given/When/Then scenarios with degenerate inputs. Each scenario includes explicit before/after state traces and at least one degenerate input variant (zero, empty, boundary).
+
+**FR-14.5 Crispin (Correctness Shift)**: Generates boundary value test cases for every guard condition and state variable. Test cases cover: below minimum, at minimum, typical, at maximum, above maximum, and degenerate (zero/empty/null).
+
+**FR-14.6 Whittaker (Correctness Shift)**: Applies all five attack methodologies against each identified invariant. Under correctness focus, Whittaker produces a minimum of one attack per methodology per invariant, rather than selecting the most impactful attacks.
+
+#### State Variable Registry (FR-15.1)
+
+When `--focus correctness` is active, the panel MUST produce a State Variable Registry cataloging every mutable variable identified in the specification.
+
+| Variable Name | Type | Initial Value | Invariant | Read Operations | Write Operations |
+|---------------|------|---------------|-----------|-----------------|------------------|
+| `<var_name>` | `<type>` | `<initial>` | `<constraint that must always hold>` | `<operations that read this variable>` | `<operations that modify this variable>` |
+
 ## Tool Coordination
 - **Read**: Specification content analysis and parsing
 - **Sequential**: Expert panel coordination and iterative analysis
@@ -297,13 +370,128 @@ improvement_roadmap:
   immediate: ["Define timeout specifications", "Add error handling scenarios"]
   short_term: ["Specify monitoring requirements", "Add performance criteria"]
   long_term: ["Comprehensive security review", "Integration testing strategy"]
+
+adversarial_analysis:
+  expert: "whittaker"
+  findings:
+    - attack: "Zero/Empty Attack"
+      severity: "CRITICAL"
+      invariant: "Section 3.2 - Session timeout handler"
+      condition: "timeout_seconds is set to 0"
+      scenario: "State before: session.timeout=0. Attack: login request. Guard `if timeout > 0` bypassed. State after: session never expires, permanent authentication."
+    - attack: "Sentinel Collision Attack"
+      severity: "MAJOR"
+      invariant: "Section 4.1 - Token refresh endpoint"
+      condition: "refresh_token value equals the reserved 'EXPIRED' sentinel string"
+      scenario: "State before: valid refresh_token='EXPIRED'. Attack: refresh request. Guard interprets token as expired sentinel. State after: valid session rejected."
 ```
 
 ### Structured Format (`--format structured`)
-Token-efficient format using SuperClaude symbol system for concise communication.
+Token-efficient format using SuperClaude symbol system for concise communication. Includes Adversarial Analysis section with attack findings in compressed symbol notation.
 
 ### Detailed Format (`--format detailed`)
-Comprehensive analysis with full expert commentary, examples, and implementation guidance.
+Comprehensive analysis with full expert commentary, examples, and implementation guidance. Includes Adversarial Analysis section with full state traces, attack methodology reasoning, and remediation suggestions per finding.
+
+## Mandatory Output Artifacts
+
+Mandatory output artifacts are structured tables and registries that the panel MUST produce when specific conditions are detected in the specification under review. These artifacts are triggered by the presence of conditional logic, threshold checks, boolean guards, or sentinel value comparisons in the specification. When triggered, these artifacts are hard gates: the panel MUST complete them before generating synthesis output.
+
+### Guard Condition Boundary Table
+
+**Trigger**: Any specification containing conditional logic, threshold checks, boolean guards, or sentinel value comparisons activates this table. When no guard conditions are identified, the section states "No guard conditions identified" and does not block synthesis.
+
+**Responsibility**: Nygard (lead construction), Crispin (completeness validation), Whittaker (adversarial attack on entries). All three experts participate when the boundary table is triggered.
+
+**Template** (7 columns, minimum 6 input condition rows per guard):
+
+| Guard | Location | Input Condition | Variable Value | Guard Result | Specified Behavior | Status |
+|-------|----------|-----------------|----------------|--------------|-------------------|--------|
+| `<guard_name>` | `<section/requirement>` | Zero/Empty | `0`, `""`, `null`, `[]` | `<true/false>` | `<what spec says happens>` | OK/GAP |
+| `<guard_name>` | `<section/requirement>` | One/Minimal | `1`, `"a"`, `[x]` | `<true/false>` | `<what spec says happens>` | OK/GAP |
+| `<guard_name>` | `<section/requirement>` | Typical | `<representative value>` | `<true/false>` | `<what spec says happens>` | OK/GAP |
+| `<guard_name>` | `<section/requirement>` | Maximum/Overflow | `MAX_INT`, `<capacity+1>` | `<true/false>` | `<what spec says happens>` | OK/GAP |
+| `<guard_name>` | `<section/requirement>` | Sentinel Value Match | `<sentinel>` | `<true/false>` | `<what spec says happens>` | OK/GAP |
+| `<guard_name>` | `<section/requirement>` | Legitimate Edge Case | `<edge value>` | `<true/false>` | `<what spec says happens>` | OK/GAP |
+
+#### Completion Criteria (Hard Gates)
+
+These rules are **hard gates**, not advisory recommendations. They block synthesis output unconditionally.
+
+1. **FR-8: GAP Status Rule**: Any cell in the Status column containing "GAP" automatically generates a finding with **MAJOR** severity minimum.
+2. **FR-9: Blank Behavior Rule**: Any blank or "unspecified" entry in the Specified Behavior column is classified as **MAJOR** severity minimum.
+3. **FR-10: Synthesis-Blocking Gate**: The Guard Condition Boundary Table MUST be complete (all cells populated, all guards enumerated) before synthesis output is generated. An incomplete table blocks synthesis output. This is a hard gate, not advisory.
+
+#### Downstream Propagation
+
+The boundary table output is formatted as structured markdown (not prose) per NFR-5 for machine-parseable downstream consumption.
+
+- **Consumer**: `sc:adversarial` AD-1 (invariant probe round)
+- **Format**: Structured markdown table with the 7 columns defined above
+- **Priority Targeting**: Entries with Status = "GAP" become priority targets for AD-1 invariant probing. GAP entries are propagated as high-priority invariant candidates.
+- **Cross-Command Integration**: See Review Heuristics > Downstream Integration Wiring for full integration point documentation.
+
+## Review Heuristics
+
+### Pipeline Dimensional Analysis
+
+Heuristic for detecting multi-stage data pipelines where output counts may diverge from input counts, potentially introducing correctness bugs.
+
+#### Trigger Condition (FR-17)
+
+Pipeline Dimensional Analysis activates when the specification under review describes a data flow with **2 or more stages** where the output count of one stage may differ from its input count (filtering, aggregation, fan-out, deduplication). The heuristic does **not** trigger on CRUD-only specifications (simple create/read/update/delete operations with no multi-stage data transformation).
+
+#### Expert Responsibility Assignments
+
+- **Fowler**: Leads pipeline identification and count annotation. Identifies all multi-stage data flows and annotates each stage with input count (N) and output count (M).
+- **Whittaker**: Attacks each count divergence point. For every stage where N != M, Whittaker applies divergence and accumulation attacks to probe whether downstream consumers handle the count difference correctly.
+
+#### 4-Step Analysis Process (FR-18)
+
+1. **Pipeline Detection** (Fowler leads): Identify all multi-stage data flows in the specification. A pipeline is any sequence of transformations where data passes through 2+ processing stages. Document the pipeline topology.
+
+2. **Quantity Annotation** (Fowler leads): For each pipeline stage, annotate the expected input count (N) and output count (M). Flag stages where N != M (filters, aggregators, fan-out operations, deduplicators).
+
+3. **Downstream Tracing** (Fowler + Whittaker): For each stage where N != M, trace which downstream consumers use the output. Verify that each consumer's specification accounts for the count difference. Flag consumers that assume input count == original count.
+
+4. **Consistency Check** (Whittaker leads): For every identified count mismatch, verify that the specification explicitly handles the divergence. Flag any mismatch where the specification assumes count conservation (e.g., "process all N items" after a filter that may reduce count to M < N).
+
+#### Severity Classification (FR-19)
+
+Any dimensional mismatch identified by the Consistency Check is classified as **CRITICAL** severity. The finding MUST include a concrete scenario demonstrating the mismatch with specific count values (e.g., "10 items enter filter, 7 pass, but downstream batch processor assumes 10").
+
+#### Quantity Flow Diagram (FR-21)
+
+When Pipeline Dimensional Analysis triggers, the panel MUST produce a Quantity Flow Diagram as an output artifact. The diagram:
+- Shows counts at each pipeline stage (N in -> M out)
+- Annotates which count each downstream consumer uses
+- Highlights divergence points where N != M
+- Uses structured text format for machine-parseability
+
+**Template**:
+```
+[Source: N items] --> [Stage 1: Filter] --> [N' items (N' <= N)]
+                                              |
+                                              v
+                                        [Stage 2: Transform] --> [N' items]
+                                              |
+                                              v
+                                        [Consumer A: expects N' items]
+                                        [Consumer B: expects N items] <-- MISMATCH
+```
+
+#### Downstream Integration Wiring
+
+The following integration points connect spec-panel outputs to downstream SuperClaude commands:
+
+| Source | Target | Integration Point | Data Flow |
+|--------|--------|-------------------|-----------|
+| SP-3 (Guard Condition Boundary Table) | `sc:adversarial` AD-1 | Invariant probe input | GAP entries become priority invariant candidates for adversarial probing |
+| SP-2 (Whittaker Attack Findings) | `sc:adversarial` AD-2 | Assumption challenge input | Attack findings feed the assumption identification round |
+| SP-1 (Correctness Focus findings) | `sc:adversarial` AD-5 | Edge case input | Correctness findings inform adversarial edge case generation |
+| SP-4 (Quantity Flow Diagram) | `sc:roadmap` RM-3 | Risk input | Dimensional mismatches inform risk-weighted roadmap prioritization |
+| SP-2 (Whittaker Assumptions) | `sc:roadmap` RM-2 | Assumption input | Identified assumptions feed roadmap assumption tracking |
+
+**Format**: All integration outputs use structured markdown (not prose) per NFR-5 for machine-parseable downstream consumption.
 
 ## Examples
 
@@ -428,7 +616,7 @@ Comprehensive analysis with full expert commentary, examples, and implementation
 - Provide legal or regulatory compliance guarantees beyond analysis guidance
 
 **Output**: Expert review document containing:
-- Multi-expert analysis (10 simulated experts)
+- Multi-expert analysis (11 simulated experts)
 - Specific, actionable recommendations
 - Consensus points and disagreements
 - Priority-ranked improvements

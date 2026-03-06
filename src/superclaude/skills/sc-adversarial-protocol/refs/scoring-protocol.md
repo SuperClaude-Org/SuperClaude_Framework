@@ -140,6 +140,15 @@ Uses an additive binary rubric with mandatory evidence citation (Claim-Evidence-
 4. Considers external dependencies and their failure scenarios
 5. Includes monitoring or validation mechanism for risk detection
 
+#### Invariant & Edge Case Coverage (5 criteria)
+1. Addresses boundary conditions for collections (empty, single-element, maximum size)
+2. Handles state variable interactions across component boundaries
+3. Identifies guard condition gaps (missing validation, unguarded type assumptions)
+4. Covers count divergence scenarios (off-by-one, inclusive/exclusive ranges)
+5. Considers interaction effects when features or components combine
+
+**Edge Case Floor Rule**: Variants scoring <1/5 on this dimension are ineligible as base variant. When all variants score 0/5, suspend the floor with a warning.
+
 ### Evidence Citation Protocol (CEV)
 
 Every criterion assessment MUST follow this structure:
@@ -159,10 +168,10 @@ VERDICT:  MET (1 point) | NOT MET (0 points)
 ### Formula
 
 ```
-qual_score = total_criteria_met / 25
+qual_score = total_criteria_met / 30
 ```
 
-`qual_score` ∈ [0.0, 1.0]. Maximum: 25/25 = 1.0.
+`qual_score` ∈ [0.0, 1.0]. Maximum: 30/30 = 1.0.
 
 ---
 
@@ -206,13 +215,14 @@ This eliminates systematic position bias documented in LLM-as-judge research.
 The base-selection.md artifact documents:
 
 1. **Quantitative scoring table**: Per-metric scores with computation details per variant
-2. **Qualitative rubric tables**: Per-dimension, per-criterion CEV assessments per variant
+2. **Qualitative rubric tables**: Per-dimension, per-criterion CEV assessments per variant (6 dimensions, 30 criteria)
 3. **Qualitative summary**: Dimension subtotals and qual_score per variant
-4. **Combined scoring table**: Quant weighted, qual weighted, final score, and debate tiebreaker per variant
-5. **Margin analysis**: Score difference and whether tiebreaker was needed
-6. **Selection rationale**: Evidence-based explanation of why the selected base won
-7. **Strengths to preserve**: From the selected base
-8. **Strengths to incorporate**: From non-base variants (feeds into Step 4)
+4. **Edge case floor check**: Per-variant eligibility based on Invariant & Edge Case Coverage floor (>=1/5 required)
+5. **Combined scoring table**: Quant weighted, qual weighted, final score, and debate tiebreaker per variant
+6. **Margin analysis**: Score difference and whether tiebreaker was needed
+7. **Selection rationale**: Evidence-based explanation of why the selected base won
+8. **Strengths to preserve**: From the selected base
+9. **Strengths to incorporate**: From non-base variants (feeds into Step 4)
 
 ---
 
