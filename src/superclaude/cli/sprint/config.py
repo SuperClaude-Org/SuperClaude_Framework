@@ -105,7 +105,7 @@ def load_sprint_config(
     index_path: Path,
     start_phase: int = 1,
     end_phase: int = 0,
-    max_turns: int = 50,
+    max_turns: int = 100,
     model: str = "",
     dry_run: bool = False,
     permission_flag: str = "--dangerously-skip-permissions",

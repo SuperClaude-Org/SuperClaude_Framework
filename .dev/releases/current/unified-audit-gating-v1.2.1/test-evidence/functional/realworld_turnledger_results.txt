@@ -1,0 +1,203 @@
+warning: `VIRTUAL_ENV=/lsiopy` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+
+==============================================================================
+  REAL-WORLD SIMULATION: TurnLedger + Per-Task Subprocess + Trailing Gates
+==============================================================================
+  Timestamp   : 2026-03-06T18:59:12.358416+00:00
+  Tasks       : 8
+  Budget      : 100 turns
+  Reimburse   : 50% rate (production default)
+  Min alloc   : 5 turns
+  Min remediate: 3 turns
+
+==============================================================================
+  PHASE 1: TurnLedger Lifecycle — Budget Tracking Through a Sprint
+==============================================================================
+  [LEDGER (INITIAL STATE)] initial=100  consumed=0  reimbursed=0  available=100  can_launch=True  can_remediate=True
+
+  Starting per-task subprocess loop with 8 tasks...
+------------------------------------------------------------------------------
+
+  ┌─ TASK T01.01: Implement TurnLedger dataclass
+  │  Simulated turns: 12
+  │  [DEBIT] pre-allocated 5 turns
+  [LEDGER (after pre-alloc)] initial=100  consumed=5  reimbursed=0  available=95  can_launch=True  can_remediate=True
+  │  [SUBPROCESS] simulating 12 turns of work...
+  │  [DEBIT] additional 7 turns (actual=12 > pre_alloc=5)
+  [LEDGER (after reconciliation)] initial=100  consumed=12  reimbursed=0  available=88  can_launch=True  can_remediate=True
+  │  [GATE] submitted trailing gate (will PASS)
+  │  [GATE RESULT] PASS — evaluation took 10.1ms
+  │  [CREDIT] reimbursed 6 turns (50% of 12)
+  [LEDGER (end of T01.01)] initial=100  consumed=12  reimbursed=6  available=94  can_launch=True  can_remediate=True
+  └─ PASS (consumed=12, gate=pass)
+
+  ┌─ TASK T01.02: Add error_max_turns NDJSON detection
+  │  Simulated turns: 8
+  │  [DEBIT] pre-allocated 5 turns
+  [LEDGER (after pre-alloc)] initial=100  consumed=17  reimbursed=6  available=89  can_launch=True  can_remediate=True
+  │  [SUBPROCESS] simulating 8 turns of work...
+  │  [DEBIT] additional 3 turns (actual=8 > pre_alloc=5)
+  [LEDGER (after reconciliation)] initial=100  consumed=20  reimbursed=6  available=86  can_launch=True  can_remediate=True
+  │  [GATE] submitted trailing gate (will PASS)
+  │  [GATE RESULT] PASS — evaluation took 10.1ms
+  │  [CREDIT] reimbursed 4 turns (50% of 8)
+  [LEDGER (end of T01.02)] initial=100  consumed=20  reimbursed=10  available=90  can_launch=True  can_remediate=True
+  └─ PASS (consumed=8, gate=pass)
+
+  ┌─ TASK T01.03: Implement INCOMPLETE reclassification
+  │  Simulated turns: 15
+  │  [DEBIT] pre-allocated 5 turns
+  [LEDGER (after pre-alloc)] initial=100  consumed=25  reimbursed=10  available=85  can_launch=True  can_remediate=True
+  │  [SUBPROCESS] simulating 15 turns of work...
+  │  [DEBIT] additional 10 turns (actual=15 > pre_alloc=5)
+  [LEDGER (after reconciliation)] initial=100  consumed=35  reimbursed=10  available=75  can_launch=True  can_remediate=True
+  │  [GATE] submitted trailing gate (will PASS)
+  │  [GATE RESULT] PASS — evaluation took 10.1ms
+  │  [CREDIT] reimbursed 7 turns (50% of 15)
+  [LEDGER (end of T01.03)] initial=100  consumed=35  reimbursed=17  available=82  can_launch=True  can_remediate=True
+  └─ PASS (consumed=15, gate=pass)
+
+  ┌─ TASK T01.04: Add pre-launch budget guard
+  │  Simulated turns: 20
+  │  [DEBIT] pre-allocated 5 turns
+  [LEDGER (after pre-alloc)] initial=100  consumed=40  reimbursed=17  available=77  can_launch=True  can_remediate=True
+  │  [SUBPROCESS] simulating 20 turns of work...
+  │  [DEBIT] additional 15 turns (actual=20 > pre_alloc=5)
+  [LEDGER (after reconciliation)] initial=100  consumed=55  reimbursed=17  available=62  can_launch=True  can_remediate=True
+  │  [GATE] submitted trailing gate (will FAIL)
+  │  [GATE RESULT] FAIL — reason: Simulated gate failure for testing
+  │  [NO CREDIT] zero reimbursement on gate failure
+  │  [REMEDIATION] budget allows remediation (available=62 >= min_remediate=3)
+  [LEDGER (end of T01.04)] initial=100  consumed=55  reimbursed=17  available=62  can_launch=True  can_remediate=True
+  └─ FAIL (consumed=20, gate=fail)
+
+  ┌─ TASK T01.05: Implement tasklist parser
+  │  Simulated turns: 18
+  │  [DEBIT] pre-allocated 5 turns
+  [LEDGER (after pre-alloc)] initial=100  consumed=60  reimbursed=17  available=57  can_launch=True  can_remediate=True
+  │  [SUBPROCESS] simulating 18 turns of work...
+  │  [DEBIT] additional 13 turns (actual=18 > pre_alloc=5)
+  [LEDGER (after reconciliation)] initial=100  consumed=73  reimbursed=17  available=44  can_launch=True  can_remediate=True
+  │  [GATE] submitted trailing gate (will PASS)
+  │  [GATE RESULT] PASS — evaluation took 10.1ms
+  │  [CREDIT] reimbursed 9 turns (50% of 18)
+  [LEDGER (end of T01.05)] initial=100  consumed=73  reimbursed=26  available=53  can_launch=True  can_remediate=True
+  └─ PASS (consumed=18, gate=pass)
+
+  ┌─ TASK T01.06: Per-task subprocess orchestration loop
+  │  Simulated turns: 25
+  │  [DEBIT] pre-allocated 5 turns
+  [LEDGER (after pre-alloc)] initial=100  consumed=78  reimbursed=26  available=48  can_launch=True  can_remediate=True
+  │  [SUBPROCESS] simulating 25 turns of work...
+  │  [DEBIT] additional 20 turns (actual=25 > pre_alloc=5)
+  [LEDGER (after reconciliation)] initial=100  consumed=98  reimbursed=26  available=28  can_launch=True  can_remediate=True
+  │  [GATE] submitted trailing gate (will PASS)
+  │  [GATE RESULT] PASS — evaluation took 10.3ms
+  │  [CREDIT] reimbursed 12 turns (50% of 25)
+  [LEDGER (end of T01.06)] initial=100  consumed=98  reimbursed=38  available=40  can_launch=True  can_remediate=True
+  └─ PASS (consumed=25, gate=pass)
+
+  ┌─ TASK T01.07: 4-layer subprocess isolation
+  │  Simulated turns: 14
+  │  [DEBIT] pre-allocated 5 turns
+  [LEDGER (after pre-alloc)] initial=100  consumed=103  reimbursed=38  available=35  can_launch=True  can_remediate=True
+  │  [SUBPROCESS] simulating 14 turns of work...
+  │  [DEBIT] additional 9 turns (actual=14 > pre_alloc=5)
+  [LEDGER (after reconciliation)] initial=100  consumed=112  reimbursed=38  available=26  can_launch=True  can_remediate=True
+  │  [GATE] submitted trailing gate (will PASS)
+  │  [GATE RESULT] PASS — evaluation took 10.1ms
+  │  [CREDIT] reimbursed 7 turns (50% of 14)
+  [LEDGER (end of T01.07)] initial=100  consumed=112  reimbursed=45  available=33  can_launch=True  can_remediate=True
+  └─ PASS (consumed=14, gate=pass)
+
+  ┌─ TASK T01.08: Result aggregation and phase reports
+  │  Simulated turns: 10
+  │  [DEBIT] pre-allocated 5 turns
+  [LEDGER (after pre-alloc)] initial=100  consumed=117  reimbursed=45  available=28  can_launch=True  can_remediate=True
+  │  [SUBPROCESS] simulating 10 turns of work...
+  │  [DEBIT] additional 5 turns (actual=10 > pre_alloc=5)
+  [LEDGER (after reconciliation)] initial=100  consumed=122  reimbursed=45  available=23  can_launch=True  can_remediate=True
+  │  [GATE] submitted trailing gate (will PASS)
+  │  [GATE RESULT] PASS — evaluation took 10.1ms
+  │  [CREDIT] reimbursed 5 turns (50% of 10)
+  [LEDGER (end of T01.08)] initial=100  consumed=122  reimbursed=50  available=28  can_launch=True  can_remediate=True
+  └─ PASS (consumed=10, gate=pass)
+
+==============================================================================
+  PHASE 2: Final Accounting
+==============================================================================
+
+  Task Results:
+  Task ID      Status       Turns    Gate        
+  ------------ ------------ -------- ------------
+  T01.01       pass         12       pass        
+  T01.02       pass         8        pass        
+  T01.03       pass         15       pass        
+  T01.04       fail         20       fail        
+  T01.05       pass         18       pass        
+  T01.06       pass         25       pass        
+  T01.07       pass         14       pass        
+  T01.08       pass         10       pass        
+
+  [LEDGER (FINAL STATE)] initial=100  consumed=122  reimbursed=50  available=28  can_launch=True  can_remediate=True
+
+  Accounting identity: available == initial - consumed + reimbursed
+    28 == 100 - 122 + 50
+    Identity holds: True
+
+  Budget decay: 100 → 28 (net loss: 72 turns)
+
+  Summary: 7 passed, 1 failed, 0 skipped out of 8 tasks
+
+==============================================================================
+  PHASE 3: Scope-Based Gate Strategy Verification
+==============================================================================
+  scope=release    config=BLOCKING   grace_period=0    → BLOCKING
+  scope=release    config=BLOCKING   grace_period=1    → BLOCKING
+  scope=release    config=BLOCKING   grace_period=10   → BLOCKING
+  scope=release    config=TRAILING   grace_period=0    → BLOCKING
+  scope=release    config=TRAILING   grace_period=1    → BLOCKING
+  scope=release    config=TRAILING   grace_period=10   → BLOCKING
+  scope=milestone  config=BLOCKING   grace_period=0    → BLOCKING
+  scope=milestone  config=BLOCKING   grace_period=1    → BLOCKING
+  scope=milestone  config=BLOCKING   grace_period=10   → BLOCKING
+  scope=milestone  config=TRAILING   grace_period=0    → TRAILING
+  scope=milestone  config=TRAILING   grace_period=1    → TRAILING
+  scope=milestone  config=TRAILING   grace_period=10   → TRAILING
+  scope=task       config=BLOCKING   grace_period=0    → BLOCKING
+  scope=task       config=BLOCKING   grace_period=1    → TRAILING
+  scope=task       config=BLOCKING   grace_period=10   → TRAILING
+  scope=task       config=TRAILING   grace_period=0    → BLOCKING
+  scope=task       config=TRAILING   grace_period=1    → TRAILING
+  scope=task       config=TRAILING   grace_period=10   → TRAILING
+
+==============================================================================
+  PHASE 4: No HALT — All tasks completed within budget
+==============================================================================
+  Budget was sufficient for all 8 tasks.
+
+==============================================================================
+  PHASE 5: Thread Safety — Concurrent Gate Submissions
+==============================================================================
+  Submitted 5 gate evaluations from 5 concurrent threads
+  Collected 5 results
+  All passed: True
+  New daemon threads still alive: 0 (should be 0 after wait)
+    step=concurrent-4  passed=True  eval_ms=0.0
+    step=concurrent-2  passed=True  eval_ms=0.0
+    step=concurrent-1  passed=True  eval_ms=0.0
+    step=concurrent-3  passed=True  eval_ms=0.0
+    step=concurrent-0  passed=True  eval_ms=0.0
+
+==============================================================================
+  SIMULATION COMPLETE
+==============================================================================
+  Elapsed: 0.57s
+  Tasks executed: 8/8 (0 skipped)
+  Budget consumed: 122 of 100
+  Budget reimbursed: 50
+  Final available: 28
+  Identity verified: True
+  Concurrent gate safety: 5/5 collected
+
+  VERDICT: ALL CHECKS PASSED

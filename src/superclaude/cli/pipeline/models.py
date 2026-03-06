@@ -172,7 +172,7 @@ class PipelineConfig:
 
     work_dir: Path = field(default_factory=lambda: Path("."))
     dry_run: bool = False
-    max_turns: int = 50
+    max_turns: int = 100
     model: str = ""
     permission_flag: str = "--dangerously-skip-permissions"
     debug: bool = False

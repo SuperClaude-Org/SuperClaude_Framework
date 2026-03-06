@@ -1,0 +1,21 @@
+warning: `VIRTUAL_ENV=/lsiopy` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+╭───────────────────────── SUPERCLAUDE SPRINT RUNNER ──────────────────────────╮
+│                                                                              │
+│  live-sprint    Elapsed: 1m 20s                                              │
+│                                                                              │
+│    #  Phase                               Status       Duration   Tasks      │
+│    1  - Live Evidence — 3 Quick Tasks   INCOMPLETE       1m 20s   T01.02     │
+│                                                                              │
+│  Progress                                            0% 0/1 tasks            │
+│                                                                              │
+│  ╭──────────────────────────── Sprint Halted ─────────────────────────────╮  │
+│  │ Result:  HALTED                                                        │  │
+│  │ Halted at Phase 1                                                      │  │
+│  │                                                                        │  │
+│  │ Resume:  superclaude sprint run                                        │  │
+│  │ /config/workspace/SuperClaude_Framework/.dev/releases/current/unified- │  │
+│  │ audit-gating-v1.2.1/test-evidence/live-sprint/tasklist-index.md        │  │
+│  │ --start 1 --end 1                                                      │  │
+│  ╰────────────────────────────────────────────────────────────────────────╯  │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯

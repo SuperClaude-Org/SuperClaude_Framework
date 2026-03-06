@@ -282,7 +282,7 @@ class SprintConfig(PipelineConfig):
     phases: list[Phase] = field(default_factory=list)
     start_phase: int = 1
     end_phase: int = 0  # 0 = auto-detect (last phase)
-    max_turns: int = 50
+    max_turns: int = 100
     model: str = ""  # empty = claude default
     dry_run: bool = False
     permission_flag: str = "--dangerously-skip-permissions"
@@ -473,7 +473,7 @@ class TurnLedger:
     initial_budget: int
     consumed: int = 0
     reimbursed: int = 0
-    reimbursement_rate: float = 0.5
+    reimbursement_rate: float = 0.8
     minimum_allocation: int = 5
     minimum_remediation_budget: int = 3
 

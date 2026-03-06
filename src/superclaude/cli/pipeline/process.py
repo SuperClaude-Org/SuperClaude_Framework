@@ -40,7 +40,7 @@ class ClaudeProcess:
         prompt: str,
         output_file: Path,
         error_file: Path,
-        max_turns: int = 50,
+        max_turns: int = 100,
         model: str = "",
         permission_flag: str = "--dangerously-skip-permissions",
         timeout_seconds: int = 6300,

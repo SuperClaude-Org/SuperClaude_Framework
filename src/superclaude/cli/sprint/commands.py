@@ -51,8 +51,8 @@ def sprint_group():
 @click.option(
     "--max-turns",
     type=int,
-    default=50,
-    help="Max agent turns per phase (default: 50)",
+    default=100,
+    help="Max agent turns per phase (default: 100)",
 )
 @click.option(
     "--model",
