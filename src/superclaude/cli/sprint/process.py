@@ -1,17 +1,15 @@
 """Sprint process management — subprocess lifecycle and signal handling.
 
 ClaudeProcess extends pipeline.process.ClaudeProcess with sprint-specific
-constructor (config, phase) and build_prompt(). subprocess and os are
-imported at module level for test-patch compatibility.
+constructor (config, phase) and build_prompt(). Lifecycle hooks delegate
+debug logging to factory closures, eliminating method overrides.
 SignalHandler remains sprint-specific.
 """
 
 from __future__ import annotations
 
 import logging
-import os
 import signal
-import subprocess
 from typing import Optional
 
 from superclaude.cli.pipeline.process import ClaudeProcess as _PipelineClaudeProcess
@@ -22,11 +20,71 @@ from .models import Phase, SprintConfig
 _dbg = logging.getLogger("superclaude.sprint.debug.process")
 
 
+def _make_spawn_hook(phase: Phase, config: SprintConfig):
+    """Factory returning an on_spawn closure for sprint debug logging.
+
+    Captures phase number and config output/error paths so the hook
+    can log spawn and files_opened events with full context.
+    """
+    output_file = config.output_file(phase)
+    error_file = config.error_file(phase)
+    phase_number = phase.number
+
+    def on_spawn(pid: int) -> None:
+        debug_log(
+            _dbg,
+            "spawn",
+            pid=pid,
+            cmd="['claude', '--print', '--verbose']",
+            phase=phase_number,
+        )
+        debug_log(
+            _dbg,
+            "files_opened",
+            stdout=str(output_file),
+            stderr=str(error_file),
+        )
+
+    return on_spawn
+
+
+def _make_signal_hook(phase: Phase, config: SprintConfig):
+    """Factory returning an on_signal closure for sprint debug logging.
+
+    Logs signal_sent events with the signal name and process id.
+    """
+
+    def on_signal(pid: int, signal_name: str) -> None:
+        debug_log(_dbg, "signal_sent", signal=signal_name, pid=pid)
+
+    return on_signal
+
+
+def _make_exit_hook(phase: Phase, config: SprintConfig):
+    """Factory returning an on_exit closure for sprint debug logging.
+
+    Logs exit events with pid, return code, and timeout detection.
+    """
+
+    def on_exit(pid: int, returncode: int | None) -> None:
+        debug_log(
+            _dbg,
+            "exit",
+            pid=pid,
+            code=returncode,
+            was_timeout=(returncode == 124),
+        )
+
+    return on_exit
+
+
 class ClaudeProcess(_PipelineClaudeProcess):
     """Sprint-specific claude process extending the pipeline base.
 
-    Preserves the sprint (config, phase) constructor, build_prompt(),
-    and debug logging while inheriting command building from pipeline.
+    Defines only __init__ (with hook wiring) and build_prompt().
+    All subprocess lifecycle (start, wait, terminate) is inherited
+    from the pipeline base class; sprint debug logging is injected
+    via lifecycle hook factories.
     """
 
     def __init__(self, config: SprintConfig, phase: Phase):
@@ -42,6 +100,9 @@ class ClaudeProcess(_PipelineClaudeProcess):
             permission_flag=config.permission_flag,
             timeout_seconds=config.max_turns * 120 + 300,
             output_format="stream-json",
+            on_spawn=_make_spawn_hook(phase, config),
+            on_signal=_make_signal_hook(phase, config),
+            on_exit=_make_exit_hook(phase, config),
         )
 
     def build_prompt(self) -> str:
@@ -87,104 +148,6 @@ class ClaudeProcess(_PipelineClaudeProcess):
             f"- Do not re-execute work from prior phases\n"
             f"- Focus only on the tasks defined in the phase file"
         )
-
-    def start(self) -> subprocess.Popen:
-        """Launch the claude process with sprint debug logging."""
-        output_file = self.config.output_file(self.phase)
-        error_file = self.config.error_file(self.phase)
-
-        output_file.parent.mkdir(parents=True, exist_ok=True)
-
-        self._stdout_fh = open(output_file, "w")
-        self._stderr_fh = open(error_file, "w")
-
-        popen_kwargs = {
-            "stdin": subprocess.DEVNULL,
-            "stdout": self._stdout_fh,
-            "stderr": self._stderr_fh,
-            "env": self.build_env(),
-        }
-        if hasattr(os, "setpgrp"):
-            popen_kwargs["preexec_fn"] = os.setpgrp
-
-        self._process = subprocess.Popen(self.build_command(), **popen_kwargs)
-
-        debug_log(
-            _dbg,
-            "spawn",
-            pid=self._process.pid,
-            cmd=str(self.build_command()[:3]),
-            phase=self.phase.number,
-        )
-        debug_log(
-            _dbg,
-            "files_opened",
-            stdout=str(output_file),
-            stderr=str(error_file),
-        )
-
-        return self._process
-
-    def wait(self) -> int:
-        """Wait for the process with timeout. Returns exit code."""
-        try:
-            self._process.wait(timeout=self.timeout_seconds)
-        except subprocess.TimeoutExpired:
-            self.terminate()
-            return 124
-
-        self._close_handles()
-        return self._process.returncode if self._process.returncode is not None else -1
-
-    def terminate(self):
-        """Graceful shutdown: SIGTERM, wait 10s, then SIGKILL."""
-        if self._process is None or self._process.poll() is not None:
-            self._close_handles()
-            return
-
-        use_pgroup = all(hasattr(os, attr) for attr in ("getpgid", "killpg"))
-        pgid = os.getpgid(self._process.pid) if use_pgroup else None
-
-        try:
-            if use_pgroup and pgid is not None:
-                os.killpg(pgid, signal.SIGTERM)
-            else:
-                self._process.terminate()
-            debug_log(_dbg, "signal_sent", signal="SIGTERM", pid=self._process.pid)
-        except ProcessLookupError:
-            self._close_handles()
-            return
-
-        try:
-            self._process.wait(timeout=10)
-        except subprocess.TimeoutExpired:
-            try:
-                if use_pgroup and pgid is not None:
-                    os.killpg(pgid, signal.SIGKILL)
-                else:
-                    self._process.kill()
-                debug_log(_dbg, "signal_sent", signal="SIGKILL", pid=self._process.pid)
-                self._process.wait(timeout=5)
-            except (ProcessLookupError, subprocess.TimeoutExpired):
-                pass
-
-        rc = self._process.returncode
-        debug_log(
-            _dbg,
-            "exit",
-            pid=self._process.pid,
-            code=rc,
-            was_timeout=(rc == 124 or getattr(self, "_timed_out", False)),
-        )
-        self._close_handles()
-
-    def _close_handles(self):
-        for fh in (self._stdout_fh, self._stderr_fh):
-            if fh is not None:
-                try:
-                    fh.close()
-                except Exception:
-                    pass
 
 
 class SignalHandler:

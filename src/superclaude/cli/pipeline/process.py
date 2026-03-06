@@ -16,7 +16,7 @@ import os
 import signal
 import subprocess
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
 
 _log = logging.getLogger("superclaude.pipeline.process")
 
@@ -27,6 +27,11 @@ class ClaudeProcess:
     Uses process groups (os.setpgrp) so we can kill the entire
     child tree on shutdown. CLAUDECODE= env prefix prevents nested
     session detection. stdout/stderr redirected to files.
+
+    Lifecycle hooks (all optional, default None):
+      on_spawn(pid)           — called after Popen in start()
+      on_signal(pid, signal)  — called before signal send in terminate()
+      on_exit(pid, returncode)— called before _close_handles() in wait()/terminate()
     """
 
     def __init__(
@@ -41,6 +46,9 @@ class ClaudeProcess:
         timeout_seconds: int = 6300,
         output_format: str = "stream-json",
         extra_args: list[str] | None = None,
+        on_spawn: Callable[[int], None] | None = None,
+        on_signal: Callable[[int, str], None] | None = None,
+        on_exit: Callable[[int, int | None], None] | None = None,
     ):
         self.prompt = prompt
         self.output_file = output_file
@@ -51,6 +59,9 @@ class ClaudeProcess:
         self.timeout_seconds = timeout_seconds
         self.output_format = output_format
         self.extra_args = extra_args or []
+        self._on_spawn = on_spawn
+        self._on_signal = on_signal
+        self._on_exit = on_exit
         self._process: Optional[subprocess.Popen] = None
         self._stdout_fh = None
         self._stderr_fh = None
@@ -104,6 +115,9 @@ class ClaudeProcess:
 
         self._process = subprocess.Popen(self.build_command(), **popen_kwargs)
 
+        if self._on_spawn is not None:
+            self._on_spawn(self._process.pid)
+
         _log.debug(
             "spawn pid=%d cmd=%s",
             self._process.pid,
@@ -120,8 +134,11 @@ class ClaudeProcess:
             self.terminate()
             return 124  # match bash timeout exit code
 
+        rc = self._process.returncode if self._process.returncode is not None else -1
+        if self._on_exit is not None:
+            self._on_exit(self._process.pid, rc)
         self._close_handles()
-        return self._process.returncode if self._process.returncode is not None else -1
+        return rc
 
     def terminate(self) -> None:
         """Graceful shutdown: SIGTERM, wait 10s, then SIGKILL."""
@@ -133,6 +150,8 @@ class ClaudeProcess:
         pgid = os.getpgid(self._process.pid) if use_pgroup else None
 
         try:
+            if self._on_signal is not None:
+                self._on_signal(self._process.pid, "SIGTERM")
             if use_pgroup and pgid is not None:
                 os.killpg(pgid, signal.SIGTERM)
             else:
@@ -160,6 +179,8 @@ class ClaudeProcess:
             self._process.pid,
             self._process.returncode,
         )
+        if self._on_exit is not None:
+            self._on_exit(self._process.pid, self._process.returncode)
         self._close_handles()
 
     def _close_handles(self) -> None:

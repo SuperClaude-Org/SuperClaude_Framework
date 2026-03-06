@@ -19,8 +19,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable
 
+from ..pipeline.deliverables import decompose_deliverables
 from ..pipeline.executor import execute_pipeline
-from ..pipeline.models import PipelineConfig, Step, StepResult, StepStatus
+from ..pipeline.models import Deliverable, PipelineConfig, Step, StepResult, StepStatus
 from ..pipeline.process import ClaudeProcess
 from .gates import (
     DEBATE_GATE,
@@ -45,36 +46,24 @@ from .prompts import (
 
 _log = logging.getLogger("superclaude.roadmap.executor")
 
-# Session-sharing flags that must NEVER appear in subprocess argv
-_FORBIDDEN_FLAGS = frozenset({"--continue", "--session", "--resume"})
+# Threshold above which inline embedding falls back to --file flags
+_EMBED_SIZE_LIMIT = 100 * 1024  # 100 KB
 
 
-def _build_subprocess_argv(step: Step, config: PipelineConfig) -> list[str]:
-    """Build subprocess argv for a single step.
+def _embed_inputs(input_paths: list[Path]) -> str:
+    """Read input files and return their contents as fenced code blocks.
 
-    Context isolation enforced: only prompt, --file inputs, model, max-turns,
-    and permission flag. No session-sharing flags.
+    Each file is wrapped in a fenced block with a ``# <path>`` header.
+    Returns an empty string when *input_paths* is empty (no-op).
     """
-    argv = [
-        "claude",
-        "-p",
-        step.prompt,
-        "--max-turns",
-        str(config.max_turns),
-        config.permission_flag,
-    ]
-    for input_path in step.inputs:
-        argv.extend(["--file", str(input_path)])
-    model = step.model or config.model
-    if model:
-        argv.extend(["--model", model])
+    if not input_paths:
+        return ""
 
-    # Context isolation assertion (FR-003, FR-023)
-    assert not _FORBIDDEN_FLAGS.intersection(
-        argv
-    ), f"Context isolation violated: {_FORBIDDEN_FLAGS.intersection(argv)} found in argv"
-
-    return argv
+    blocks: list[str] = []
+    for p in input_paths:
+        content = Path(p).read_text(encoding="utf-8")
+        blocks.append(f"# {p}\n```\n{content}\n```")
+    return "\n\n".join(blocks)
 
 
 def roadmap_run_step(
@@ -99,8 +88,29 @@ def roadmap_run_step(
             finished_at=datetime.now(timezone.utc),
         )
 
+    # Inline embedding: read input files into the prompt instead of --file flags
+    embedded = _embed_inputs(step.inputs)
+    if embedded and len(embedded.encode("utf-8")) <= _EMBED_SIZE_LIMIT:
+        effective_prompt = step.prompt + "\n\n" + embedded
+        extra_args: list[str] = []
+    elif embedded:
+        _log.warning(
+            "Step '%s': embedded inputs exceed %d bytes, falling back to --file flags",
+            step.id,
+            _EMBED_SIZE_LIMIT,
+        )
+        effective_prompt = step.prompt
+        extra_args = [
+            arg
+            for input_path in step.inputs
+            for arg in ("--file", str(input_path))
+        ]
+    else:
+        effective_prompt = step.prompt
+        extra_args = []
+
     proc = ClaudeProcess(
-        prompt=step.prompt,
+        prompt=effective_prompt,
         output_file=step.output_file,
         error_file=step.output_file.with_suffix(".err"),
         max_turns=config.max_turns,
@@ -108,11 +118,7 @@ def roadmap_run_step(
         permission_flag=config.permission_flag,
         timeout_seconds=step.timeout_seconds,
         output_format="text",
-        extra_args=[
-            arg
-            for input_path in step.inputs
-            for arg in ("--file", str(input_path))
-        ],
+        extra_args=extra_args,
     )
 
     proc.start()
@@ -453,6 +459,21 @@ def read_state(path: Path) -> dict | None:
         return None
 
 
+def apply_decomposition_pass(deliverables: list[Deliverable]) -> list[Deliverable]:
+    """Post-generation decomposition pass for the roadmap pipeline.
+
+    Runs after deliverable generation, before output formatting.
+    Splits behavioral deliverables into Implement/Verify pairs.
+
+    Idempotent: running twice produces identical results because
+    already-decomposed deliverables (IDs ending .a/.b) are skipped.
+
+    Preserves milestone-internal ordering: deliverables within each
+    milestone maintain their relative order after decomposition.
+    """
+    return decompose_deliverables(deliverables)
+
+
 def execute_roadmap(config: RoadmapConfig, resume: bool = False) -> None:
     """Execute the roadmap generation pipeline.
 
@@ -506,8 +527,9 @@ def _apply_resume(
     Also checks for stale spec detection.
     """
     state_file = config.output_dir / ".roadmap-state.json"
-    if state_file.exists():
-        state = json.loads(state_file.read_text())
+    state = read_state(state_file)
+    force_extract = False
+    if state is not None:
         saved_hash = state.get("spec_hash", "")
         current_hash = hashlib.sha256(config.spec_file.read_bytes()).hexdigest()
         if saved_hash and saved_hash != current_hash:
@@ -516,15 +538,21 @@ def _apply_resume(
                 f"  Last hash: {saved_hash[:12]}...\n"
                 f"  Current:   {current_hash[:12]}...\n"
                 f"Forcing re-run of extract step.",
+                file=sys.stderr,
                 flush=True,
             )
-            # Don't skip extract even if its gate passes
-            return steps
+            force_extract = True
 
     skipped = 0
     result: list[Step | list[Step]] = []
+    found_failure = False
 
     for entry in steps:
+        if found_failure:
+            # After first failing step, include all remaining steps
+            result.append(entry)
+            continue
+
         if isinstance(entry, list):
             # Parallel group: check all steps
             all_pass = True
@@ -541,14 +569,22 @@ def _apply_resume(
                 skipped += len(entry)
                 print(f"[roadmap] Skipping {', '.join(s.id for s in entry)} (gates pass)", flush=True)
             else:
+                found_failure = True
                 result.append(entry)
         else:
+            # Force re-run of extract on stale spec
+            if force_extract and entry.id == "extract":
+                found_failure = True
+                result.append(entry)
+                continue
+
             if entry.gate:
                 passed, _reason = gate_fn(entry.output_file, entry.gate)
                 if passed:
                     skipped += 1
                     print(f"[roadmap] Skipping {entry.id} (gate passes)", flush=True)
                     continue
+            found_failure = True
             result.append(entry)
 
     if skipped > 0:

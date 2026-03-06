@@ -92,6 +92,67 @@ class StepResult:
         return (self.finished_at - self.started_at).total_seconds()
 
 
+class DeliverableKind(Enum):
+    """Classification of deliverable type for decomposition and analysis."""
+
+    IMPLEMENT = "implement"
+    VERIFY = "verify"
+    INVARIANT_CHECK = "invariant_check"
+    FMEA_TEST = "fmea_test"
+    GUARD_TEST = "guard_test"
+    CONTRACT_TEST = "contract_test"
+
+    @classmethod
+    def from_str(cls, value: str) -> DeliverableKind:
+        """Parse a string into a DeliverableKind, raising ValueError on unknown."""
+        try:
+            return cls(value)
+        except ValueError:
+            valid = ", ".join(k.value for k in cls)
+            raise ValueError(
+                f"Unknown deliverable kind: {value!r}. Valid kinds: {valid}"
+            )
+
+
+@dataclass
+class Deliverable:
+    """A single deliverable within a pipeline step or roadmap task.
+
+    Attributes:
+        id: Unique identifier (e.g. 'D-0001', 'D-0001.a').
+        description: Human-readable description of what this deliverable produces.
+        kind: Classification for decomposition passes. Defaults to 'implement'
+              for backward compatibility with pre-extension deliverables.
+        metadata: Attachment point for analytical passes (M2-M4). Defaults to
+                  empty dict. Round-trip serializable.
+    """
+
+    id: str
+    description: str
+    kind: DeliverableKind = DeliverableKind.IMPLEMENT
+    metadata: dict = field(default_factory=dict)
+
+    def to_dict(self) -> dict:
+        """Serialize to a dict for JSON round-trip."""
+        return {
+            "id": self.id,
+            "description": self.description,
+            "kind": self.kind.value,
+            "metadata": self.metadata,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> Deliverable:
+        """Deserialize from a dict. Pre-extension dicts without 'kind' default to 'implement'."""
+        kind_str = data.get("kind", "implement")
+        return cls(
+            id=data["id"],
+            description=data["description"],
+            kind=DeliverableKind.from_str(kind_str),
+            metadata=data.get("metadata", {}),
+        )
+
+
 @dataclass
 class PipelineConfig:
     """Configuration shared by both sprint and roadmap pipelines."""
