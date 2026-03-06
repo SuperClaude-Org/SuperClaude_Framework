@@ -1,4 +1,4 @@
-# SuperClaude Developer Guide: Commands, Skills, and Agents
+p# SuperClaude Developer Guide: Commands, Skills, and Agents
 
 > **Version**: 1.0.0 | **Last Updated**: 2026-02-21
 > **Audience**: Developers creating, extending, or maintaining SuperClaude framework components

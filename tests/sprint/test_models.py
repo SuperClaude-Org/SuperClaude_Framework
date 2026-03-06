@@ -1,7 +1,8 @@
 """Unit tests for sprint data models.
 
-Covers all 7 types (PhaseStatus, SprintOutcome, Phase, SprintConfig,
-PhaseResult, SprintResult, MonitorState) and their property methods.
+Covers all types (PhaseStatus, SprintOutcome, Phase, SprintConfig,
+PhaseResult, SprintResult, MonitorState, TaskResult, TaskStatus,
+GateOutcome, TurnLedger) and their property methods.
 """
 
 import time
@@ -11,6 +12,7 @@ from pathlib import Path
 import pytest
 
 from superclaude.cli.sprint.models import (
+    GateOutcome,
     MonitorState,
     Phase,
     PhaseResult,
@@ -18,6 +20,10 @@ from superclaude.cli.sprint.models import (
     SprintConfig,
     SprintOutcome,
     SprintResult,
+    TaskEntry,
+    TaskResult,
+    TaskStatus,
+    TurnLedger,
 )
 
 # ---------------------------------------------------------------------------
@@ -35,6 +41,7 @@ class TestPhaseStatus:
             "PASS",
             "PASS_NO_SIGNAL",
             "PASS_NO_REPORT",
+            "INCOMPLETE",
             "HALT",
             "TIMEOUT",
             "ERROR",
@@ -50,6 +57,7 @@ class TestPhaseStatus:
             (PhaseStatus.PASS, True),
             (PhaseStatus.PASS_NO_SIGNAL, True),
             (PhaseStatus.PASS_NO_REPORT, True),
+            (PhaseStatus.INCOMPLETE, True),
             (PhaseStatus.HALT, True),
             (PhaseStatus.TIMEOUT, True),
             (PhaseStatus.ERROR, True),
@@ -67,6 +75,7 @@ class TestPhaseStatus:
             (PhaseStatus.PASS, True),
             (PhaseStatus.PASS_NO_SIGNAL, True),
             (PhaseStatus.PASS_NO_REPORT, True),
+            (PhaseStatus.INCOMPLETE, False),
             (PhaseStatus.HALT, False),
             (PhaseStatus.TIMEOUT, False),
             (PhaseStatus.ERROR, False),
@@ -84,6 +93,7 @@ class TestPhaseStatus:
             (PhaseStatus.PASS, False),
             (PhaseStatus.PASS_NO_SIGNAL, False),
             (PhaseStatus.PASS_NO_REPORT, False),
+            (PhaseStatus.INCOMPLETE, True),
             (PhaseStatus.HALT, True),
             (PhaseStatus.TIMEOUT, True),
             (PhaseStatus.ERROR, True),
@@ -426,3 +436,333 @@ class TestMonitorState:
     def test_output_size_display_zero(self):
         ms = MonitorState(output_bytes=0)
         assert ms.output_size_display == "0 B"
+
+
+# ---------------------------------------------------------------------------
+# TurnLedger dataclass
+# ---------------------------------------------------------------------------
+
+
+class TestTurnLedger:
+    """Tests for TurnLedger budget arithmetic."""
+
+    def test_initial_available(self):
+        ledger = TurnLedger(initial_budget=50)
+        assert ledger.available() == 50
+
+    def test_debit_reduces_available(self):
+        ledger = TurnLedger(initial_budget=50)
+        ledger.debit(10)
+        assert ledger.consumed == 10
+        assert ledger.available() == 40
+
+    def test_debit_monotonicity(self):
+        """consumed can only increase via debit."""
+        ledger = TurnLedger(initial_budget=50)
+        ledger.debit(10)
+        ledger.debit(5)
+        assert ledger.consumed == 15
+        assert ledger.available() == 35
+
+    def test_debit_negative_raises(self):
+        ledger = TurnLedger(initial_budget=50)
+        with pytest.raises(ValueError, match="non-negative"):
+            ledger.debit(-1)
+
+    def test_credit_increases_available(self):
+        ledger = TurnLedger(initial_budget=50)
+        ledger.debit(20)
+        ledger.credit(5)
+        assert ledger.reimbursed == 5
+        assert ledger.available() == 35  # 50 - 20 + 5
+
+    def test_credit_negative_raises(self):
+        ledger = TurnLedger(initial_budget=50)
+        with pytest.raises(ValueError, match="non-negative"):
+            ledger.credit(-1)
+
+    def test_available_formula(self):
+        """available() = initial_budget - consumed + reimbursed."""
+        ledger = TurnLedger(initial_budget=100)
+        ledger.debit(30)
+        ledger.credit(10)
+        assert ledger.available() == 100 - 30 + 10
+
+    def test_can_launch_true(self):
+        ledger = TurnLedger(initial_budget=50, minimum_allocation=5)
+        assert ledger.can_launch() is True
+
+    def test_can_launch_false_insufficient(self):
+        ledger = TurnLedger(initial_budget=50, minimum_allocation=5)
+        ledger.debit(46)
+        assert ledger.available() == 4
+        assert ledger.can_launch() is False
+
+    def test_can_launch_exact_boundary(self):
+        ledger = TurnLedger(initial_budget=50, minimum_allocation=5)
+        ledger.debit(45)
+        assert ledger.available() == 5
+        assert ledger.can_launch() is True
+
+    def test_can_remediate_true(self):
+        ledger = TurnLedger(initial_budget=50, minimum_remediation_budget=3)
+        assert ledger.can_remediate() is True
+
+    def test_can_remediate_false(self):
+        ledger = TurnLedger(initial_budget=50, minimum_remediation_budget=3)
+        ledger.debit(48)
+        assert ledger.available() == 2
+        assert ledger.can_remediate() is False
+
+    def test_can_remediate_exact_boundary(self):
+        ledger = TurnLedger(initial_budget=50, minimum_remediation_budget=3)
+        ledger.debit(47)
+        assert ledger.available() == 3
+        assert ledger.can_remediate() is True
+
+    def test_defaults(self):
+        ledger = TurnLedger(initial_budget=50)
+        assert ledger.consumed == 0
+        assert ledger.reimbursed == 0
+        assert ledger.reimbursement_rate == 0.5
+        assert ledger.minimum_allocation == 5
+        assert ledger.minimum_remediation_budget == 3
+
+    def test_zero_budget_available(self):
+        """initial_budget=0 → available starts at 0."""
+        ledger = TurnLedger(initial_budget=0)
+        assert ledger.available() == 0
+
+    def test_zero_budget_can_launch_false(self):
+        """With zero budget, can_launch() returns False."""
+        ledger = TurnLedger(initial_budget=0, minimum_allocation=5)
+        assert ledger.can_launch() is False
+
+    def test_zero_budget_can_remediate_false(self):
+        """With zero budget, can_remediate() returns False."""
+        ledger = TurnLedger(initial_budget=0, minimum_remediation_budget=3)
+        assert ledger.can_remediate() is False
+
+    def test_over_budget_debit_makes_available_negative(self):
+        """Debiting more than available results in negative available."""
+        ledger = TurnLedger(initial_budget=10)
+        ledger.debit(15)
+        assert ledger.available() == -5
+        assert ledger.can_launch() is False
+        assert ledger.can_remediate() is False
+
+    def test_debit_zero_is_noop(self):
+        """debit(0) is valid and does not change state."""
+        ledger = TurnLedger(initial_budget=50)
+        ledger.debit(0)
+        assert ledger.consumed == 0
+        assert ledger.available() == 50
+
+    def test_credit_zero_is_noop(self):
+        """credit(0) is valid and does not change state."""
+        ledger = TurnLedger(initial_budget=50)
+        ledger.credit(0)
+        assert ledger.reimbursed == 0
+        assert ledger.available() == 50
+
+    def test_credit_exceeds_consumed_increases_available(self):
+        """Crediting more than consumed is allowed (increases available beyond initial)."""
+        ledger = TurnLedger(initial_budget=50)
+        ledger.debit(10)
+        ledger.credit(20)
+        assert ledger.available() == 60  # 50 - 10 + 20
+
+    def test_budget_monotonicity_consumed_never_decreases(self):
+        """consumed only increases — there is no method to decrease it."""
+        ledger = TurnLedger(initial_budget=50)
+        ledger.debit(10)
+        ledger.debit(5)
+        ledger.credit(20)  # credit doesn't decrease consumed
+        assert ledger.consumed == 15  # still 10 + 5
+
+    def test_budget_monotonicity_across_many_operations(self):
+        """consumed never decreases across 15+ mixed operations."""
+        ledger = TurnLedger(initial_budget=200)
+        prev_consumed = 0
+        ops = [
+            ("debit", 10), ("debit", 5), ("credit", 3),
+            ("debit", 20), ("credit", 10), ("debit", 1),
+            ("credit", 0), ("debit", 15), ("debit", 0),
+            ("credit", 5), ("debit", 8), ("credit", 2),
+            ("debit", 12), ("debit", 3), ("credit", 7),
+        ]
+        for op, amount in ops:
+            if op == "debit":
+                ledger.debit(amount)
+            else:
+                ledger.credit(amount)
+            assert ledger.consumed >= prev_consumed, (
+                f"consumed decreased from {prev_consumed} to {ledger.consumed} "
+                f"after {op}({amount})"
+            )
+            prev_consumed = ledger.consumed
+
+        # Verify final arithmetic
+        total_debits = sum(a for o, a in ops if o == "debit")
+        total_credits = sum(a for o, a in ops if o == "credit")
+        assert ledger.consumed == total_debits
+        assert ledger.reimbursed == total_credits
+        assert ledger.available() == 200 - total_debits + total_credits
+
+    def test_exact_threshold_budget_can_launch(self):
+        """Budget exactly at minimum_allocation allows launch."""
+        ledger = TurnLedger(initial_budget=5, minimum_allocation=5)
+        assert ledger.can_launch() is True
+
+    def test_exact_threshold_budget_can_remediate(self):
+        """Budget exactly at minimum_remediation_budget allows remediation."""
+        ledger = TurnLedger(initial_budget=3, minimum_remediation_budget=3)
+        assert ledger.can_remediate() is True
+
+
+# ---------------------------------------------------------------------------
+# GateOutcome enum
+# ---------------------------------------------------------------------------
+
+
+class TestGateOutcome:
+    """Tests for GateOutcome enum."""
+
+    def test_all_members_present(self):
+        expected = {"PASS", "FAIL", "DEFERRED", "PENDING"}
+        assert {m.name for m in GateOutcome} == expected
+
+    def test_values(self):
+        assert GateOutcome.PASS.value == "pass"
+        assert GateOutcome.FAIL.value == "fail"
+        assert GateOutcome.DEFERRED.value == "deferred"
+        assert GateOutcome.PENDING.value == "pending"
+
+    def test_is_success_pass(self):
+        assert GateOutcome.PASS.is_success is True
+
+    def test_is_success_fail(self):
+        assert GateOutcome.FAIL.is_success is False
+
+    def test_is_success_deferred(self):
+        assert GateOutcome.DEFERRED.is_success is False
+
+    def test_is_success_pending(self):
+        assert GateOutcome.PENDING.is_success is False
+
+
+# ---------------------------------------------------------------------------
+# TaskResult dataclass — enhanced fields and serialization
+# ---------------------------------------------------------------------------
+
+
+def _make_task_entry(**kwargs) -> TaskEntry:
+    defaults = dict(task_id="T01.01", title="Test task")
+    defaults.update(kwargs)
+    return TaskEntry(**defaults)
+
+
+def _make_task_result(**kwargs) -> TaskResult:
+    now = datetime.now(timezone.utc)
+    defaults = dict(
+        task=_make_task_entry(),
+        status=TaskStatus.PASS,
+        turns_consumed=10,
+        exit_code=0,
+        started_at=now - timedelta(seconds=30),
+        finished_at=now,
+        gate_outcome=GateOutcome.PASS,
+    )
+    defaults.update(kwargs)
+    return TaskResult(**defaults)
+
+
+class TestTaskResult:
+    """Tests for TaskResult dataclass fields and serialization."""
+
+    def test_fields_present(self):
+        """TaskResult has all required fields including gate_outcome and reimbursement_amount."""
+        tr = _make_task_result()
+        assert tr.task.task_id == "T01.01"
+        assert tr.status == TaskStatus.PASS
+        assert tr.turns_consumed == 10
+        assert tr.gate_outcome == GateOutcome.PASS
+        assert tr.reimbursement_amount == 0
+        assert tr.output_path == ""
+
+    def test_gate_outcome_default(self):
+        tr = TaskResult(task=_make_task_entry())
+        assert tr.gate_outcome == GateOutcome.PENDING
+
+    def test_reimbursement_amount_default(self):
+        tr = TaskResult(task=_make_task_entry())
+        assert tr.reimbursement_amount == 0
+
+    def test_output_path_field(self):
+        tr = _make_task_result(output_path="/tmp/output.txt")
+        assert tr.output_path == "/tmp/output.txt"
+
+    def test_duration_seconds(self):
+        now = datetime.now(timezone.utc)
+        tr = _make_task_result(
+            started_at=now - timedelta(seconds=45),
+            finished_at=now,
+        )
+        assert abs(tr.duration_seconds - 45.0) < 0.01
+
+    def test_to_context_summary_verbose(self):
+        tr = _make_task_result(
+            task=_make_task_entry(task_id="T02.03", title="Implement feature"),
+            status=TaskStatus.PASS,
+            gate_outcome=GateOutcome.PASS,
+            turns_consumed=15,
+        )
+        summary = tr.to_context_summary(verbose=True)
+        assert "### T02.03 — Implement feature" in summary
+        assert "**Status**: pass" in summary
+        assert "**Gate**: pass" in summary
+        assert "**Turns consumed**: 15" in summary
+
+    def test_to_context_summary_verbose_with_reimbursement(self):
+        tr = _make_task_result(reimbursement_amount=5)
+        summary = tr.to_context_summary(verbose=True)
+        assert "**Reimbursement**: 5 turns" in summary
+
+    def test_to_context_summary_verbose_without_reimbursement(self):
+        tr = _make_task_result(reimbursement_amount=0)
+        summary = tr.to_context_summary(verbose=True)
+        assert "Reimbursement" not in summary
+
+    def test_to_context_summary_verbose_with_output_path(self):
+        tr = _make_task_result(output_path="/results/out.txt")
+        summary = tr.to_context_summary(verbose=True)
+        assert "**Output**: /results/out.txt" in summary
+
+    def test_to_context_summary_compressed(self):
+        tr = _make_task_result(
+            task=_make_task_entry(task_id="T01.02"),
+            status=TaskStatus.FAIL,
+            gate_outcome=GateOutcome.FAIL,
+        )
+        summary = tr.to_context_summary(verbose=False)
+        assert "T01.02" in summary
+        assert "fail" in summary
+        assert "gate: fail" in summary
+        # Compressed should be a single line
+        assert "\n" not in summary
+
+    def test_to_context_summary_deterministic(self):
+        """Serialization produces identical output for identical inputs."""
+        now = datetime.now(timezone.utc)
+        kwargs = dict(
+            task=_make_task_entry(task_id="T01.01", title="Test"),
+            status=TaskStatus.PASS,
+            turns_consumed=10,
+            started_at=now - timedelta(seconds=30),
+            finished_at=now,
+            gate_outcome=GateOutcome.PASS,
+        )
+        tr1 = TaskResult(**kwargs)
+        tr2 = TaskResult(**kwargs)
+        assert tr1.to_context_summary(verbose=True) == tr2.to_context_summary(verbose=True)
+        assert tr1.to_context_summary(verbose=False) == tr2.to_context_summary(verbose=False)

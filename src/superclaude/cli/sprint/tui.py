@@ -15,6 +15,7 @@ from rich.text import Text
 
 from .debug_logger import debug_log
 from .models import (
+    GateDisplayState,
     MonitorState,
     Phase,
     PhaseStatus,
@@ -28,6 +29,7 @@ STATUS_STYLES = {
     PhaseStatus.PASS: "bold green",
     PhaseStatus.PASS_NO_SIGNAL: "green",
     PhaseStatus.PASS_NO_REPORT: "green",
+    PhaseStatus.INCOMPLETE: "bold red",
     PhaseStatus.HALT: "bold red",
     PhaseStatus.TIMEOUT: "bold red",
     PhaseStatus.ERROR: "bold red",
@@ -40,6 +42,7 @@ STATUS_ICONS = {
     PhaseStatus.PASS: "[green]PASS[/]",
     PhaseStatus.PASS_NO_SIGNAL: "[green]PASS[/]",
     PhaseStatus.PASS_NO_REPORT: "[green]PASS[/]",
+    PhaseStatus.INCOMPLETE: "[red]INCOMPLETE[/]",
     PhaseStatus.HALT: "[red]HALT[/]",
     PhaseStatus.TIMEOUT: "[red]TIMEOUT[/]",
     PhaseStatus.ERROR: "[red]ERROR[/]",
@@ -59,7 +62,11 @@ class SprintTUI:
         self.monitor_state = MonitorState()
         self.current_phase: Optional[Phase] = None
         self._live: Optional[Live] = None
-        self._live_failed: bool = False  # silences future updates after first render error
+        self._live_failed: bool = False
+        # Per-phase gate display state; updated via update() by executor.
+        # Only rendered when grace_period > 0 (trailing gates enabled).
+        self.gate_states: dict[int, GateDisplayState] = {}
+        self._show_gate_column: bool = getattr(config, "grace_period", 0) > 0  # silences future updates after first render error
 
     def start(self) -> Live:
         """Start the Live display and return it for the executor to use."""
@@ -143,6 +150,8 @@ class SprintTUI:
         table.add_column("#", width=3, justify="right")
         table.add_column("Phase", min_width=30)
         table.add_column("Status", width=12, justify="center")
+        if self._show_gate_column:
+            table.add_column("Gate", width=6, justify="center")
         table.add_column("Duration", width=10, justify="right")
         table.add_column("Tasks", width=8, justify="center")
 
@@ -174,12 +183,18 @@ class SprintTUI:
             )
             tasks = f"{result.last_task_id}" if result else "-"
 
-            table.add_row(
+            row: list[str] = [
                 str(phase.number),
                 phase.display_name,
                 STATUS_ICONS.get(status, str(status.value)),
-                duration,
-                tasks,
+            ]
+            if self._show_gate_column:
+                gate_state = self.gate_states.get(phase.number, GateDisplayState.NONE)
+                row.append(gate_state.icon)
+            row.extend([duration, tasks])
+
+            table.add_row(
+                *row,
                 style=style if status == PhaseStatus.PENDING else "",
             )
 

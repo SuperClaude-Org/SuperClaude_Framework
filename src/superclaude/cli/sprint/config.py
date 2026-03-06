@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+import logging
 import re
 from pathlib import Path
 
 import click
 
-from .models import Phase, SprintConfig
+from .models import Phase, SprintConfig, TaskEntry
 
 # Canonical phase filename conventions (case-insensitive):
 # 1) phase-1-tasklist.md
@@ -111,6 +112,7 @@ def load_sprint_config(
     debug: bool = False,
     stall_timeout: int = 0,
     stall_action: str = "warn",
+    shadow_gates: bool = False,
 ) -> SprintConfig:
     """Load and validate a complete sprint configuration."""
     index_path = Path(index_path).resolve()
@@ -158,6 +160,7 @@ def load_sprint_config(
         debug=debug,
         stall_timeout=stall_timeout,
         stall_action=stall_action,
+        shadow_gates=shadow_gates,
     )
 
     # Validate that the requested range yields at least one active phase
@@ -169,3 +172,110 @@ def load_sprint_config(
         )
 
     return config
+
+
+# ---------------------------------------------------------------------------
+# Tasklist parser — extracts task inventory from phase markdown
+# ---------------------------------------------------------------------------
+
+_TASK_HEADING_RE = re.compile(
+    r"^###\s+(T\d{2}\.\d{2})\s*(?:--|-—|—)\s*(.+)",
+    re.MULTILINE,
+)
+
+_DEPENDENCY_RE = re.compile(
+    r"\*\*Dependencies:\*\*\s*(.*)",
+    re.IGNORECASE,
+)
+
+_TASK_ID_REF_RE = re.compile(r"T\d{2}\.\d{2}")
+
+_logger = logging.getLogger("superclaude.sprint.config")
+
+
+def parse_tasklist(content: str) -> list[TaskEntry]:
+    """Parse phase tasklist markdown into a structured task inventory.
+
+    Extracts task ID, title, and dependency annotations from each
+    ``### T<PP>.<TT> -- Title`` block. Malformed input (missing headings,
+    invalid IDs, empty content) is handled gracefully — invalid blocks
+    are skipped with a logged warning.
+
+    Args:
+        content: Raw markdown text of a phase tasklist file.
+
+    Returns:
+        Ordered list of :class:`TaskEntry` instances.
+    """
+    if not content or not content.strip():
+        return []
+
+    headings = list(_TASK_HEADING_RE.finditer(content))
+    if not headings:
+        _logger.warning("No task headings (### T<PP>.<TT>) found in tasklist content")
+        return []
+
+    tasks: list[TaskEntry] = []
+    for i, match in enumerate(headings):
+        task_id = match.group(1)
+        title = match.group(2).strip()
+
+        # Extract the block body between this heading and the next (or EOF)
+        block_start = match.end()
+        block_end = headings[i + 1].start() if i + 1 < len(headings) else len(content)
+        block = content[block_start:block_end]
+
+        # Extract dependencies
+        dependencies: list[str] = []
+        dep_match = _DEPENDENCY_RE.search(block)
+        if dep_match:
+            dep_text = dep_match.group(1).strip()
+            if dep_text.lower() not in ("none", ""):
+                dependencies = _TASK_ID_REF_RE.findall(dep_text)
+
+        # Build description from the deliverables section if present
+        description = ""
+        for line in block.splitlines():
+            stripped = line.strip()
+            if stripped.startswith("**Deliverables:**"):
+                # Grab the next non-empty line(s) after "Deliverables:"
+                idx = block.index(stripped) + len(stripped)
+                rest = block[idx:].strip()
+                desc_lines = []
+                for dline in rest.splitlines():
+                    dline = dline.strip()
+                    if not dline or dline.startswith("**"):
+                        break
+                    # Strip leading "- " from markdown list items
+                    if dline.startswith("- "):
+                        dline = dline[2:]
+                    desc_lines.append(dline)
+                description = " ".join(desc_lines)
+                break
+
+        tasks.append(
+            TaskEntry(
+                task_id=task_id,
+                title=title,
+                description=description,
+                dependencies=dependencies,
+            )
+        )
+
+    return tasks
+
+
+def parse_tasklist_file(path: Path) -> list[TaskEntry]:
+    """Read a phase tasklist file and parse it into a task inventory.
+
+    Args:
+        path: Path to the phase tasklist markdown file.
+
+    Returns:
+        Ordered list of :class:`TaskEntry` instances.
+
+    Raises:
+        FileNotFoundError: If the path does not exist.
+    """
+    content = path.read_text(errors="replace")
+    return parse_tasklist(content)

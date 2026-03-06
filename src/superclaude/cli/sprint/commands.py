@@ -105,6 +105,12 @@ def sprint_group():
     default="warn",
     help="Action on stall detection (default: warn)",
 )
+@click.option(
+    "--shadow-gates",
+    is_flag=True,
+    default=False,
+    help="Enable shadow mode: trailing gates run in parallel, results are metrics-only",
+)
 def run(
     index_path: Path,
     start_phase: int,
@@ -118,6 +124,7 @@ def run(
     debug_mode: bool,
     stall_timeout: int,
     stall_action: str,
+    shadow_gates: bool,
 ):
     """Execute a sprint from a tasklist index.
 
@@ -145,6 +152,7 @@ def run(
         debug=debug_mode,
         stall_timeout=stall_timeout,
         stall_action=stall_action,
+        shadow_gates=shadow_gates,
     )
 
     # Thread tmux session name into config when relaunched by launch_in_tmux
