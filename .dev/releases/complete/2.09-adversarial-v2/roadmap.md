@@ -1,7 +1,7 @@
 ---
 spec_sources:
-  - .dev/releases/current/2.07-adversarial-v2/05-adversarial2.0-final-refactor-spec.md
-  - .dev/releases/current/2.07-adversarial-v2/adversarial-release-spec.md
+  - .dev/releases/current/2.09-adversarial-v2/05-adversarial2.0-final-refactor-spec.md
+  - .dev/releases/current/2.09-adversarial-v2/adversarial-release-spec.md
 generated: "2026-03-04T00:00:00Z"
 generator: sc:roadmap
 complexity_score: 0.690
@@ -79,15 +79,15 @@ adversarial:
     - haiku:architect
   convergence_score: 0.80
   base_variant: opus:architect
-  artifacts_dir: .dev/releases/current/2.07-adversarial-v2/adversarial/
+  artifacts_dir: .dev/releases/current/2.09-adversarial-v2/adversarial/
   consolidation_convergence: 0.85
 ---
 
-# Roadmap: /sc:adversarial v2.07 — Dual Release
+# Roadmap: /sc:adversarial v2.09 — Dual Release
 
 ## Overview
 
-This roadmap covers the complete v2.07 release of the `/sc:adversarial` command, which comprises two complementary tracks developed in parallel:
+This roadmap covers the complete v2.09 release of the `/sc:adversarial` command, which comprises two complementary tracks developed in parallel:
 
 **Track A (Architectural)**: The Meta-Orchestrator Layer (`--pipeline` flag) transforms the existing single-phase adversarial command into a multi-phase DAG-orchestrated pipeline. Users can compose arbitrarily complex debate workflows using either inline shorthand or YAML files, with native parallelism, artifact routing between phases, dry-run inspection, blind evaluation, and checkpoint-based resume. The existing 5-step pipeline and Mode A/B code paths receive zero changes — the Meta-Orchestrator is a purely additive wrapper.
 
@@ -134,7 +134,7 @@ M2 and M3 are parallelizable after M1. V1 gates only after both M2 and M3 are co
 
 ### Objective
 
-Establish the structural baseline for the v2.07 release: confirm backward compatibility contract, document the SKILL.md integration plan for both tracks, set up testing scaffolding, and write the `--pipeline` flag detection stub (step_0 guard) that gates all pipeline mode logic.
+Establish the structural baseline for the v2.09 release: confirm backward compatibility contract, document the SKILL.md integration plan for both tracks, set up testing scaffolding, and write the `--pipeline` flag detection stub (step_0 guard) that gates all pipeline mode logic.
 
 ### Deliverables
 
@@ -315,7 +315,7 @@ Implement the remaining two protocol improvements (Phase 2 from Spec 2): the Inv
 
 ### Objective
 
-End-to-end validation of the complete v2.07 release: canonical 8-step workflow, protocol regression with all four improvements active, overhead measurement against the 40% ceiling, and completeness verification that no backward-compatible contract was broken.
+End-to-end validation of the complete v2.09 release: canonical 8-step workflow, protocol regression with all four improvements active, overhead measurement against the 40% ceiling, and completeness verification that no backward-compatible contract was broken.
 
 ### Deliverables
 
@@ -324,7 +324,7 @@ End-to-end validation of the complete v2.07 release: canonical 8-step workflow, 
 | V2.1 | Canonical end-to-end: SC-001 (8-step pipeline with `--blind`) executes successfully | Pipeline completes all 3 phases; final output is a merged roadmap with no model-name references (SC-003) |
 | V2.2 | Full protocol stack: SC-005 through SC-009 (all acceptance scenario suites) pass with all improvements active simultaneously | ≥9 of 10 success criteria pass; no more than 1 SC at WARN level |
 | V2.3 | Overhead measurement: SC-010 — measure total overhead delta with all improvements enabled | Measured total overhead ≤40% (NFR-007) |
-| V2.4 | Backward compatibility final check: all D1.2 baseline invocations produce unchanged output with v2.07 SKILL.md | 100% of baseline invocations pass (0 regressions) |
+| V2.4 | Backward compatibility final check: all D1.2 baseline invocations produce unchanged output with v2.09 SKILL.md | 100% of baseline invocations pass (0 regressions) |
 
 ### Dependencies
 
