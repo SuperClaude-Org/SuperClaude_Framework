@@ -28,6 +28,71 @@ FILES_CHANGED_PATTERN = re.compile(
     r"(?:modified|created|edited|wrote|updated)\s+[`'\"]?([^\s`'\"]+\.\w+)"
 )
 
+# Pattern for detecting budget exhaustion in NDJSON output
+ERROR_MAX_TURNS_PATTERN = re.compile(r'"subtype"\s*:\s*"error_max_turns"')
+
+
+def detect_error_max_turns(output_path: Path) -> bool:
+    """Check if the last NDJSON line indicates budget exhaustion.
+
+    Scans the last non-empty line of the output file for the
+    ``"subtype":"error_max_turns"`` pattern, which signals that a
+    subprocess exhausted its turn budget.
+
+    Returns True if error_max_turns is detected, False otherwise.
+    """
+    try:
+        content = output_path.read_text(errors="replace")
+    except (FileNotFoundError, OSError):
+        return False
+
+    if not content.strip():
+        return False
+
+    # Get last non-empty line
+    lines = content.strip().splitlines()
+    for line in reversed(lines):
+        line = line.strip()
+        if line:
+            return bool(ERROR_MAX_TURNS_PATTERN.search(line))
+
+    return False
+
+
+# Pattern for counting assistant message turns in NDJSON output
+# Each "assistant" type message represents one turn consumed.
+_TURN_INDICATOR_PATTERN = re.compile(r'"type"\s*:\s*"assistant"')
+
+
+def count_turns_from_output(output_path: Path) -> int:
+    """Extract the number of turns consumed from subprocess NDJSON output.
+
+    Counts lines containing ``"type":"assistant"`` which represent
+    individual assistant response turns. Each such line indicates
+    one turn was consumed from the budget.
+
+    Args:
+        output_path: Path to the subprocess NDJSON output file.
+
+    Returns:
+        Number of turns counted. Returns 0 if file is missing or empty.
+    """
+    try:
+        content = output_path.read_text(errors="replace")
+    except (FileNotFoundError, OSError):
+        return 0
+
+    if not content.strip():
+        return 0
+
+    count = 0
+    for line in content.splitlines():
+        line = line.strip()
+        if line and _TURN_INDICATOR_PATTERN.search(line):
+            count += 1
+
+    return count
+
 
 class OutputMonitor:
     """Background thread that watches a stream-json output file.

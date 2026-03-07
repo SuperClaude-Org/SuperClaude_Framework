@@ -22,6 +22,185 @@ from superclaude.cli.pipeline.models import (
 )
 
 
+@dataclass
+class TaskEntry:
+    """A single task parsed from a phase tasklist markdown file.
+
+    Represents one ``### T<PP>.<TT> -- Title`` block with its metadata.
+    """
+
+    task_id: str
+    title: str
+    description: str = ""
+    dependencies: list[str] = field(default_factory=list)
+
+
+class TaskStatus(Enum):
+    """Outcome status for a single task within a phase."""
+
+    PASS = "pass"
+    FAIL = "fail"
+    INCOMPLETE = "incomplete"
+    SKIPPED = "skipped"
+
+    @property
+    def is_success(self) -> bool:
+        return self == TaskStatus.PASS
+
+    @property
+    def is_failure(self) -> bool:
+        return self in (TaskStatus.FAIL, TaskStatus.INCOMPLETE)
+
+
+class GateOutcome(Enum):
+    """Outcome of a quality gate check for a task."""
+
+    PASS = "pass"
+    FAIL = "fail"
+    DEFERRED = "deferred"
+    PENDING = "pending"
+
+    @property
+    def is_success(self) -> bool:
+        return self == GateOutcome.PASS
+
+
+class GateDisplayState(Enum):
+    """Visual state for gate status in the TUI phase table.
+
+    Maps gate lifecycle stages to distinct display properties (color, icon, label)
+    for at-a-glance feedback on trailing gate progress.
+
+    Valid transitions:
+        NONE → CHECKING → PASS
+        NONE → CHECKING → FAIL_DEFERRED → REMEDIATING → REMEDIATED
+        NONE → CHECKING → FAIL_DEFERRED → REMEDIATING → HALT
+    """
+
+    NONE = "none"
+    CHECKING = "checking"
+    PASS = "pass"
+    FAIL_DEFERRED = "fail_deferred"
+    REMEDIATING = "remediating"
+    REMEDIATED = "remediated"
+    HALT = "halt"
+
+    @property
+    def color(self) -> str:
+        """Rich style string for TUI rendering."""
+        return _GATE_DISPLAY_COLORS[self]
+
+    @property
+    def icon(self) -> str:
+        """Short icon/label for TUI column rendering."""
+        return _GATE_DISPLAY_ICONS[self]
+
+    @property
+    def label(self) -> str:
+        """Human-readable label for reports."""
+        return _GATE_DISPLAY_LABELS[self]
+
+
+# Valid transitions: frozenset of (from_state, to_state) pairs
+GATE_DISPLAY_TRANSITIONS: frozenset[tuple[GateDisplayState, GateDisplayState]] = frozenset({
+    (GateDisplayState.NONE, GateDisplayState.CHECKING),
+    (GateDisplayState.CHECKING, GateDisplayState.PASS),
+    (GateDisplayState.CHECKING, GateDisplayState.FAIL_DEFERRED),
+    (GateDisplayState.FAIL_DEFERRED, GateDisplayState.REMEDIATING),
+    (GateDisplayState.REMEDIATING, GateDisplayState.REMEDIATED),
+    (GateDisplayState.REMEDIATING, GateDisplayState.HALT),
+})
+
+
+def is_valid_gate_transition(from_state: GateDisplayState, to_state: GateDisplayState) -> bool:
+    """Check whether a gate display state transition is valid."""
+    return (from_state, to_state) in GATE_DISPLAY_TRANSITIONS
+
+
+_GATE_DISPLAY_COLORS: dict[GateDisplayState, str] = {
+    GateDisplayState.NONE: "dim",
+    GateDisplayState.CHECKING: "bold cyan",
+    GateDisplayState.PASS: "bold green",
+    GateDisplayState.FAIL_DEFERRED: "bold yellow",
+    GateDisplayState.REMEDIATING: "bold magenta",
+    GateDisplayState.REMEDIATED: "green",
+    GateDisplayState.HALT: "bold red",
+}
+
+_GATE_DISPLAY_ICONS: dict[GateDisplayState, str] = {
+    GateDisplayState.NONE: "[dim]—[/]",
+    GateDisplayState.CHECKING: "[cyan]⏳[/]",
+    GateDisplayState.PASS: "[green]✓[/]",
+    GateDisplayState.FAIL_DEFERRED: "[yellow]⚠[/]",
+    GateDisplayState.REMEDIATING: "[magenta]🔧[/]",
+    GateDisplayState.REMEDIATED: "[green]✓✓[/]",
+    GateDisplayState.HALT: "[red]✗[/]",
+}
+
+_GATE_DISPLAY_LABELS: dict[GateDisplayState, str] = {
+    GateDisplayState.NONE: "No gate",
+    GateDisplayState.CHECKING: "Checking",
+    GateDisplayState.PASS: "Passed",
+    GateDisplayState.FAIL_DEFERRED: "Deferred",
+    GateDisplayState.REMEDIATING: "Remediating",
+    GateDisplayState.REMEDIATED: "Remediated",
+    GateDisplayState.HALT: "Halted",
+}
+
+
+@dataclass
+class TaskResult:
+    """Outcome of executing a single task subprocess.
+
+    Constructed by the runner from subprocess output — not agent self-reported.
+    Includes execution data, gate outcome, and reimbursement tracking.
+    """
+
+    task: TaskEntry
+    status: TaskStatus = TaskStatus.SKIPPED
+    turns_consumed: int = 0
+    exit_code: int = 0
+    started_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    finished_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    output_bytes: int = 0
+    gate_outcome: GateOutcome = GateOutcome.PENDING
+    reimbursement_amount: int = 0
+    output_path: str = ""
+
+    @property
+    def duration_seconds(self) -> float:
+        return (self.finished_at - self.started_at).total_seconds()
+
+    def to_context_summary(self, *, verbose: bool = True) -> str:
+        """Serialize to structured markdown for context injection.
+
+        Args:
+            verbose: If True, include full detail. If False, produce a
+                compressed one-line summary for progressive summarization.
+
+        Returns:
+            Deterministic markdown string suitable for context injection.
+        """
+        if not verbose:
+            return (
+                f"- **{self.task.task_id}**: {self.status.value} "
+                f"| gate: {self.gate_outcome.value}"
+            )
+        lines = [
+            f"### {self.task.task_id} — {self.task.title}",
+            f"- **Status**: {self.status.value}",
+            f"- **Gate**: {self.gate_outcome.value}",
+            f"- **Turns consumed**: {self.turns_consumed}",
+            f"- **Duration**: {self.duration_seconds:.1f}s",
+            f"- **Exit code**: {self.exit_code}",
+        ]
+        if self.reimbursement_amount > 0:
+            lines.append(f"- **Reimbursement**: {self.reimbursement_amount} turns")
+        if self.output_path:
+            lines.append(f"- **Output**: {self.output_path}")
+        return "\n".join(lines)
+
+
 class PhaseStatus(Enum):
     """Lifecycle of a single phase."""
 
@@ -30,6 +209,7 @@ class PhaseStatus(Enum):
     PASS = "pass"
     PASS_NO_SIGNAL = "pass_no_signal"
     PASS_NO_REPORT = "pass_no_report"
+    INCOMPLETE = "incomplete"
     HALT = "halt"
     TIMEOUT = "timeout"
     ERROR = "error"
@@ -41,6 +221,7 @@ class PhaseStatus(Enum):
             PhaseStatus.PASS,
             PhaseStatus.PASS_NO_SIGNAL,
             PhaseStatus.PASS_NO_REPORT,
+            PhaseStatus.INCOMPLETE,
             PhaseStatus.HALT,
             PhaseStatus.TIMEOUT,
             PhaseStatus.ERROR,
@@ -57,7 +238,7 @@ class PhaseStatus(Enum):
 
     @property
     def is_failure(self) -> bool:
-        return self in (PhaseStatus.HALT, PhaseStatus.TIMEOUT, PhaseStatus.ERROR)
+        return self in (PhaseStatus.INCOMPLETE, PhaseStatus.HALT, PhaseStatus.TIMEOUT, PhaseStatus.ERROR)
 
 
 class SprintOutcome(Enum):
@@ -101,7 +282,7 @@ class SprintConfig(PipelineConfig):
     phases: list[Phase] = field(default_factory=list)
     start_phase: int = 1
     end_phase: int = 0  # 0 = auto-detect (last phase)
-    max_turns: int = 50
+    max_turns: int = 100
     model: str = ""  # empty = claude default
     dry_run: bool = False
     permission_flag: str = "--dangerously-skip-permissions"
@@ -111,6 +292,8 @@ class SprintConfig(PipelineConfig):
     stall_timeout: int = 0  # 0 = disabled
     stall_action: str = "warn"  # "warn" or "kill"
     phase_timeout: int = 0  # 0 = disabled
+    # Shadow mode: trailing gates run in parallel, results are metrics-only
+    shadow_gates: bool = False
 
     def __post_init__(self):
         # Sync release_dir to PipelineConfig.work_dir so both access paths
@@ -277,3 +460,150 @@ class MonitorState:
         if self.output_bytes < 1024 * 1024:
             return f"{self.output_bytes / 1024:.1f} KB"
         return f"{self.output_bytes / (1024 * 1024):.1f} MB"
+
+
+@dataclass
+class TurnLedger:
+    """Economic model for subprocess turn budget tracking.
+
+    Tracks budget allocation, consumption, and reimbursement for sprint
+    subprocesses. Enforces monotonicity: consumed can only increase.
+    """
+
+    initial_budget: int
+    consumed: int = 0
+    reimbursed: int = 0
+    reimbursement_rate: float = 0.8
+    minimum_allocation: int = 5
+    minimum_remediation_budget: int = 3
+
+    def available(self) -> int:
+        """Return available turns: initial_budget - consumed + reimbursed."""
+        return self.initial_budget - self.consumed + self.reimbursed
+
+    def debit(self, turns: int) -> None:
+        """Consume turns from the budget. Enforces monotonicity."""
+        if turns < 0:
+            raise ValueError("debit amount must be non-negative")
+        self.consumed += turns
+
+    def credit(self, turns: int) -> None:
+        """Reimburse turns to the budget."""
+        if turns < 0:
+            raise ValueError("credit amount must be non-negative")
+        self.reimbursed += turns
+
+    def can_launch(self) -> bool:
+        """Return True if enough budget remains for a subprocess launch."""
+        return self.available() >= self.minimum_allocation
+
+    def can_remediate(self) -> bool:
+        """Return True if enough budget remains for remediation."""
+        return self.available() >= self.minimum_remediation_budget
+
+
+def build_resume_output(
+    config: SprintConfig,
+    halt_task_id: str,
+    remaining_tasks: list[TaskEntry],
+    diagnostic_path: str | None = None,
+    ledger: TurnLedger | None = None,
+) -> str:
+    """Build actionable HALT output with resume command and context.
+
+    Produces an actionable resume block containing:
+    - Resume command with exact task ID
+    - Remaining tasks in execution order
+    - Diagnostic output reference (if available)
+    - Budget suggestion based on remaining work
+
+    Args:
+        config: Sprint configuration.
+        halt_task_id: The first uncompleted task ID.
+        remaining_tasks: Tasks not yet attempted, in execution order.
+        diagnostic_path: Path to diagnostic output (if chain produced results).
+        ledger: TurnLedger for budget suggestion.
+
+    Returns:
+        Formatted HALT output string.
+    """
+    remaining_count = len(remaining_tasks)
+    budget_suggestion = max(remaining_count * 10, 50) if remaining_count > 0 else 0
+
+    lines = [
+        "## HALT — Sprint Paused",
+        "",
+        "### Resume Command",
+        f"```",
+        f"superclaude sprint run {config.index_path} --resume {halt_task_id} --budget {budget_suggestion}",
+        f"```",
+        "",
+        f"### Remaining Tasks ({remaining_count})",
+    ]
+
+    for task in remaining_tasks:
+        lines.append(f"- {task.task_id}: {task.title}")
+
+    if diagnostic_path:
+        lines.append("")
+        lines.append("### Diagnostic Output")
+        lines.append(f"See: {diagnostic_path}")
+
+    if ledger:
+        lines.append("")
+        lines.append("### Budget Status")
+        lines.append(f"- Consumed: {ledger.consumed} turns")
+        lines.append(f"- Available: {ledger.available()} turns")
+        lines.append(f"- Suggested budget for resume: {budget_suggestion} turns")
+
+    return "\n".join(lines)
+
+
+@dataclass
+class ShadowGateMetrics:
+    """Aggregated metrics from shadow gate evaluation.
+
+    Collected when ``--shadow-gates`` is enabled. Shadow metrics are
+    informational only and do not affect sprint behavior.
+    """
+
+    total_evaluated: int = 0
+    passed: int = 0
+    failed: int = 0
+    latency_ms: list[float] = field(default_factory=list)
+
+    @property
+    def pass_rate(self) -> float:
+        """Fraction of gates that passed (0.0–1.0)."""
+        if self.total_evaluated == 0:
+            return 0.0
+        return self.passed / self.total_evaluated
+
+    @property
+    def p50_latency_ms(self) -> float:
+        """Median gate evaluation latency in milliseconds."""
+        if not self.latency_ms:
+            return 0.0
+        s = sorted(self.latency_ms)
+        mid = len(s) // 2
+        if len(s) % 2 == 0:
+            return (s[mid - 1] + s[mid]) / 2
+        return s[mid]
+
+    @property
+    def p95_latency_ms(self) -> float:
+        """95th percentile gate evaluation latency in milliseconds."""
+        if not self.latency_ms:
+            return 0.0
+        s = sorted(self.latency_ms)
+        idx = int(len(s) * 0.95)
+        return s[min(idx, len(s) - 1)]
+
+    def record(self, passed: bool, evaluation_ms: float) -> None:
+        """Record a single shadow gate result."""
+        self.total_evaluated += 1
+        if passed:
+            self.passed += 1
+        else:
+            self.failed += 1
+        self.latency_ms.append(evaluation_ms)

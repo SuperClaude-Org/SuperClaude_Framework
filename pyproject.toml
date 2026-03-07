@@ -120,6 +120,11 @@ markers = [
     "diagnostic_l2: Level 2 - Integration tests",
     "diagnostic_l3: Level 3 - System tests",
     "diagnostic_negative: Negative / failure mode tests",
+    "e2e_trailing: End-to-end tests with trailing gate mode (T09.01)",
+    "backward_compat: Backward compatibility regression tests (T09.02)",
+    "property_based: Property-based tests using hypothesis (T09.03)",
+    "nfr_benchmark: Non-functional requirement benchmark tests (T09.04)",
+    "gate_performance: Gate evaluation performance benchmarks",
 ]
 
 [tool.coverage.run]

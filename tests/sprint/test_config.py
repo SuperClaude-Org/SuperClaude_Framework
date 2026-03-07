@@ -9,9 +9,11 @@ from superclaude.cli.sprint.config import (
     _extract_phase_name,
     discover_phases,
     load_sprint_config,
+    parse_tasklist,
+    parse_tasklist_file,
     validate_phases,
 )
-from superclaude.cli.sprint.models import Phase
+from superclaude.cli.sprint.models import Phase, TaskEntry
 
 # ---------------------------------------------------------------------------
 # Pattern matching tests
@@ -210,7 +212,7 @@ class TestLoadSprintConfig:
         assert len(config.phases) == 2
         assert config.start_phase == 1
         assert config.end_phase == 2
-        assert config.max_turns == 50
+        assert config.max_turns == 100
 
     def test_missing_index(self, tmp_path):
         with pytest.raises(click.exceptions.ClickException, match="not found"):
@@ -237,3 +239,122 @@ class TestLoadSprintConfig:
         assert config.max_turns == 100
         assert config.model == "claude-sonnet"
         assert config.dry_run is True
+
+    def test_explicit_max_turns_override(self, tmp_path):
+        """NFR-006/SC-004: explicit max_turns=50 overrides the new default of 100."""
+        (tmp_path / "phase-1-tasklist.md").write_text("# Phase 1\n")
+        index = tmp_path / "tasklist-index.md"
+        index.write_text("- phase-1-tasklist.md\n")
+
+        config = load_sprint_config(index_path=index, max_turns=50)
+        assert config.max_turns == 50  # explicit override, not 100
+
+
+# ---------------------------------------------------------------------------
+# Tasklist parser tests
+# ---------------------------------------------------------------------------
+
+_SAMPLE_TASKLIST = """\
+# Phase 2 -- Per-Task Subprocess Architecture
+
+### T02.01 -- Implement Tasklist Parser in sprint/config.py
+
+| Field | Value |
+|---|---|
+| Effort | M |
+
+**Deliverables:**
+- Tasklist parser (~100 lines) in `src/superclaude/cli/sprint/config.py`
+
+**Dependencies:** None (parser is independent of TurnLedger)
+
+---
+
+### T02.02 -- Implement Per-Task Subprocess Orchestration Loop
+
+| Field | Value |
+|---|---|
+| Effort | L |
+
+**Deliverables:**
+- Per-task subprocess orchestration loop (~200 lines)
+
+**Dependencies:** T01.01 (TurnLedger), T02.01 (TaskInventory parser)
+
+---
+
+### T02.03 -- Implement 4-Layer Subprocess Isolation Setup
+
+| Field | Value |
+|---|---|
+| Effort | M |
+
+**Deliverables:**
+- 4-layer isolation setup (~40 lines)
+
+**Dependencies:** T02.02 (orchestration loop spawns subprocesses)
+"""
+
+
+class TestTasklistParser:
+    """Tests for parse_tasklist() and parse_tasklist_file()."""
+
+    def test_extracts_task_ids(self):
+        tasks = parse_tasklist(_SAMPLE_TASKLIST)
+        assert [t.task_id for t in tasks] == ["T02.01", "T02.02", "T02.03"]
+
+    def test_extracts_titles(self):
+        tasks = parse_tasklist(_SAMPLE_TASKLIST)
+        assert tasks[0].title == "Implement Tasklist Parser in sprint/config.py"
+        assert tasks[1].title == "Implement Per-Task Subprocess Orchestration Loop"
+        assert tasks[2].title == "Implement 4-Layer Subprocess Isolation Setup"
+
+    def test_extracts_dependencies_none(self):
+        tasks = parse_tasklist(_SAMPLE_TASKLIST)
+        assert tasks[0].dependencies == []
+
+    def test_extracts_dependencies_multiple(self):
+        tasks = parse_tasklist(_SAMPLE_TASKLIST)
+        assert tasks[1].dependencies == ["T01.01", "T02.01"]
+
+    def test_extracts_dependencies_single(self):
+        tasks = parse_tasklist(_SAMPLE_TASKLIST)
+        assert tasks[2].dependencies == ["T02.02"]
+
+    def test_extracts_description_from_deliverables(self):
+        tasks = parse_tasklist(_SAMPLE_TASKLIST)
+        assert "Tasklist parser" in tasks[0].description
+        assert "config.py" in tasks[0].description
+
+    def test_empty_content_returns_empty(self):
+        assert parse_tasklist("") == []
+
+    def test_whitespace_only_returns_empty(self):
+        assert parse_tasklist("   \n\n  ") == []
+
+    def test_no_headings_returns_empty(self):
+        assert parse_tasklist("# Just a title\n\nSome text without task headings.") == []
+
+    def test_malformed_heading_skipped(self):
+        content = "### T02.01 -- Valid Task\n\nContent\n\n### Not a task ID\n\nMore content"
+        tasks = parse_tasklist(content)
+        assert len(tasks) == 1
+        assert tasks[0].task_id == "T02.01"
+
+    def test_em_dash_separator(self):
+        content = "### T03.01 — Task With Em Dash\n\nContent"
+        tasks = parse_tasklist(content)
+        assert len(tasks) == 1
+        assert tasks[0].task_id == "T03.01"
+        assert tasks[0].title == "Task With Em Dash"
+
+    def test_parse_tasklist_file(self, tmp_path):
+        f = tmp_path / "phase-2-tasklist.md"
+        f.write_text(_SAMPLE_TASKLIST)
+        tasks = parse_tasklist_file(f)
+        assert len(tasks) == 3
+        assert tasks[0].task_id == "T02.01"
+
+    def test_parse_tasklist_file_missing(self, tmp_path):
+        with pytest.raises(FileNotFoundError):
+            parse_tasklist_file(tmp_path / "nonexistent.md")

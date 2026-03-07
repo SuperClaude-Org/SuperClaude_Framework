@@ -1,0 +1,29 @@
+warning: `VIRTUAL_ENV=/lsiopy` does not match the project environment path `/config/workspace/SuperClaude_Framework/.venv` and will be ignored; use `--active` to target the active environment instead
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.2, pluggy-1.6.0 -- /config/workspace/SuperClaude_Framework/.venv/bin/python
+cachedir: .pytest_cache
+SuperClaude: 4.2.0
+benchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
+hypothesis profile 'default'
+rootdir: /config/workspace/SuperClaude_Framework
+configfile: pyproject.toml
+plugins: superclaude-4.2.0, benchmark-5.2.3, anyio-4.12.1, hypothesis-6.151.9, cov-7.0.0
+collecting ... collected 15 items
+
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_trailing_gate_async.py::TestGateResultQueueThreadSafety::test_concurrent_put_then_drain_collects_all PASSED [  6%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_trailing_gate_async.py::TestGateResultQueueThreadSafety::test_interleaved_put_and_drain PASSED [ 13%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_trailing_gate_async.py::TestGateResultQueueThreadSafety::test_pending_count_reflects_queue_size PASSED [ 20%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_trailing_gate_async.py::TestTrailingGateRunnerConcurrency::test_concurrent_submit_from_multiple_threads PASSED [ 26%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_trailing_gate_async.py::TestTrailingGateRunnerConcurrency::test_steps_without_gate_return_immediate_pass PASSED [ 33%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_trailing_gate_async.py::TestPendingCountAccuracy::test_pending_count_rises_and_falls PASSED [ 40%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_trailing_gate_async.py::TestPendingCountAccuracy::test_pending_count_zero_when_no_submissions PASSED [ 46%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_trailing_gate_async.py::TestDaemonThreadBehavior::test_spawned_threads_are_daemon PASSED [ 53%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_trailing_gate_async.py::TestDaemonThreadBehavior::test_cancel_stops_pending_evaluations PASSED [ 60%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_trailing_gate_async.py::TestDeferredRemediationLogIntegration::test_failed_gates_captured_in_remediation_log PASSED [ 66%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_trailing_gate_async.py::TestDeferredRemediationLogIntegration::test_remediation_log_disk_persistence PASSED [ 73%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_trailing_gate_async.py::TestDeferredRemediationLogIntegration::test_mark_remediated_changes_status PASSED [ 80%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_trailing_gate_async.py::TestWaitForPendingTimeout::test_wait_for_pending_respects_timeout PASSED [ 86%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_trailing_gate_async.py::TestWaitForPendingTimeout::test_wait_for_pending_returns_all_completed_results PASSED [ 93%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_trailing_gate_async.py::TestMixedPassFailConcurrency::test_mixed_results_collected_correctly PASSED [100%]
+
+============================== 15 passed in 2.55s ==============================

@@ -15,7 +15,8 @@ from datetime import datetime, timezone
 from typing import Callable, Protocol
 
 from .gates import gate_passed
-from .models import PipelineConfig, Step, StepResult, StepStatus
+from .models import GateMode, PipelineConfig, Step, StepResult, StepStatus
+from .trailing_gate import TrailingGateRunner
 
 _log = logging.getLogger("superclaude.pipeline.executor")
 
@@ -50,6 +51,7 @@ def execute_pipeline(
     on_step_complete: Callable[[Step, StepResult], None] = lambda s, r: None,
     on_state_update: Callable[[dict], None] = lambda state: None,
     cancel_check: Callable[[], bool] = lambda: False,
+    trailing_runner: TrailingGateRunner | None = None,
 ) -> list[StepResult]:
     """Generic pipeline executor.
 
@@ -61,6 +63,9 @@ def execute_pipeline(
     1. Call on_step_start(step)
     2. Call run_step(step, config, cancel_check)
     3. If step has gate criteria: run gate_passed()
+       - BLOCKING mode: evaluate synchronously, halt on failure
+       - TRAILING mode (grace_period > 0): submit to TrailingGateRunner,
+         continue execution; sync point at end collects results
     4. If gate fails and attempts < retry_limit: retry (go to 2)
     5. If gate fails and attempts exhausted: HALT
     6. Call on_step_complete(step, result)
@@ -74,6 +79,10 @@ def execute_pipeline(
     Returns list of all StepResults (one per step, flattened).
     """
     all_results: list[StepResult] = []
+    # Create trailing runner if grace_period > 0 and none provided
+    _trailing = trailing_runner
+    if _trailing is None and config.grace_period > 0:
+        _trailing = TrailingGateRunner()
 
     for entry in steps:
         if cancel_check():
@@ -96,13 +105,30 @@ def execute_pipeline(
             if any(r.status != StepStatus.PASS for r in group_results):
                 break
         else:
-            # Sequential step
-            result = _execute_single_step(entry, config, run_step, cancel_check, on_step_start, on_step_complete)
+            # Sequential step -- branch on gate_mode
+            result = _execute_single_step(
+                entry, config, run_step, cancel_check,
+                on_step_start, on_step_complete,
+                trailing_runner=_trailing,
+            )
             all_results.append(result)
             on_state_update(_build_state(all_results))
 
             if result.status != StepStatus.PASS:
                 break
+
+    # Sync point: collect all trailing gate results at end of pipeline
+    if _trailing is not None:
+        trailing_results = _trailing.wait_for_pending(
+            timeout=max(30.0, float(config.grace_period))
+        )
+        for tr in trailing_results:
+            if not tr.passed:
+                _log.warning(
+                    "Trailing gate failed for step '%s': %s",
+                    tr.step_id,
+                    tr.failure_reason,
+                )
 
     return all_results
 
@@ -114,10 +140,23 @@ def _execute_single_step(
     cancel_check: Callable[[], bool],
     on_step_start: Callable[[Step], None] = lambda s: None,
     on_step_complete: Callable[[Step, StepResult], None] = lambda s, r: None,
+    trailing_runner: TrailingGateRunner | None = None,
 ) -> StepResult:
-    """Execute a single step with retry logic and gate checking."""
+    """Execute a single step with retry logic and gate checking.
+
+    Gate mode branching:
+    - BLOCKING (default): gate evaluates synchronously before proceeding
+    - TRAILING (grace_period > 0): gate submitted to TrailingGateRunner,
+      step returns PASS immediately and execution continues
+    - grace_period == 0 forces BLOCKING regardless of gate_mode
+    """
     on_step_start(step)
     max_attempts = step.retry_limit + 1  # retry_limit=1 means 2 attempts total
+
+    # Determine effective gate mode
+    effective_mode = step.gate_mode
+    if config.grace_period == 0:
+        effective_mode = GateMode.BLOCKING
 
     for attempt in range(1, max_attempts + 1):
         if cancel_check():
@@ -153,7 +192,21 @@ def _execute_single_step(
             on_step_complete(step, result)
             return result
 
-        # Run gate check
+        # TRAILING mode: submit to runner, return PASS immediately
+        if effective_mode == GateMode.TRAILING and trailing_runner is not None:
+            trailing_runner.submit(step)
+            result = StepResult(
+                step=step,
+                status=StepStatus.PASS,
+                attempt=attempt,
+                gate_failure_reason=None,
+                started_at=result.started_at,
+                finished_at=result.finished_at,
+            )
+            on_step_complete(step, result)
+            return result
+
+        # BLOCKING mode: run gate check synchronously
         passed, reason = gate_passed(step.output_file, step.gate)
         if passed:
             result = StepResult(

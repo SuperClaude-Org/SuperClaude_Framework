@@ -1,0 +1,162 @@
+warning: `VIRTUAL_ENV=/lsiopy` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+
+================================================================================
+  REAL INTEGRATION TEST: execute_phase_tasks + TurnLedger + TrailingGateRunner
+================================================================================
+  Timestamp: 2026-03-06T19:18:53.589372+00:00
+  All functions are PRODUCTION CODE — only subprocess is replaced
+  
+
+================================================================================
+  STEP 1: PRE-FLIGHT — Ledger State Before Execution
+================================================================================
+  initial_budget   = 50
+  consumed         = 0
+  reimbursed       = 0
+  available()      = 50
+  reimbursement    = 50%
+  min_allocation   = 5
+  min_remediation  = 3
+  can_launch()     = True
+  can_remediate()  = True
+  
+  Task plan: 5 tasks, turn costs = [7, 12, 20, 4, 15]
+  Total turns needed (raw): 58
+  Budget: 50 turns → expect exhaustion around task 4-5
+
+================================================================================
+  STEP 2: EXECUTE — Running execute_phase_tasks() [PRODUCTION CODE]
+================================================================================
+  Calling execute_phase_tasks() with real TurnLedger and 5 tasks...
+  Only the subprocess is replaced — all budget logic is production code
+  
+
+================================================================================
+  STEP 3: LEDGER TRACE — Every debit/credit operation
+================================================================================
+  Op       Amount   Consumed   Reimbursed  Available     Time
+  -------- ------ ---------- ------------ ---------- --------
+  DEBIT         5          5            0         45   0.000s
+  DEBIT         2          7            0         43   0.051s
+  DEBIT         5         12            0         38   0.051s
+  DEBIT         7         19            0         31   0.101s
+  DEBIT         5         24            0         26   0.101s
+  DEBIT        15         39            0         11   0.151s
+  DEBIT         5         44            0          6   0.151s
+  CREDIT        1         44            1          7   0.202s
+  DEBIT         5         49            1          2   0.202s
+  DEBIT        10         59            1         -8   0.252s
+
+================================================================================
+  STEP 4: TASK RESULTS — Per-task execution outcomes
+================================================================================
+  Task ID    Status        Turns  ExitCode  OutputBytes
+  ---------- ------------ ------ --------- ------------
+  T01.01     pass              7         0          341
+  T01.02     pass             12         0          480
+  T01.03     pass             20         0          704
+  T01.04     pass              4         0          260
+  T01.05     pass             15         0          567
+
+================================================================================
+  STEP 5: TRAILING GATE EVALUATION — Real gate_passed() on real output files
+================================================================================
+  Submitting 5 gate evaluations to TrailingGateRunner...
+  Gate criteria: frontmatter=['task_id', 'status'], min_lines=5
+  
+    Submitted gate for T01.01 (output: T01.01_output.md, 341 bytes)
+    Submitted gate for T01.02 (output: T01.02_output.md, 480 bytes)
+    Submitted gate for T01.03 (output: T01.03_output.md, 704 bytes)
+    Submitted gate for T01.04 (output: T01.04_output.md, 260 bytes)
+    Submitted gate for T01.05 (output: T01.05_output.md, 567 bytes)
+  
+  Waiting for trailing gate daemon threads to complete...
+  Collected 5 gate results:
+  
+  Step ID      Passed    Eval ms Reason
+  ---------- -------- ---------- ------------------------------
+  T01.01         True       0.2ms —
+  T01.02         True       0.1ms —
+  T01.04         True       0.1ms —
+  T01.05         True       0.1ms —
+  T01.03         True       0.5ms —
+
+================================================================================
+  STEP 6: REIMBURSEMENT — Credit turns back for passed gates
+================================================================================
+  Applying 50% reimbursement for each PASSED gate (production reimbursement logic):
+  
+    T01.01: PASS → credit(3) = floor(7 × 0.5)
+    T01.02: PASS → credit(6) = floor(12 × 0.5)
+    T01.04: PASS → credit(2) = floor(4 × 0.5)
+    T01.05: PASS → credit(7) = floor(15 × 0.5)
+    T01.03: PASS → credit(10) = floor(20 × 0.5)
+
+================================================================================
+  STEP 7: FINAL LEDGER STATE — Post-reimbursement
+================================================================================
+  initial_budget   = 50
+  consumed         = 59
+  reimbursed       = 29
+  available()      = 20
+  can_launch()     = True
+  can_remediate()  = True
+  
+  ACCOUNTING IDENTITY: available == initial - consumed + reimbursed
+    20 == 50 - 59 + 29
+    VERIFIED: True
+  
+  BUDGET DECAY: 50 → 20 (net loss: 30 turns)
+
+================================================================================
+  STEP 8: PHASE REPORT — aggregate_task_results() [PRODUCTION CODE]
+================================================================================
+  Phase:          1
+  Status:         PASS
+  Tasks total:    5
+  Tasks passed:   5
+  Tasks failed:   0
+  Tasks skipped:  0
+  Tasks incomplete: 0
+  Not attempted:  0
+  Total turns:    58
+  Budget remaining: 20
+
+================================================================================
+  STEP 9: COMPLETE LEDGER TRACE — Chronological debit/credit log
+================================================================================
+  This is the raw evidence that turns are being tracked by the production code,
+  not simulated or hallucinated. Each line is a real call to ledger.debit() or
+  ledger.credit() made by execute_phase_tasks().
+  
+    [ 1] DEBIT    5 turns | consumed=  5 reimbursed=  0 available= 45  ← pre-allocate for T01.01
+    [ 2] DEBIT    2 turns | consumed=  7 reimbursed=  0 available= 43  ← reconcile: actual exceeded pre-alloc by 2
+    [ 3] DEBIT    5 turns | consumed= 12 reimbursed=  0 available= 38  ← pre-allocate for T01.02
+    [ 4] DEBIT    7 turns | consumed= 19 reimbursed=  0 available= 31  ← reconcile: actual exceeded pre-alloc by 7
+    [ 5] DEBIT    5 turns | consumed= 24 reimbursed=  0 available= 26  ← pre-allocate for T01.03
+    [ 6] DEBIT   15 turns | consumed= 39 reimbursed=  0 available= 11  ← reconcile: actual exceeded pre-alloc by 15
+    [ 7] DEBIT    5 turns | consumed= 44 reimbursed=  0 available=  6  ← pre-allocate for T01.04
+    [ 8] CREDIT   1 turns | consumed= 44 reimbursed=  1 available=  7  ← reconcile: actual was less than pre-alloc
+    [ 9] DEBIT    5 turns | consumed= 49 reimbursed=  1 available=  2  ← pre-allocate for T01.05
+    [10] DEBIT   10 turns | consumed= 59 reimbursed=  1 available= -8  ← reconcile: actual exceeded pre-alloc by 10
+    [11] CREDIT   3 turns | consumed= 59 reimbursed=  4 available= -5  ← gate PASS reimbursement
+    [12] CREDIT   6 turns | consumed= 59 reimbursed= 10 available=  1  ← gate PASS reimbursement
+    [13] CREDIT   2 turns | consumed= 59 reimbursed= 12 available=  3  ← gate PASS reimbursement
+    [14] CREDIT   7 turns | consumed= 59 reimbursed= 19 available= 10  ← gate PASS reimbursement
+    [15] CREDIT  10 turns | consumed= 59 reimbursed= 29 available= 20  ← gate PASS reimbursement
+
+================================================================================
+  VERDICT
+================================================================================
+    [PASS] Accounting identity holds
+    [PASS] Budget decayed (not static)
+    [PASS] At least 1 task executed
+    [PASS] Gate evaluation ran on real files
+    [PASS] All gates passed
+    [PASS] Ledger trace has entries
+    [PASS] Reimbursement occurred
+  
+  Elapsed: 0.25s
+  Work dir: /tmp/sprint-evidence-319yw6q6
+  
+  ALL CHECKS PASSED

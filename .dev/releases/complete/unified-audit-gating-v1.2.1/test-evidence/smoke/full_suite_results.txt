@@ -1,0 +1,42 @@
+================================================================================
+  FULL SUITE SMOKE TEST RESULTS — unified-audit-gating-v1.2.1
+================================================================================
+Timestamp : 2026-03-06T18:44:55Z
+Project   : /config/workspace/SuperClaude_Framework
+Branch    : feature/2.15-cli-portify
+Commit    : 0c3b0d7
+
+--------------------------------------------------------------------------------
+  SUITE RESULTS
+--------------------------------------------------------------------------------
+
+  Sprint Suite (tests/sprint/)
+    Exit code : 0
+    Verdict   : PASS
+    Passed    : 624
+    Failed    : 0
+    Skipped   : 1
+    Errors    : 0
+    Total     : 625
+
+  Pipeline Suite (tests/pipeline/)
+    Exit code : 0
+    Verdict   : PASS
+    Passed    : 388
+    Failed    : 0
+    Skipped   : 0
+    Errors    : 0
+    Total     : 388
+
+--------------------------------------------------------------------------------
+  AGGREGATE
+--------------------------------------------------------------------------------
+    Total passed  : 1012
+    Total failed  : 0
+    Total skipped : 1
+    Total errors  : 0
+    Grand total   : 1013
+
+================================================================================
+  OVERALL VERDICT: PASS
+================================================================================

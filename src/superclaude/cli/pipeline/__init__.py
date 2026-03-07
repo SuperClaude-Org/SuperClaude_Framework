@@ -22,6 +22,12 @@ Public API surface (42 symbols):
 
 from .combined_m2_pass import CombinedM2Output, run_combined_m2_pass
 from .conflict_detector import ConflictDetection, ConflictKind, detect_conflicts
+from .conflict_review import (
+    ConflictAction,
+    ConflictReviewResult,
+    detect_file_overlap,
+    review_conflicts,
+)
 from .contract_extractor import ImplicitContract, extract_implicit_contracts
 from .dataflow_graph import (
     DataFlowEdge,
@@ -32,6 +38,12 @@ from .dataflow_graph import (
 )
 from .dataflow_pass import DataFlowTracingOutput, run_dataflow_tracing_pass
 from .deliverables import decompose_deliverables, is_behavioral
+from .diagnostic_chain import (
+    DiagnosticReport,
+    DiagnosticStage,
+    StageResult,
+    run_diagnostic_chain,
+)
 from .executor import execute_pipeline
 from .fmea_classifier import (
     DetectionDifficulty,
@@ -60,23 +72,43 @@ from .models import (
     StepStatus,
 )
 from .process import ClaudeProcess
+from .trailing_gate import (
+    DeferredRemediationLog,
+    GateResultQueue,
+    GateScope,
+    RemediationEntry,
+    RemediationRetryResult,
+    RemediationRetryStatus,
+    RemediationStatus,
+    TrailingGatePolicy,
+    TrailingGateResult,
+    TrailingGateRunner,
+    attempt_remediation,
+    build_remediation_prompt,
+    resolve_gate_mode,
+)
 
 __all__ = [
     "AcceptedRisk",
     "ClaudeProcess",
     "CombinedM2Output",
+    "ConflictAction",
     "ConflictDetection",
     "ConflictKind",
+    "ConflictReviewResult",
     "DataFlowEdge",
     "DataFlowGraph",
     "DataFlowNode",
     "DataFlowTracingOutput",
+    "DeferredRemediationLog",
     "Deliverable",
     "DeliverableKind",
     "DetectionDifficulty",
     "FMEAFailureMode",
     "FMEAPromotionOutput",
     "GateCriteria",
+    "GateResultQueue",
+    "GateScope",
     "GuardAnalysisOutput",
     "GuardDetection",
     "GuardKind",
@@ -87,13 +119,19 @@ __all__ = [
     "PipelineConfig",
     "ReleaseGateViolation",
     "ReleaseGateWarning",
+    "RemediationEntry",
+    "RemediationStatus",
     "SemanticCheck",
     "Severity",
     "Step",
     "StepResult",
     "StepStatus",
+    "TrailingGatePolicy",
+    "TrailingGateResult",
+    "TrailingGateRunner",
     "TypeTransitionKind",
     "build_dataflow_graph",
+    "build_remediation_prompt",
     "classify_failure_modes",
     "decompose_deliverables",
     "detect_conflicts",
@@ -102,6 +140,7 @@ __all__ = [
     "gate_passed",
     "is_behavioral",
     "promote_failure_modes",
+    "resolve_gate_mode",
     "run_combined_m2_pass",
     "run_dataflow_tracing_pass",
     "run_guard_analysis_pass",

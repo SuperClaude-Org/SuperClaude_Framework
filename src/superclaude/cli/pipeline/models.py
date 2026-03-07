@@ -43,6 +43,18 @@ class StepStatus(Enum):
         return self in (StepStatus.FAIL, StepStatus.TIMEOUT)
 
 
+class GateMode(Enum):
+    """Gating behavior for pipeline steps.
+
+    BLOCKING: Step must pass before the next step can begin (default).
+    TRAILING: Step runs but does not block subsequent steps; failures
+              are evaluated after a grace period.
+    """
+
+    BLOCKING = "BLOCKING"
+    TRAILING = "TRAILING"
+
+
 @dataclass
 class SemanticCheck:
     """Pure Python check applied to file content. No LLM invocation."""
@@ -74,6 +86,7 @@ class Step:
     inputs: list[Path] = field(default_factory=list)
     retry_limit: int = 1
     model: str = ""
+    gate_mode: GateMode = GateMode.BLOCKING
 
 
 @dataclass
@@ -159,7 +172,8 @@ class PipelineConfig:
 
     work_dir: Path = field(default_factory=lambda: Path("."))
     dry_run: bool = False
-    max_turns: int = 50
+    max_turns: int = 100
     model: str = ""
     permission_flag: str = "--dangerously-skip-permissions"
     debug: bool = False
+    grace_period: int = 0

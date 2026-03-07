@@ -7,6 +7,8 @@ from superclaude.cli.sprint.monitor import (
     TASK_ID_PATTERN,
     TOOL_PATTERN,
     OutputMonitor,
+    count_turns_from_output,
+    detect_error_max_turns,
 )
 
 
@@ -130,3 +132,100 @@ class TestOutputMonitor:
 
         assert monitor.state.last_task_id == "T02.03"
         assert monitor.state.last_tool_used == "Grep"
+
+
+class TestDetectErrorMaxTurns:
+    """Tests for error_max_turns NDJSON detection."""
+
+    def test_detects_error_max_turns_last_line(self, tmp_path):
+        output = tmp_path / "output.txt"
+        output.write_text(
+            '{"type":"result","subtype":"success"}\n'
+            '{"type":"result","subtype":"error_max_turns"}\n'
+        )
+        assert detect_error_max_turns(output) is True
+
+    def test_no_false_positive_on_success(self, tmp_path):
+        output = tmp_path / "output.txt"
+        output.write_text('{"type":"result","subtype":"success"}\n')
+        assert detect_error_max_turns(output) is False
+
+    def test_no_false_positive_on_other_error(self, tmp_path):
+        output = tmp_path / "output.txt"
+        output.write_text('{"type":"result","subtype":"error_timeout"}\n')
+        assert detect_error_max_turns(output) is False
+
+    def test_empty_output(self, tmp_path):
+        output = tmp_path / "output.txt"
+        output.write_text("")
+        assert detect_error_max_turns(output) is False
+
+    def test_missing_file(self, tmp_path):
+        output = tmp_path / "nonexistent.txt"
+        assert detect_error_max_turns(output) is False
+
+    def test_truncated_ndjson(self, tmp_path):
+        output = tmp_path / "output.txt"
+        output.write_text('{"type":"result","sub')
+        assert detect_error_max_turns(output) is False
+
+    def test_multiple_lines_only_checks_last(self, tmp_path):
+        output = tmp_path / "output.txt"
+        output.write_text(
+            '{"type":"result","subtype":"error_max_turns"}\n'
+            '{"type":"result","subtype":"success"}\n'
+        )
+        assert detect_error_max_turns(output) is False
+
+    def test_trailing_whitespace(self, tmp_path):
+        output = tmp_path / "output.txt"
+        output.write_text('{"type":"result","subtype":"error_max_turns"}\n\n\n')
+        assert detect_error_max_turns(output) is True
+
+
+class TestCountTurnsFromOutput:
+    """Tests for turn counting from NDJSON subprocess output."""
+
+    def test_counts_assistant_turns(self, tmp_path):
+        output = tmp_path / "output.txt"
+        output.write_text(
+            '{"type":"assistant","text":"Hello"}\n'
+            '{"type":"tool_use","name":"Read"}\n'
+            '{"type":"tool_result","content":"file content"}\n'
+            '{"type":"assistant","text":"I see the file"}\n'
+            '{"type":"result","subtype":"success"}\n'
+        )
+        assert count_turns_from_output(output) == 2
+
+    def test_zero_turns_on_empty(self, tmp_path):
+        output = tmp_path / "output.txt"
+        output.write_text("")
+        assert count_turns_from_output(output) == 0
+
+    def test_zero_turns_missing_file(self, tmp_path):
+        output = tmp_path / "nonexistent.txt"
+        assert count_turns_from_output(output) == 0
+
+    def test_no_assistant_messages(self, tmp_path):
+        output = tmp_path / "output.txt"
+        output.write_text(
+            '{"type":"tool_use","name":"Read"}\n'
+            '{"type":"tool_result","content":"data"}\n'
+        )
+        assert count_turns_from_output(output) == 0
+
+    def test_many_turns(self, tmp_path):
+        output = tmp_path / "output.txt"
+        lines = [f'{{"type":"assistant","text":"turn {i}"}}\n' for i in range(10)]
+        output.write_text("".join(lines))
+        assert count_turns_from_output(output) == 10
+
+    def test_handles_malformed_json_lines(self, tmp_path):
+        output = tmp_path / "output.txt"
+        output.write_text(
+            '{"type":"assistant","text":"Hello"}\n'
+            "not valid json\n"
+            '{"type":"assistant","text":"World"}\n'
+        )
+        # Should still count the valid assistant lines
+        assert count_turns_from_output(output) == 2

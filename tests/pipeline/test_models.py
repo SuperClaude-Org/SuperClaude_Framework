@@ -9,6 +9,7 @@ import pytest
 
 from superclaude.cli.pipeline.models import (
     GateCriteria,
+    GateMode,
     PipelineConfig,
     SemanticCheck,
     Step,
@@ -50,10 +51,11 @@ class TestPipelineConfig:
     def test_defaults(self, tmp_path):
         cfg = PipelineConfig(work_dir=tmp_path)
         assert cfg.dry_run is False
-        assert cfg.max_turns == 50
+        assert cfg.max_turns == 100
         assert cfg.model == ""
         assert cfg.permission_flag == "--dangerously-skip-permissions"
         assert cfg.debug is False
+        assert cfg.grace_period == 0
 
     def test_custom_values(self, tmp_path):
         cfg = PipelineConfig(
@@ -157,3 +159,56 @@ class TestStepResult:
         sr = StepResult(step=step, status=StepStatus.FAIL, attempt=2, gate_failure_reason="Missing field 'title'", started_at=now, finished_at=now)
         assert sr.gate_failure_reason == "Missing field 'title'"
         assert sr.attempt == 2
+
+
+class TestGateMode:
+    """Tests for GateMode enum and backward compatibility."""
+
+    def test_gate_mode_values(self):
+        assert GateMode.BLOCKING.value == "BLOCKING"
+        assert GateMode.TRAILING.value == "TRAILING"
+
+    def test_gate_mode_default_is_blocking(self, tmp_path):
+        """Step.gate_mode defaults to BLOCKING for backward compatibility."""
+        s = Step(
+            id="test",
+            prompt="p",
+            output_file=tmp_path / "o",
+            gate=None,
+            timeout_seconds=60,
+        )
+        assert s.gate_mode == GateMode.BLOCKING
+
+    def test_gate_mode_trailing(self, tmp_path):
+        s = Step(
+            id="test",
+            prompt="p",
+            output_file=tmp_path / "o",
+            gate=None,
+            timeout_seconds=60,
+            gate_mode=GateMode.TRAILING,
+        )
+        assert s.gate_mode == GateMode.TRAILING
+
+    def test_grace_period_default(self):
+        """PipelineConfig.grace_period defaults to 0 for backward compat."""
+        cfg = PipelineConfig()
+        assert cfg.grace_period == 0
+
+    def test_grace_period_custom(self):
+        cfg = PipelineConfig(grace_period=30)
+        assert cfg.grace_period == 30
+
+    def test_existing_tests_pass_without_gate_mode(self, tmp_path):
+        """Backward compatibility: existing Step creation without gate_mode still works."""
+        s = Step(
+            id="extract",
+            prompt="do the thing",
+            output_file=tmp_path / "out.md",
+            gate=GateCriteria(required_frontmatter_fields=["a"], min_lines=5),
+            timeout_seconds=300,
+        )
+        # All existing fields still accessible
+        assert s.id == "extract"
+        assert s.retry_limit == 1
+        assert s.gate_mode == GateMode.BLOCKING
