@@ -72,8 +72,8 @@ def roadmap_group():
 @click.option(
     "--max-turns",
     type=int,
-    default=50,
-    help="Max agent turns per claude subprocess. Default: 50.",
+    default=100,
+    help="Max agent turns per claude subprocess. Default: 100.",
 )
 @click.option(
     "--debug",

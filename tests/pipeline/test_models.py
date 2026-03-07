@@ -51,7 +51,7 @@ class TestPipelineConfig:
     def test_defaults(self, tmp_path):
         cfg = PipelineConfig(work_dir=tmp_path)
         assert cfg.dry_run is False
-        assert cfg.max_turns == 50
+        assert cfg.max_turns == 100
         assert cfg.model == ""
         assert cfg.permission_flag == "--dangerously-skip-permissions"
         assert cfg.debug is False

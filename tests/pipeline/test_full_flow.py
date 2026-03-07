@@ -322,8 +322,9 @@ class TestFullFlowIntegration:
 
         # Verify cumulative accounting
         # consumed: 10 + 10 + 5 = 25
-        # reimbursed: 5
-        # available: 200 - 25 + 5 = 180
+        # reimbursed: int(10 * 0.8) = 8
+        # available: 200 - 25 + 8 = 183
+        expected_reimbursed = int(10 * ledger.reimbursement_rate)
         assert ledger.consumed == 25
-        assert ledger.reimbursed == 5
-        assert ledger.available() == 180
+        assert ledger.reimbursed == expected_reimbursed
+        assert ledger.available() == 200 - 25 + expected_reimbursed

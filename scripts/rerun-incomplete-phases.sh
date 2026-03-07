@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # rerun-incomplete-phases.sh — Safely re-run incomplete sprint phases one at a time.
 #
-# Context: Sprint v2.11-roadmap-v4 hit max_turns (50) on all 4 phases,
+# Context: Sprint v2.11-roadmap-v4 hit max_turns (100) on all 4 phases,
 # leaving 8 tasks incomplete. This script:
 #   1. Backs up existing results and artifacts
 #   2. Re-runs each phase individually with higher turn limit

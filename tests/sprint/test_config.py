@@ -212,7 +212,7 @@ class TestLoadSprintConfig:
         assert len(config.phases) == 2
         assert config.start_phase == 1
         assert config.end_phase == 2
-        assert config.max_turns == 50
+        assert config.max_turns == 100
 
     def test_missing_index(self, tmp_path):
         with pytest.raises(click.exceptions.ClickException, match="not found"):
@@ -239,6 +239,15 @@ class TestLoadSprintConfig:
         assert config.max_turns == 100
         assert config.model == "claude-sonnet"
         assert config.dry_run is True
+
+    def test_explicit_max_turns_override(self, tmp_path):
+        """NFR-006/SC-004: explicit max_turns=50 overrides the new default of 100."""
+        (tmp_path / "phase-1-tasklist.md").write_text("# Phase 1\n")
+        index = tmp_path / "tasklist-index.md"
+        index.write_text("- phase-1-tasklist.md\n")
+
+        config = load_sprint_config(index_path=index, max_turns=50)
+        assert config.max_turns == 50  # explicit override, not 100
 
 
 # ---------------------------------------------------------------------------
