@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "spec_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.18-cli-portify-v2/refactoring-spec-cli-portify.md",
+  "spec_hash": "28886ff55868f7fa8af1b7fc58a80c174bfd2cb3d39348c5a1e36a7378d88a00",
+  "agents": [
+    {
+      "model": "opus",
+      "persona": "architect"
+    },
+    {
+      "model": "haiku",
+      "persona": "analyzer"
+    }
+  ],
+  "depth": "deep",
+  "last_run": "2026-03-08T16:16:25.883402+00:00",
+  "steps": {
+    "extract": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.18-cli-portify-v2/extraction.md",
+      "started_at": "2026-03-08T15:59:34.710170+00:00",
+      "completed_at": "2026-03-08T16:02:00.730983+00:00"
+    },
+    "generate-opus-architect": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.18-cli-portify-v2/roadmap-opus-architect.md",
+      "started_at": "2026-03-08T16:02:00.731774+00:00",
+      "completed_at": "2026-03-08T16:06:16.767780+00:00"
+    },
+    "generate-haiku-analyzer": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.18-cli-portify-v2/roadmap-haiku-analyzer.md",
+      "started_at": "2026-03-08T16:02:00.732954+00:00",
+      "completed_at": "2026-03-08T16:03:53.748801+00:00"
+    },
+    "diff": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.18-cli-portify-v2/diff-analysis.md",
+      "started_at": "2026-03-08T16:06:16.768616+00:00",
+      "completed_at": "2026-03-08T16:07:33.780460+00:00"
+    },
+    "debate": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.18-cli-portify-v2/debate-transcript.md",
+      "started_at": "2026-03-08T16:07:33.780736+00:00",
+      "completed_at": "2026-03-08T16:09:31.801030+00:00"
+    },
+    "score": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.18-cli-portify-v2/base-selection.md",
+      "started_at": "2026-03-08T16:09:31.801689+00:00",
+      "completed_at": "2026-03-08T16:10:23.811446+00:00"
+    },
+    "merge": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.18-cli-portify-v2/roadmap.md",
+      "started_at": "2026-03-08T16:10:23.811929+00:00",
+      "completed_at": "2026-03-08T16:13:14.848047+00:00"
+    },
+    "test-strategy": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.18-cli-portify-v2/test-strategy.md",
+      "started_at": "2026-03-08T16:13:14.848842+00:00",
+      "completed_at": "2026-03-08T16:16:25.882671+00:00"
+    }
+  }
+}

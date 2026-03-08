@@ -1,0 +1,49 @@
+# Blocking OQ Implementation Decisions
+# Generated: 2026-03-08
+# Task: T01.09
+# Roadmap Items: R-014, R-015
+
+schema_version: "1.0"
+
+decisions:
+  OQ-002:
+    title: "TurnLedger in pipeline API"
+    blocking: true
+    resolution: "TurnLedger is NOT in superclaude.cli.pipeline.models. It exists in superclaude.cli.sprint.models only. Portified pipelines import TurnLedger from sprint.models directly."
+    evidence: "grep -r TurnLedger src/superclaude/cli/ shows it in sprint/models.py:466 and sprint/executor.py only"
+    impact: "Pipeline-spec.md reference on line ~419 already correct; no spec change needed"
+
+  OQ-003:
+    title: "dry-run behavior"
+    blocking: true
+    resolution: "Execute Phases 0-2 only. Emit contracts (portify-prerequisites.yaml, portify-analysis.yaml). No code generation (Phase 3) or integration (Phase 4)."
+    evidence: "Roadmap spec M1.3 line 79"
+    impact: "Affects command shim --dry-run flag behavior and protocol control flow"
+
+  OQ-004:
+    title: "Integration schema"
+    blocking: true
+    resolution: "portify-integration.yaml fields: schema_version, phase, status, timestamp, main_py_patched, command_registered, test_file_generated, smoke_test_passed"
+    evidence: "Roadmap spec M1.3 line 84"
+    impact: "Defines Phase 4 contract structure consumed by Phase 5 validation"
+
+  OQ-007:
+    title: "Approval gate mechanism"
+    blocking: true
+    resolution: "TodoWrite checkpoint pattern: write contract → mark task 'awaiting review' → user resumes → protocol validates on resume"
+    evidence: "Roadmap spec M1.3 line 83"
+    impact: "Defines Phase 1→2 and Phase 2→3 user review gates"
+
+  OQ-008:
+    title: "Default output path"
+    blocking: true
+    resolution: "Default --output to src/superclaude/cli/<derived_name>/ where derived_name strips sc- prefix and -protocol suffix, converted to kebab-case"
+    evidence: "Roadmap spec M1.3 line 84"
+    impact: "Affects contract emission paths and collision detection"
+
+  OQ-010:
+    title: "Step boundary algorithm"
+    blocking: true
+    resolution: "Already documented in refs/analysis-protocol.md under 'Step Decomposition Algorithm' → 'Identify Step Boundaries'. No additional extraction needed."
+    evidence: "File exists at src/superclaude/skills/sc-cli-portify/refs/analysis-protocol.md lines 42-55"
+    impact: "Phase 3 step decomposition references this algorithm directly"

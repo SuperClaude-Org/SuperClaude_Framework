@@ -1,355 +1,134 @@
+
+
 ---
-spec_source: .dev/releases/current/v2.18-roadmap-validate/spec-roadmap-validate.md
-generated_by: sc:roadmap v2.0.0
-generated_at: "2026-03-06"
-complexity_score: 0.510
-complexity_class: MEDIUM
-primary_persona: backend
-primary_persona_confidence: 0.42
-consulting_personas: [architect, scribe]
-domain_distribution:
-  backend: 55
-  documentation: 25
-  performance: 10
-  frontend: 5
-  security: 5
-extraction_mode: single-pass
-requirement_counts:
-  functional: 23
-  non_functional: 5
-  dependencies: 8
-  success_criteria: 7
-  risks: 5
-pipeline_diagnostics:
-  prereq_checks:
-    spec_validated: true
-    output_collision_resolved: false
-    adversarial_skill_present: na
-    tier1_templates_found: 0
-  extraction_passes: 1
-  dedup_removals: 0
-  verification_status: PASS
-  fallback_activated: false
----
-
-# Extraction Report: FR-050 — superclaude roadmap validate
-
-## Project Overview
-
-- **Title**: Roadmap Validate — Post-Pipeline Reflection & Adversarial Validation
-- **Version**: 1.0.0
-- **Feature ID**: FR-050
-- **Parent Feature**: roadmap-pipeline
-- **Target Release**: v2.19
-
-**Summary**: Adds a `superclaude roadmap validate` subcommand that runs structured Claude subprocesses to validate merged roadmap artifacts across 7 dimensions. Supports single-agent and multi-agent adversarial validation modes. Validates cross-file consistency, deliverable ID uniqueness, bidirectional traceability, milestone DAG validity, tasklist parseability, and content-level interleave.
-
+spec_source: "spec-roadmap-validate.md"
+generated: "2026-03-08T00:00:00Z"
+generator: "superclaude-extraction-agent"
+functional_requirements: 14
+nonfunctional_requirements: 7
+total_requirements: 21
+complexity_score: 0.65
+complexity_class: moderate
+domains_detected: 4
+risks_identified: 6
+dependencies_identified: 8
+success_criteria_count: 9
+extraction_mode: full
 ---
 
 ## Functional Requirements
 
-### FR-001: Validate Subcommand Core
-- **Description**: Add `superclaude roadmap validate <output-dir>` subcommand that validates presence of roadmap.md, test-strategy.md, and extraction.md in the specified output directory, then runs the validation pipeline.
-- **Priority**: P0
-- **Domain**: Backend
-- **Source**: L52-L61
+**FR-001** (FR-050.1): Implement `superclaude roadmap validate <output-dir>` subcommand that accepts a path to a directory containing roadmap pipeline outputs and validates presence of all 3 required files (`roadmap.md`, `test-strategy.md`, `extraction.md`) before running the validation pipeline.
 
-### FR-002: Single-Agent Validation Mode
-- **Description**: Default validation mode when `--agents` is not specified or has exactly 1 agent. Runs a single `reflect` step producing `validate/validation-report.md`.
-- **Priority**: P0
-- **Domain**: Backend
-- **Source**: L63-L76
+**FR-002** (FR-050.1): Support CLI options `--agents`, `--model`, `--max-turns`, and `--debug` on the `validate` subcommand with defaults of `opus:architect`, empty string, 50, and false respectively.
 
-### FR-003: Multi-Agent Adversarial Validation
-- **Description**: When `--agents` specifies 2+ agents, run parallel reflect steps per agent followed by a sequential adversarial-merge step. Produces per-agent reflect files and a merged validation-report.md.
-- **Priority**: P1
-- **Domain**: Backend
-- **Source**: L78-L95
+**FR-003** (FR-050.2): In single-agent mode (default or 1 agent specified), run a single sequential reflection subprocess that produces `<output-dir>/validate/validation-report.md`.
 
-### FR-004: Auto-Invocation from `roadmap run`
-- **Description**: After the 8-step pipeline succeeds, `execute_roadmap()` automatically invokes `execute_validate()` unless `--no-validate` is passed. Inherits `--agents`, `--model`, `--max-turns`, and `--debug` from parent invocation.
-- **Priority**: P0
-- **Domain**: Backend
-- **Source**: L97-L103
+**FR-004** (FR-050.3): In multi-agent mode (2+ agents via `--agents`), run parallel reflection subprocesses per agent producing `reflect-<agent-id>.md` files, followed by a sequential adversarial merge step producing the final `validation-report.md`.
 
-### FR-005: 7-Dimension Validation
-- **Description**: The reflection prompt validates across 7 dimensions with severity classification: Schema (BLOCKING), Structure (BLOCKING), Traceability (BLOCKING), Cross-file (BLOCKING), Interleave (WARNING), Decomposition (WARNING), Parseability (BLOCKING).
-- **Priority**: P0
-- **Domain**: Backend, Documentation
-- **Source**: L105-L117
+**FR-005** (FR-050.4): Auto-invoke `execute_validate()` from `execute_roadmap()` after the 8-step pipeline succeeds, inheriting `--agents`, `--model`, `--max-turns`, and `--debug` from the parent invocation.
 
-### FR-006: Validation Report Schema
-- **Description**: `validation-report.md` has YAML frontmatter with blocking_issues_count, warnings_count, info_count, tasklist_ready, validation_agents, validation_mode. Body contains Summary, Blocking Issues, Warnings, Info, and Validation Metadata sections.
-- **Priority**: P0
-- **Domain**: Documentation
-- **Source**: L119-L161
+**FR-006** (FR-050.4): Support `--no-validate` flag on `roadmap run` to skip the automatic post-pipeline validation step.
 
-### FR-007: Agent Agreement Analysis Table
-- **Description**: Multi-agent adversarial merge report includes Agent Agreement Analysis table with BOTH_AGREE, ONLY_A, ONLY_B, and CONFLICT categories. Severity conflicts are escalated to higher severity.
-- **Priority**: P1
-- **Domain**: Backend, Documentation
-- **Source**: L163-L175
+**FR-007** (FR-050.4): When `--resume` is used and all gates pass on existing artifacts, validation still runs on the final artifacts. If the pipeline halts on a failed step, validation is skipped.
 
-### FR-008: Reflection Prompt Specification
-- **Description**: `build_reflect_prompt()` instructs Claude to read all 3 input files, validate across 7 dimensions, classify findings by severity, output structured report. Key constraints: context independence ("You did NOT generate these artifacts"), precision ("false positives waste user time"), location citations required.
-- **Priority**: P0
-- **Domain**: Backend
-- **Source**: L299-L316
+**FR-008** (FR-050.5): Validate across 7 dimensions: Schema (BLOCKING), Structure (BLOCKING), Traceability (BLOCKING), Cross-file consistency (BLOCKING), Interleave ratio (WARNING), Decomposition (WARNING), and Parseability (BLOCKING).
 
-### FR-009: Adversarial Merge Prompt Specification
-- **Description**: `build_adversarial_merge_prompt()` instructs Claude to read all reflection reports, deduplicate findings, categorize unique findings, resolve severity conflicts by escalation, produce merged report with Agent Agreement Analysis, and recalculate blocking_issues_count from merged findings.
-- **Priority**: P1
-- **Domain**: Backend
-- **Source**: L318-L339
+**FR-009** (FR-050.6): Produce a `validation-report.md` with YAML frontmatter containing `blocking_issues_count`, `warnings_count`, `info_count`, `tasklist_ready`, `validation_agents`, and `validation_mode` fields.
 
-### FR-010: New File — validate_executor.py
-- **Description**: Create `src/superclaude/cli/roadmap/validate_executor.py` containing `execute_validate()` and `_build_validate_steps()` functions.
-- **Priority**: P0
-- **Domain**: Backend
-- **Source**: L183-L186
+**FR-010** (FR-050.6): Structure the report body with Summary, Blocking Issues (B-NNN IDs with Dimension/Location/Detail/Fix), Warnings (W-NNN), Info (I-NNN), and Validation Metadata sections.
 
-### FR-011: New File — validate_gates.py
-- **Description**: Create `src/superclaude/cli/roadmap/validate_gates.py` containing `REFLECT_GATE` and `ADVERSARIAL_MERGE_GATE` gate criteria with semantic checks.
-- **Priority**: P0
-- **Domain**: Backend
-- **Source**: L183-L186
+**FR-011** (FR-050.6): Set `tasklist_ready: true` only when `blocking_issues_count == 0`.
 
-### FR-012: New File — validate_prompts.py
-- **Description**: Create `src/superclaude/cli/roadmap/validate_prompts.py` containing `build_reflect_prompt()` and `build_adversarial_merge_prompt()` functions.
-- **Priority**: P0
-- **Domain**: Backend
-- **Source**: L183-L186
+**FR-012** (FR-050.7): In multi-agent mode, include an Agent Agreement Analysis table in the merged report categorizing findings as BOTH_AGREE, ONLY_A, ONLY_B, or CONFLICT (severity disagreements escalated to higher severity).
 
-### FR-013: Modify commands.py
-- **Description**: Add `validate` subcommand to roadmap CLI group and add `--no-validate` flag to `run` command.
-- **Priority**: P0
-- **Domain**: Backend
-- **Source**: L189-L190
+**FR-013**: Apply `REFLECT_GATE` criteria to individual reflection outputs: required frontmatter fields (`blocking_issues_count`, `warnings_count`, `tasklist_ready`), min 20 lines, STANDARD enforcement, non-empty frontmatter values semantic check.
 
-### FR-014: Modify executor.py
-- **Description**: Add call to `execute_validate()` after successful pipeline execution in `execute_roadmap()`.
-- **Priority**: P0
-- **Domain**: Backend
-- **Source**: L191
-
-### FR-015: Add ValidateConfig Dataclass
-- **Description**: Add `ValidateConfig(PipelineConfig)` dataclass to `models.py` with fields: output_dir, validate_dir, agents, roadmap_file, test_strategy_file, extraction_file.
-- **Priority**: P0
-- **Domain**: Backend
-- **Source**: L192, L212-L222
-
-### FR-016: Single-Agent Step Construction
-- **Description**: `_build_validate_steps()` with 1 agent returns a list with a single `Step` (id="reflect", gate=REFLECT_GATE, timeout=300s, retry_limit=1).
-- **Priority**: P0
-- **Domain**: Backend
-- **Source**: L346-L359
-
-### FR-017: Multi-Agent Step Construction
-- **Description**: `_build_validate_steps()` with 2+ agents returns a parallel group of reflect steps followed by a sequential adversarial-merge step (gate=ADVERSARIAL_MERGE_GATE).
-- **Priority**: P1
-- **Domain**: Backend
-- **Source**: L365-L393
-
-### FR-018: CLI validate Command Interface
-- **Description**: `roadmap validate` subcommand accepts output_dir (required), `--agents` (default: opus:architect), `--model`, `--max-turns` (default: 50), `--debug` flag.
-- **Priority**: P0
-- **Domain**: Backend
-- **Source**: L417-L432
-
-### FR-019: --no-validate Flag
-- **Description**: Add `--no-validate` flag to `roadmap run` command that skips the post-pipeline validation step.
-- **Priority**: P0
-- **Domain**: Backend
-- **Source**: L399-L413
-
-### FR-020: Success Output Format
-- **Description**: On success (no blocking issues), output step progress, summary counts, tasklist_ready status, and report file path.
-- **Priority**: P1
-- **Domain**: Documentation
-- **Source**: L438-L444
-
-### FR-021: Blocking Issues Warning Behavior
-- **Description**: When blocking issues are found, warn user with issue summary but do not exit non-zero. List each blocking issue briefly in CLI output.
-- **Priority**: P0
-- **Domain**: Backend
-- **Source**: L446-L459
-
-### FR-022: Gate Failure Output
-- **Description**: When the validation subprocess itself fails (gate check failure), output FAIL status with reason and point user to potentially incomplete report file.
-- **Priority**: P1
-- **Domain**: Documentation
-- **Source**: L461-L468
-
-### FR-023: Gate Semantic Checks
-- **Description**: Implement `_has_agreement_table` semantic check verifying Agent Agreement Analysis section with table. Reuse `_frontmatter_values_non_empty` from `roadmap/gates.py` via import.
-- **Priority**: P0
-- **Domain**: Backend
-- **Source**: L226-L283
-
----
+**FR-014**: Apply `ADVERSARIAL_MERGE_GATE` criteria to merged output: required frontmatter fields (`blocking_issues_count`, `warnings_count`, `tasklist_ready`, `validation_mode`, `validation_agents`), min 30 lines, STRICT enforcement, non-empty frontmatter + agreement table semantic checks.
 
 ## Non-Functional Requirements
 
-### NFR-001: Wall Time Constraint
-- **Description**: Validate step adds ≤10% wall time to pipeline. ≤2 min for single agent.
-- **Category**: Performance
-- **Constraint**: ≤120 seconds single-agent, ≤10% overhead
-- **Source**: L473
+**NFR-001** (NFR-050.1): Validation step adds ≤10% wall time to the pipeline, targeting ≤2 minutes for single-agent mode.
 
-### NFR-002: Module Isolation
-- **Description**: No imports from validate_* modules in pipeline/* modules. Maintains NFR-007 (existing constraint).
-- **Category**: Maintainability
-- **Constraint**: Zero reverse imports
-- **Source**: L474
+**NFR-002** (NFR-050.2): No imports from `validate_*` modules in `pipeline/*` modules — maintains unidirectional dependency (validate → roadmap, not vice versa).
 
-### NFR-003: Standalone Operation
-- **Description**: `validate` subcommand works independently of `roadmap run`.
-- **Category**: Reliability
-- **Constraint**: Standalone invocable
-- **Source**: L475
+**NFR-003** (NFR-050.3): `validate` subcommand works independently of `roadmap run` as a standalone invocation against any output directory.
 
-### NFR-004: Infrastructure Reuse
-- **Description**: Reuses existing pipeline infrastructure (execute_pipeline, ClaudeProcess, gate_passed). Zero new infrastructure.
-- **Category**: Maintainability
-- **Constraint**: No new infrastructure classes
-- **Source**: L476
+**NFR-004** (NFR-050.4): Reuses existing pipeline infrastructure (`execute_pipeline`, `ClaudeProcess`, `gate_passed`) with zero new infrastructure components.
 
-### NFR-005: Unified Code Path
-- **Description**: Single-agent and multi-agent share identical code path (list of 1 vs list of N).
-- **Category**: Maintainability
-- **Constraint**: One implementation for both modes
-- **Source**: L477
+**NFR-005** (NFR-050.5): Single-agent and multi-agent code paths share identical logic, differing only in list length (1 vs N).
 
----
+**NFR-006**: Blocking issues produce warnings in CLI output but do not cause non-zero exit codes — users may proceed with known issues.
 
-## Dependencies
+**NFR-007**: Validation subprocess runs with context independence from the generation pipeline to eliminate confirmation bias (separate Claude subprocess, not in-session).
 
-### DEP-001: validate_executor.py → validate_gates.py, validate_prompts.py
-- **Type**: Internal
-- **Affected**: FR-010, FR-011, FR-012
-- **Source**: L201-L207
+## Complexity Assessment
 
-### DEP-002: validate_gates.py → roadmap/gates.py
-- **Type**: Internal (import reuse)
-- **Affected**: FR-011, FR-023
-- **Source**: L229-L230
+**complexity_score**: 0.65
+**complexity_class**: moderate
 
-### DEP-003: ValidateConfig → PipelineConfig
-- **Type**: Internal (inheritance)
-- **Affected**: FR-015
-- **Source**: L214
+**Scoring Rationale**:
+- **Domain breadth** (+0.15): Spans CLI, subprocess orchestration, prompt engineering, and structured validation — 4 domains but well-bounded.
+- **Code scope** (+0.15): 3 new files, 3 modified files. Clear module boundaries with explicit dependency graph. No schema migrations.
+- **Integration complexity** (+0.15): Reuses existing pipeline executor and gate infrastructure. Must integrate with `roadmap run` auto-invocation and `--resume` behavior.
+- **Algorithmic complexity** (+0.10): Multi-agent parallel execution with adversarial merge is moderately complex but follows established patterns from the parent pipeline.
+- **Risk reduction** (-0.10): No breaking changes, purely additive subcommand, `--no-validate` preserves backward compatibility. Well-specified gate criteria and prompt constraints.
+- **Spec maturity** (+0.10): Spec is thorough with resolved open items, explicit implementation order, and validation fixes already applied.
 
-### DEP-004: execute_validate() → execute_pipeline()
-- **Type**: Internal (function reuse)
-- **Affected**: FR-010
-- **Source**: L203-L204
+## Architectural Constraints
 
-### DEP-005: commands.py → validate_executor.py
-- **Type**: Internal
-- **Affected**: FR-013, FR-010
-- **Source**: L206-L207
+1. **Unidirectional dependency**: `validate_*` modules may import from `roadmap/gates.py` and `pipeline/*`, but `pipeline/*` must never import from `validate_*` (NFR-050.2).
+2. **Infrastructure reuse mandate**: Must reuse `execute_pipeline`, `ClaudeProcess`, and `gate_passed` — no new infrastructure classes or subprocess mechanisms (NFR-050.4).
+3. **File placement**: New files must reside in `src/superclaude/cli/roadmap/` alongside existing roadmap modules (`validate_executor.py`, `validate_gates.py`, `validate_prompts.py`).
+4. **Agent spec format**: Must use identical `model:persona` format as `roadmap run` for consistency and code reuse.
+5. **Output directory structure**: Validation outputs go in `<output-dir>/validate/` subdirectory, not in the parent output directory.
+6. **Implementation order**: `models.py` → (`validate_gates.py` ‖ `validate_prompts.py`) → `validate_executor.py` → (`commands.py` ‖ `executor.py`), respecting dependency graph.
+7. **Gate enforcement tiers**: REFLECT_GATE uses STANDARD enforcement; ADVERSARIAL_MERGE_GATE uses STRICT enforcement.
+8. **Subprocess isolation**: Validation must run as a separate Claude subprocess, not in-session, to prevent confirmation bias from the generation context.
 
-### DEP-006: executor.py → execute_validate()
-- **Type**: Internal
-- **Affected**: FR-014, FR-010
-- **Source**: L204
+## Risk Inventory
 
-### DEP-007: Step/GateCriteria/SemanticCheck class reuse
-- **Type**: Internal (infrastructure)
-- **Affected**: FR-011, FR-016, FR-017
-- **Source**: L244-L283
+**R-001** (medium): **False positive rate in validation findings**. Claude may flag non-issues as BLOCKING, wasting user investigation time. *Mitigation*: Prompt constraint "false positives waste user time" + adversarial merge deduplication reduces false positives.
 
-### DEP-008: ClaudeProcess, gate_passed reuse
-- **Type**: Internal (infrastructure)
-- **Affected**: NFR-004
-- **Source**: L476
+**R-002** (medium): **Validation subprocess token cost**. Multi-agent validation with 3 input files could consume significant tokens. *Mitigation*: NFR-001 targets ≤2 min wall time; single-agent default for standalone invocation keeps costs low.
 
----
+**R-003** (low): **Gate criteria too lenient**. REFLECT_GATE min 20 lines may pass shallow reports. *Mitigation*: Semantic checks for non-empty frontmatter values provide content-level validation beyond line count.
+
+**R-004** (medium): **Adversarial merge quality**. The merge step must correctly deduplicate, categorize, and resolve severity conflicts across agent reports. *Mitigation*: Explicit prompt instructions for BOTH_AGREE/ONLY_A/ONLY_B/CONFLICT categories; STRICT gate enforcement on merged output.
+
+**R-005** (low): **`--resume` interaction edge cases**. Validation runs on final artifacts even with `--resume`, but partially valid artifacts from a resumed pipeline could produce misleading validation results. *Mitigation*: Spec explicitly states validation only runs after all gates pass.
+
+**R-006** (low): **Import path coupling**. Reusing `_frontmatter_values_non_empty` from `roadmap/gates.py` creates a coupling point. *Mitigation*: This is a pure function with no side effects; coupling is acceptable per the unidirectional dependency constraint.
+
+## Dependency Inventory
+
+1. **`src/superclaude/cli/roadmap/commands.py`** — existing CLI group to extend with `validate` subcommand and `--no-validate` flag.
+2. **`src/superclaude/cli/roadmap/executor.py`** — existing `execute_roadmap()` to modify for auto-invocation.
+3. **`src/superclaude/cli/roadmap/models.py`** — existing models module to extend with `ValidateConfig` dataclass.
+4. **`src/superclaude/cli/roadmap/gates.py`** — existing gate infrastructure; import `_frontmatter_values_non_empty` and `GateCriteria`/`SemanticCheck` classes.
+5. **`src/superclaude/cli/roadmap/pipeline/executor.py`** — `execute_pipeline` function reused for running validation steps.
+6. **`click`** — CLI framework for subcommand and option definitions.
+7. **`ClaudeProcess`** — existing subprocess management for running Claude validation agents.
+8. **`AgentSpec`** — existing agent specification parsing (model:persona format).
 
 ## Success Criteria
 
-### SC-001: Validate Report Production
-- **Description**: validate subcommand produces validation-report.md with correct YAML frontmatter containing all required fields.
-- **Derived From**: FR-006
-- **Measurable**: Yes
+1. **SC-001**: `superclaude roadmap validate <dir>` exits successfully and produces `validate/validation-report.md` with valid YAML frontmatter containing all required fields.
+2. **SC-002**: Single-agent validation completes in ≤2 minutes wall time.
+3. **SC-003**: Multi-agent validation produces per-agent reflection files and a merged report with Agent Agreement Analysis table.
+4. **SC-004**: `superclaude roadmap run spec.md` auto-invokes validation after pipeline success (verified by presence of `validate/` directory).
+5. **SC-005**: `superclaude roadmap run spec.md --no-validate` does not produce a `validate/` directory.
+6. **SC-006**: Known issues (duplicate D-IDs, missing milestone refs, untraced requirements) are detected as BLOCKING in the validation report.
+7. **SC-007**: Blocking issues produce CLI warnings but exit code 0.
+8. **SC-008**: All 7 unit tests and 4 integration tests from section 10 pass.
+9. **SC-009**: No imports from `validate_*` exist in `pipeline/*` modules (verified by grep).
 
-### SC-002: Tasklist Readiness Logic
-- **Description**: tasklist_ready is true if and only if blocking_issues_count == 0.
-- **Derived From**: FR-005, FR-006
-- **Measurable**: Yes
+## Open Questions
 
-### SC-003: Agent Agreement Table
-- **Description**: Multi-agent mode produces Agent Agreement Analysis table with BOTH_AGREE/ONLY_A/ONLY_B/CONFLICT categories.
-- **Derived From**: FR-007
-- **Measurable**: Yes
+1. **Default agent count asymmetry**: Standalone `validate` defaults to single-agent (`opus:architect`) while `roadmap run` defaults to dual-agent adversarial (`opus:architect,haiku:architect`). The spec documents this intentionally (section 7.2 note), but should the standalone default match `roadmap run` for consistency? Or is cost efficiency the correct priority for standalone use?
 
-### SC-004: Auto-Invocation
-- **Description**: `roadmap run` (without --no-validate) triggers validation after successful pipeline completion.
-- **Derived From**: FR-004
-- **Measurable**: Yes
+2. **Retry semantics**: Steps have `retry_limit=1`. If a reflection subprocess fails the gate on retry, should the overall validation be marked as failed, or should partial results be surfaced? The spec says "validation-report.md may be incomplete" (section 8.3) but doesn't specify whether other successful agent reports should still be available.
 
-### SC-005: Skip Validation
-- **Description**: `--no-validate` flag skips validation step entirely.
-- **Derived From**: FR-019
-- **Measurable**: Yes
+3. **Interleave ratio bounds**: Dimension 5 checks `interleave_ratio in [0.1, 1.0]` but the spec doesn't define how interleave_ratio is calculated. This is left to the reflection prompt's interpretation, which could lead to inconsistent validation across agents.
 
-### SC-006: Unified Code Path
-- **Description**: Single-agent and multi-agent use the same _build_validate_steps() function (list of 1 vs list of N).
-- **Derived From**: NFR-005
-- **Measurable**: Yes
-
-### SC-007: Performance Target
-- **Description**: Single-agent validation completes in ≤120 seconds.
-- **Derived From**: NFR-001
-- **Measurable**: Yes
-
----
-
-## Risk Register
-
-### RISK-001: Context Independence Limitation
-- **Description**: Subprocess execution assumes context independence, but implicit state from the session environment could influence validation quality.
-- **Probability**: Medium
-- **Impact**: Medium
-- **Affected**: FR-008
-- **Source**: Inferred
-
-### RISK-002: Gate False Positives
-- **Description**: Semantic checks (e.g., _has_agreement_table) may produce false positives on valid but unconventional report formats.
-- **Probability**: Medium
-- **Impact**: Low
-- **Affected**: FR-023
-- **Source**: Inferred
-
-### RISK-003: Multi-Agent Resource Constraints
-- **Description**: Parallel reflect steps may hit API rate limits or resource constraints when running multiple Claude subprocesses concurrently.
-- **Probability**: Low
-- **Impact**: High
-- **Affected**: FR-003, FR-017
-- **Source**: Inferred
-
-### RISK-004: Pipeline Infrastructure Coupling
-- **Description**: Dependency on existing execute_pipeline infrastructure means changes to that module could break validate functionality.
-- **Probability**: Low
-- **Impact**: High
-- **Affected**: NFR-004, DEP-004
-- **Source**: Inferred
-
-### RISK-005: Adversarial Merge Inconsistency
-- **Description**: Severity conflict resolution during adversarial merge may produce inconsistent escalation decisions across different finding types.
-- **Probability**: Medium
-- **Impact**: Medium
-- **Affected**: FR-007, FR-009
-- **Source**: Inferred
-
----
-
-## Domain Distribution Analysis
-
-| Domain | Percentage | Key Requirements |
-|--------|-----------|-----------------|
-| Backend | 55% | CLI integration, subprocess orchestration, data models, pipeline reuse, step construction |
-| Documentation | 25% | Report schemas, structured output, validation dimensions, output formatting |
-| Performance | 10% | Wall time constraints, parallel execution efficiency |
-| Frontend | 5% | CLI output formatting |
-| Security | 5% | Validation dimension (schema/structure checks) |
+4. **`.roadmap-state.json` interaction**: The spec states validation state is separate from pipeline state, but doesn't specify whether validation completion/failure is recorded anywhere for `--resume` awareness in subsequent runs.
