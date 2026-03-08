@@ -28,7 +28,7 @@ When the user requests roadmap generation from a specification file. Requires a 
 | `--output` | `-o` | No | `.dev/releases/current/<spec-name>/` | Output directory |
 | `--depth` | `-d` | No | `standard` | Analysis depth: quick, standard, deep |
 | `--multi-roadmap` | | No | `false` | Enable multi-roadmap adversarial generation |
-| `--agents` | `-a` | With --multi-roadmap | - | Agent specs: `model[:persona[:"instruction"]]` |
+| `--agents` | `-a` | No | - | Agent specs: `model[:persona[:"instruction"]]`. Implies `--multi-roadmap` when present. |
 | `--interactive` | `-i` | No | `false` | User approval at adversarial decision points |
 | `--validate` | `-v` | No | `true` | Enable multi-agent validation (Wave 4) |
 | `--no-validate` | | No | `false` | Skip validation. Sets validation_status: SKIPPED |
@@ -63,12 +63,17 @@ When the user requests roadmap generation from a specification file. Requires a 
 
 # Custom output directory
 /sc:roadmap specs/auth.md --output .dev/releases/current/v2.0-auth/
+
+# Shorthand: --agents implies --multi-roadmap
+/sc:roadmap specs/v2-prd.md --agents opus:architect,haiku:analyzer --depth deep
 ```
 
 ## Activation
 
 **MANDATORY**: Before executing any protocol steps, invoke:
 > Skill sc:roadmap-protocol
+
+Pass all user-provided arguments (spec file path, flags) verbatim to the Skill invocation via the `args` parameter.
 
 Do NOT proceed with protocol execution using only this command file.
 The full behavioral specification is in the protocol skill.

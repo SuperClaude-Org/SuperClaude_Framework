@@ -11,6 +11,7 @@ NFR-003: No subprocess import. NFR-007: No sprint/roadmap imports.
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 from .models import GateCriteria, SemanticCheck
@@ -68,24 +69,30 @@ def gate_passed(output_file: Path, criteria: GateCriteria) -> tuple[bool, str | 
     return True, None
 
 
+_FRONTMATTER_RE = re.compile(
+    r"^---[ \t]*\n((?:[ \t]*\w[\w\s]*:.*\n)+)---[ \t]*$",
+    re.MULTILINE,
+)
+
+
 def _check_frontmatter(
     content: str, required_fields: list[str], output_file: Path
 ) -> tuple[bool, str | None]:
-    """Extract and validate YAML frontmatter fields."""
-    # Frontmatter is delimited by --- at start and end
-    stripped = content.lstrip()
-    if not stripped.startswith("---"):
-        return False, f"YAML frontmatter missing or unparseable in {output_file}: no opening ---"
+    """Extract and validate YAML frontmatter fields.
 
-    # Find closing ---
-    rest = stripped[3:].lstrip("\n")
-    end_idx = rest.find("\n---")
-    if end_idx == -1:
-        return False, f"YAML frontmatter missing or unparseable in {output_file}: no closing ---"
+    Uses regex with re.MULTILINE to discover frontmatter anywhere in the
+    document (not just byte 0), allowing conversational preamble before the
+    ``---`` delimiters.  Horizontal rules (``---`` with no ``key: value``
+    content) are rejected because the pattern requires at least one
+    ``key: value`` line between delimiters.
+    """
+    match = _FRONTMATTER_RE.search(content)
+    if match is None:
+        return False, f"YAML frontmatter not found in {output_file}"
 
-    frontmatter_text = rest[:end_idx]
+    frontmatter_text = match.group(1)
 
-    # Simple key extraction (key: value lines)
+    # Extract keys from key: value lines
     found_keys: set[str] = set()
     for line in frontmatter_text.splitlines():
         line = line.strip()

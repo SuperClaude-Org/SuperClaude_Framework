@@ -7,7 +7,7 @@ allowed-tools: Read, Glob, Grep, Edit, Write, Bash, TodoWrite, Task
 <!-- Extended metadata (for documentation, not parsed):
 category: development
 complexity: high
-mcp-servers: [sequential, serena, context7]
+mcp-servers: [sequential, serena, context7, auggie-mcp]
 personas: [architect, analyzer, backend]
 -->
 

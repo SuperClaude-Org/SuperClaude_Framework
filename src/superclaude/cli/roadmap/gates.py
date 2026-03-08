@@ -139,9 +139,23 @@ def _convergence_score_valid(content: str) -> bool:
 # --- GateCriteria instances ---
 
 EXTRACT_GATE = GateCriteria(
-    required_frontmatter_fields=["functional_requirements", "complexity_score", "complexity_class"],
+    required_frontmatter_fields=[
+        "spec_source",
+        "generated",
+        "generator",
+        "functional_requirements",
+        "nonfunctional_requirements",
+        "total_requirements",
+        "complexity_score",
+        "complexity_class",
+        "domains_detected",
+        "risks_identified",
+        "dependencies_identified",
+        "success_criteria_count",
+        "extraction_mode",
+    ],
     min_lines=50,
-    enforcement_tier="STANDARD",
+    enforcement_tier="STRICT",
 )
 
 GENERATE_A_GATE = GateCriteria(

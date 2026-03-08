@@ -69,7 +69,7 @@ All artifacts include YAML frontmatter for machine parseability.
 | `--output` | `-o` | No | `.dev/releases/current/<spec-name>/` | Output directory |
 | `--depth` | `-d` | No | `standard` | Analysis depth: quick, standard, deep. Maps to sc:adversarial --depth when adversarial modes active |
 | `--multi-roadmap` | | No | `false` | Enable multi-roadmap adversarial generation |
-| `--agents` | `-a` | With --multi-roadmap | - | Agent specs: `model[:persona[:"instruction"]]`. If persona omitted, uses auto-detected primary persona. Examples: `opus,sonnet,gpt52` or `opus:architect,sonnet:security` |
+| `--agents` | `-a` | No | - | Agent specs: `model[:persona[:"instruction"]]`. Implies `--multi-roadmap` when present. If persona omitted, uses auto-detected primary persona. Examples: `opus,sonnet,gpt52` or `opus:architect,sonnet:security` |
 | `--interactive` | `-i` | No | `false` | User approval at adversarial decision points |
 | `--validate` | `-v` | No | `true` | Enable multi-agent validation (Wave 4) |
 | `--no-validate` | | No | `false` | Skip validation. Sets `validation_status: SKIPPED` and `validation_score: 0.0` in frontmatter |
@@ -113,13 +113,14 @@ sc:roadmap executes in 5 waves (0-4). Each wave has entry criteria, behavioral i
 3. **Output collision check**: If output directory already contains roadmap artifacts (roadmap.md, extraction.md, test-strategy.md), append `-N` suffix to all output filenames (e.g., `roadmap-2.md`). Increment until no collision.
 4. Check template directory availability (4-tier: local → user → plugin → inline generation)
 5. If `--specs` or `--multi-roadmap` flags present: verify `src/superclaude/skills/sc-adversarial-protocol/SKILL.md` exists. If not, abort: `"sc:adversarial skill not installed. Required for --specs/--multi-roadmap flags. Install via: superclaude install"`
-6. If `--multi-roadmap`: validate all model identifiers in `--agents` are recognized. Abort on unknown models.
-7. If `--resume-from` present:
+6. **Implicit `--multi-roadmap` inference**: If `--agents` flag is present WITHOUT `--multi-roadmap`: auto-enable `--multi-roadmap`. Emit info: `"--multi-roadmap auto-enabled (inferred from --agents flag)."` Then re-execute step 5 to verify sc:adversarial skill prerequisite.
+7. If `--multi-roadmap`: validate all model identifiers in `--agents` are recognized. Abort on unknown models.
+8. If `--resume-from` present:
    - Verify `--specs` or `--multi-roadmap` is also present. If neither: abort with `"--resume-from requires --specs or --multi-roadmap."`
    - Verify `--dry-run` is NOT present. If present: abort with `"--resume-from is incompatible with --dry-run."`
    - Verify the specified directory exists. If not: abort with `"--resume-from directory not found: <path>"`
    - Verify `return-contract.yaml` exists in the directory. If not: abort with `"return-contract.yaml not found in --resume-from directory: <path>"`
-8. Log all fallback decisions
+9. Log all fallback decisions
 
 **Exit Criteria**: All prerequisites validated. Trigger `sc:save` with current session state. Emit: `"Wave 0 complete: prerequisites validated."`
 
