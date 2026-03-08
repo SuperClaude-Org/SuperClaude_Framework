@@ -35,7 +35,18 @@ class TestGateInstances:
         assert "functional_requirements" in EXTRACT_GATE.required_frontmatter_fields
         assert "complexity_score" in EXTRACT_GATE.required_frontmatter_fields
         assert "complexity_class" in EXTRACT_GATE.required_frontmatter_fields
-        assert EXTRACT_GATE.enforcement_tier == "STANDARD"
+        assert "spec_source" in EXTRACT_GATE.required_frontmatter_fields
+        assert "generated" in EXTRACT_GATE.required_frontmatter_fields
+        assert "generator" in EXTRACT_GATE.required_frontmatter_fields
+        assert "nonfunctional_requirements" in EXTRACT_GATE.required_frontmatter_fields
+        assert "total_requirements" in EXTRACT_GATE.required_frontmatter_fields
+        assert "domains_detected" in EXTRACT_GATE.required_frontmatter_fields
+        assert "risks_identified" in EXTRACT_GATE.required_frontmatter_fields
+        assert "dependencies_identified" in EXTRACT_GATE.required_frontmatter_fields
+        assert "success_criteria_count" in EXTRACT_GATE.required_frontmatter_fields
+        assert "extraction_mode" in EXTRACT_GATE.required_frontmatter_fields
+        assert len(EXTRACT_GATE.required_frontmatter_fields) == 13
+        assert EXTRACT_GATE.enforcement_tier == "STRICT"
         assert EXTRACT_GATE.min_lines == 50
 
     def test_generate_gates_are_strict(self):

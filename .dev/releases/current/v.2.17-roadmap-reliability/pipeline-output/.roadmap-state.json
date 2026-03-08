@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "spec_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v.2.17-roadmap-reliability/spec-roadmap-pipeline-reliability.md",
+  "spec_hash": "2ff387c8d7d0e912f6fcee6d5e6d60bc5be453c9d60c1f5cb85364374fab467b",
+  "agents": [
+    {
+      "model": "opus",
+      "persona": "architect"
+    },
+    {
+      "model": "haiku",
+      "persona": "analyzer"
+    }
+  ],
+  "depth": "deep",
+  "last_run": "2026-03-08T15:15:32.183811+00:00",
+  "steps": {
+    "extract": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v.2.17-roadmap-reliability/pipeline-output/extraction.md",
+      "started_at": "2026-03-08T15:04:15.043346+00:00",
+      "completed_at": "2026-03-08T15:05:19.058822+00:00"
+    },
+    "generate-opus-architect": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v.2.17-roadmap-reliability/pipeline-output/roadmap-opus-architect.md",
+      "started_at": "2026-03-08T15:05:19.060606+00:00",
+      "completed_at": "2026-03-08T15:06:29.073370+00:00"
+    },
+    "generate-haiku-analyzer": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v.2.17-roadmap-reliability/pipeline-output/roadmap-haiku-analyzer.md",
+      "started_at": "2026-03-08T15:05:19.060837+00:00",
+      "completed_at": "2026-03-08T15:06:49.076568+00:00"
+    },
+    "diff": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v.2.17-roadmap-reliability/pipeline-output/diff-analysis.md",
+      "started_at": "2026-03-08T15:06:49.076991+00:00",
+      "completed_at": "2026-03-08T15:07:48.090533+00:00"
+    },
+    "debate": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v.2.17-roadmap-reliability/pipeline-output/debate-transcript.md",
+      "started_at": "2026-03-08T15:07:48.090774+00:00",
+      "completed_at": "2026-03-08T15:09:19.111079+00:00"
+    },
+    "score": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v.2.17-roadmap-reliability/pipeline-output/base-selection.md",
+      "started_at": "2026-03-08T15:09:19.111385+00:00",
+      "completed_at": "2026-03-08T15:10:19.125820+00:00"
+    },
+    "merge": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v.2.17-roadmap-reliability/pipeline-output/roadmap.md",
+      "started_at": "2026-03-08T15:10:19.126074+00:00",
+      "completed_at": "2026-03-08T15:11:53.147026+00:00"
+    },
+    "test-strategy": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v.2.17-roadmap-reliability/pipeline-output/test-strategy.md",
+      "started_at": "2026-03-08T15:11:53.147925+00:00",
+      "completed_at": "2026-03-08T15:15:32.183178+00:00"
+    }
+  }
+}

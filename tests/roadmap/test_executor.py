@@ -19,6 +19,7 @@ from superclaude.cli.pipeline.executor import execute_pipeline
 from superclaude.cli.roadmap.executor import (
     _build_steps,
     _format_halt_output,
+    _sanitize_output,
     _save_state,
     execute_roadmap,
 )
@@ -84,10 +85,19 @@ class TestIntegrationMockSubprocess:
             # Write gate-passing output for each step
             # Use realistic values for specific frontmatter fields
             fm_values = {
+                "spec_source": "spec.md",
+                "generated": "2026-03-08T00:00:00Z",
+                "generator": "test-agent",
                 "functional_requirements": "5",
+                "nonfunctional_requirements": "3",
+                "total_requirements": "8",
                 "complexity_score": "0.7",
                 "complexity_class": "moderate",
-                "spec_source": "spec.md",
+                "domains_detected": "2",
+                "risks_identified": "3",
+                "dependencies_identified": "4",
+                "success_criteria_count": "5",
+                "extraction_mode": "full",
                 "primary_persona": "architect",
                 "total_diff_points": "3",
                 "shared_assumptions_count": "4",
@@ -195,3 +205,72 @@ class TestSaveAndReloadState:
         assert state is not None
         assert state["schema_version"] == 1
         assert state["steps"]["extract"]["status"] == "PASS"
+
+
+class TestSanitizeOutput:
+    """Unit tests for _sanitize_output() -- spec §6.2 test matrix."""
+
+    def test_strips_preamble_before_frontmatter(self, tmp_path):
+        """Preamble present: file is rewritten, returns byte count."""
+        f = tmp_path / "output.md"
+        preamble = "Here is the result:\n\n"
+        body = "---\ntitle: test\n---\n## Content\n- item 1\n"
+        f.write_text(preamble + body, encoding="utf-8")
+
+        result = _sanitize_output(f)
+
+        assert result == len(preamble.encode("utf-8"))
+        assert f.read_text(encoding="utf-8") == body
+
+    def test_no_preamble_unchanged(self, tmp_path):
+        """No preamble (starts with ---): file unchanged, returns 0."""
+        f = tmp_path / "output.md"
+        content = "---\ntitle: test\n---\n## Content\n"
+        f.write_text(content, encoding="utf-8")
+
+        result = _sanitize_output(f)
+
+        assert result == 0
+        assert f.read_text(encoding="utf-8") == content
+
+    def test_no_frontmatter_unchanged(self, tmp_path):
+        """No frontmatter delimiter at all: file unchanged, returns 0."""
+        f = tmp_path / "output.md"
+        content = "Just some text without any frontmatter.\n"
+        f.write_text(content, encoding="utf-8")
+
+        result = _sanitize_output(f)
+
+        assert result == 0
+        assert f.read_text(encoding="utf-8") == content
+
+    def test_multi_line_preamble_stripped(self, tmp_path):
+        """Multi-line preamble: all lines before first --- are stripped."""
+        f = tmp_path / "output.md"
+        preamble = "Sure! Here is your output.\n\nI've formatted it as requested:\n\n"
+        body = "---\nkey: value\n---\n- item\n"
+        f.write_text(preamble + body, encoding="utf-8")
+
+        result = _sanitize_output(f)
+
+        assert result == len(preamble.encode("utf-8"))
+        assert f.read_text(encoding="utf-8") == body
+
+    def test_atomic_write_uses_tmp_and_replace(self, tmp_path):
+        """Atomic write: .tmp file used and os.replace() called."""
+        f = tmp_path / "output.md"
+        preamble = "preamble\n"
+        body = "---\ntitle: test\n---\n"
+        f.write_text(preamble + body, encoding="utf-8")
+
+        with patch("os.replace", wraps=__import__("os").replace) as mock_replace:
+            result = _sanitize_output(f)
+
+        assert result > 0
+        # os.replace was called with the .tmp source and original target
+        mock_replace.assert_called_once()
+        call_args = mock_replace.call_args[0]
+        assert str(call_args[0]).endswith(".tmp")
+        assert call_args[1] == f
+        # Final file has correct content
+        assert f.read_text(encoding="utf-8") == body

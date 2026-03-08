@@ -66,6 +66,84 @@ def _embed_inputs(input_paths: list[Path]) -> str:
     return "\n\n".join(blocks)
 
 
+def _sanitize_output(output_file: Path) -> int:
+    """Strip conversational preamble before YAML frontmatter in a step output file.
+
+    Reads the file, finds the first ``^---`` line, and removes everything before
+    it.  Uses atomic write (write to ``.tmp`` then ``os.replace()``) to prevent
+    partial file states.
+
+    Returns the byte count of the stripped preamble (0 when file already starts
+    with ``---`` or no frontmatter delimiter is found).
+    """
+    import os
+    import re
+
+    try:
+        content = output_file.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return 0
+
+    # Already starts with frontmatter delimiter -- nothing to strip
+    if content.lstrip().startswith("---"):
+        return 0
+
+    # Search for the first ^--- line
+    match = re.search(r"^---[ \t]*$", content, re.MULTILINE)
+    if match is None:
+        # No frontmatter found at all -- leave file unchanged
+        return 0
+
+    preamble = content[: match.start()]
+    cleaned = content[match.start() :]
+    preamble_bytes = len(preamble.encode("utf-8"))
+
+    # Atomic write: tmp file + os.replace
+    tmp_file = output_file.with_suffix(output_file.suffix + ".tmp")
+    tmp_file.write_text(cleaned, encoding="utf-8")
+    os.replace(tmp_file, output_file)
+
+    _log.info("Stripped %d-byte preamble from %s", preamble_bytes, output_file)
+    return preamble_bytes
+
+
+def _inject_pipeline_diagnostics(
+    output_file: Path,
+    started_at: datetime,
+    finished_at: datetime,
+) -> None:
+    """Inject executor-populated pipeline_diagnostics into extraction frontmatter.
+
+    The LLM cannot reliably produce execution timing or environment metadata,
+    so the executor injects these fields post-subprocess (FR-033).
+    """
+    content = output_file.read_text(encoding="utf-8")
+    if not content.startswith("---"):
+        return
+
+    # Find end of frontmatter
+    end_idx = content.find("\n---", 3)
+    if end_idx == -1:
+        return
+
+    elapsed = (finished_at - started_at).total_seconds()
+    diagnostics_line = (
+        f"pipeline_diagnostics: "
+        f"{{elapsed_seconds: {elapsed:.1f}, "
+        f"started_at: \"{started_at.isoformat()}\", "
+        f"finished_at: \"{finished_at.isoformat()}\"}}"
+    )
+
+    # Insert before the closing ---
+    new_content = (
+        content[: end_idx]
+        + "\n"
+        + diagnostics_line
+        + content[end_idx:]
+    )
+    output_file.write_text(new_content, encoding="utf-8")
+
+
 def roadmap_run_step(
     step: Step,
     config: PipelineConfig,
@@ -159,6 +237,13 @@ def roadmap_run_step(
             started_at=started_at,
             finished_at=finished_at,
         )
+
+    # Sanitize output: strip conversational preamble before gate validation
+    _sanitize_output(step.output_file)
+
+    # Inject executor-populated fields into extract step frontmatter (FR-033)
+    if step.id == "extract" and step.output_file.exists():
+        _inject_pipeline_diagnostics(step.output_file, started_at, finished_at)
 
     # Process completed successfully; gate check happens in execute_pipeline
     return StepResult(

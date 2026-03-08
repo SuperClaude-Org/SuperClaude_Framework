@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from superclaude.cli.pipeline.gates import gate_passed
+from superclaude.cli.pipeline.gates import _check_frontmatter, gate_passed
 from superclaude.cli.pipeline.models import GateCriteria, SemanticCheck
 
 
@@ -197,3 +197,66 @@ class TestEdgeCases:
         f = make_file("ws_content.md", content)
         ok, reason = gate_passed(f, gc)
         assert ok is True  # 10 lines, passes min_lines=3
+
+
+class TestCheckFrontmatterRegex:
+    """8 unit tests for _check_frontmatter() per spec §6.1 test matrix."""
+
+    DUMMY = Path("test.md")
+
+    def test_preamble_before_frontmatter(self):
+        """Preamble text before valid frontmatter should be accepted."""
+        content = "Preamble\n---\nkey: val\n---\nBody"
+        ok, reason = _check_frontmatter(content, ["key"], self.DUMMY)
+        assert ok is True
+        assert reason is None
+
+    def test_clean_frontmatter(self):
+        """Standard frontmatter at start of document should pass."""
+        content = "---\ntitle: Test\nversion: 1.0\n---\nBody content"
+        ok, reason = _check_frontmatter(content, ["title", "version"], self.DUMMY)
+        assert ok is True
+        assert reason is None
+
+    def test_horizontal_rule_rejected(self):
+        """Horizontal rule (--- with no key: value) must be rejected."""
+        content = "Some text\n---\nMore text without colon\n---\nEnd"
+        ok, reason = _check_frontmatter(content, [], self.DUMMY)
+        assert ok is False
+        assert "not found" in reason.lower()
+
+    def test_missing_frontmatter(self):
+        """Document with no --- delimiters at all should fail."""
+        content = "Just plain text\nwith multiple lines\nbut no frontmatter"
+        ok, reason = _check_frontmatter(content, [], self.DUMMY)
+        assert ok is False
+        assert "not found" in reason.lower()
+
+    def test_missing_required_field(self):
+        """Frontmatter present but missing a required field should fail."""
+        content = "---\ntitle: Test\n---\nBody"
+        ok, reason = _check_frontmatter(content, ["title", "version"], self.DUMMY)
+        assert ok is False
+        assert "Missing required" in reason
+        assert "version" in reason
+
+    def test_multiple_frontmatter_blocks(self):
+        """Multiple --- blocks: should match the first valid frontmatter."""
+        content = "---\nfirst: block\n---\nMiddle\n---\nsecond: block\n---\nEnd"
+        ok, reason = _check_frontmatter(content, ["first"], self.DUMMY)
+        assert ok is True
+        assert reason is None
+
+    def test_whitespace_before_frontmatter(self):
+        """Whitespace lines before frontmatter should still match."""
+        content = "   \n\n---\ntitle: Test\n---\nBody"
+        ok, reason = _check_frontmatter(content, ["title"], self.DUMMY)
+        assert ok is True
+        assert reason is None
+
+    def test_empty_file(self):
+        """Empty string should fail with 'not found'."""
+        content = ""
+        ok, reason = _check_frontmatter(content, [], self.DUMMY)
+        assert ok is False
+        assert "not found" in reason.lower()

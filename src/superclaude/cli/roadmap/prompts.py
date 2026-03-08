@@ -35,29 +35,71 @@ _DEPTH_INSTRUCTIONS = {
     ),
 }
 
+_OUTPUT_FORMAT_BLOCK = (
+    "\n\n<output_format>\n"
+    "CRITICAL: Your response MUST begin with YAML frontmatter (--- delimited block).\n"
+    "Do NOT include any text, preamble, or commentary before the opening ---.\n"
+    "Do NOT say \"Here is...\", \"Sure!\", or any conversational text before the frontmatter.\n"
+    "\n"
+    "Correct start:\n"
+    "---\n"
+    "key: value\n"
+    "---\n"
+    "\n"
+    "Incorrect start:\n"
+    "Here is the output:\n"
+    "---\n"
+    "key: value\n"
+    "---\n"
+    "</output_format>"
+)
+
 
 def build_extract_prompt(spec_file: Path) -> str:
     """Prompt for step 'extract'.
 
     Instructs Claude to read the provided specification and produce
-    extraction.md with YAML frontmatter containing functional_requirements,
-    complexity_score, and complexity_class.
+    extraction.md with YAML frontmatter containing all 13 required
+    protocol fields plus 8 structured body sections.
     """
     return (
         "You are a requirements extraction specialist.\n\n"
         "Read the provided specification file and produce a requirements extraction document.\n\n"
         "Your output MUST begin with YAML frontmatter delimited by --- lines containing:\n"
-        "- functional_requirements: (integer count of identified requirements)\n"
-        "- complexity_score: (float 0.0-1.0 assessing overall complexity)\n"
-        "- complexity_class: (one of: simple, moderate, complex, enterprise)\n\n"
-        "After the frontmatter, provide:\n"
-        "1. A numbered list of all functional requirements extracted from the spec\n"
-        "2. A numbered list of all non-functional requirements\n"
-        "3. A complexity assessment with justification\n"
-        "4. Key architectural constraints identified in the spec\n"
-        "5. Open questions or ambiguities found\n\n"
+        "- spec_source: (string) the source specification filename\n"
+        "- generated: (string) ISO-8601 timestamp of extraction\n"
+        "- generator: (string) identifier of the extraction agent\n"
+        "- functional_requirements: (integer) count of identified functional requirements\n"
+        "- nonfunctional_requirements: (integer) count of identified non-functional requirements\n"
+        "- total_requirements: (integer) sum of functional + non-functional requirements\n"
+        "- complexity_score: (float 0.0-1.0) assessing overall complexity\n"
+        "- complexity_class: (string) one of: simple, moderate, complex, enterprise\n"
+        "- domains_detected: (integer) count of distinct technical domains identified\n"
+        "- risks_identified: (integer) count of risks found in the specification\n"
+        "- dependencies_identified: (integer) count of external dependencies\n"
+        "- success_criteria_count: (integer) count of measurable success criteria\n"
+        "- extraction_mode: (string) one of: full, partial, incremental\n\n"
+        "After the frontmatter, provide the following 8 structured sections:\n\n"
+        "## Functional Requirements\n"
+        "Numbered list with FR-NNN IDs (e.g. FR-001, FR-002). "
+        "Extract every functional requirement, even implicit ones.\n\n"
+        "## Non-Functional Requirements\n"
+        "Numbered list with NFR-NNN IDs (e.g. NFR-001, NFR-002). "
+        "Include performance, security, scalability, maintainability.\n\n"
+        "## Complexity Assessment\n"
+        "Provide complexity_score and complexity_class with detailed scoring rationale.\n\n"
+        "## Architectural Constraints\n"
+        "List all architectural constraints, technology mandates, and integration boundaries.\n\n"
+        "## Risk Inventory\n"
+        "Numbered list of identified risks with severity (high/medium/low) and mitigation.\n\n"
+        "## Dependency Inventory\n"
+        "List all external dependencies, libraries, services, and integration points.\n\n"
+        "## Success Criteria\n"
+        "Measurable success criteria with acceptance thresholds.\n\n"
+        "## Open Questions\n"
+        "Ambiguities, gaps, or items requiring stakeholder clarification.\n\n"
         "Be thorough and precise. Extract every requirement, even implicit ones."
-    )
+    ) + _OUTPUT_FORMAT_BLOCK
 
 
 def build_generate_prompt(agent: AgentSpec, extraction_path: Path) -> str:
@@ -65,11 +107,22 @@ def build_generate_prompt(agent: AgentSpec, extraction_path: Path) -> str:
 
     Instructs Claude to read the extraction document and generate a
     complete project roadmap with the agent's persona as a role instruction.
+    References expanded extraction fields for richer context.
     """
     return (
         f"You are a {agent.persona} specialist creating a project roadmap.\n\n"
         "Read the provided requirements extraction document and generate a comprehensive "
         "project roadmap.\n\n"
+        "The extraction document contains YAML frontmatter with these fields you should "
+        "reference for context:\n"
+        "- spec_source, generated, generator: provenance metadata\n"
+        "- functional_requirements, nonfunctional_requirements, total_requirements: scope counts\n"
+        "- complexity_score, complexity_class: complexity assessment\n"
+        "- domains_detected: number of technical domains to address\n"
+        "- risks_identified: number of risks to mitigate in the roadmap\n"
+        "- dependencies_identified: external dependencies to plan around\n"
+        "- success_criteria_count: measurable criteria to validate against\n"
+        "- extraction_mode: extraction completeness indicator\n\n"
         "Your output MUST begin with YAML frontmatter delimited by --- lines containing:\n"
         f"- spec_source: (the source specification filename)\n"
         "- complexity_score: (float 0.0-1.0 from the extraction)\n"
@@ -84,7 +137,7 @@ def build_generate_prompt(agent: AgentSpec, extraction_path: Path) -> str:
         f"Apply your {agent.persona} perspective throughout: prioritize concerns, "
         f"risks, and recommendations that a {agent.persona} would emphasize.\n\n"
         "Use numbered and bulleted lists for actionable items. Be specific and concrete."
-    )
+    ) + _OUTPUT_FORMAT_BLOCK
 
 
 def build_diff_prompt(variant_a_path: Path, variant_b_path: Path) -> str:
@@ -109,7 +162,7 @@ def build_diff_prompt(variant_a_path: Path, variant_b_path: Path) -> str:
         "3. Areas where one variant is clearly stronger\n"
         "4. Areas requiring debate to resolve\n\n"
         "Be objective. Present both positions fairly without bias."
-    )
+    ) + _OUTPUT_FORMAT_BLOCK
 
 
 def build_debate_prompt(
@@ -136,7 +189,7 @@ def build_debate_prompt(
         "- Positions attributed to Variant A and Variant B\n"
         "- A convergence assessment summarizing areas of agreement and remaining disputes\n\n"
         "Ensure each perspective argues its strongest case. Do not artificially force agreement."
-    )
+    ) + _OUTPUT_FORMAT_BLOCK
 
 
 def build_score_prompt(
@@ -162,7 +215,7 @@ def build_score_prompt(
         "4. Base variant selection rationale\n"
         "5. Specific improvements from the non-base variant to incorporate in merge\n\n"
         "Be evidence-based. Reference specific debate points and variant content."
-    )
+    ) + _OUTPUT_FORMAT_BLOCK
 
 
 def build_merge_prompt(
@@ -194,7 +247,7 @@ def build_merge_prompt(
         "Use proper heading hierarchy (H2, H3, H4) with no gaps. "
         "Ensure all internal cross-references resolve. "
         "Do not duplicate heading text at H2 or H3 level."
-    )
+    ) + _OUTPUT_FORMAT_BLOCK
 
 
 def build_test_strategy_prompt(
@@ -220,4 +273,4 @@ def build_test_strategy_prompt(
         "5. Acceptance criteria per milestone\n"
         "6. Quality gates between phases\n\n"
         "Be specific about what to test at each milestone."
-    )
+    ) + _OUTPUT_FORMAT_BLOCK
