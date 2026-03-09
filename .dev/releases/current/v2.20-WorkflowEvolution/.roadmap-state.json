@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "spec_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.20-WorkflowEvolution/spec-workflow-evolution-merged.md",
+  "spec_hash": "f12a1daafd581e98a7c5493fd135dd7366910324a8eac850ac334d8f3f6c7586",
+  "agents": [
+    {
+      "model": "opus",
+      "persona": "architect"
+    },
+    {
+      "model": "haiku",
+      "persona": "analyzer"
+    }
+  ],
+  "depth": "deep",
+  "last_run": "2026-03-09T16:26:37.619127+00:00",
+  "steps": {
+    "extract": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.20-WorkflowEvolution/extraction.md",
+      "started_at": "2026-03-09T16:06:30.416214+00:00",
+      "completed_at": "2026-03-09T16:08:51.441023+00:00"
+    },
+    "generate-opus-architect": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.20-WorkflowEvolution/roadmap-opus-architect.md",
+      "started_at": "2026-03-09T16:08:51.441973+00:00",
+      "completed_at": "2026-03-09T16:10:37.458190+00:00"
+    },
+    "generate-haiku-analyzer": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.20-WorkflowEvolution/roadmap-haiku-analyzer.md",
+      "started_at": "2026-03-09T16:08:51.442464+00:00",
+      "completed_at": "2026-03-09T16:10:27.458854+00:00"
+    },
+    "diff": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.20-WorkflowEvolution/diff-analysis.md",
+      "started_at": "2026-03-09T16:10:37.458609+00:00",
+      "completed_at": "2026-03-09T16:11:46.470365+00:00"
+    },
+    "debate": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.20-WorkflowEvolution/debate-transcript.md",
+      "started_at": "2026-03-09T16:11:46.470613+00:00",
+      "completed_at": "2026-03-09T16:13:46.490436+00:00"
+    },
+    "score": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.20-WorkflowEvolution/base-selection.md",
+      "started_at": "2026-03-09T16:13:46.490750+00:00",
+      "completed_at": "2026-03-09T16:17:07.533128+00:00"
+    },
+    "merge": {
+      "status": "PASS",
+      "attempt": 2,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.20-WorkflowEvolution/roadmap.md",
+      "started_at": "2026-03-09T16:19:32.554630+00:00",
+      "completed_at": "2026-03-09T16:24:32.599025+00:00"
+    },
+    "test-strategy": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.20-WorkflowEvolution/test-strategy.md",
+      "started_at": "2026-03-09T16:24:32.599549+00:00",
+      "completed_at": "2026-03-09T16:26:37.617672+00:00"
+    }
+  },
+  "validation": {
+    "status": "pass",
+    "timestamp": "2026-03-09T16:34:22.698609+00:00"
+  }
+}
