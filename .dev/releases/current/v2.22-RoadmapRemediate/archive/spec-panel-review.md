@@ -9,7 +9,7 @@ major_count: 7
 minor_count: 8
 ---
 
-# Spec Panel Review: v2.21 Roadmap Remediation Loop
+# Spec Panel Review: v2.22 Roadmap Remediation Loop
 
 ## Certification Decision
 

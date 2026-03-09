@@ -1,6 +1,6 @@
 ---
 title: "Roadmap Remediation Loop"
-version: "2.21"
+version: "2.22"
 codename: "RoadmapRemediate"
 status: draft
 author: brainstorm-session
@@ -12,7 +12,7 @@ estimated_effort: 3-5 sprints
 risk: medium
 ---
 
-# v2.21 — Roadmap Remediation Loop
+# v2.22 — Roadmap Remediation Loop
 
 ## 1. Problem Statement
 

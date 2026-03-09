@@ -9,10 +9,10 @@ major_patches: 7
 estimated_effort: single session
 ---
 
-# Spec Patch Tasklist: v2.21 Roadmap Remediation Loop
+# Spec Patch Tasklist: v2.22 Roadmap Remediation Loop
 
 All patches target a single file:
-`/.dev/releases/backlog/v.2.21-RoadmapRemediate/spec-roadmap-remediate.md`
+`/.dev/releases/backlog/v.2.22-RoadmapRemediate/spec-roadmap-remediate.md`
 
 Patches are ordered by dependency — earlier patches may create sections
 referenced by later patches.
