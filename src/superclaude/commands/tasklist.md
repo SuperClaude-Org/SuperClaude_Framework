@@ -1,17 +1,17 @@
 ---
 name: tasklist
-description: "Generate deterministic, Sprint CLI-compatible tasklist bundles from roadmaps"
+description: "Generate deterministic, Sprint CLI-compatible tasklist bundles from roadmaps with integrated roadmap validation"
 category: utility
 complexity: high
-allowed-tools: Read, Glob, Grep, Write, Bash, TodoWrite, Skill
+allowed-tools: Read, Glob, Grep, Write, Bash, TaskCreate, TaskUpdate, TaskList, TaskGet, Task, Skill
 mcp-servers: [sequential, context7]
 personas: [analyzer, architect]
-version: "1.0.0"
+version: "2.0.0"
 ---
 
 # /sc:tasklist
 
-Generate a deterministic, Sprint CLI-compatible tasklist bundle from a roadmap file. Transforms roadmap items into phased, execution-ready task files with compliance tier classification and verification routing.
+Generate a deterministic, Sprint CLI-compatible tasklist bundle from a roadmap file. Transforms roadmap items into phased, execution-ready task files with compliance tier classification and verification routing. After generation, automatically validates the tasklist against the source roadmap, patches any drift, and verifies corrections.
 
 ## Triggers
 
@@ -104,9 +104,11 @@ The full generation algorithm is in the protocol skill.
 - Derive TASKLIST_ROOT from roadmap content
 - Invoke the skill with validated context
 - Report generated file paths on completion
+- Validate generated tasklist against source roadmap (via skill stages 7-10)
+- Produce validation artifacts in TASKLIST_ROOT/validation/
 
 **Will Not:**
 - Execute the generation algorithm (that is the skill's job)
 - Modify source roadmap files
 - Run `superclaude sprint run` (output is compatible; invocation is separate)
-- Generate anything beyond the tasklist bundle
+- Generate anything beyond the tasklist bundle and validation artifacts

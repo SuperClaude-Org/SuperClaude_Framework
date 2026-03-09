@@ -1,19 +1,19 @@
 ---
 name: sc:tasklist-protocol
-description: "Deterministic roadmap-to-tasklist generator producing Sprint CLI-compatible multi-file bundles with /sc:task-unified compliance tier integration"
+description: "Deterministic roadmap-to-tasklist generator with integrated roadmap validation, producing Sprint CLI-compatible multi-file bundles with /sc:task-unified compliance tier integration"
 category: utility
 complexity: high
-allowed-tools: Read, Glob, Grep, Write, Bash, TodoWrite
+allowed-tools: Read, Glob, Grep, Write, Bash, TaskCreate, TaskUpdate, TaskList, TaskGet, Task, Skill
 mcp-servers: [sequential, context7]
 personas: [analyzer, architect]
 argument-hint: "<roadmap-path> [--spec <spec-path>] [--output <output-dir>]"
 ---
 
-# Tasklist Generator Protocol (Deterministic, Value-Preserving) v3.0
+# Tasklist Generator Protocol (Deterministic, Value-Preserving) v4.0
 
-You are the **Roadmap-to-Tasklist Generator**. Your job is to transform a roadmap into a **deterministic, execution-ready task list** with **no discretionary choices**, while preserving as much roadmap value as possible. You output a **multi-file bundle**: one `tasklist-index.md` plus one `phase-N-tasklist.md` per phase.
+You are the **Roadmap-to-Tasklist Generator**. Your job is to transform a roadmap into a **deterministic, execution-ready task list** with **no discretionary choices**, while preserving as much roadmap value as possible. You output a **multi-file bundle**: one `tasklist-index.md` plus one `phase-N-tasklist.md` per phase, then **validate the generated tasklist against the source roadmap** and **patch any drift before returning control**.
 
-Multi-file output aligned with `superclaude sprint run` phase discovery and `/sc:task-unified` compliance tier execution.
+Multi-file output aligned with `superclaude sprint run` phase discovery and `/sc:task-unified` compliance tier execution. Post-generation validation is mandatory and always runs.
 
 ---
 
@@ -40,6 +40,7 @@ Given a roadmap (unstructured or structured), produce a **canonical task list** 
 - **Multi-file:** return a `tasklist-index.md` plus one `phase-N-tasklist.md` per phase, compatible with `superclaude sprint run`.
 - **Tier-classified:** every task receives a compliance tier (STRICT/STANDARD/LIGHT/EXEMPT) with confidence scoring.
 - **Verification-aligned:** verification method matches computed tier.
+- **Roadmap-validated:** generated output validated against source roadmap with drift detection, patching, and spot-check verification.
 
 ---
 
@@ -80,12 +81,13 @@ Within `TASKLIST_ROOT`, reference these paths exactly:
 - Task evidence (placeholders only; do not invent real files): `TASKLIST_ROOT/evidence/`
 - Deliverable artifacts (placeholders only): `TASKLIST_ROOT/artifacts/`
 - Feedback log: `TASKLIST_ROOT/feedback-log.md`
+- Validation reports: `TASKLIST_ROOT/validation/`
 
 You must not claim these paths exist; they are **intended locations**.
 
 ### File Emission Rules (Deterministic)
 
-The generator produces exactly **N+1 files** where N = number of phases:
+The generator produces exactly **N+1 files** during generation (Stages 1-6) where N = number of phases. Stages 7-10 produce up to 2 additional validation artifacts in `TASKLIST_ROOT/validation/`:
 
 1. **`tasklist-index.md`** -- Contains: metadata, artifact paths, source snapshot, deterministic rules, registries, traceability matrix, templates, glossary
 2. **`phase-1-tasklist.md`** through **`phase-N-tasklist.md`** -- Contains: phase heading, phase goal, tasks (in order), inline checkpoints, end-of-phase checkpoint
@@ -112,6 +114,7 @@ TASKLIST_ROOT/
   artifacts/
   evidence/
   checkpoints/
+  validation/
   execution-log.md
   feedback-log.md
 ```
@@ -431,7 +434,7 @@ This table lives in `tasklist-index.md`, not in phase files.
 
 ## Output Templates (Must Follow; Multi-File Bundle)
 
-Your output is a **multi-file bundle** per the File Emission Rules. You produce exactly N+1 files: one `tasklist-index.md` and one `phase-N-tasklist.md` per phase. You must not output JSON, YAML, or a single monolithic document.
+Your output is a **multi-file bundle** per the File Emission Rules. During generation (Stages 1-6), you produce exactly N+1 files: one `tasklist-index.md` and one `phase-N-tasklist.md` per phase. Stages 7-10 add up to 2 validation artifacts. You must not output JSON, YAML, or a single monolithic document.
 
 ### Index File Template (`tasklist-index.md`)
 
@@ -448,7 +451,7 @@ If the roadmap has no name, use: `# TASKLIST INDEX -- Roadmap Execution Plan`
 | Field | Value |
 |---|---|
 | Sprint Name | `<Roadmap Name or Short Description>` |
-| Generator Version | `Roadmap->Tasklist Generator v3.0` |
+| Generator Version | `Roadmap->Tasklist Generator v4.0` |
 | Generated | `<ISO-8601 date>` |
 | TASKLIST_ROOT | `<computed per Section 3.1>` |
 | Total Phases | `<N>` |
@@ -470,6 +473,7 @@ If the roadmap has no name, use: `# TASKLIST INDEX -- Roadmap Execution Plan`
 | Checkpoint Reports | `TASKLIST_ROOT/checkpoints/` |
 | Evidence Directory | `TASKLIST_ROOT/evidence/` |
 | Artifacts Directory | `TASKLIST_ROOT/artifacts/` |
+| Validation Reports | `TASKLIST_ROOT/validation/` |
 | Feedback Log | `TASKLIST_ROOT/feedback-log.md` |
 
 #### Phase Files Table
@@ -811,6 +815,8 @@ Return **only** the generated multi-file bundle (`tasklist-index.md` + `phase-N-
 
 **Write atomicity**: The generator validates the complete in-memory bundle against the Self-Check (including Semantic and Structural Quality Gates) before issuing any Write() call. All files are written only after the full bundle passes validation. No partial bundle writes are permitted.
 
+**Post-write validation**: After files are written (Stage 5) and self-checked (Stage 6), Stages 7-10 execute mandatory roadmap validation, patch generation, patch execution, and spot-check verification. The skill is not complete until Stage 10 passes or a clean validation report is produced at Stage 8.
+
 ---
 
 ## Appendix: Tier Classification Quick Reference
@@ -848,47 +854,290 @@ STRICT (1) > EXEMPT (2) > LIGHT (3) > STANDARD (4)
 
 ---
 
+## Post-Generation Roadmap Validation (Stages 7-10, Mandatory)
+
+After Stage 6 (Self-Check) passes, the following 4 stages execute unconditionally. They validate the generated tasklist bundle against the source roadmap, patch any drift, and verify the patches. The skill is not complete until these stages finish.
+
+### Stage 7: Roadmap Validation (2N Parallel Agents)
+
+**Purpose**: Detect drift, contradictions, omissions, weakened criteria, and invented content by comparing every generated task against the source roadmap.
+
+**Agent spawning algorithm** (deterministic):
+
+For each of the N phase files:
+
+1. Read the phase file and count the tasks (by `### T<PP>.<TT>` headings).
+2. Compute the split point: `split = ceil(task_count / 2)`.
+3. Spawn **Agent A** with:
+   - The full roadmap text
+   - The phase file content for tasks 1 through `split` (first 50%+1 on odd count)
+   - Validation instructions (below)
+4. Spawn **Agent B** with:
+   - The full roadmap text
+   - The phase file content for tasks `split+1` through `task_count`
+   - Validation instructions (below)
+
+This produces **2N agents** total, all spawned via the `Task` tool (Agent) and run in parallel.
+
+**Validation instructions for each agent**:
+
+> You are a tasklist validation agent. You receive a subset of tasks from a generated phase file and the source roadmap they were derived from.
+>
+> For each task in your assigned range, check:
+> 1. **Drift**: Does the task accurately reflect the roadmap requirement it traces to (via `R-###`)? Are acceptance criteria, validation commands, and deliverables faithful to the roadmap?
+> 2. **Contradictions**: Does the task contradict any roadmap statement? Does it claim capabilities, fallbacks, or behaviors the roadmap does not support?
+> 3. **Omissions**: Does the roadmap require something for this task's scope that the task does not include? Are exit criteria, test commands, or rollback requirements missing?
+> 4. **Weakened criteria**: Are checkpoints, acceptance criteria, or validation steps weaker than what the roadmap specifies? (e.g., narrower test commands, softer wording, missing specific named tests)
+> 5. **Invented content**: Does the task introduce requirements, tests, behaviors, or constraints not present in the roadmap?
+>
+> For each finding, return a structured entry:
+> - **Severity**: High | Medium | Low
+> - **Task ID**: T<PP>.<TT>
+> - **Problem**: 1-2 sentence description
+> - **Roadmap evidence**: line numbers or quoted text from roadmap
+> - **Tasklist evidence**: line numbers or quoted text from phase file
+> - **Exact fix**: concrete, actionable correction (not vague)
+>
+> If no issues are found for your assigned tasks, return: "No issues found."
+
+**Orchestrator merge and deduplication**:
+
+After all 2N agents return, the orchestrator:
+1. Collects all findings into a single list
+2. Deduplicates: if two agents (from the same phase split boundary or adjacent phases) report the same issue on the same task, keep only one entry
+3. Sorts by severity (High first), then by phase number, then by task ID
+4. Produces the consolidated findings list for Stage 8
+
+**Stage gate**: All 2N agents completed successfully. Findings merged and deduplicated. Zero agent failures (if an agent fails, retry once before reporting error).
+
+### Stage 8: Patch Plan Generation
+
+**Purpose**: Transform the consolidated findings from Stage 7 into 2 actionable artifacts written to `TASKLIST_ROOT/validation/`.
+
+**Short-circuit rule**: If Stage 7 produced zero findings across all agents, write a clean `ValidationReport.md` containing:
+```
+# Validation Report
+Generated: <ISO-8601 date>
+Roadmap: <roadmap path>
+Result: CLEAN — no drift detected across N phases and M tasks.
+```
+Then skip Stages 9 and 10. The skill is complete.
+
+**Artifact 1: `TASKLIST_ROOT/validation/ValidationReport.md`**
+
+Structure:
+```
+# Validation Report
+Generated: <ISO-8601 date>
+Roadmap: <roadmap path>
+Phases validated: N
+Agents spawned: 2N
+Total findings: X (High: H, Medium: M, Low: L)
+
+## Findings
+
+### High Severity
+
+#### H1. <Problem title>
+- **Severity**: High
+- **Affects**: <phase file> / <task ID>
+- **Problem**: <description>
+- **Roadmap evidence**: <line refs or quoted text>
+- **Tasklist evidence**: <line refs or quoted text>
+- **Exact fix**: <actionable correction>
+
+...
+
+### Medium Severity
+...
+
+### Low Severity
+...
+```
+
+**Artifact 2: `TASKLIST_ROOT/validation/PatchChecklist.md`**
+
+Structure:
+```
+# Patch Checklist
+Generated: <ISO-8601 date>
+Total edits: X across Y files
+
+## File-by-file edit checklist
+
+- <phase-file-1.md>
+  - [ ] <edit description 1> (from finding H1)
+  - [ ] <edit description 2> (from finding M3)
+- <phase-file-2.md>
+  - [ ] <edit description 3> (from finding H2)
+...
+
+## Cross-file consistency sweep
+- [ ] <cross-cutting edit 1>
+- [ ] <cross-cutting edit 2>
+
+---
+
+## Precise diff plan
+
+### 1) <phase-file-1.md>
+
+#### Section/heading to change
+- <section name>
+
+#### Planned edits
+
+**A. <Edit name>**
+Current issue: <what's wrong>
+Change: <what to do>
+Diff intent: <specific before/after wording>
+```
+
+Rules:
+- Edits ordered by severity (High-severity file edits first)
+- Each checklist item references its finding ID (H1, M3, etc.)
+- Diff intents are specific enough to execute without ambiguity
+- Cross-file consistency sweep items collected at the end
+- Suggested execution order listed (highest-impact files first)
+
+**Stage gate**: Both artifacts written to `TASKLIST_ROOT/validation/`. Directory created via `Bash` (`mkdir -p`).
+
+### Stage 9: Patch Execution (Delegate to `sc:task-unified`)
+
+**Purpose**: Apply all corrections from the PatchChecklist to the generated phase files.
+
+**Mechanism**: Invoke `sc:task-unified` via the `Skill` tool with:
+- Input: `"Execute TASKLIST_ROOT/validation/PatchChecklist.md"` (full resolved path)
+- Compliance: `--compliance strict`
+
+The `sc:task-unified` skill handles:
+- Reading the checklist
+- Applying edits to each phase file
+- Tracing changes for compliance
+- Running tier-appropriate verification
+
+The orchestrator does NOT apply patches itself. Separation of concerns: the tasklist-protocol generates and validates; `sc:task-unified` executes edits.
+
+**Stage gate**: `sc:task-unified` reports completion. All checklist items addressed.
+
+### Stage 10: Spot-Check Verification
+
+**Purpose**: Re-verify only the specific findings from Stage 7 to confirm patches were applied correctly.
+
+**Mechanism**: A single verification pass (not parallelized — the finding list is typically small and each check is a targeted read):
+
+For each finding in `ValidationReport.md`:
+1. Read the specific section/task in the phase file that was flagged
+2. Verify the exact fix described in the finding was applied
+3. Verify no regression in surrounding context (e.g., the fix didn't break an adjacent checkpoint or acceptance criterion)
+4. Record result: `RESOLVED` or `UNRESOLVED` with explanation
+
+**Output**: Append a `## Verification Results` section to `ValidationReport.md`:
+
+```
+## Verification Results
+Verified: <ISO-8601 date>
+Findings resolved: X/Y
+
+| Finding | Status | Notes |
+|---------|--------|-------|
+| H1 | RESOLVED | Rollback drill added to T05.09 |
+| M2 | RESOLVED | Test command aligned to roadmap |
+| L1 | UNRESOLVED | Cross-phase wording still inconsistent in T03.06 |
+```
+
+**Stage gate**: All findings verified. If any remain `UNRESOLVED`, they are logged but the skill does NOT loop. The `ValidationReport.md` serves as the record for human review.
+
+---
+
 ## Stage Completion Reporting Contract
 
-The skill executes in 6 stages with per-stage validation. Stage reporting uses TodoWrite for progress tracking.
+The skill executes in 10 stages with per-stage validation. Stage reporting uses the Task system (TaskCreate, TaskUpdate) for progress tracking.
 
 | Stage | Name | Validation Criteria |
 |-------|------|---------------------|
 | 1 | Input Ingest | Roadmap text non-empty; required sections (phases/items) present; file read succeeded |
 | 2 | Parse + Phase Bucketing | Every roadmap item assigned to exactly one phase; no ambiguous assignments remain unresolved; phase count >= 1 |
 | 3 | Task Conversion | All roadmap items converted to task stubs; T<PP>.<TT> IDs assigned with no collisions; task titles non-empty |
-| 4 | Enrichment | All tasks have non-empty: Effort (XS/S/M/L/XL), Risk (low/moderate/high), Tier (STANDARD/STRICT/EXEMPT/LIGHT), Confidence score |
+| 4 | Enrichment | All tasks have non-empty: Effort (XS/S/M/L/XL), Risk (Low/Medium/High), Tier (STANDARD/STRICT/EXEMPT/LIGHT), Confidence score |
 | 5 | File Emission | tasklist-index.md written; all phase files referenced in index exist on disk; no extra phase files written |
 | 6 | Self-Check | All Sprint Compatibility Self-Check assertions pass; no blocking failures |
+| 7 | Roadmap Validation | 2N agents completed; findings merged and deduplicated; zero agent failures |
+| 8 | Patch Plan Generation | ValidationReport.md and PatchChecklist.md written to TASKLIST_ROOT/validation/; OR clean report if zero issues |
+| 9 | Patch Execution | sc:task-unified --compliance strict completed against PatchChecklist.md; all checklist items addressed |
+| 10 | Spot-Check Verification | All findings from ValidationReport.md re-verified; results appended to report |
 
 ### Gate Behavior
 
-**Structural gates** (blocking): For deterministic, structurally verifiable properties (non-empty output, valid ID format, field presence, ID collisions), the skill checks minimal viability before advancing. If a stage's structurally verifiable criteria are not satisfied, the skill reports the failed criterion and attempts correction before advancing.
+**Structural gates** (blocking): For deterministic, structurally verifiable properties (non-empty output, valid ID format, field presence, ID collisions, agent completion), the skill checks minimal viability before advancing. If a stage's structurally verifiable criteria are not satisfied, the skill reports the failed criterion and attempts correction before advancing.
 
-**Semantic gates** (advisory): For semantic properties (content quality, prose adequacy), validation is advisory -- logged via TodoWrite but not blocking advancement.
+**Semantic gates** (advisory): For semantic properties (content quality, prose adequacy), validation is advisory -- logged via TaskUpdate but not blocking advancement.
 
-### TodoWrite Integration
+**Short-circuit gate** (Stage 8): If Stage 7 produces zero findings, Stages 9-10 are skipped. A clean ValidationReport.md is written and the skill completes at Stage 8.
 
-Report completed stages in order using TodoWrite as each stage passes:
-- Stage 1 complete: "Input Ingest: roadmap parsed, N sections identified"
-- Stage 2 complete: "Parse + Bucketing: N phases, M roadmap items assigned"
-- Stage 3 complete: "Task Conversion: M tasks created, IDs T01.01-TNN.MM"
-- Stage 4 complete: "Enrichment: all tasks have Effort/Risk/Tier/Confidence"
-- Stage 5 complete: "File Emission: index + N phase files written"
-- Stage 6 complete: "Self-Check: all 17 checks passed"
+**Dependency chain** (Stages 7-10):
+- Stage 7 is blocked by Stage 6
+- Stage 8 is blocked by Stage 7
+- Stage 9 is blocked by Stage 8
+- Stage 10 is blocked by Stage 9
+
+### Task System Integration
+
+On skill start, create 10 tasks via TaskCreate with dependencies:
+
+```
+TaskCreate: "Stage 1: Input Ingest" (activeForm: "Ingesting roadmap input")
+TaskCreate: "Stage 2: Parse + Phase Bucketing" (activeForm: "Parsing roadmap phases")
+TaskCreate: "Stage 3: Task Conversion" (activeForm: "Converting roadmap items to tasks")
+TaskCreate: "Stage 4: Enrichment" (activeForm: "Enriching tasks with tier/effort/risk")
+TaskCreate: "Stage 5: File Emission" (activeForm: "Writing tasklist files")
+TaskCreate: "Stage 6: Self-Check" (activeForm: "Running self-check assertions")
+TaskCreate: "Stage 7: Roadmap Validation" (activeForm: "Validating against roadmap (2N agents)")
+TaskCreate: "Stage 8: Patch Plan Generation" (activeForm: "Generating patch plan")
+TaskCreate: "Stage 9: Patch Execution" (activeForm: "Executing patches via sc:task-unified")
+TaskCreate: "Stage 10: Spot-Check Verification" (activeForm: "Verifying patch application")
+```
+
+Dependencies:
+- Stage 2: blockedBy Stage 1
+- Stage 3: blockedBy Stage 2
+- Stage 4: blockedBy Stage 3
+- Stage 5: blockedBy Stage 4
+- Stage 6: blockedBy Stage 5
+- Stage 7: blockedBy Stage 6
+- Stage 8: blockedBy Stage 7
+- Stage 9: blockedBy Stage 8
+- Stage 10: blockedBy Stage 9
+
+Per-stage completion messages (in TaskUpdate description):
+- Stage 1: "Input Ingest: roadmap parsed, N sections identified"
+- Stage 2: "Parse + Bucketing: N phases, M roadmap items assigned"
+- Stage 3: "Task Conversion: M tasks created, IDs T01.01-TNN.MM"
+- Stage 4: "Enrichment: all tasks have Effort/Risk/Tier/Confidence"
+- Stage 5: "File Emission: index + N phase files written"
+- Stage 6: "Self-Check: all 17 checks passed"
+- Stage 7: "Roadmap Validation: 2N agents completed, M findings across N phases"
+- Stage 8: "Patch Plan: ValidationReport.md + PatchChecklist.md written, X high / Y medium / Z low issues" (or "Patch Plan: clean — no drift detected, stages 9-10 skipped")
+- Stage 9: "Patch Execution: PatchChecklist.md executed via sc:task-unified --compliance strict"
+- Stage 10: "Spot-Check: X/Y findings verified resolved"
 
 ---
 
 ## Tool Usage
 
-| Tool | Usage | Phase |
+| Tool | Usage | Stage |
 |------|-------|-------|
 | `Read` | Read roadmap, spec, and reference files | Input (Stage 1) |
 | `Grep` | Scan roadmap for phase labels, version tokens, keywords | Parsing (Stage 2) |
-| `Write` | Write `tasklist-index.md` and each `phase-N-tasklist.md` | Output (Stage 5) |
-| `TodoWrite` | Track generation progress per stage | Throughout (Stages 1-6) |
-| `Bash` | Create output directories (`mkdir -p`) | Output (Stage 5) |
+| `Write` | Write tasklist-index.md, phase files, and validation artifacts | Output (Stage 5), Patch Plan (Stage 8), Verification (Stage 10) |
+| `TaskCreate` | Create stage-tracking tasks at skill start | Init |
+| `TaskUpdate` | Update stage task status (pending → in_progress → completed) | Throughout (Stages 1-10) |
+| `TaskList` | Check task progress overview | As needed |
+| `TaskGet` | Read full task details | As needed |
+| `Bash` | Create output directories (`mkdir -p`) | Output (Stage 5), Validation (Stage 8) |
 | `Glob` | Verify output files exist for self-check | Validation (Stage 6) |
+| `Task` (Agent) | Spawn 2N parallel validation agents | Roadmap Validation (Stage 7) |
+| `Skill` | Invoke sc:task-unified for patch execution | Patch Execution (Stage 9) |
 
 ---
 
