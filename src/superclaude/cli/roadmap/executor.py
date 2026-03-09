@@ -494,9 +494,17 @@ def _print_step_plan(num: int, step: Step, parallel: bool = False) -> None:
 
 
 def _save_state(config: RoadmapConfig, results: list[StepResult]) -> None:
-    """Write .roadmap-state.json to output_dir via atomic tmp + os.replace()."""
+    """Write .roadmap-state.json to output_dir via atomic tmp + os.replace().
+
+    Preserves existing ``validation`` key if present (written by
+    ``_save_validation_status``).
+    """
     state_file = config.output_dir / ".roadmap-state.json"
     spec_hash = hashlib.sha256(config.spec_file.read_bytes()).hexdigest()
+
+    # Preserve existing validation status across state rewrites
+    existing = read_state(state_file)
+    existing_validation = existing.get("validation") if existing else None
 
     state = {
         "schema_version": 1,
@@ -517,6 +525,9 @@ def _save_state(config: RoadmapConfig, results: list[StepResult]) -> None:
             if r.step
         },
     }
+
+    if existing_validation is not None:
+        state["validation"] = existing_validation
 
     write_state(state, state_file)
 
@@ -559,11 +570,14 @@ def apply_decomposition_pass(deliverables: list[Deliverable]) -> list[Deliverabl
     return decompose_deliverables(deliverables)
 
 
-def execute_roadmap(config: RoadmapConfig, resume: bool = False) -> None:
+def execute_roadmap(config: RoadmapConfig, resume: bool = False, no_validate: bool = False) -> None:
     """Execute the roadmap generation pipeline.
 
     Builds the step list, handles --dry-run and --resume, then
     delegates to execute_pipeline() with roadmap_run_step.
+
+    After all 8 steps pass, auto-invokes validation unless
+    --no-validate is set or --resume halted on a failed step.
     """
     config.output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -600,6 +614,93 @@ def execute_roadmap(config: RoadmapConfig, resume: bool = False) -> None:
         sys.exit(1)
 
     print(f"\n[roadmap] Pipeline complete: {len(results)} steps passed", flush=True)
+
+    # Auto-invoke validation after successful pipeline completion
+    if no_validate:
+        print("[roadmap] Validation skipped (--no-validate)", flush=True)
+        _save_validation_status(config, "skipped")
+        return
+
+    # Check if validation already completed (--resume path)
+    if resume:
+        state_file = config.output_dir / ".roadmap-state.json"
+        state = read_state(state_file)
+        if state and "validation" in state:
+            saved = state["validation"]
+            if saved.get("status") in ("pass", "fail"):
+                print(
+                    f"[roadmap] Validation already completed ({saved['status']}), skipping",
+                    flush=True,
+                )
+                return
+
+    _auto_invoke_validate(config)
+
+
+def _save_validation_status(
+    config: RoadmapConfig,
+    status: str,
+) -> None:
+    """Update .roadmap-state.json with validation status.
+
+    Adds or updates the ``validation`` key without modifying existing state.
+
+    Parameters
+    ----------
+    config:
+        RoadmapConfig with output_dir.
+    status:
+        One of "pass", "fail", or "skipped".
+    """
+    state_file = config.output_dir / ".roadmap-state.json"
+    state = read_state(state_file)
+    if state is None:
+        state = {}
+    state["validation"] = {
+        "status": status,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+    write_state(state, state_file)
+
+
+def _auto_invoke_validate(config: RoadmapConfig) -> None:
+    """Auto-invoke validation after a successful roadmap pipeline run.
+
+    Inherits --model, --max-turns, --debug from the parent roadmap config.
+    Default agent count for roadmap-run invocation is 2 (dual-agent for rigor).
+    """
+    from .models import AgentSpec, ValidateConfig
+    from .validate_executor import execute_validate
+
+    # Default to 2 agents for roadmap-run auto-invocation (dual-agent for rigor per OQ-1)
+    validate_agents = config.agents[:2] if len(config.agents) >= 2 else config.agents
+
+    validate_config = ValidateConfig(
+        output_dir=config.output_dir,
+        agents=validate_agents,
+        work_dir=config.output_dir,
+        max_turns=config.max_turns,
+        model=config.model,
+        debug=config.debug,
+    )
+
+    print("\n[roadmap] Auto-invoking validation...", flush=True)
+
+    try:
+        counts = execute_validate(validate_config)
+        blocking = counts.get("blocking_count", 0)
+        warning = counts.get("warning_count", 0)
+        info = counts.get("info_count", 0)
+        print(
+            f"[validate] Complete: {blocking} blocking, {warning} warning, {info} info",
+            flush=True,
+        )
+        validation_status = "fail" if blocking > 0 else "pass"
+        _save_validation_status(config, validation_status)
+    except FileNotFoundError as exc:
+        _log.error("Validation skipped: %s", exc)
+        print(f"[validate] Skipped: {exc}", file=sys.stderr, flush=True)
+        _save_validation_status(config, "skipped")
 
 
 def _apply_resume(

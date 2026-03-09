@@ -1,0 +1,44 @@
+{
+  "test_id": "test-3-information-cascade",
+  "test_version": "v2.20-baseline",
+  "timestamp": "2026-03-09T02:21:55Z",
+  "findings_targeted": ["F-006", "Evidence-Chain-2", "Evidence-Chain-5"],
+  "spec_file": "/config/workspace/SuperClaude_Framework/.dev/releases/complete/v2.0-roadmap-v2/SC-ROADMAP-V2-SPEC.md",
+  "pipeline_exit_code": 0,
+  "elapsed_seconds": 1395,
+  "stages": [
+    {"stage": "input-spec", "file": "/config/workspace/SuperClaude_Framework/.dev/releases/complete/v2.0-roadmap-v2/SC-ROADMAP-V2-SPEC.md", "word_count": 7367, "line_count": 1128, "requirement_ids": 26, "constraint_words": 14, "headings": 115, "bullets": 307, "unique_terms": 1463, "frontmatter_fields": 47},
+    {"stage": "extract", "file": "/config/workspace/SuperClaude_Framework/.dev/benchmarks/v2.20-baseline/outputs/test-3-cascade/extraction.md", "word_count": 2875, "line_count": 309, "requirement_ids": 96, "constraint_words": 8, "headings": 8, "bullets": 32, "unique_terms": 897, "frontmatter_fields": 14},
+    {"stage": "generate-opus", "file": "/config/workspace/SuperClaude_Framework/.dev/benchmarks/v2.20-baseline/outputs/test-3-cascade/roadmap-opus-architect.md", "word_count": 3133, "line_count": 404, "requirement_ids": 93, "constraint_words": 13, "headings": 47, "bullets": 176, "unique_terms": 852, "frontmatter_fields": 3},
+    {"stage": "generate-haiku", "file": "/config/workspace/SuperClaude_Framework/.dev/benchmarks/v2.20-baseline/outputs/test-3-cascade/roadmap-haiku-analyst.md", "word_count": 2970, "line_count": 674, "requirement_ids": 2, "constraint_words": 23, "headings": 70, "bullets": 407, "unique_terms": 851, "frontmatter_fields": 3},
+    {"stage": "diff", "file": "/config/workspace/SuperClaude_Framework/.dev/benchmarks/v2.20-baseline/outputs/test-3-cascade/diff-analysis.md", "word_count": 1287, "line_count": 124, "requirement_ids": 0, "constraint_words": 8, "headings": 20, "bullets": 71, "unique_terms": 482, "frontmatter_fields": 2},
+    {"stage": "debate", "file": "/config/workspace/SuperClaude_Framework/.dev/benchmarks/v2.20-baseline/outputs/test-3-cascade/debate-transcript.md", "word_count": 2706, "line_count": 163, "requirement_ids": 0, "constraint_words": 14, "headings": 19, "bullets": 17, "unique_terms": 724, "frontmatter_fields": 2},
+    {"stage": "score", "file": "/config/workspace/SuperClaude_Framework/.dev/benchmarks/v2.20-baseline/outputs/test-3-cascade/base-selection.md", "word_count": 1476, "line_count": 124, "requirement_ids": 6, "constraint_words": 6, "headings": 15, "bullets": 13, "unique_terms": 511, "frontmatter_fields": 2},
+    {"stage": "merge", "file": "/config/workspace/SuperClaude_Framework/.dev/benchmarks/v2.20-baseline/outputs/test-3-cascade/roadmap.md", "word_count": 4161, "line_count": 529, "requirement_ids": 93, "constraint_words": 21, "headings": 62, "bullets": 276, "unique_terms": 1041, "frontmatter_fields": 3},
+    {"stage": "test-strategy", "file": "/config/workspace/SuperClaude_Framework/.dev/benchmarks/v2.20-baseline/outputs/test-3-cascade/test-strategy.md", "word_count": 4027, "line_count": 408, "requirement_ids": 33, "constraint_words": 9, "headings": 38, "bullets": 85, "unique_terms": 832, "frontmatter_fields": 2},
+    {"stage": "validate", "file": "/config/workspace/SuperClaude_Framework/.dev/benchmarks/v2.20-baseline/outputs/test-3-cascade/validate/validation-report.md", "word_count": 99, "line_count": 28, "requirement_ids": 0, "constraint_words": 0, "headings": 2, "bullets": 2, "unique_terms": 45, "frontmatter_fields": 5}
+  ],
+  "boundaries": [
+    {"boundary": "spec-to-extract", "from_stage": "input-spec", "to_stage": "extract", "word_preservation_ratio": 0.3903, "requirement_preservation_ratio": 3.6923, "constraint_preservation_ratio": 0.5714, "term_preservation_ratio": 0.6131},
+    {"boundary": "extract-to-generate-opus", "from_stage": "extract", "to_stage": "generate-opus", "word_preservation_ratio": 1.0897, "requirement_preservation_ratio": 0.9688, "constraint_preservation_ratio": 1.6250, "term_preservation_ratio": 0.9498},
+    {"boundary": "extract-to-generate-haiku", "from_stage": "extract", "to_stage": "generate-haiku", "word_preservation_ratio": 1.0330, "requirement_preservation_ratio": 0.0208, "constraint_preservation_ratio": 2.8750, "term_preservation_ratio": 0.9487},
+    {"boundary": "generate-opus-to-diff", "from_stage": "generate-opus", "to_stage": "diff", "word_preservation_ratio": 0.4108, "requirement_preservation_ratio": 0.0000, "constraint_preservation_ratio": 0.6154, "term_preservation_ratio": 0.5657},
+    {"boundary": "generate-haiku-to-diff", "from_stage": "generate-haiku", "to_stage": "diff", "word_preservation_ratio": 0.4333, "requirement_preservation_ratio": 0.0000, "constraint_preservation_ratio": 0.3478, "term_preservation_ratio": 0.5664},
+    {"boundary": "diff-to-debate", "from_stage": "diff", "to_stage": "debate", "word_preservation_ratio": 2.1026, "requirement_preservation_ratio": 1.0000, "constraint_preservation_ratio": 1.7500, "term_preservation_ratio": 1.5021},
+    {"boundary": "debate-to-score", "from_stage": "debate", "to_stage": "score", "word_preservation_ratio": 0.5455, "requirement_preservation_ratio": 0.0000, "constraint_preservation_ratio": 0.4286, "term_preservation_ratio": 0.7058},
+    {"boundary": "score-to-merge", "from_stage": "score", "to_stage": "merge", "word_preservation_ratio": 2.8191, "requirement_preservation_ratio": 15.5000, "constraint_preservation_ratio": 3.5000, "term_preservation_ratio": 2.0372},
+    {"boundary": "merge-to-test-strategy", "from_stage": "merge", "to_stage": "test-strategy", "word_preservation_ratio": 0.9678, "requirement_preservation_ratio": 0.3548, "constraint_preservation_ratio": 0.4286, "term_preservation_ratio": 0.7992},
+    {"boundary": "spec-to-test-strategy", "from_stage": "input-spec", "to_stage": "test-strategy", "word_preservation_ratio": 0.5466, "requirement_preservation_ratio": 1.2692, "constraint_preservation_ratio": 0.6429, "term_preservation_ratio": 0.5687}
+  ],
+  "interpretation": {
+    "what_to_look_for": [
+      "Requirement IDs should survive across spec→extract→merge and not collapse in merge→test-strategy.",
+      "Constraint preservation drops indicate seam-level contract thinning, especially extract→generate and merge→test-strategy.",
+      "Diff/debate/score stages are expected to transform content shape, but severe requirement or constraint loss still signals seam failure.",
+      "If merge has fewer requirement IDs than extract, schema drift through passing gates is present (Evidence Chain 2).",
+      "If test-strategy loses substantial requirements or constraints relative to merge, spec-to-implementation drift is present (Evidence Chain 5)."
+    ],
+    "baseline_expectation": "Progressive information loss at multiple boundaries with all gates still passing.",
+    "target": "Seam gates detect and flag significant information drops before drift reaches merged roadmap or test strategy."
+  }
+}

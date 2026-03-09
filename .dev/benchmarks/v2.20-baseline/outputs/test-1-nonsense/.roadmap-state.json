@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "spec_file": "/config/workspace/SuperClaude_Framework/.dev/benchmarks/v2.20-baseline/fixtures/nonsense-spec.md",
+  "spec_hash": "5ffd44ccf755840c241b58fdbb68701f7605db6d53fb5a18d87d111fbafc6b7b",
+  "agents": [
+    {
+      "model": "opus",
+      "persona": "architect"
+    },
+    {
+      "model": "haiku",
+      "persona": "analyst"
+    }
+  ],
+  "depth": "standard",
+  "last_run": "2026-03-09T02:28:46.276550+00:00",
+  "steps": {
+    "extract": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/benchmarks/v2.20-baseline/outputs/test-1-nonsense/extraction.md",
+      "started_at": "2026-03-09T02:21:55.201805+00:00",
+      "completed_at": "2026-03-09T02:22:40.210547+00:00"
+    },
+    "generate-opus-architect": {
+      "status": "PASS",
+      "attempt": 2,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/benchmarks/v2.20-baseline/outputs/test-1-nonsense/roadmap-opus-architect.md",
+      "started_at": "2026-03-09T02:23:11.218332+00:00",
+      "completed_at": "2026-03-09T02:23:47.224360+00:00"
+    },
+    "generate-haiku-analyst": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/benchmarks/v2.20-baseline/outputs/test-1-nonsense/roadmap-haiku-analyst.md",
+      "started_at": "2026-03-09T02:22:40.211509+00:00",
+      "completed_at": "2026-03-09T02:23:35.221022+00:00"
+    },
+    "diff": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/benchmarks/v2.20-baseline/outputs/test-1-nonsense/diff-analysis.md",
+      "started_at": "2026-03-09T02:23:47.224680+00:00",
+      "completed_at": "2026-03-09T02:24:34.233703+00:00"
+    },
+    "debate": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/benchmarks/v2.20-baseline/outputs/test-1-nonsense/debate-transcript.md",
+      "started_at": "2026-03-09T02:24:34.233944+00:00",
+      "completed_at": "2026-03-09T02:25:43.244319+00:00"
+    },
+    "score": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/benchmarks/v2.20-baseline/outputs/test-1-nonsense/base-selection.md",
+      "started_at": "2026-03-09T02:25:43.244577+00:00",
+      "completed_at": "2026-03-09T02:26:23.252781+00:00"
+    },
+    "merge": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/benchmarks/v2.20-baseline/outputs/test-1-nonsense/roadmap.md",
+      "started_at": "2026-03-09T02:26:23.252997+00:00",
+      "completed_at": "2026-03-09T02:27:38.263553+00:00"
+    },
+    "test-strategy": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/benchmarks/v2.20-baseline/outputs/test-1-nonsense/test-strategy.md",
+      "started_at": "2026-03-09T02:27:38.264118+00:00",
+      "completed_at": "2026-03-09T02:28:46.275678+00:00"
+    }
+  },
+  "validation": {
+    "status": "pass",
+    "timestamp": "2026-03-09T02:33:34.323822+00:00"
+  }
+}

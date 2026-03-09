@@ -1,0 +1,55 @@
+{
+    "test_id": "test-4-validation-depth",
+    "test_version": "v2.20-baseline",
+    "timestamp": "2026-03-09T02:21:55Z",
+    "findings_targeted": ["F-001", "F-002", "validate-pipeline"],
+    "source_dir": "/config/workspace/SuperClaude_Framework/.dev/releases/complete/v2.19-roadmap-validate",
+    "single_agent": {
+        "exit_code": 0,
+        "elapsed_seconds": 141,
+        "report_path": "/config/workspace/SuperClaude_Framework/.dev/benchmarks/v2.20-baseline/outputs/test-4-validation/single-agent/validate/validation-report.md",
+        "validation_complete": true,
+        "blocking_issues": 1,
+        "warnings": 5,
+        "info_items": 3,
+        "total_findings": 9,
+        "structural_findings": 2,
+        "semantic_findings": 7,
+        "semantic_ratio": 0.78,
+        "word_count": 1051
+    },
+    "multi_agent": {
+        "exit_code": 0,
+        "elapsed_seconds": 348,
+        "report_path": "/config/workspace/SuperClaude_Framework/.dev/benchmarks/v2.20-baseline/outputs/test-4-validation/multi-agent/validate/validation-report.md",
+        "validation_complete": false,
+        "blocking_issues": 0,
+        "warnings": 0,
+        "info_items": 0,
+        "total_findings": 0,
+        "structural_findings": 0,
+        "semantic_findings": 0,
+        "semantic_ratio": 0.00,
+        "reflect_reports": 2,
+        "has_agreement_table": false,
+        "both_agree": 0,
+        "only_a": 0,
+        "only_b": 0,
+        "conflicts": 0,
+        "word_count": 99
+    },
+    "comparison": {
+        "blocking_delta": -1,
+        "warning_delta": -5,
+        "info_delta": -3,
+        "total_findings_delta": -9,
+        "structural_delta": -2,
+        "semantic_delta": -7,
+        "semantic_ratio_single": 0.78,
+        "semantic_ratio_multi": 0.00
+    },
+    "interpretation": {
+        "baseline_expectation": "Both modes may produce well-formed reports, but pre-v2.20 they are expected to skew structural. Multi-agent depth is only meaningful if the merged report completes successfully.",
+        "target": "Higher semantic finding ratio, successful multi-agent merge, and evidence that multi-agent validation surfaces unique issues or conflicts that single-agent validation misses."
+    }
+}

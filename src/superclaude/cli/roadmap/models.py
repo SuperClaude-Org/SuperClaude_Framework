@@ -60,3 +60,20 @@ class RoadmapConfig(PipelineConfig):
     )
     depth: Literal["quick", "standard", "deep"] = "standard"
     output_dir: Path = field(default_factory=lambda: Path("."))
+
+
+@dataclass
+class ValidateConfig(PipelineConfig):
+    """Configuration for the roadmap validation pipeline.
+
+    Extends PipelineConfig with validation-specific fields:
+    output_dir, agents. Inherits model, max_turns, debug from PipelineConfig.
+    """
+
+    output_dir: Path = field(default_factory=lambda: Path("."))
+    agents: list[AgentSpec] = field(
+        default_factory=lambda: [
+            AgentSpec("opus", "architect"),
+            AgentSpec("haiku", "architect"),
+        ]
+    )
