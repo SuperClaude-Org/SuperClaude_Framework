@@ -139,9 +139,9 @@ class TestAcceptanceCriteriaAC01:
         _dry_run_output(steps)
         captured = capsys.readouterr()
 
-        # Count "Step N" lines -> 8 individual steps (7 entries, 2 parallel = 8)
+        # Count "Step N" lines -> 9 individual steps (8 entries, 2 parallel = 9)
         step_lines = [l for l in captured.out.splitlines() if l.startswith("Step ")]
-        assert len(step_lines) == 8
+        assert len(step_lines) == 9
 
     def test_dry_run_no_files_created(self, tmp_path, capsys):
         from superclaude.cli.roadmap.executor import _build_steps, _dry_run_output

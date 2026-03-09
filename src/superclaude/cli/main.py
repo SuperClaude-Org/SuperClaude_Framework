@@ -363,6 +363,10 @@ from superclaude.cli.cleanup_audit import cleanup_audit_group
 
 main.add_command(cleanup_audit_group, name="cleanup-audit")
 
+from superclaude.cli.tasklist import tasklist_group
+
+main.add_command(tasklist_group, name="tasklist")
+
 
 if __name__ == "__main__":
     main()

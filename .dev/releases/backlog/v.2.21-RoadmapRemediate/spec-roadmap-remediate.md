@@ -116,8 +116,10 @@ The validation report remains on disk for manual review.
 the selected severity scope. Findings outside the chosen scope are marked
 SKIPPED in the remediation tasklist.
 
-**If 0 BLOCKING and 0 WARNING and 0 INFO**: Skip prompt entirely, proceed
-directly to certify with a no-op remediation (nothing to fix).
+**If 0 BLOCKING and 0 WARNING**: Skip prompt entirely. If also 0 INFO,
+proceed directly to certify with a no-op (nothing to fix). If INFO findings
+exist, skip remediation (INFO-only remediation is low value) and proceed
+to certify.
 
 ### 2.3 Step 10: Remediate
 
@@ -144,6 +146,14 @@ class Finding:
 #### 2.3.2 Filtering
 
 Based on the user's selection at the prompt (§2.2):
+
+**Zero-findings guard**: If filtering produces 0 actionable findings (all
+findings are SKIPPED due to NO_ACTION_REQUIRED, OUT_OF_SCOPE, or severity
+below the user's selected scope), the remediate step emits a
+`remediation-tasklist.md` with `actionable: 0` and all entries marked SKIPPED.
+The certify step receives this and produces a `certification-report.md` with
+`findings_verified: 0`, `certified: true` — vacuously certified since there
+was nothing to fix.
 
 - **Option 1 (BLOCKING only)**: Only BLOCKING findings with fix guidance → proceed.
   WARNING and INFO → SKIPPED.
@@ -199,6 +209,37 @@ Do not change anything else. Do not add commentary or explanations.
 - Do not reorder sections unless fix guidance explicitly requires it
 ```
 
+**Cross-file finding example**: Finding F-05 spans roadmap.md and
+test-strategy.md. Each agent receives a scoped version:
+
+Agent 1 (roadmap.md) prompt fragment:
+```
+### F-05 [WARNING] test phase assignment conflict
+- Location: roadmap.md:§3.1 Phase 1 Tests
+- Evidence: test_fidelity_deviation_dataclass listed under Phase 2 in
+  test-strategy.md but should be Phase 1 per roadmap
+- Fix Guidance (YOUR FILE): Add test_fidelity_deviation_dataclass to the
+  Phase 1 test listing in §3.1. Do NOT modify Phase 2.
+- Note: The test-strategy.md side of this fix is handled by a separate agent.
+```
+
+Agent 2 (test-strategy.md) prompt fragment:
+```
+### F-05 [WARNING] test phase assignment conflict
+- Location: test-strategy.md:§2.1 Phase 2
+- Evidence: test_fidelity_deviation_dataclass listed under Phase 2 but
+  belongs in Phase 1 per roadmap
+- Fix Guidance (YOUR FILE): Move test_fidelity_deviation_dataclass from
+  §2.1 (Phase 2) to Phase 1 section. Adjust Phase 1 count to 10, Phase 2
+  count to 5.
+- Note: The roadmap.md side of this fix is handled by a separate agent.
+```
+
+**Execution Parameters**:
+- Timeout: 300 seconds per agent (scoped edits are faster than generation)
+- Retry: 1 retry on failure (consistent with other pipeline steps)
+- Model: inherits from parent pipeline config (same as validation agents)
+
 #### 2.3.5 Editable Files (Constraint)
 
 Remediation agents may ONLY edit:
@@ -217,6 +258,7 @@ Emit `remediation-tasklist.md` as a standalone file (not phase-tasklist format):
 ---
 type: remediation-tasklist
 source_report: validate/reflect-merged.md
+source_report_hash: "a1b2c3d4..."
 generated: 2026-03-09T14:30:00Z
 total_findings: 14
 actionable: 10
@@ -248,6 +290,89 @@ skipped: 4
 - F-13 | NO_ACTION_REQUIRED
 - F-14 | NO_ACTION_REQUIRED
 ```
+
+#### 2.3.7 Pipeline Integration Model
+
+The remediate step presents as a **single Step** to `execute_pipeline()`,
+consistent with `validate_executor.py` which already manages its own internal
+orchestration. The outer pipeline sees:
+
+- **Step ID**: `remediate`
+- **output_file**: `remediation-tasklist.md`
+- **gate**: `REMEDIATE_GATE` (checks remediation-tasklist.md frontmatter and
+  status entries)
+
+Internally, `remediate_executor.py` manages:
+
+1. Parse validation report → `Finding` objects
+2. Filter by user-selected scope
+3. Group findings by file
+4. Snapshot target files (copy to `<file>.pre-remediate` for rollback)
+5. Spawn one `ClaudeProcess` per file group, in parallel via `threading`
+6. Collect exit codes, update `remediation-tasklist.md` with per-finding status
+7. On any agent failure: execute rollback (see §2.3.8)
+
+The `remediate_executor` does NOT use `execute_pipeline()` for its internal
+agents. It uses `ClaudeProcess` directly, matching the pattern in
+`validate_executor.py:validate_run_step()`.
+
+```python
+REMEDIATE_GATE = GateCriteria(
+    required_frontmatter_fields=[
+        "type",
+        "source_report",
+        "source_report_hash",
+        "total_findings",
+        "actionable",
+        "skipped",
+    ],
+    min_lines=10,
+    enforcement_tier="STRICT",
+    semantic_checks=[
+        SemanticCheck(
+            name="frontmatter_values_non_empty",
+            check_fn=_frontmatter_values_non_empty,
+            failure_message="Remediation tasklist frontmatter has empty values",
+        ),
+        SemanticCheck(
+            name="all_actionable_have_status",
+            check_fn=_all_actionable_have_status,
+            failure_message="Not all actionable findings have a FIXED/FAILED status",
+        ),
+    ],
+)
+```
+
+#### 2.3.8 Partial Failure and Rollback
+
+Before spawning remediation agents, the executor snapshots all target files:
+
+```
+roadmap.md          → roadmap.md.pre-remediate
+test-strategy.md    → test-strategy.md.pre-remediate
+extraction.md       → extraction.md.pre-remediate
+```
+
+**Failure semantics**: If ANY remediation agent exits non-zero or times out:
+
+1. **Halt** all remaining agents (if still running)
+2. **Rollback** all target files from `.pre-remediate` snapshots
+3. **Mark** all findings for the failed agent as FAILED in
+   `remediation-tasklist.md`
+4. **Mark** all cross-file findings involving the failed file as FAILED
+   (even if the other agent succeeded — half-applied cross-file fixes
+   create worse inconsistencies than the original finding)
+5. **Set** remediate step status to FAIL
+6. **Pipeline halts** — consistent with existing parallel group behavior
+   where any failure stops the pipeline
+
+**On full success**: Delete `.pre-remediate` snapshots. Set all agent-targeted
+findings to FIXED.
+
+**Rationale**: Rollback-on-any-failure is preferred over partial success because
+cross-file findings (e.g., F-05) create consistency dependencies between files.
+Keeping one side of a cross-file fix while the other failed produces artifacts
+in a worse state than before remediation.
 
 ### 2.4 Step 11: Certify
 
@@ -352,6 +477,32 @@ CERTIFY_GATE = GateCriteria(
 )
 ```
 
+### 2.5 Pipeline Execution Flow
+
+The extended pipeline runs as two phases with an interactive prompt between
+them, consistent with the existing `_auto_invoke_validate()` pattern in
+`execute_roadmap()`:
+
+```
+Phase A: execute_pipeline(steps 1-9)
+         ↓
+         _auto_invoke_validate() ← existing behavior
+         ↓
+         Parse validation report, print summary
+         ↓
+         User prompt: [1] / [2] / [3] / [n]
+         ↓ (if user selects 1/2/3)
+Phase B: remediate_executor.execute() ← internal dispatch, NOT execute_pipeline
+         ↓
+         certify step via execute_pipeline([certify_step])
+```
+
+The user prompt is handled in `execute_roadmap()`, NOT inside
+`execute_pipeline()`. This preserves `execute_pipeline()`'s non-interactive
+contract. The remediate step uses internal dispatch (§2.3.7) rather than
+`execute_pipeline()`. The certify step runs as a single Step via
+`execute_pipeline()` since it's a standard single-agent step.
+
 ## 3. State Management
 
 ### 3.1 .roadmap-state.json Extensions
@@ -403,7 +554,9 @@ New step entries alongside existing ones:
 
 - If `validate` output passes its gate → skip to `remediate`
 - If `remediate` output exists and `remediation-tasklist.md` shows all FIXED →
-  skip to `certify`
+  verify `source_report_hash` matches the current validation report's SHA-256.
+  If hash matches, skip to `certify`. If hash differs (stale tasklist from a
+  prior run), re-run remediate from scratch.
 - If `certify` output passes its gate → pipeline complete, nothing to do
 
 Resume checks are based on gate evaluation of output files, consistent with
@@ -527,13 +680,16 @@ certified-with-caveats → some findings failed certification
 
 - SC-001: `roadmap run` completes all 12 steps without manual intervention when
   user approves remediation
-- SC-002: Remediation fixes ≥90% of BLOCKING findings on first pass
+- SC-002: ≥90% of BLOCKING findings receive PASS in the certification report
+  (§2.4.3). Measurement: `findings_passed / findings_verified` where severity
+  is BLOCKING.
 - SC-003: Certification correctly identifies unfixed findings (no false passes)
 - SC-004: `--resume` correctly skips completed remediation/certification steps
 - SC-005: No edits to files outside the allowed set (roadmap.md, extraction.md,
   test-strategy.md)
-- SC-006: Pipeline time increase ≤30% over current validate-only pipeline
-  (remediate + certify should be fast — scoped prompts, single-agent certify)
+- SC-006: Steps 10-11 (remediate + certify) add ≤30% wall-clock time relative
+  to the wall-clock time of steps 1-9 in the same run. Baseline is measured
+  from step 1 start to step 9 completion.
 - SC-007: `remediation-tasklist.md` accurately reflects all findings and their
   final status
 - SC-008: `.roadmap-state.json` schema remains backward-compatible (new fields
@@ -554,5 +710,14 @@ certified-with-caveats → some findings failed certification
 - **OQ-003 [RESOLVED]**: If the merged validation report is missing or
   malformed, remediation falls back to parsing individual reflect reports
   (`reflect-opus-architect.md`, `reflect-haiku-analyzer.md`, etc.). Findings
-  from individual reports are deduplicated by location + description similarity.
+  from individual reports are deduplicated using a two-step rule:
+  1. **Location match**: Two findings are candidates for deduplication if they
+     reference the same file AND their locations overlap or are within 5 lines
+     of each other (e.g., "roadmap.md:§3.1" and "roadmap.md:lines 85-92"
+     where §3.1 starts at line 83).
+  2. **Severity resolution**: On match, take the higher severity (BLOCKING >
+     WARNING > INFO). Merge fix guidance from both reports, preferring the
+     more specific guidance.
+  Findings that don't match any candidate are included as-is from their
+  source report.
   If no parseable reports exist at all, remediation is skipped with a warning.

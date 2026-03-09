@@ -55,14 +55,26 @@ _OUTPUT_FORMAT_BLOCK = (
 )
 
 
-def build_extract_prompt(spec_file: Path) -> str:
+def build_extract_prompt(
+    spec_file: Path,
+    retrospective_content: str | None = None,
+) -> str:
     """Prompt for step 'extract'.
 
     Instructs Claude to read the provided specification and produce
     extraction.md with YAML frontmatter containing all 13 required
     protocol fields plus 8 structured body sections.
+
+    Parameters
+    ----------
+    spec_file:
+        Path to the specification file being extracted.
+    retrospective_content:
+        Optional retrospective text from a prior release cycle.
+        When provided, it is framed as advisory "areas to watch"
+        context -- NOT as hard requirements (RSK-004 mitigation).
     """
-    return (
+    base = (
         "You are a requirements extraction specialist.\n\n"
         "Read the provided specification file and produce a requirements extraction document.\n\n"
         "Your output MUST begin with YAML frontmatter delimited by --- lines containing:\n"
@@ -99,7 +111,20 @@ def build_extract_prompt(spec_file: Path) -> str:
         "## Open Questions\n"
         "Ambiguities, gaps, or items requiring stakeholder clarification.\n\n"
         "Be thorough and precise. Extract every requirement, even implicit ones."
-    ) + _OUTPUT_FORMAT_BLOCK
+    )
+
+    if retrospective_content:
+        advisory = (
+            "\n\n## Advisory: Areas to Watch (from prior retrospective)\n\n"
+            "The following retrospective content is provided as advisory context "
+            "only. These are areas to watch during extraction -- they are NOT "
+            "additional requirements and MUST NOT be treated as such. Use them "
+            "to inform your risk assessment and open questions sections.\n\n"
+            f"{retrospective_content}"
+        )
+        base += advisory
+
+    return base + _OUTPUT_FORMAT_BLOCK
 
 
 def build_generate_prompt(agent: AgentSpec, extraction_path: Path) -> str:
@@ -247,6 +272,78 @@ def build_merge_prompt(
         "Use proper heading hierarchy (H2, H3, H4) with no gaps. "
         "Ensure all internal cross-references resolve. "
         "Do not duplicate heading text at H2 or H3 level."
+    ) + _OUTPUT_FORMAT_BLOCK
+
+
+def build_spec_fidelity_prompt(
+    spec_file: Path,
+    roadmap_path: Path,
+) -> str:
+    """Prompt for step 'spec-fidelity'.
+
+    Instructs Claude to compare the specification against the roadmap,
+    quote both documents for each deviation, and produce structured YAML
+    frontmatter output with severity counts and tasklist_ready field.
+
+    Embeds explicit severity definitions (HIGH/MEDIUM/LOW) to reduce
+    LLM classification drift (RSK-007).
+    """
+    return (
+        "You are a specification fidelity analyst.\n\n"
+        "Read the provided specification file and the generated roadmap. "
+        "Compare them systematically to identify deviations where the roadmap "
+        "diverges from or omits requirements in the specification.\n\n"
+        "## Severity Definitions\n\n"
+        "Apply these severity classifications precisely:\n\n"
+        "**HIGH**: The roadmap omits, contradicts, or fundamentally misrepresents "
+        "a specification requirement. The roadmap cannot be used as-is without "
+        "risking incorrect implementation. Examples:\n"
+        "- A functional requirement (FR-NNN) is entirely missing from the roadmap\n"
+        "- A non-functional requirement (NFR-NNN) is contradicted by the roadmap\n"
+        "- A success criterion (SC-NNN) has no corresponding validation in the roadmap\n"
+        "- An architectural constraint is violated by the roadmap's proposed approach\n\n"
+        "**MEDIUM**: The roadmap addresses the requirement but with insufficient "
+        "detail, ambiguous language, or minor misalignment that could lead to "
+        "implementation issues. Examples:\n"
+        "- A requirement is mentioned but lacks specific acceptance criteria\n"
+        "- The roadmap's phasing differs from the spec's priority ordering\n"
+        "- A dependency is acknowledged but not properly sequenced\n\n"
+        "**LOW**: Minor stylistic, formatting, or organizational differences that "
+        "do not affect correctness. Examples:\n"
+        "- Different heading structure or section ordering\n"
+        "- Terminology variations that don't change meaning\n"
+        "- Missing cross-references that don't affect understanding\n\n"
+        "## Comparison Dimensions\n\n"
+        "Compare across ALL of these dimensions:\n"
+        "1. **Signatures**: Function/method/API signatures specified vs. roadmapped\n"
+        "2. **Data Models**: Data structures, schemas, field definitions\n"
+        "3. **Gates**: Quality gates, validation checkpoints, acceptance criteria\n"
+        "4. **CLI Options**: Command-line flags, arguments, configuration options\n"
+        "5. **NFRs**: Performance targets, security requirements, scalability constraints\n\n"
+        "## Output Requirements\n\n"
+        "Your output MUST begin with YAML frontmatter delimited by --- lines containing:\n"
+        "- high_severity_count: (integer) number of HIGH severity deviations\n"
+        "- medium_severity_count: (integer) number of MEDIUM severity deviations\n"
+        "- low_severity_count: (integer) number of LOW severity deviations\n"
+        "- total_deviations: (integer) total number of deviations found\n"
+        "- validation_complete: (boolean) true if analysis completed fully\n"
+        "- tasklist_ready: (boolean) true ONLY if high_severity_count is 0 AND "
+        "validation_complete is true\n\n"
+        "After the frontmatter, provide:\n\n"
+        "## Deviation Report\n\n"
+        "For each deviation, provide a numbered entry with:\n"
+        "- **ID**: DEV-NNN (zero-padded 3-digit)\n"
+        "- **Severity**: HIGH, MEDIUM, or LOW\n"
+        "- **Deviation**: Concise description of what differs\n"
+        "- **Spec Quote**: Verbatim quote from the specification\n"
+        "- **Roadmap Quote**: Verbatim quote from the roadmap, or '[MISSING]' if absent\n"
+        "- **Impact**: Assessment of how the deviation affects correctness\n"
+        "- **Recommended Correction**: Specific action to resolve the deviation\n\n"
+        "## Summary\n\n"
+        "Provide a brief summary of findings with severity distribution.\n\n"
+        "Be thorough and precise. Quote both documents for every deviation. "
+        "Do not invent deviations -- only report genuine differences between "
+        "the spec and roadmap."
     ) + _OUTPUT_FORMAT_BLOCK
 
 

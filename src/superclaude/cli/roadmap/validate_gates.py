@@ -34,7 +34,7 @@ REFLECT_GATE = GateCriteria(
         "tasklist_ready",
     ],
     min_lines=20,
-    enforcement_tier="STANDARD",
+    enforcement_tier="STRICT",
     semantic_checks=[
         SemanticCheck(
             name="frontmatter_values_non_empty",

@@ -1,6 +1,6 @@
 # Phase 1 -- Pre-Implementation Decisions
 
-Resolve all 8 open questions before implementation begins. Each decision must be documented with rationale, impacts, and stakeholder sign-off. The roadmap provides concrete recommendations for each question; this phase validates and records those decisions in a canonical decision log.
+Resolve all 8 open questions before implementation begins. Each decision must be documented with rationale, impacts, and explicit downstream implementation implications. The roadmap provides concrete recommendations for each question; this phase validates and records those decisions in a canonical decision log.
 
 ### T01.01 -- Resolve OQ-001 Cross-Reference Strictness Rollout
 
@@ -130,7 +130,7 @@ Resolve all 8 open questions before implementation begins. Each decision must be
 3. **[EXECUTION]** Document decision: 7-column schema, drop Source Pair column, encode in frontmatter
 4. **[EXECUTION]** Specify column definitions and data types for each column
 5. **[VERIFICATION]** Confirm schema is parseable and unambiguous
-6. **[COMPLETION]** Add entry to decision log; cross-reference with FR-021, FR-026
+6. **[COMPLETION]** Add entry to decision log; cross-reference with FR-051.4 as the schema anchor and FR-026 for downstream finalization consistency
 
 **Acceptance Criteria:**
 - Decision document at .dev/releases/current/v2.20-WorkflowEvolution/artifacts/D-0003/spec.md exists with 7-column schema
@@ -437,7 +437,7 @@ Resolve all 8 open questions before implementation begins. Each decision must be
 3. **[EXECUTION]** Compile decision log with all 8 entries, each referencing its OQ and FR codes
 4. **[EXECUTION]** Create canonical deviation report schema document with 7-column definition
 5. **[VERIFICATION]** Confirm all 8 decisions present and schema is complete
-6. **[COMPLETION]** Cross-reference decision log with Phase 2 exit criteria
+6. **[COMPLETION]** Cross-reference decision log with the next output phase’s implementation entry and exit criteria
 
 **Acceptance Criteria:**
 - Decision log at .dev/releases/current/v2.20-WorkflowEvolution/artifacts/D-0009/spec.md contains all 8 OQ resolutions
@@ -462,7 +462,7 @@ Resolve all 8 open questions before implementation begins. Each decision must be
 **Verification:**
 - Decision log contains all 8 OQ resolutions with rationale and FR cross-references
 - Canonical deviation report schema is documented with 7 columns and clear definitions
-- No unresolved blockers for Phase 2 implementation work
+- No unresolved blockers for the next output phase implementation work
 
 **Exit Criteria:**
 - All D-0001 through D-0010 artifacts exist and are non-empty

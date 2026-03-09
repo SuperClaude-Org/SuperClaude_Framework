@@ -48,7 +48,7 @@ class RoadmapConfig(PipelineConfig):
     """Configuration for the roadmap generation pipeline.
 
     Extends PipelineConfig with roadmap-specific fields:
-    spec_file, agents, depth, output_dir.
+    spec_file, agents, depth, output_dir, retrospective_file.
     """
 
     spec_file: Path = field(default_factory=lambda: Path("."))
@@ -60,6 +60,7 @@ class RoadmapConfig(PipelineConfig):
     )
     depth: Literal["quick", "standard", "deep"] = "standard"
     output_dir: Path = field(default_factory=lambda: Path("."))
+    retrospective_file: Path | None = None
 
 
 @dataclass

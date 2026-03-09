@@ -44,10 +44,10 @@ def _make_config(tmp_path: Path) -> RoadmapConfig:
 
 
 class TestBuildSteps:
-    def test_produces_7_entries(self, tmp_path):
+    def test_produces_8_entries(self, tmp_path):
         config = _make_config(tmp_path)
         steps = _build_steps(config)
-        assert len(steps) == 7  # 5 sequential + 1 parallel group (2 steps) + test-strategy
+        assert len(steps) == 8  # 6 sequential + 1 parallel group (2 steps) + spec-fidelity
 
     def test_second_entry_is_parallel(self, tmp_path):
         config = _make_config(tmp_path)
@@ -72,6 +72,7 @@ class TestBuildSteps:
         assert ids[5] == "score"
         assert ids[6] == "merge"
         assert ids[7] == "test-strategy"
+        assert ids[8] == "spec-fidelity"
 
 
 class TestIntegrationMockSubprocess:
@@ -108,6 +109,12 @@ class TestIntegrationMockSubprocess:
                 "adversarial": "true",
                 "validation_milestones": "3",
                 "interleave_ratio": "1:3",
+                "high_severity_count": "0",
+                "medium_severity_count": "0",
+                "low_severity_count": "0",
+                "total_deviations": "0",
+                "validation_complete": "true",
+                "tasklist_ready": "true",
             }
             fm_fields = {}
             if step.gate and step.gate.required_frontmatter_fields:
@@ -142,7 +149,7 @@ class TestIntegrationMockSubprocess:
             run_step=mock_runner,
         )
 
-        assert len(results) == 8  # 7 entries -> 8 individual steps
+        assert len(results) == 9  # 8 entries -> 9 individual steps
         assert all(r.status == StepStatus.PASS for r in results)
 
     def test_pipeline_halts_on_gate_failure(self, tmp_path):
@@ -167,7 +174,7 @@ class TestIntegrationMockSubprocess:
 
         # First step (extract) should fail gate (no output written)
         assert results[-1].status == StepStatus.FAIL
-        assert len(results) < 8  # Not all steps executed
+        assert len(results) < 9  # Not all steps executed
 
 
 class TestContextIsolation:

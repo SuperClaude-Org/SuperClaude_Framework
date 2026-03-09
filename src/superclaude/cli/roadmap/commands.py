@@ -85,6 +85,16 @@ def roadmap_group():
     is_flag=True,
     help="Skip post-pipeline validation step.",
 )
+@click.option(
+    "--retrospective",
+    type=click.Path(exists=False, path_type=Path),
+    default=None,
+    help=(
+        "Path to a retrospective file from a prior release cycle. "
+        "Content is framed as advisory 'areas to watch' in extraction. "
+        "Missing file is not an error -- extraction proceeds normally."
+    ),
+)
 def run(
     spec_file: Path,
     agents: str,
@@ -96,6 +106,7 @@ def run(
     max_turns: int,
     debug: bool,
     no_validate: bool,
+    retrospective: Path | None,
 ) -> None:
     """Run the roadmap generation pipeline on SPEC_FILE.
 
@@ -110,6 +121,18 @@ def run(
     # Resolve output directory
     resolved_output = output_dir if output_dir is not None else spec_file.parent
 
+    # Resolve retrospective file (missing file is not an error)
+    retro_path = None
+    if retrospective is not None:
+        retro_path = Path(retrospective).resolve()
+        if not retro_path.is_file():
+            click.echo(
+                f"[roadmap] Retrospective file not found: {retro_path} "
+                "(proceeding without retrospective context)",
+                err=True,
+            )
+            retro_path = None
+
     config = RoadmapConfig(
         spec_file=spec_file.resolve(),
         agents=agent_specs,
@@ -120,6 +143,7 @@ def run(
         max_turns=max_turns,
         model=model,
         debug=debug,
+        retrospective_file=retro_path,
     )
 
     execute_roadmap(config, resume=resume, no_validate=no_validate)

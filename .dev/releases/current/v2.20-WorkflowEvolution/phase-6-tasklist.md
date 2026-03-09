@@ -124,7 +124,7 @@ Final validation that all gates pass, artifacts are consistent, and release crit
 - Completed sign-off checklist with passing evidence per SC criterion and known limitations
 
 **Steps:**
-1. **[PLANNING]** Compile all 14 SC criteria verification results from Phase 5
+1. **[PLANNING]** Compile and cross-reference all 14 SC criteria verification results from prior output-phase artifacts and validation outputs
 2. **[PLANNING]** Identify known limitations and deferred items (e.g., FR-012)
 3. **[EXECUTION]** Walk through each SC criterion with passing evidence link
 4. **[EXECUTION]** Document known limitations: FR-012 multi-agent deferred to v2.21
@@ -175,20 +175,20 @@ Final validation that all gates pass, artifacts are consistent, and release crit
 **Steps:**
 1. **[PLANNING]** Prepare final test run with all test directories
 2. **[PLANNING]** Verify test environment matches production configuration
-3. **[EXECUTION]** Run `uv run pytest tests/ -v` for complete test suite
+3. **[EXECUTION]** Run `uv run pytest` for the roadmap-defined complete test suite
 4. **[EXECUTION]** Run E2E: full pipeline with all gates active on representative spec
 5. **[EXECUTION]** Independently verify all 14 SC-* criteria against evidence
-6. **[VERIFICATION]** `uv run pytest tests/ -v` exits 0 with 0 failures
+6. **[VERIFICATION]** `uv run pytest` exits 0 with 0 failures
 7. **[COMPLETION]** Record final test counts and SC verification evidence
 
 **Acceptance Criteria:**
-- `uv run pytest tests/ -v` exits 0 with 0 failures across all test directories
+- `uv run pytest` exits 0 with 0 failures across the roadmap-defined full suite
 - E2E pipeline run with all gates active produces clean pass on representative spec
 - All 14 SC-* criteria independently verified with evidence links
 - No test regressions across entire suite
 
 **Validation:**
-- `uv run pytest tests/ -v` — 0 failures
+- `uv run pytest` — 0 failures
 - Evidence: final test output and SC verification matrix
 
 **Dependencies:** T06.01, T06.02, T06.03 (all Phase 6 tasks)
@@ -202,11 +202,14 @@ Final validation that all gates pass, artifacts are consistent, and release crit
 **Checkpoint Report Path:** .dev/releases/current/v2.20-WorkflowEvolution/checkpoints/CP-P06-END.md
 
 **Verification:**
-- `uv run pytest tests/ -v` exits 0 with 0 failures
+- `uv run pytest` exits 0 with 0 failures
 - All 14 SC criteria have documented passing evidence
 - Release artifacts archived in .dev/releases/
 
 **Exit Criteria:**
 - All D-0052 through D-0055 artifacts created
+- All 14 success criteria passing
+- No regressions across entire suite
+- All artifacts archived in .dev/releases/
 - Release sign-off documented with evidence for each criterion
 - No known blocking issues remain for v2.20 release

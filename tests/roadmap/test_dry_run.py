@@ -31,7 +31,7 @@ def _make_step(id: str, output: str, gate: GateCriteria | None = None, model: st
 
 class TestDryRunOutput:
     def _build_8_steps(self) -> list[Step | list[Step]]:
-        """Build a representative 8-step pipeline (7 logical entries, 8 steps)."""
+        """Build a representative 9-step pipeline (8 logical entries, 9 steps)."""
         gate_standard = GateCriteria(
             required_frontmatter_fields=["functional_requirements"],
             min_lines=50,
@@ -57,6 +57,7 @@ class TestDryRunOutput:
             _make_step("score", "base-selection.md", gate_standard),
             _make_step("merge", "roadmap.md", gate_strict),
             _make_step("test-strategy", "test-strategy.md", gate_standard),
+            _make_step("spec-fidelity", "spec-fidelity.md", gate_strict),
         ]
 
     def test_prints_all_step_entries(self, capsys):
@@ -64,7 +65,7 @@ class TestDryRunOutput:
         _dry_run_output(steps)
         captured = capsys.readouterr()
 
-        # Should have 8 step entries (7 logical + 2 parallel = 8 individual)
+        # Should have 9 step entries (8 logical + 2 parallel = 9 individual)
         assert "extract" in captured.out
         assert "generate-opus-architect" in captured.out
         assert "generate-haiku-architect" in captured.out
@@ -73,6 +74,7 @@ class TestDryRunOutput:
         assert "score" in captured.out
         assert "merge" in captured.out
         assert "test-strategy" in captured.out
+        assert "spec-fidelity" in captured.out
 
     def test_each_entry_includes_step_id(self, capsys):
         steps = self._build_8_steps()
@@ -81,7 +83,7 @@ class TestDryRunOutput:
 
         # Count "Step N" lines
         step_lines = [l for l in captured.out.splitlines() if l.startswith("Step ")]
-        assert len(step_lines) == 8
+        assert len(step_lines) == 9
 
     def test_each_entry_includes_output_file(self, capsys):
         steps = self._build_8_steps()

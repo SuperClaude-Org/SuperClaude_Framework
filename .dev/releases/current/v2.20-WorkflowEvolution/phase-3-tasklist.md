@@ -17,7 +17,7 @@ Implement the spec-fidelity prompt, gate, pipeline step, and state persistence. 
 | Critical Path Override | No |
 | Verification Method | Direct test execution |
 | MCP Requirements | Preferred: Sequential, Context7 |
-| Fallback Allowed | Yes |
+| Fallback Allowed | No alternate dependency fallback; degraded pipeline behavior applies after failure |
 | Sub-Agent Delegation | None |
 | Deliverable IDs | D-0022 |
 
@@ -47,7 +47,7 @@ Implement the spec-fidelity prompt, gate, pipeline step, and state persistence. 
 - Evidence: test output showing prompt structure validation
 
 **Dependencies:** T02.05 (severity classification), T02.04 (deviation format)
-**Rollback:** Remove build_spec_fidelity_prompt() from prompts.py
+**Rollback:** Remove build_spec_fidelity_prompt() from prompts.py; degraded reporting remains the only post-failure behavior, not an alternate dependency path
 
 ---
 
@@ -66,7 +66,7 @@ Implement the spec-fidelity prompt, gate, pipeline step, and state persistence. 
 | Critical Path Override | No |
 | Verification Method | Direct test execution |
 | MCP Requirements | Preferred: Sequential |
-| Fallback Allowed | Yes |
+| Fallback Allowed | No alternate dependency fallback; degraded pipeline behavior applies after failure |
 | Sub-Agent Delegation | None |
 | Deliverable IDs | D-0023 |
 
@@ -115,7 +115,7 @@ Implement the spec-fidelity prompt, gate, pipeline step, and state persistence. 
 | Critical Path Override | No |
 | Verification Method | Direct test execution |
 | MCP Requirements | Preferred: Sequential, Context7 |
-| Fallback Allowed | Yes |
+| Fallback Allowed | No alternate dependency fallback; degraded pipeline behavior applies after failure |
 | Sub-Agent Delegation | None |
 | Deliverable IDs | D-0024 |
 
@@ -131,7 +131,7 @@ Implement the spec-fidelity prompt, gate, pipeline step, and state persistence. 
 3. **[EXECUTION]** Add spec-fidelity step with timeout=600s, retry_limit=1
 4. **[EXECUTION]** Set output path to {output_dir}/spec-fidelity.md
 5. **[EXECUTION]** Ensure --no-validate does NOT skip this step (FR-010, AC-005)
-6. **[VERIFICATION]** `uv run pytest tests/roadmap/ -k pipeline -v` exits 0
+6. **[VERIFICATION]** `uv run pytest tests/roadmap/ -k "pipeline and spec_fidelity" -v` exits 0
 7. **[COMPLETION]** Document step configuration and --no-validate behavior
 
 **Acceptance Criteria:**
@@ -141,7 +141,7 @@ Implement the spec-fidelity prompt, gate, pipeline step, and state persistence. 
 - --no-validate flag does NOT skip spec-fidelity step
 
 **Validation:**
-- `uv run pytest tests/roadmap/ -k pipeline -v` — tests pass
+- `uv run pytest tests/roadmap/ -k "pipeline and spec_fidelity" -v` — tests pass
 - Evidence: test output confirming step order and --no-validate behavior
 
 **Dependencies:** T03.01 (prompt builder), T03.02 (gate)
@@ -164,7 +164,7 @@ Implement the spec-fidelity prompt, gate, pipeline step, and state persistence. 
 | Critical Path Override | No |
 | Verification Method | Direct test execution |
 | MCP Requirements | Preferred: Sequential |
-| Fallback Allowed | Yes |
+| Fallback Allowed | No alternate dependency fallback; degraded pipeline behavior applies after failure |
 | Sub-Agent Delegation | None |
 | Deliverable IDs | D-0025, D-0026 |
 
@@ -215,7 +215,7 @@ Implement the spec-fidelity prompt, gate, pipeline step, and state persistence. 
 | Critical Path Override | No |
 | Verification Method | Skip verification |
 | MCP Requirements | None |
-| Fallback Allowed | Yes |
+| Fallback Allowed | No alternate dependency fallback; degraded pipeline behavior applies after failure |
 | Sub-Agent Delegation | None |
 | Deliverable IDs | D-0027 |
 
@@ -263,7 +263,7 @@ Implement the spec-fidelity prompt, gate, pipeline step, and state persistence. 
 | Critical Path Override | No |
 | Verification Method | Direct test execution |
 | MCP Requirements | None |
-| Fallback Allowed | Yes |
+| Fallback Allowed | No alternate dependency fallback; degraded pipeline behavior applies after failure |
 | Sub-Agent Delegation | None |
 | Deliverable IDs | D-0028 |
 
@@ -286,7 +286,7 @@ Implement the spec-fidelity prompt, gate, pipeline step, and state persistence. 
 - `uv run pytest tests/roadmap/ -v` exits 0 with 0 failures
 - SC-001, SC-002, SC-007, SC-008, SC-014 individually verified with test evidence
 - Pipeline time overhead <=5% excluding new spec-fidelity step (SC-012)
-- All Phase 1-2 tests still pass (regression check)
+- All prior output phases remain green (regression check)
 
 **Validation:**
 - `uv run pytest tests/roadmap/ -v` — 0 failures

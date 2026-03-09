@@ -1,4 +1,4 @@
-"""Roadmap executor -- orchestrates the 8-step roadmap pipeline.
+"""Roadmap executor -- orchestrates the 9-step roadmap pipeline.
 
 Builds the step list with parallel generate group, defines
 ``roadmap_run_step`` as the StepRunner, and delegates to
@@ -31,6 +31,7 @@ from .gates import (
     GENERATE_B_GATE,
     MERGE_GATE,
     SCORE_GATE,
+    SPEC_FIDELITY_GATE,
     TEST_STRATEGY_GATE,
 )
 from .models import RoadmapConfig
@@ -41,6 +42,7 @@ from .prompts import (
     build_generate_prompt,
     build_merge_prompt,
     build_score_prompt,
+    build_spec_fidelity_prompt,
     build_test_strategy_prompt,
 )
 
@@ -256,7 +258,7 @@ def roadmap_run_step(
 
 
 def _build_steps(config: RoadmapConfig) -> list[Step | list[Step]]:
-    """Build the 8-step pipeline with parallel generate group.
+    """Build the 9-step pipeline with parallel generate group.
 
     Returns a list where each element is either a single Step (sequential)
     or a list[Step] (parallel group).
@@ -276,12 +278,26 @@ def _build_steps(config: RoadmapConfig) -> list[Step | list[Step]]:
     score_file = out / "base-selection.md"
     merge_file = out / "roadmap.md"
     test_strat = out / "test-strategy.md"
+    spec_fidelity_file = out / "spec-fidelity.md"
+
+    # Load retrospective content if configured (missing file handled gracefully)
+    retrospective_content: str | None = None
+    if config.retrospective_file is not None and config.retrospective_file.is_file():
+        try:
+            retrospective_content = config.retrospective_file.read_text(
+                encoding="utf-8"
+            )
+        except OSError:
+            retrospective_content = None
 
     steps: list[Step | list[Step]] = [
         # Step 1: Extract
         Step(
             id="extract",
-            prompt=build_extract_prompt(config.spec_file),
+            prompt=build_extract_prompt(
+                config.spec_file,
+                retrospective_content=retrospective_content,
+            ),
             output_file=extraction,
             gate=EXTRACT_GATE,
             timeout_seconds=300,
@@ -361,6 +377,16 @@ def _build_steps(config: RoadmapConfig) -> list[Step | list[Step]]:
             inputs=[merge_file, extraction],
             retry_limit=1,
         ),
+        # Step 8: Spec Fidelity (after test-strategy, FR-008 through FR-010)
+        Step(
+            id="spec-fidelity",
+            prompt=build_spec_fidelity_prompt(config.spec_file, merge_file),
+            output_file=spec_fidelity_file,
+            gate=SPEC_FIDELITY_GATE,
+            timeout_seconds=600,
+            inputs=[config.spec_file, merge_file],
+            retry_limit=1,
+        ),
     ]
 
     return steps
@@ -436,6 +462,7 @@ def _get_all_step_ids(config: RoadmapConfig) -> list[str]:
         "score",
         "merge",
         "test-strategy",
+        "spec-fidelity",
     ]
 
 
@@ -496,15 +523,15 @@ def _print_step_plan(num: int, step: Step, parallel: bool = False) -> None:
 def _save_state(config: RoadmapConfig, results: list[StepResult]) -> None:
     """Write .roadmap-state.json to output_dir via atomic tmp + os.replace().
 
-    Preserves existing ``validation`` key if present (written by
-    ``_save_validation_status``).
+    Preserves existing ``validation`` and ``fidelity_status`` keys if present.
     """
     state_file = config.output_dir / ".roadmap-state.json"
     spec_hash = hashlib.sha256(config.spec_file.read_bytes()).hexdigest()
 
-    # Preserve existing validation status across state rewrites
+    # Preserve existing validation and fidelity status across state rewrites
     existing = read_state(state_file)
     existing_validation = existing.get("validation") if existing else None
+    existing_fidelity = existing.get("fidelity_status") if existing else None
 
     state = {
         "schema_version": 1,
@@ -529,7 +556,81 @@ def _save_state(config: RoadmapConfig, results: list[StepResult]) -> None:
     if existing_validation is not None:
         state["validation"] = existing_validation
 
+    # Derive fidelity_status from spec-fidelity step result
+    fidelity_result = next(
+        (r for r in results if r.step and r.step.id == "spec-fidelity"),
+        None,
+    )
+    if fidelity_result is not None:
+        state["fidelity_status"] = _derive_fidelity_status(fidelity_result)
+    elif existing_fidelity is not None:
+        state["fidelity_status"] = existing_fidelity
+
     write_state(state, state_file)
+
+
+def _derive_fidelity_status(result: StepResult) -> str:
+    """Derive fidelity_status enum from a spec-fidelity StepResult.
+
+    Returns one of: 'pass', 'fail', 'skipped', 'degraded'.
+    """
+    if result.status == StepStatus.PASS:
+        # Check if the output indicates degraded mode
+        if result.step and result.step.output_file.exists():
+            content = result.step.output_file.read_text(encoding="utf-8")
+            if "validation_complete: false" in content:
+                return "degraded"
+        return "pass"
+    if result.status == StepStatus.SKIPPED:
+        return "skipped"
+    if result.status in (StepStatus.FAIL, StepStatus.TIMEOUT):
+        return "fail"
+    return "skipped"
+
+
+def generate_degraded_report(
+    output_file: Path,
+    failed_agent: str,
+    failure_reason: str,
+) -> None:
+    """Generate a degraded fidelity report when the agent fails.
+
+    Produces a report with validation_complete=false and
+    fidelity_check_attempted=true so the SPEC_FIDELITY_GATE
+    can distinguish degraded from clean passes (NFR-007).
+
+    The degraded report names the failed agent and reason in the body.
+    """
+    report = (
+        "---\n"
+        "high_severity_count: 0\n"
+        "medium_severity_count: 0\n"
+        "low_severity_count: 0\n"
+        "total_deviations: 0\n"
+        "validation_complete: false\n"
+        "fidelity_check_attempted: true\n"
+        "tasklist_ready: false\n"
+        "---\n"
+        "\n"
+        "## Degraded Fidelity Report\n"
+        "\n"
+        "Spec-fidelity validation could not be completed.\n"
+        "\n"
+        f"**Failed Agent**: {failed_agent}\n"
+        f"**Failure Reason**: {failure_reason}\n"
+        "\n"
+        "This is a degraded report produced after agent failure and retry "
+        "exhaustion. No deviations were analyzed. The pipeline continues "
+        "in degraded mode with validation_complete=false.\n"
+        "\n"
+        "### Recommended Actions\n"
+        "\n"
+        "1. Investigate the agent failure\n"
+        "2. Re-run the spec-fidelity step manually\n"
+        "3. Review the roadmap against the specification\n"
+    )
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    output_file.write_text(report, encoding="utf-8")
 
 
 def write_state(state: dict, path: Path) -> None:
@@ -576,8 +677,12 @@ def execute_roadmap(config: RoadmapConfig, resume: bool = False, no_validate: bo
     Builds the step list, handles --dry-run and --resume, then
     delegates to execute_pipeline() with roadmap_run_step.
 
-    After all 8 steps pass, auto-invokes validation unless
+    After all 9 steps pass, auto-invokes validation unless
     --no-validate is set or --resume halted on a failed step.
+
+    Note: --no-validate does NOT skip the spec-fidelity step
+    (FR-010, AC-005). It only skips the post-pipeline validation
+    subsystem.
     """
     config.output_dir.mkdir(parents=True, exist_ok=True)
 

@@ -195,7 +195,7 @@ Implement tasklist validation as a standalone CLI subcommand with its own fideli
 - Evidence: linkable artifact produced (performance report)
 
 **Dependencies:** T04.03 (CLI subcommand operational)
-**Rollback:** TBD
+**Rollback:** No code-path rollback required; remove or replace invalid benchmark evidence if tasklist validation timing data proves incorrect
 
 ---
 
@@ -222,7 +222,7 @@ Implement tasklist validation as a standalone CLI subcommand with its own fideli
 - .dev/releases/current/v2.20-WorkflowEvolution/artifacts/D-0034/evidence.md
 
 **Deliverables:**
-- Phase 4 test results verifying SC-005, SC-009, SC-013 and regression check
+- Output Phase 4 test results verifying SC-005, SC-009, SC-013, fabricated traceability detection, validation layering guard, and regression check
 
 **Steps:**
 1. **[PLANNING]** List all tests added in Phase 4 and their SC criterion mappings
@@ -235,7 +235,7 @@ Implement tasklist validation as a standalone CLI subcommand with its own fideli
 
 **Acceptance Criteria:**
 - `uv run pytest tests/ -v` exits 0 with 0 failures
-- SC-005 (catches fabricated traceability), SC-009, SC-013 individually verified
+- SC-005 (catches fabricated traceability against v2.19 artifacts), SC-009, and SC-013 individually verified
 - Deviation reports 100% parseable (NFR-005)
 - test_tasklist_validates_against_roadmap_not_spec passes (validation layering guard)
 
@@ -243,8 +243,8 @@ Implement tasklist validation as a standalone CLI subcommand with its own fideli
 - `uv run pytest tests/ -v` — 0 failures
 - Evidence: SC criterion verification matrix
 
-**Dependencies:** T04.01-T04.04 (all Phase 4 tasks)
-**Rollback:** TBD
+**Dependencies:** T04.01-T04.04 (all output Phase 4 tasks)
+**Rollback:** Re-run the output Phase 4 verification suite after removing invalid evidence or test-matrix entries if a verification path proves incorrect
 
 ---
 
@@ -256,9 +256,12 @@ Implement tasklist validation as a standalone CLI subcommand with its own fideli
 **Verification:**
 - `superclaude tasklist validate --help` renders correctly
 - SC-005 (fabricated traceability detection) passes with v2.19 artifacts
-- All Phase 1-3 tests still pass (full regression check)
+- All prior output phases (Phases 1–3) still pass (full regression check)
 
 **Exit Criteria:**
 - All D-0029 through D-0034 artifacts created
 - CLI subcommand registered and operational
+- SC-005, SC-009, and SC-013 verified with evidence
+- Validation layering guard verified by test_tasklist_validates_against_roadmap_not_spec
 - Deviation reports 100% parseable (NFR-005)
+- All prior output phases (Phases 1–3) still pass (full regression check)

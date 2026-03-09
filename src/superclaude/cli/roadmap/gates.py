@@ -38,11 +38,13 @@ def _cross_refs_resolve(content: str) -> bool:
     """Verify all 'See section' / cross-reference patterns have matching headings.
 
     Checks that internal references like 'See section X.Y' or 'See X.Y'
-    have corresponding headings. This is a best-effort check.
+    have corresponding headings. Unresolved references emit warnings but
+    do not block the pipeline (warning-only mode per OQ-001 for v2.20).
     """
     import re
+    import warnings
 
-    # Extract heading anchors (simplified: heading text)
+    # Extract heading anchors (simplified: heading text, lowercased)
     headings: set[str] = set()
     for line in content.splitlines():
         stripped = line.lstrip()
@@ -56,13 +58,25 @@ def _cross_refs_resolve(content: str) -> bool:
     if not refs:
         return True
 
-    # For numbered references, we check if any heading contains the number
+    # Check each reference against headings
+    unresolved: list[str] = []
     for ref in refs:
         found = any(ref in h for h in headings)
         if not found:
             # Also check if the section number appears as a heading prefix
             found = any(h.startswith(ref) for h in headings)
-        # Don't fail on this -- it's too fragile for now
+        if not found:
+            unresolved.append(ref)
+
+    if unresolved:
+        for ref in unresolved:
+            warnings.warn(
+                f"Unresolved cross-reference: 'See section {ref}' has no matching heading",
+                stacklevel=2,
+            )
+        # Warning-only mode (OQ-001): return True to avoid blocking pipeline
+        return True
+
     return True
 
 
@@ -110,6 +124,106 @@ def _has_actionable_content(content: str) -> bool:
     import re
     # Look for markdown list items: "- ", "* ", "1. ", "2. ", etc.
     return bool(re.search(r'^\s*(?:[-*]|\d+\.)\s+\S', content, re.MULTILINE))
+
+
+def _parse_frontmatter(content: str) -> dict[str, str] | None:
+    """Extract YAML frontmatter key-value pairs from content.
+
+    Returns a dict of key→value strings, or None if no frontmatter found.
+    """
+    stripped = content.lstrip()
+    if not stripped.startswith("---"):
+        return None
+
+    rest = stripped[3:].lstrip("\n")
+    end_idx = rest.find("\n---")
+    if end_idx == -1:
+        return None
+
+    result: dict[str, str] = {}
+    for line in rest[:end_idx].splitlines():
+        line = line.strip()
+        if ":" in line:
+            key, value = line.split(":", 1)
+            result[key.strip()] = value.strip()
+    return result
+
+
+def _high_severity_count_zero(content: str) -> bool:
+    """Validate that high_severity_count equals zero in fidelity report frontmatter.
+
+    Returns True only if the frontmatter contains high_severity_count with
+    integer value 0. Returns False if:
+    - Frontmatter is missing
+    - high_severity_count field is missing
+    - high_severity_count > 0
+
+    Raises TypeError if high_severity_count value is not parseable as an integer.
+    """
+    fm = _parse_frontmatter(content)
+    if fm is None:
+        return False
+
+    value = fm.get("high_severity_count")
+    if value is None:
+        return False
+
+    try:
+        count = int(value)
+    except (ValueError, TypeError):
+        raise TypeError(
+            f"high_severity_count must be an integer, got: {value!r}"
+        )
+
+    return count == 0
+
+
+def _tasklist_ready_consistent(content: str) -> bool:
+    """Validate tasklist_ready is consistent with severity counts.
+
+    Consistency rule: tasklist_ready=true requires high_severity_count=0
+    AND validation_complete=true. If tasklist_ready=true but either
+    condition fails, this returns False (inconsistency detected).
+
+    Returns False if:
+    - Frontmatter is missing
+    - tasklist_ready field is missing
+    - Inconsistency: tasklist_ready=true but high_severity_count > 0
+    - Inconsistency: tasklist_ready=true but validation_complete != true
+    """
+    fm = _parse_frontmatter(content)
+    if fm is None:
+        return False
+
+    tasklist_ready_str = fm.get("tasklist_ready")
+    if tasklist_ready_str is None:
+        return False
+
+    tasklist_ready = tasklist_ready_str.lower() == "true"
+
+    if not tasklist_ready:
+        # If tasklist_ready is false, that's always consistent
+        return True
+
+    # tasklist_ready is true -- verify consistency
+    high_str = fm.get("high_severity_count")
+    if high_str is None:
+        return False
+    try:
+        high_count = int(high_str)
+    except (ValueError, TypeError):
+        return False
+
+    if high_count > 0:
+        return False
+
+    validation_str = fm.get("validation_complete")
+    if validation_str is None:
+        return False
+    if validation_str.lower() != "true":
+        return False
+
+    return True
 
 
 def _convergence_score_valid(content: str) -> bool:
@@ -248,6 +362,31 @@ TEST_STRATEGY_GATE = GateCriteria(
     enforcement_tier="STANDARD",
 )
 
+SPEC_FIDELITY_GATE = GateCriteria(
+    required_frontmatter_fields=[
+        "high_severity_count",
+        "medium_severity_count",
+        "low_severity_count",
+        "total_deviations",
+        "validation_complete",
+        "tasklist_ready",
+    ],
+    min_lines=20,
+    enforcement_tier="STRICT",
+    semantic_checks=[
+        SemanticCheck(
+            name="high_severity_count_zero",
+            check_fn=_high_severity_count_zero,
+            failure_message="high_severity_count must be 0 for spec-fidelity gate to pass",
+        ),
+        SemanticCheck(
+            name="tasklist_ready_consistent",
+            check_fn=_tasklist_ready_consistent,
+            failure_message="tasklist_ready is inconsistent with severity counts or validation_complete",
+        ),
+    ],
+)
+
 # All gates in pipeline order for reference
 ALL_GATES = [
     ("extract", EXTRACT_GATE),
@@ -258,4 +397,5 @@ ALL_GATES = [
     ("score", SCORE_GATE),
     ("merge", MERGE_GATE),
     ("test-strategy", TEST_STRATEGY_GATE),
+    ("spec-fidelity", SPEC_FIDELITY_GATE),
 ]

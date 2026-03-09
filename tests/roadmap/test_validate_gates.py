@@ -16,8 +16,15 @@ class TestReflectGate:
     def test_is_gate_criteria(self):
         assert isinstance(REFLECT_GATE, GateCriteria)
 
-    def test_enforcement_standard(self):
-        assert REFLECT_GATE.enforcement_tier == "STANDARD"
+    def test_reflect_gate_is_strict(self):
+        assert REFLECT_GATE.enforcement_tier == "STRICT"
+
+    def test_reflect_gate_semantic_checks_execute(self):
+        """Verify semantic checks execute and produce correct results under STRICT tier."""
+        content = "---\nblocking_issues_count: 0\nwarnings_count: 2\ntasklist_ready: true\n---\n"
+        assert REFLECT_GATE.semantic_checks is not None
+        for check in REFLECT_GATE.semantic_checks:
+            assert check.check_fn(content) is True
 
     def test_min_lines(self):
         assert REFLECT_GATE.min_lines == 20

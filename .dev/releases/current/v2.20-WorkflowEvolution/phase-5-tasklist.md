@@ -434,25 +434,29 @@ Wire retrospective context into extraction, harden integration across the full p
 
 **Deliverables:**
 - Monitoring metrics definition: false positive rate, degraded-run frequency, pipeline time drift, LLM severity drift
-- Rollback plan with trigger thresholds and procedure for gate strictness changes
+- Rollback plan with trigger thresholds, drill procedure, and evidence capture for gate strictness changes
 
 **Steps:**
 1. **[PLANNING]** Review roadmap risk register for monitoring-relevant risks
 2. **[PLANNING]** Identify rollback scenarios from RSK-003, RSK-006, RSK-007
 3. **[EXECUTION]** Define monitoring metrics with measurement methods and alert thresholds
 4. **[EXECUTION]** Write rollback plan with step-by-step procedure for gate strictness reversion
-5. **[VERIFICATION]** Confirm rollback plan covers all new gates introduced in v2.20
-6. **[COMPLETION]** Cross-reference with operational guidance document
+5. **[EXECUTION]** Define rollback trigger thresholds and execute a rollback drill or dry-run simulation
+6. **[EXECUTION]** Record expected vs observed rollback results and store evidence artifact paths
+7. **[VERIFICATION]** Confirm rollback plan covers all new gates introduced in v2.20 and is exercised in drill/simulation
+8. **[COMPLETION]** Cross-reference with operational guidance document
 
 **Acceptance Criteria:**
 - Metrics document at .dev/releases/current/v2.20-WorkflowEvolution/artifacts/D-0045/spec.md defines 4 metrics
 - Rollback plan at .dev/releases/current/v2.20-WorkflowEvolution/artifacts/D-0046/spec.md has step-by-step procedure
 - Rollback triggers have numeric thresholds (e.g., false positive rate > X%)
+- Rollback procedure is exercised in a drill or dry-run simulation with results documented
+- Evidence paths for rollback drill outputs are recorded
 - Plan covers REFLECT_GATE, SPEC_FIDELITY_GATE, and TASKLIST_FIDELITY_GATE
 
 **Validation:**
-- Manual check: 4 metrics defined; rollback plan has numbered steps
-- Evidence: linkable artifacts produced (metrics definition and rollback plan)
+- Manual check: 4 metrics defined; rollback plan has numbered steps; rollback drill or dry-run results are documented
+- Evidence: linkable artifacts produced (metrics definition, rollback plan, and rollback drill evidence)
 
 **Dependencies:** T05.03 (integration run baseline data), T05.07 (replay results)
 **Rollback:** TBD
@@ -668,7 +672,7 @@ Wire retrospective context into extraction, harden integration across the full p
 
 ---
 
-### T05.14 -- Execute Phase 5 Test Suite
+### T05.14 -- Execute Output Phase 5 Validation Suite
 
 | Field | Value |
 |---|---|
@@ -729,5 +733,5 @@ Wire retrospective context into extraction, harden integration across the full p
 
 **Exit Criteria:**
 - All D-0035 through D-0051 artifacts created
-- Monitoring metrics defined and rollback plan documented
+- Monitoring metrics defined and rollback plan documented and tested
 - Team can distinguish clean pass, fail, skipped, and degraded states

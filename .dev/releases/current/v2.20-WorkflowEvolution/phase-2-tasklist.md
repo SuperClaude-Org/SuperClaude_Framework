@@ -32,14 +32,16 @@ Fix broken gates, define the canonical deviation report format, and establish th
 **Steps:**
 1. **[PLANNING]** Read current REFLECT_GATE configuration in src/superclaude/cli/roadmap/validate_gates.py
 2. **[PLANNING]** Identify all tests referencing REFLECT_GATE behavior
-3. **[EXECUTION]** Change REFLECT_GATE enforcement tier from STANDARD to STRICT
-4. **[EXECUTION]** Run gate against existing validation artifacts in .dev/releases/complete/ to assess blast radius
-5. **[EXECUTION]** Update existing tests to expect STRICT behavior
-6. **[VERIFICATION]** `uv run pytest tests/roadmap/ -v` exits 0
-7. **[COMPLETION]** Document blast radius results and any artifact failures
+3. **[EXECUTION]** Run pre-change regression baseline against existing roadmap tests and record results before modifying gate enforcement
+4. **[EXECUTION]** Change REFLECT_GATE enforcement tier from STANDARD to STRICT
+5. **[EXECUTION]** Run gate against existing validation artifacts in .dev/releases/complete/ to assess blast radius
+6. **[EXECUTION]** Update existing tests to expect STRICT behavior
+7. **[VERIFICATION]** `uv run pytest tests/roadmap/ -v` exits 0
+8. **[COMPLETION]** Document baseline results, blast radius findings, and any artifact failures
 
 **Acceptance Criteria:**
-- `uv run pytest tests/roadmap/test_gates.py -k reflect` exits 0 with STRICT enforcement verified
+- `uv run pytest tests/roadmap/test_gates.py -k "test_reflect_gate_is_strict or test_reflect_gate_semantic_checks_execute" -v` exits 0 with named roadmap REFLECT tests passing
+- Pre-change regression baseline for `uv run pytest tests/roadmap/ -v` is recorded before tier modification
 - Blast radius assessment documents which existing artifacts pass/fail under STRICT
 - No regressions in existing test suite (`uv run pytest tests/roadmap/` exits 0)
 - Evidence document records exact failure count and artifact names
@@ -249,7 +251,7 @@ Fix broken gates, define the canonical deviation report format, and establish th
 ### Checkpoint: Phase 2 / Tasks T02.01-T02.05
 
 **Purpose:** Verify gate fixes and specification documents are complete before implementing code artifacts.
-**Checkpoint Report Path:** .dev/releases/current/v2.20-WorkflowEvolution/checkpoints/CP-P02-T01-T05.md
+**Checkpoint Report Path:** .dev/releases/current/v2.20-WorkflowEvolution/checkpoints/CP-P02-T02-01-T02-05.md
 
 **Verification:**
 - REFLECT_GATE promotion and cross-reference fix pass all tests
@@ -516,5 +518,9 @@ Fix broken gates, define the canonical deviation report format, and establish th
 
 **Exit Criteria:**
 - All D-0011 through D-0021 artifacts created
-- No test regressions from any Phase 2 changes (SC-010)
+- All existing tests pass with no regressions from any output Phase 2 changes (SC-010)
+- _cross_refs_resolve() correctly rejects dangling references
+- Semantic checks have 100% branch coverage
+- Deviation format reference document exists and is linkable
 - OQ-002 and OQ-003 formally confirmed and closed in decision log
+- No new executor or process framework introduced
