@@ -147,17 +147,49 @@ MCP (Model Context Protocol) server integration and orchestration system for Cla
 - Cross-Browser Testing: Validate functionality across all major browsers
 - User Experience Testing: Accessibility validation, usability testing, conversion optimization
 
+## Auggie MCP Integration (Codebase Intelligence)
+
+**Purpose**: Semantic codebase retrieval, project structure understanding, code-aware context loading
+
+**Activation Patterns**:
+- Automatic: Code-related brainstorm topics, task execution (STRICT/STANDARD tiers), implementation planning
+- Manual: `--auggie` flag
+- Smart: Commands detect need for codebase awareness before code-related operations
+
+**Workflow Process**:
+1. Topic Analysis: Determine if codebase context would be valuable for the current operation
+2. Query Formulation: Create natural language queries from task/topic context
+3. Retrieval: Call `codebase-retrieval` with project `directory_path` (current working directory)
+4. Context Synthesis: Extract relevant findings into structured briefing (~500-800 tokens)
+5. Integration: Feed context into downstream reasoning, dialogue, or implementation
+
+**Query Patterns**:
+- Topic-Specific: `"{topic} - find relevant code, existing implementations, related components"`
+- Architecture Scan: `"Project architecture, structure, patterns related to {domain_area}"`
+- Pre-Edit Context: `"All symbols, classes, and methods involved in {change_description}"`
+
+**Integration Commands**: `/brainstorm`, `/task`, `/implement`, `/analyze`, `/troubleshoot`
+
+**Error Recovery**:
+- Server unavailable → Fallback to Serena symbol search (`get_symbols_overview`) + Grep/Glob for basic codebase awareness
+- No relevant results → Proceed without codebase context, note limitation to user
+- Timeout → Use partial results if available, otherwise skip with warning
+- Authentication expired → Note limitation, suggest `auggie login`, use fallback tools
+- Working directory invalid → Prompt user for correct project path
+
 ## MCP Server Use Cases by Command Category
 
 **Development Commands**:
 - Context7: Framework patterns, library documentation
 - Magic: UI component generation
 - Sequential: Complex setup workflows
+- Auggie: Pre-implementation codebase context
 
 **Analysis Commands**:
 - Context7: Best practices, patterns
 - Sequential: Deep analysis, systematic review
 - Playwright: Issue reproduction, visual testing
+- Auggie: Codebase context and pattern discovery
 
 **Quality Commands**:
 - Context7: Security patterns, improvement patterns
@@ -175,6 +207,7 @@ MCP (Model Context Protocol) server integration and orchestration system for Cla
 **Planning Commands**:
 - Context7: Benchmarks and patterns
 - Sequential: Complex planning and estimation
+- Auggie: Existing implementation awareness
 
 **Deployment Commands**:
 - Sequential: Deployment planning
@@ -199,6 +232,7 @@ MCP (Model Context Protocol) server integration and orchestration system for Cla
 - Sequential Cache: Analysis results with pattern matching
 - Magic Cache: Component patterns with design system versioning
 - Playwright Cache: Test results and screenshots with environment-specific caching
+- Auggie Cache: Codebase retrieval results with working-directory-scoped caching
 - Cross-Server Cache: Shared cache for multi-server operations
 - Loop Optimization: Cache iterative analysis results, reuse improvement patterns
 
@@ -218,6 +252,7 @@ MCP (Model Context Protocol) server integration and orchestration system for Cla
 | Serena | 4 failures | 45s | Basic file operations | No semantic understanding |
 | Playwright | 2 failures | 120s | Skip E2E, use unit tests | Reduced test coverage |
 | Magic | 3 failures | 45s | Basic component template | No design system integration |
+| Auggie | 3 failures | 45s | Serena + Grep/Glob | Reduced codebase awareness |
 
 ### Task Command Circuit Integration
 | Compliance Tier | Required Servers | Fallback Allowed | Behavior |
