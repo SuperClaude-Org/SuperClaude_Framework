@@ -19,7 +19,7 @@ If the roadmap has no name, use: `# TASKLIST INDEX -- Roadmap Execution Plan`
 | Field | Value |
 |---|---|
 | Sprint Name | `<Roadmap Name or Short Description>` |
-| Generator Version | `Roadmap->Tasklist Generator v3.0` |
+| Generator Version | `Roadmap->Tasklist Generator v4.0` |
 | Generated | `<ISO-8601 date>` |
 | TASKLIST_ROOT | `<computed per Section 3.1>` |
 | Total Phases | `<N>` |
@@ -41,6 +41,7 @@ If the roadmap has no name, use: `# TASKLIST INDEX -- Roadmap Execution Plan`
 | Checkpoint Reports | `TASKLIST_ROOT/checkpoints/` |
 | Evidence Directory | `TASKLIST_ROOT/evidence/` |
 | Artifacts Directory | `TASKLIST_ROOT/artifacts/` |
+| Validation Reports | `TASKLIST_ROOT/validation/` |
 | Feedback Log | `TASKLIST_ROOT/feedback-log.md` |
 
 ### Phase Files Table

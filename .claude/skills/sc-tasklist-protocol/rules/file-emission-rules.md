@@ -6,7 +6,7 @@ Read-only reference extracted from SKILL.md Section 3.3. This file exists for hu
 
 ## File Count
 
-The generator produces exactly **N+1 files** where N = number of phases:
+The generator produces exactly **N+1 files** during generation (Stages 1-6) where N = number of phases. Stages 7-10 produce up to 2 additional validation artifacts in `TASKLIST_ROOT/validation/`:
 
 1. **`tasklist-index.md`** -- Contains: metadata, artifact paths, source snapshot, deterministic rules, registries, traceability matrix, templates, glossary
 2. **`phase-1-tasklist.md`** through **`phase-N-tasklist.md`** -- Contains: phase heading, phase goal, tasks (in order), inline checkpoints, end-of-phase checkpoint
@@ -53,6 +53,7 @@ TASKLIST_ROOT/
   artifacts/
   evidence/
   checkpoints/
+  validation/
   execution-log.md
   feedback-log.md
 ```
