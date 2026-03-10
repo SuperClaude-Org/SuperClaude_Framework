@@ -1,0 +1,16 @@
+{
+  "test_id": "S2",
+  "test_name": "verify-sync",
+  "test_type": "structural",
+  "sc": "SC-005",
+  "run": 1,
+  "model": null,
+  "timestamp": "2026-02-25T07:40:28.705357+00:00",
+  "duration_ms": 129,
+  "exit_code": 0,
+  "scores": {
+    "pass": true,
+    "weighted_total": 1.0
+  },
+  "score": 1.0
+}

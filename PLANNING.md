@@ -336,6 +336,55 @@ Before releasing a new version:
 
 ---
 
+## 🔧 **Roadmap Generation Pipeline**
+
+### Pipeline Steps
+
+The `superclaude roadmap run` command executes a 9-step pipeline (8 stages,
+with generate running as a parallel pair):
+
+| # | Step | Gate Tier | Timeout | Output File |
+|---|------|-----------|---------|-------------|
+| 1 | extract | STRICT | 300s | extraction.md |
+| 2a | generate-{agent_a} | STRICT | 600s | roadmap-{agent_a}.md |
+| 2b | generate-{agent_b} | STRICT | 600s | roadmap-{agent_b}.md |
+| 3 | diff | STANDARD | 300s | diff-analysis.md |
+| 4 | debate | STRICT | 600s | debate-transcript.md |
+| 5 | score | STANDARD | 300s | base-selection.md |
+| 6 | merge | STRICT | 600s | roadmap.md |
+| 7 | test-strategy | STANDARD | 300s | test-strategy.md |
+| 8 | spec-fidelity | STRICT | 600s | spec-fidelity.md |
+
+Steps 2a and 2b run in parallel.
+
+### Gate Ordering
+
+```
+extract → generate (parallel) → diff → debate → score → merge → test-strategy → spec-fidelity
+```
+
+### --no-validate Behavior
+
+The `--no-validate` flag skips only the **post-pipeline validation** subsystem
+(the `superclaude roadmap validate` command auto-invocation). It does NOT skip
+the spec-fidelity pipeline step. The spec-fidelity step always runs as part of
+the core pipeline.
+
+### --retrospective Flag
+
+The `--retrospective <file>` flag loads a retrospective markdown file and
+injects its content into the extraction prompt as advisory "areas to watch"
+context. If the file is missing, extraction proceeds normally without error.
+
+### Post-Pipeline Validation
+
+After pipeline completion (unless `--no-validate`), the system auto-invokes
+`superclaude roadmap validate` which runs:
+- Per-agent reflection steps (REFLECT_GATE, STRICT)
+- Adversarial merge (ADVERSARIAL_MERGE_GATE, STRICT) for multi-agent mode
+
+---
+
 ## 🚀 **Roadmap**
 
 ### **v4.2.0 (Current)**

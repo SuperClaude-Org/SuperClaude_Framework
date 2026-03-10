@@ -117,11 +117,8 @@ Actionable rules for enhanced Claude Code framework operation.
 ## Workspace Hygiene
 **Priority**: 🟡 **Triggers**: After operations, session end, temporary file creation
 
-- **Clean After Operations**: Remove temporary files, scripts, and directories when done
-- **No Artifact Pollution**: Delete build artifacts, logs, and debugging outputs
-- **Temporary File Management**: Clean up all temporary files before task completion
-- **Professional Workspace**: Maintain clean project structure without clutter
-- **Session End Cleanup**: Remove any temporary resources before ending session
+- **Clean After Operations**: Remove temporary files, scripts, build artifacts, logs, and debugging outputs when done
+- **Session End Cleanup**: Remove all temporary resources before ending session
 - **Version Control Hygiene**: Never leave temporary files that could be accidentally committed
 - **Resource Management**: Delete unused directories and files to prevent workspace bloat
 
@@ -231,57 +228,3 @@ Actionable rules for enhanced Claude Code framework operation.
 **Detection**: Any date reference without prior env verification
 
 
-## Quick Reference & Decision Trees
-
-### Critical Decision Flows
-
-**🔴 Before Any File Operations**
-```
-File operation needed?
-├─ Writing/Editing? → Read existing first → Understand patterns → Edit
-├─ Creating new? → Check existing structure → Place appropriately
-└─ Safety check → Absolute paths only → No auto-commit
-```
-
-**🟡 Starting New Feature**
-```
-New feature request?
-├─ Scope clear? → No → Brainstorm mode first
-├─ >3 steps? → Yes → TodoWrite required
-├─ Patterns exist? → Yes → Follow exactly
-├─ Tests available? → Yes → Run before starting
-└─ Framework deps? → Check package.json first
-```
-
-**🟢 Tool Selection Matrix**
-```
-Task type → Best tool:
-├─ Multi-file edits → MultiEdit > individual Edits
-├─ Complex analysis → Task agent > native reasoning
-├─ Code search → Grep > bash grep
-├─ UI components → Magic MCP > manual coding  
-├─ Documentation → Context7 MCP > web search
-└─ Browser testing → Playwright MCP > unit tests
-```
-
-### Priority-Based Quick Actions
-
-#### 🔴 CRITICAL (Never Compromise)
-- `git status && git branch` before starting
-- Read before Write/Edit operations  
-- Feature branches only, never main/master
-- Root cause analysis, never skip validation
-- Absolute paths, no auto-commit
-
-#### 🟡 IMPORTANT (Strong Preference)
-- TodoWrite for >3 step tasks
-- Complete all started implementations
-- Build only what's asked (MVP first)
-- Professional language (no marketing superlatives)
-- Clean workspace (remove temp files)
-
-#### 🟢 RECOMMENDED (Apply When Practical)  
-- Parallel operations over sequential
-- Descriptive naming conventions
-- MCP tools over basic alternatives
-- Batch operations when possible

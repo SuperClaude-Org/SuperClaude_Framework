@@ -1,0 +1,7 @@
+<!-- SC:TASK-UNIFIED:CLASSIFICATION -->
+TIER: LIGHT
+CONFIDENCE: 0.95
+KEYWORDS: [routing, middleware, technical explanation]
+OVERRIDE: false
+RATIONALE: Request is a straightforward technical documentation question about routing middleware functionality with no security, safety, or policy concerns.
+<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->

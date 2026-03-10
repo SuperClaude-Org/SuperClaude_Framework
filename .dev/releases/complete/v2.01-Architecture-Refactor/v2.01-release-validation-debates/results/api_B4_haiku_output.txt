@@ -1,0 +1,7 @@
+<!-- SC:TASK-UNIFIED:CLASSIFICATION -->
+TIER: LIGHT
+CONFIDENCE: 0.92
+KEYWORDS: pagination, endpoint, user list, feature development
+OVERRIDE: false
+RATIONALE: Standard feature development task with clear scope and no security, compliance, or high-risk implications.
+<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->

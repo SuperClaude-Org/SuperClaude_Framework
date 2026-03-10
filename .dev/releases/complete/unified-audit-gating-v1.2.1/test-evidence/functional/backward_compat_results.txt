@@ -1,0 +1,25 @@
+=== Backward Compatibility Test: unified-audit-gating v1.2.1 ===
+Date: 2026-03-06T18:53:42Z
+Project root: /config/workspace/SuperClaude_Framework/.dev
+Test file: /config/workspace/SuperClaude_Framework/.dev/releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_backward_compatibility.py
+---
+warning: `VIRTUAL_ENV=/lsiopy` does not match the project environment path `/config/workspace/SuperClaude_Framework/.venv` and will be ignored; use `--active` to target the active environment instead
+============================= test session starts ==============================
+collecting ... collected 12 items
+
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_backward_compatibility.py::TestGateModeDefault::test_step_gate_mode_defaults_to_blocking PASSED [  8%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_backward_compatibility.py::TestGateModeDefault::test_gate_mode_blocking_is_string_blocking PASSED [ 16%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_backward_compatibility.py::TestGracePeriodDefaults::test_pipeline_config_grace_period_defaults_to_zero PASSED [ 25%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_backward_compatibility.py::TestGracePeriodDefaults::test_sprint_config_inherits_grace_period_zero PASSED [ 33%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_backward_compatibility.py::TestGracePeriodDefaults::test_sprint_config_explicit_zero_matches_default PASSED [ 41%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_backward_compatibility.py::TestNoDaemonThreadsAtGracePeriodZero::test_no_new_daemon_threads_during_execution PASSED [ 50%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_backward_compatibility.py::TestNoTrailingGateRunnerAtGracePeriodZero::test_trailing_gate_runner_not_constructed PASSED [ 58%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_backward_compatibility.py::TestNoTrailingGateRunnerAtGracePeriodZero::test_trailing_gate_runner_constructed_when_grace_period_positive PASSED [ 66%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_backward_compatibility.py::TestExecutorBlockingPathAtGracePeriodZero::test_gate_passed_called_synchronously PASSED [ 75%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_backward_compatibility.py::TestExecutorBlockingPathAtGracePeriodZero::test_trailing_mode_step_forced_blocking_at_grace_period_zero PASSED [ 83%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_backward_compatibility.py::TestExecutorBlockingPathAtGracePeriodZero::test_gate_failure_halts_pipeline_at_grace_period_zero PASSED [ 91%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_backward_compatibility.py::TestFullPipelineBackwardCompat::test_multi_step_all_blocking PASSED [100%]
+
+============================== 12 passed in 0.09s ==============================
+---
+Exit code: 0

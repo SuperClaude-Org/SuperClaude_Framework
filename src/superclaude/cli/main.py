@@ -45,10 +45,10 @@ def main():
 )
 def install(target: str, force: bool, list_only: bool):
     """
-    Install SuperClaude commands to Claude Code
+    Install SuperClaude to Claude Code
 
-    Installs all slash commands (/sc:research, /sc:index-repo, etc.) to your
-    ~/.claude/commands/sc directory so you can use them in Claude Code.
+    Installs core framework files, slash commands, agents, and skills
+    to ~/.claude/ so you can use SuperClaude in Claude Code.
 
     Examples:
         superclaude install
@@ -56,36 +56,113 @@ def install(target: str, force: bool, list_only: bool):
         superclaude install --list
         superclaude install --target /custom/path
     """
+    from .install_agents import (
+        install_agents,
+        list_available_agents,
+        list_installed_agents,
+    )
     from .install_commands import (
         install_commands,
         list_available_commands,
         list_installed_commands,
     )
+    from .install_core import (
+        install_core_files,
+        list_core_files,
+        list_installed_core_files,
+    )
+    from .install_skill import list_available_skills
+    from .install_skills import install_all_skills, list_installed_skills
 
     # List only mode
     if list_only:
+        # Core files
+        core_available = list_core_files()
+        core_installed = list_installed_core_files()
+
+        click.echo("📋 Core Framework Files:")
+        for name in core_available:
+            status = "✅ installed" if name in core_installed else "⬜ not installed"
+            click.echo(f"   {name:35} {status}")
+
+        click.echo(
+            f"\nCore: {len(core_available)} available, {len(core_installed)} installed"
+        )
+
+        # Commands
         available = list_available_commands()
         installed = list_installed_commands()
 
-        click.echo("📋 Available Commands:")
+        click.echo("\n📋 Slash Commands:")
         for cmd in available:
             status = "✅ installed" if cmd in installed else "⬜ not installed"
             click.echo(f"   /{cmd:20} {status}")
 
-        click.echo(f"\nTotal: {len(available)} available, {len(installed)} installed")
+        click.echo(
+            f"\nCommands: {len(available)} available, {len(installed)} installed"
+        )
+
+        # Agents
+        agents_available = list_available_agents()
+        agents_installed = list_installed_agents()
+
+        click.echo("\n📋 Agents:")
+        for name in agents_available:
+            status = "✅ installed" if name in agents_installed else "⬜ not installed"
+            click.echo(f"   {name:35} {status}")
+
+        click.echo(
+            f"\nAgents: {len(agents_available)} available, {len(agents_installed)} installed"
+        )
+
+        # Skills
+        skills_available = list_available_skills()
+        skills_installed = list_installed_skills()
+
+        click.echo("\n📋 Skills:")
+        for name in skills_available:
+            status = "✅ installed" if name in skills_installed else "⬜ not installed"
+            click.echo(f"   {name:35} {status}")
+
+        click.echo(
+            f"\nSkills: {len(skills_available)} available, {len(skills_installed)} installed"
+        )
         return
 
-    # Install commands
-    target_path = Path(target).expanduser()
-
-    click.echo(f"📦 Installing SuperClaude commands to {target_path}...")
+    # Step 1: Install core framework files to ~/.claude/
+    click.echo("📦 Installing core framework files to ~/.claude/...")
     click.echo()
 
-    success, message = install_commands(target_path=target_path, force=force)
+    core_success, core_message = install_core_files(force=force)
+    click.echo(core_message)
+    click.echo()
 
-    click.echo(message)
+    # Step 2: Install slash commands
+    target_path = Path(target).expanduser()
 
-    if not success:
+    click.echo(f"📦 Installing slash commands to {target_path}...")
+    click.echo()
+
+    cmd_success, cmd_message = install_commands(target_path=target_path, force=force)
+    click.echo(cmd_message)
+    click.echo()
+
+    # Step 3: Install agents
+    click.echo("📦 Installing agents to ~/.claude/agents/...")
+    click.echo()
+
+    agent_success, agent_message = install_agents(force=force)
+    click.echo(agent_message)
+    click.echo()
+
+    # Step 4: Install skills
+    click.echo("📦 Installing skills to ~/.claude/skills/...")
+    click.echo()
+
+    skill_success, skill_message = install_all_skills(force=force)
+    click.echo(skill_message)
+
+    if not core_success or not cmd_success or not agent_success or not skill_success:
         sys.exit(1)
 
 
@@ -142,27 +219,48 @@ def mcp(servers, list_only, scope, dry_run):
 )
 def update(target: str):
     """
-    Update SuperClaude commands to latest version
+    Update SuperClaude to latest version
 
-    Re-installs all slash commands to match the current package version.
-    This is a convenience command equivalent to 'install --force'.
+    Re-installs core framework files and slash commands to match
+    the current package version. Equivalent to 'install --force'.
 
     Example:
         superclaude update
         superclaude update --target /custom/path
     """
+    from .install_agents import install_agents
     from .install_commands import install_commands
+    from .install_core import install_core_files
+    from .install_skills import install_all_skills
 
-    target_path = Path(target).expanduser()
-
-    click.echo(f"🔄 Updating SuperClaude commands to version {__version__}...")
+    click.echo(f"🔄 Updating SuperClaude to version {__version__}...")
     click.echo()
 
-    success, message = install_commands(target_path=target_path, force=True)
+    # Update core framework files
+    click.echo("📦 Updating core framework files...")
+    core_success, core_message = install_core_files(force=True)
+    click.echo(core_message)
+    click.echo()
 
-    click.echo(message)
+    # Update slash commands
+    target_path = Path(target).expanduser()
+    click.echo("📦 Updating slash commands...")
+    cmd_success, cmd_message = install_commands(target_path=target_path, force=True)
+    click.echo(cmd_message)
+    click.echo()
 
-    if not success:
+    # Update agents
+    click.echo("📦 Updating agents...")
+    agent_success, agent_message = install_agents(force=True)
+    click.echo(agent_message)
+    click.echo()
+
+    # Update skills
+    click.echo("📦 Updating skills...")
+    skill_success, skill_message = install_all_skills(force=True)
+    click.echo(skill_message)
+
+    if not core_success or not cmd_success or not agent_success or not skill_success:
         sys.exit(1)
 
 
@@ -251,6 +349,23 @@ def doctor(verbose: bool):
 def version():
     """Show SuperClaude version"""
     click.echo(f"SuperClaude version {__version__}")
+
+
+from superclaude.cli.sprint import sprint_group
+
+main.add_command(sprint_group, name="sprint")
+
+from superclaude.cli.roadmap import roadmap_group
+
+main.add_command(roadmap_group, name="roadmap")
+
+from superclaude.cli.cleanup_audit import cleanup_audit_group
+
+main.add_command(cleanup_audit_group, name="cleanup-audit")
+
+from superclaude.cli.tasklist import tasklist_group
+
+main.add_command(tasklist_group, name="tasklist")
 
 
 if __name__ == "__main__":

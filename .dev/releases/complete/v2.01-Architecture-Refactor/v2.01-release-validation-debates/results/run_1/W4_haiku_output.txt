@@ -1,0 +1,13 @@
+I’m blocked on a scope conflict before Wave 0:
+
+- Your **global** `CLAUDE.md` instruction says: **“You are only to modify documents within @docs/generated”**.
+- But `/sc:roadmap` (per the protocol) would normally write to:  
+  `.dev/releases/current/v2.01-Architecture-Refactor/` (outside `docs/generated`).
+
+Pick where you want the roadmap artifacts written:
+
+1) **Write to `docs/generated/…`** (recommended to stay within the restriction)  
+2) **Use the default `.dev/releases/current/…` output** (you’re explicitly granting an exception for this run)  
+3) **Dry-run only** (Wave 0–2 preview to console; no files written)
+
+Reply with **1, 2, or 3**, and if **1**, tell me the exact target folder under `docs/generated/` you prefer.

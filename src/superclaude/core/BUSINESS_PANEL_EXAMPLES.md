@@ -81,54 +81,25 @@
 # Business model design with expert guidance
 ```
 
-## Expert Selection Strategies
+## Expert Selection
 
-### By Business Domain
-```yaml
-strategy_planning:
-  experts: ['porter', 'kim_mauborgne', 'collins', 'meadows']
-  rationale: "Competitive analysis, blue ocean opportunities, execution excellence, systems thinking"
-
-innovation_management:
-  experts: ['christensen', 'drucker', 'godin', 'meadows']  
-  rationale: "Disruption theory, systematic innovation, remarkability, systems approach"
-
-organizational_development:
-  experts: ['collins', 'drucker', 'meadows', 'doumont']
-  rationale: "Excellence principles, management effectiveness, systems change, clear communication"
-
-risk_management:
-  experts: ['taleb', 'meadows', 'porter', 'collins']
-  rationale: "Antifragility, systems resilience, competitive threats, disciplined execution"
-
-market_entry:
-  experts: ['porter', 'christensen', 'godin', 'kim_mauborgne']
-  rationale: "Industry analysis, disruption potential, tribe building, blue ocean creation"
-
-business_model_design:
-  experts: ['christensen', 'drucker', 'kim_mauborgne', 'meadows']
-  rationale: "Value creation, customer focus, value innovation, system dynamics"
-```
+### By Domain
+| Domain | Experts | Focus |
+|--------|---------|-------|
+| Strategy | porter, kim_mauborgne, collins, meadows | Competitive, blue ocean, execution, systems |
+| Innovation | christensen, drucker, godin, meadows | Disruption, systematic innovation, remarkability |
+| Organization | collins, drucker, meadows, doumont | Excellence, management, systems change, communication |
+| Risk | taleb, meadows, porter, collins | Antifragility, resilience, threats, discipline |
+| Market Entry | porter, christensen, godin, kim_mauborgne | Industry, disruption, tribes, blue ocean |
+| Business Model | christensen, drucker, kim_mauborgne, meadows | Value creation, customer focus, innovation |
 
 ### By Analysis Type
-```yaml
-comprehensive_audit:
-  experts: "all"
-  mode: "discussion → debate → synthesis"
-  
-strategic_validation:
-  experts: ['porter', 'collins', 'taleb']
-  mode: "debate"
-  
-learning_facilitation:
-  experts: ['drucker', 'meadows', 'doumont']
-  mode: "socratic"
-
-quick_assessment:
-  experts: "auto-select-3"
-  mode: "discussion"
-  flags: "--synthesis-only"
-```
+| Type | Experts | Mode |
+|------|---------|------|
+| Comprehensive audit | all | discussion → debate → synthesis |
+| Strategic validation | porter, collins, taleb | debate |
+| Learning facilitation | drucker, meadows, doumont | socratic |
+| Quick assessment | auto-select-3 | discussion --synthesis-only |
 
 ## Output Format Variations
 
@@ -178,30 +149,9 @@ quick_assessment:
 
 ## Integration Workflows
 
-### Business Strategy Development
-```yaml
-workflow_stages:
-  stage_1: "/sc:business-panel @market_research.pdf --mode discussion"
-  stage_2: "/sc:business-panel @competitive_analysis.md --mode debate"  
-  stage_3: "/sc:business-panel 'synthesize findings' --mode socratic"
-  stage_4: "/design strategy --business-panel --experts 'porter,kim_mauborgne'"
-```
-
-### Innovation Pipeline Assessment
-```yaml
-workflow_stages:
-  stage_1: "/sc:business-panel @innovation_portfolio.xlsx --focus innovation"
-  stage_2: "/improve @product_roadmap.md --business-panel"
-  stage_3: "/analyze @market_opportunities.pdf --business-panel --think"
-```
-
-### Risk Management Review
-```yaml  
-workflow_stages:
-  stage_1: "/sc:business-panel @risk_register.pdf --experts 'taleb,meadows,porter'"
-  stage_2: "/sc:business-panel 'challenge risk assumptions' --mode debate"
-  stage_3: "/implement risk_mitigation --business-panel --validate"
-```
+**Strategy Development**: discussion @market_research → debate @competitive → socratic synthesis → /design strategy
+**Innovation Pipeline**: /sc:business-panel --focus innovation → /improve roadmap → /analyze opportunities --think
+**Risk Review**: /sc:business-panel --experts taleb,meadows,porter → debate assumptions → /implement mitigation --validate
 
 ## Customization Options
 
@@ -239,41 +189,11 @@ workflow_stages:
 /sc:business-panel @doc.pdf --budget 10000  # token limit
 ```
 
-## Quality Validation
+## Quality Standards
+- **Authenticity**: Expert voice consistency, framework fidelity, realistic interactions
+- **Relevance**: Strategic focus, actionable insights, evidence-based conclusions
+- **Integration**: Synthesis > individual analysis, framework distinctiveness preserved
 
-### Analysis Quality Checks
-```yaml
-authenticity_validation:
-  voice_consistency: "Each expert maintains characteristic style"
-  framework_fidelity: "Analysis follows authentic methodology"
-  interaction_realism: "Expert dynamics reflect professional patterns"
-
-business_relevance:
-  strategic_focus: "Analysis addresses real strategic concerns"  
-  actionable_insights: "Recommendations are implementable"
-  evidence_based: "Conclusions supported by framework logic"
-
-integration_quality:
-  synthesis_value: "Combined insights exceed individual analysis"
-  framework_preservation: "Integration maintains framework distinctiveness"
-  practical_utility: "Results support strategic decision-making"
-```
-
-### Performance Standards
-```yaml
-response_time:
-  simple_analysis: "< 30 seconds"
-  comprehensive_analysis: "< 2 minutes"
-  multi_document: "< 5 minutes"
-
-token_efficiency:
-  discussion_mode: "8-15K tokens"
-  debate_mode: "10-20K tokens"  
-  socratic_mode: "12-25K tokens"
-  synthesis_only: "3-8K tokens"
-
-accuracy_targets:
-  framework_authenticity: "> 90%"
-  strategic_relevance: "> 85%"
-  actionable_insights: "> 80%"
-```
+**Performance**: Simple <30s, comprehensive <2min, multi-doc <5min
+**Token budgets**: Discussion 8-15K, debate 10-20K, socratic 12-25K, synthesis 3-8K
+**Accuracy**: Framework authenticity >90%, relevance >85%, actionable >80%

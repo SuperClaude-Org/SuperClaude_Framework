@@ -1,0 +1,16 @@
+{
+  "test_id": "S1",
+  "test_name": "lint-architecture",
+  "test_type": "structural",
+  "sc": "SC-004",
+  "run": 1,
+  "model": null,
+  "timestamp": "2026-02-25T07:40:28.743394+00:00",
+  "duration_ms": 167,
+  "exit_code": 2,
+  "scores": {
+    "pass": false,
+    "weighted_total": 0.0
+  },
+  "score": 0.0
+}

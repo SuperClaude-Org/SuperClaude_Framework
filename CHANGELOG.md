@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed (Sprint Runner v2.0.0 — Unified Audit Gating)
+- **`max_turns`**: Default increased from `50` → `100` per phase
+  - Phase timeout increases proportionally: 6,300s → 12,300s
+  - Provides adequate headroom for complex phases with trailing gate verification
+- **`reimbursement_rate`**: Default changed from `0.5` → `0.8`
+  - Budget sustainability improved: 80% of turns reimbursed on PASS vs prior 50%
+  - Net cost per passing task: 4 turns (down from ~6 at rate=0.5)
+  - 46-task sprint drains ~184 turns from a 200-turn budget (16-turn margin)
+
+### Migration Guide
+Users relying on the previous defaults can preserve old behavior with explicit overrides:
+
+```bash
+# Preserve old max_turns (50)
+superclaude sprint run <index> --max-turns 50
+
+# Preserve old reimbursement_rate (0.5)
+superclaude sprint run <index> --reimbursement-rate 0.5
+
+# Preserve both
+superclaude sprint run <index> --max-turns 50 --reimbursement-rate 0.5
+```
+
+**Why the change**: The old `max_turns=50` frequently caused phase timeouts on complex sprints. The old `reimbursement_rate=0.5` drained budgets too aggressively, leaving insufficient margin for remediation attempts.
+
+### Budget Guidance
+- For sprints with **>40 tasks** at rate=0.8: recommend `initial_budget ≥ 250`
+  - At budget=200 with 46 tasks, the margin is only 16 turns — tight for sprints requiring remediation
+- For sprints with **≤20 tasks**: `initial_budget=200` provides comfortable margin
+- Override via: `superclaude sprint run <index> --initial-budget 250`
+
 ## [4.2.0] - 2026-01-18
 ### Added
 - **AIRIS MCP Gateway** - Optional unified MCP solution with 60+ tools (#509)

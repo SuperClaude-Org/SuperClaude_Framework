@@ -1,0 +1,6 @@
+Frontmatter check: 5/5
+  PASS: adversarial.md
+  PASS: cleanup-audit.md
+  PASS: task-unified.md
+  PASS: validate-tests.md
+  PASS: roadmap.md

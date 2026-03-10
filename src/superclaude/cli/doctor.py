@@ -24,11 +24,15 @@ def run_doctor(verbose: bool = False) -> Dict[str, Any]:
     plugin_check = _check_pytest_plugin()
     checks.append(plugin_check)
 
-    # Check 2: Skills installed
+    # Check 2: Agents installed
+    agents_check = _check_agents_installed()
+    checks.append(agents_check)
+
+    # Check 3: Skills installed
     skills_check = _check_skills_installed()
     checks.append(skills_check)
 
-    # Check 3: Configuration
+    # Check 4: Configuration
     config_check = _check_configuration()
     checks.append(config_check)
 
@@ -85,6 +89,38 @@ def _check_pytest_plugin() -> Dict[str, Any]:
         }
 
 
+def _check_agents_installed() -> Dict[str, Any]:
+    """
+    Check if agents are installed
+
+    Returns:
+        Check result dict
+    """
+    agents_dir = Path("~/.claude/agents").expanduser()
+
+    if not agents_dir.exists():
+        return {
+            "name": "Agents installed",
+            "passed": True,  # Optional, so pass
+            "details": ["No agents installed (run 'superclaude install')"],
+        }
+
+    agents = [f.stem for f in agents_dir.glob("*.md") if f.name != "README.md"]
+
+    if agents:
+        return {
+            "name": "Agents installed",
+            "passed": True,
+            "details": [f"{len(agents)} agent(s) installed"],
+        }
+    else:
+        return {
+            "name": "Agents installed",
+            "passed": True,  # Optional
+            "details": ["No agents installed (run 'superclaude install')"],
+        }
+
+
 def _check_skills_installed() -> Dict[str, Any]:
     """
     Check if any skills are installed
@@ -101,10 +137,12 @@ def _check_skills_installed() -> Dict[str, Any]:
             "details": ["No skills installed (optional)"],
         }
 
-    # Find skills (directories with implementation.md)
+    # Find skills (directories with SKILL.md or implementation.md)
     skills = []
     for item in skills_dir.iterdir():
-        if item.is_dir() and (item / "implementation.md").exists():
+        if item.is_dir() and any(
+            (item / m).exists() for m in ("SKILL.md", "skill.md", "implementation.md")
+        ):
             skills.append(item.name)
 
     if skills:

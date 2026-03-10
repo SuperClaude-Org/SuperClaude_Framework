@@ -1,0 +1,28 @@
+{
+    "test_id": "test-1-nonsense-penetration",
+    "test_version": "v2.20-baseline",
+    "timestamp": "2026-03-09T02:21:55Z",
+    "findings_targeted": ["F-001", "SC-007"],
+    "spec_file": "/config/workspace/SuperClaude_Framework/.dev/benchmarks/v2.20-baseline/fixtures/nonsense-spec.md",
+    "pipeline_exit_code": 0,
+    "elapsed_seconds": 699,
+    "metrics": {
+        "gate_pass_signals": 8,
+        "gate_fail_signals": 0,
+        "files_produced": 8,
+        "expected_files": 8,
+        "file_completion_rate_pct": 100,
+        "validation_report_present": true,
+        "validation_blocking_count": 0,
+        "validation_warning_count": 0,
+        "nonsense_propagation_depth": 9,
+        "nonsense_terms_in_final_roadmap": 2,
+        "nonsense_terms_checked": 8,
+        "nonsense_survival_rate_pct": 25
+    },
+    "interpretation": {
+        "primary_signal": "High files_produced plus nonsense in roadmap.md indicates semantic nonsense penetrated structure-only gates.",
+        "secondary_signal": "validation_blocking_count > 0 with roadmap.md still produced means validation noticed issues after propagation, not before.",
+        "propagation_scale": "1-8 = first missing expected core artifact, 9 = all expected core artifacts produced"
+    }
+}

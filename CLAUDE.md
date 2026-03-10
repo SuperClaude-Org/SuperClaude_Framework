@@ -24,17 +24,18 @@ uv run python script.py          # Execute scripts
 # Claude Code Configuration (v4.2.0)
 .claude/
 ├── settings.json        # User settings
-└── commands/            # Slash commands (installed via `superclaude install`)
-    ├── pm.md
-    ├── research.md
-    └── index-repo.md
+├── commands/            # Slash commands (installed via `superclaude install`)
+├── agents/              # Agent definitions (installed via `superclaude install`)
+└── skills/              # Skills (installed via `superclaude install`)
 
 # Python Package
 src/superclaude/         # Pytest plugin + CLI tools
 ├── pytest_plugin.py     # Auto-loaded pytest integration
 ├── pm_agent/            # confidence.py, self_check.py, reflexion.py
 ├── execution/           # parallel.py, reflection.py, self_correction.py
-└── cli/                 # main.py, doctor.py, install_skill.py
+├── cli/                 # main.py, doctor.py, install_skill.py, install_agents.py, install_skills.py
+├── agents/              # Agent definition source files (.md)
+└── skills/              # Skill packages (SKILL.md + rules/ + templates/ + scripts/)
 
 # Project Files
 tests/                   # Python test suite
@@ -66,6 +67,10 @@ make lint             # Run ruff linter
 make format           # Format code with ruff
 make doctor           # Health check diagnostics
 
+# Component Sync (skills + agents)
+make sync-dev         # Copy src/superclaude/{skills,agents} → .claude/
+make verify-sync      # Check src/ and .claude/ are in sync (CI-friendly)
+
 # MCP Servers
 superclaude mcp                              # Interactive install (gateway default)
 superclaude mcp --list                       # List available servers
@@ -79,6 +84,21 @@ make sync-plugin-repo        # Sync artefacts into ../SuperClaude_Plugin
 # Maintenance
 make clean            # Remove build artifacts
 ```
+
+## 🔄 Component Sync
+
+**Source of truth**: `src/superclaude/` is the canonical location for all distributable components (skills, agents, commands, core files). The `superclaude install` CLI reads from here.
+
+**Dev copies**: `.claude/skills/` and `.claude/agents/` in the repo root are convenience copies that Claude Code reads directly during development.
+
+**Workflow when adding/editing components**:
+1. Edit files in `src/superclaude/skills/` or `src/superclaude/agents/`
+2. Run `make sync-dev` to copy changes to `.claude/`
+3. Run `make verify-sync` to confirm sync (also run before committing)
+
+**If you edited `.claude/` directly** (e.g., iterating on a skill with Claude Code):
+1. Copy your changes to `src/superclaude/` manually
+2. Run `make verify-sync` to confirm both sides match
 
 ## 📦 Core Architecture
 
@@ -247,13 +267,19 @@ superclaude mcp  # Interactive install, gateway is default (requires Docker)
 ```bash
 # Option 1: pipx (recommended)
 pipx install superclaude
-superclaude install
+superclaude install        # Installs: core files → commands → agents → skills
 
 # Option 2: Direct from repo
 git clone https://github.com/SuperClaude-Org/SuperClaude_Framework.git
 cd SuperClaude_Framework
 ./install.sh
 ```
+
+**`superclaude install` installs 4 component types**:
+1. Core framework files (`.md`) → `~/.claude/`
+2. Slash commands (`.md`) → `~/.claude/commands/sc/`
+3. Agent definitions (`.md`) → `~/.claude/agents/`
+4. Skills (directories with `SKILL.md`) → `~/.claude/skills/`
 
 **Development Mode**:
 ```bash

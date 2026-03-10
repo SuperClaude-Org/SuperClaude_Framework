@@ -1,0 +1,16 @@
+{
+  "test_id": "S4",
+  "test_name": "task-unified-size",
+  "test_type": "structural",
+  "sc": "SC-010",
+  "run": 1,
+  "model": null,
+  "timestamp": "2026-02-25T07:40:28.576769+00:00",
+  "duration_ms": 0,
+  "exit_code": 0,
+  "scores": {
+    "pass": true,
+    "weighted_total": 1.0
+  },
+  "score": 1.0
+}

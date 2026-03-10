@@ -1,0 +1,21 @@
+{
+  "test_id": "B2",
+  "test_type": "classification",
+  "sc": "SC-007",
+  "run": 1,
+  "model": "haiku",
+  "timestamp": "2026-02-25T07:41:25.601470+00:00",
+  "duration_ms": 34166,
+  "prompt": "explain how the routing middleware works",
+  "expected_tier": "EXEMPT",
+  "actual": {},
+  "scores": {
+    "header_present": 0.0,
+    "tier_correct": 0.0,
+    "confidence_adequate": 0.0,
+    "keywords_relevant": 0.0,
+    "weighted_total": 0.0,
+    "parsed": {}
+  },
+  "score": 0.0
+}

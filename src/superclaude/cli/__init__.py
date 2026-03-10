@@ -2,7 +2,10 @@
 SuperClaude CLI
 
 Commands:
-    - superclaude install-skill pm-agent  # Install PM Agent skill
+    - superclaude install                  # Install all components (core, commands, agents, skills)
+    - superclaude update                   # Update all components to latest version
+    - superclaude install-skill <name>     # Install a single skill
+    - superclaude mcp                      # Install MCP servers
     - superclaude doctor                   # Check installation health
     - superclaude version                  # Show version
 """

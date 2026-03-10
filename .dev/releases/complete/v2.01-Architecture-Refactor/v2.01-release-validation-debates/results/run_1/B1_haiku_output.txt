@@ -1,0 +1,7 @@
+I need one clarification pass before I touch code, because “security vulnerability in auth module” can mean very different fixes (and wrong assumptions here are risky).
+
+Please answer the 3 questions in the prompt (vuln type, scope, authorization). Once you do, I’ll:
+
+- locate the relevant auth code paths,
+- propose the smallest correct fix (or fix+tests if you choose that scope),
+- run the appropriate test suite with `uv`/`make` per repo rules.

@@ -1,0 +1,69 @@
+{
+  "generated_at": "2026-03-04 15:51",
+  "output_dir": "/config/workspace/IronHands-CLI/.dev/Research/process-improvement-debate",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Parallel Brainstorm",
+      "description": "Spawn 3 parallel agents, each running /sc:brainstorm for one command",
+      "execution": "parallel",
+      "agents": [
+        {
+          "id": "brainstorm-spec-panel",
+          "prompt_file": "prompts/01-brainstorm-spec-panel.md",
+          "output_file": "brainstorm-spec-panel.md",
+          "model": "opus",
+          "agent_type": "general-purpose",
+          "description": "Brainstorm spec-panel improvements"
+        },
+        {
+          "id": "brainstorm-adversarial",
+          "prompt_file": "prompts/02-brainstorm-adversarial.md",
+          "output_file": "brainstorm-adversarial.md",
+          "model": "opus",
+          "agent_type": "general-purpose",
+          "description": "Brainstorm adversarial improvements"
+        },
+        {
+          "id": "brainstorm-roadmap",
+          "prompt_file": "prompts/03-brainstorm-roadmap.md",
+          "output_file": "brainstorm-roadmap.md",
+          "model": "opus",
+          "agent_type": "general-purpose",
+          "description": "Brainstorm roadmap improvements"
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Adversarial Scoring Debate",
+      "description": "Score and debate all proposals from Phase 1",
+      "execution": "sequential (depends on Phase 1 completion)",
+      "agents": [
+        {
+          "id": "adversarial-debate",
+          "prompt_file": "prompts/04-adversarial-debate.md",
+          "output_files": [
+            "debate-transcript.md",
+            "scoring-results.md",
+            "final-recommendations.md",
+            "cross-cutting-analysis.md"
+          ],
+          "model": "opus",
+          "agent_type": "general-purpose",
+          "description": "Adversarial debate on all proposals"
+        }
+      ]
+    }
+  ],
+  "expected_outputs": [
+    "brainstorm-spec-panel.md",
+    "brainstorm-adversarial.md",
+    "brainstorm-roadmap.md",
+    "scoring-framework.md",
+    "debate-transcript.md",
+    "scoring-results.md",
+    "final-recommendations.md",
+    "cross-cutting-analysis.md"
+  ]
+}

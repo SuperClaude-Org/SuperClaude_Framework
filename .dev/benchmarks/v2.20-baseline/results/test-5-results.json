@@ -1,0 +1,33 @@
+{
+    "test_id": "test-5-gate-stress",
+    "test_version": "v2.20-baseline",
+    "timestamp": "2026-03-09T02:21:55Z",
+    "findings_targeted": ["F-001", "_cross_refs_resolve", "_has_actionable_content", "_convergence_score_valid"],
+    "source_dir": "/config/workspace/SuperClaude_Framework/.dev/releases/complete/v2.19-roadmap-validate",
+    "baseline": {
+        "validate_exit": 0,
+        "blocking": 1,
+        "warnings": 5,
+        "info": 0
+    },
+    "corruption_results": [{"corruption":"cross-ref","validate_exit":0,"blocking":3,"warnings":4,"info":0,"detected":true},{"corruption":"actionability","validate_exit":0,"blocking":4,"warnings":3,"info":0,"detected":true},{"corruption":"convergence","validate_exit":0,"blocking":2,"warnings":4,"info":0,"detected":true},{"corruption":"heading-gap","validate_exit":0,"blocking":2,"warnings":4,"info":0,"detected":true},{"corruption":"duplicate-heading","validate_exit":0,"blocking":3,"warnings":4,"info":0,"detected":true},{"corruption":"empty-frontmatter","validate_exit":0,"blocking":1,"warnings":2,"info":0,"detected":true},{"corruption":"semantic-nonsense","validate_exit":0,"blocking":5,"warnings":3,"info":0,"detected":true}],
+    "summary": {
+        "total_corruptions": 7,
+        "detected": 7,
+        "missed": 0,
+        "detection_rate_pct": 100.0
+    },
+    "expected_baseline": {
+        "cross-ref": "MISSED (never fails today)",
+        "actionability": "MISSED (accepts any bullet)",
+        "convergence": "MISSED (only checks range)",
+        "heading-gap": "CAUGHT (enforced in merge gate)",
+        "duplicate-heading": "CAUGHT (enforced in merge gate)",
+        "empty-frontmatter": "DEPENDS (STRICT tier only)",
+        "semantic-nonsense": "MISSED (no content validation)"
+    },
+    "interpretation": {
+        "baseline_expectation": "~2-3 out of 7 detected (heading-gap, duplicate-heading, maybe empty-frontmatter)",
+        "target": "7 out of 7 detected after v2.20 gate hardening"
+    }
+}

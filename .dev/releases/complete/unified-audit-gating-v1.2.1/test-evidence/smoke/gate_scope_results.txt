@@ -1,0 +1,35 @@
+warning: `VIRTUAL_ENV=/lsiopy` does not match the project environment path `/config/workspace/SuperClaude_Framework/.venv` and will be ignored; use `--active` to target the active environment instead
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.2, pluggy-1.6.0 -- /config/workspace/SuperClaude_Framework/.venv/bin/python
+cachedir: .pytest_cache
+SuperClaude: 4.2.0
+benchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
+hypothesis profile 'default'
+rootdir: /config/workspace/SuperClaude_Framework
+configfile: pyproject.toml
+plugins: superclaude-4.2.0, benchmark-5.2.3, anyio-4.12.1, hypothesis-6.151.9, cov-7.0.0
+collecting ... collected 21 items
+
+releases/current/unified-audit-gating-v1.2.1/test-evidence/smoke/test_gate_scope_safety.py::TestReleaseScopeAlwaysBlocking::test_release_default_is_blocking PASSED [  4%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/smoke/test_gate_scope_safety.py::TestReleaseScopeAlwaysBlocking::test_release_ignores_trailing_config PASSED [  9%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/smoke/test_gate_scope_safety.py::TestReleaseScopeAlwaysBlocking::test_release_ignores_grace_period PASSED [ 14%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/smoke/test_gate_scope_safety.py::TestReleaseScopeAlwaysBlocking::test_release_ignores_trailing_config_and_grace_period PASSED [ 19%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/smoke/test_gate_scope_safety.py::TestReleaseScopeAlwaysBlocking::test_release_blocking_across_grace_periods[0] PASSED [ 23%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/smoke/test_gate_scope_safety.py::TestReleaseScopeAlwaysBlocking::test_release_blocking_across_grace_periods[1] PASSED [ 28%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/smoke/test_gate_scope_safety.py::TestReleaseScopeAlwaysBlocking::test_release_blocking_across_grace_periods[5] PASSED [ 33%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/smoke/test_gate_scope_safety.py::TestReleaseScopeAlwaysBlocking::test_release_blocking_across_grace_periods[60] PASSED [ 38%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/smoke/test_gate_scope_safety.py::TestReleaseScopeAlwaysBlocking::test_release_blocking_across_grace_periods[3600] PASSED [ 42%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/smoke/test_gate_scope_safety.py::TestReleaseScopeAlwaysBlocking::test_release_blocking_across_all_gate_modes[GateMode.BLOCKING] PASSED [ 47%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/smoke/test_gate_scope_safety.py::TestReleaseScopeAlwaysBlocking::test_release_blocking_across_all_gate_modes[GateMode.TRAILING] PASSED [ 52%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/smoke/test_gate_scope_safety.py::TestTaskScopeDefaults::test_task_trailing_with_grace_period PASSED [ 57%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/smoke/test_gate_scope_safety.py::TestTaskScopeDefaults::test_task_blocking_with_zero_grace_period PASSED [ 61%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/smoke/test_gate_scope_safety.py::TestTaskScopeDefaults::test_task_trailing_with_large_grace_period PASSED [ 66%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/smoke/test_gate_scope_safety.py::TestTaskScopeDefaults::test_task_defaults_to_blocking_no_args PASSED [ 71%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/smoke/test_gate_scope_safety.py::TestMilestoneScopeDefaults::test_milestone_default_is_blocking PASSED [ 76%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/smoke/test_gate_scope_safety.py::TestMilestoneScopeDefaults::test_milestone_configurable_to_trailing PASSED [ 80%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/smoke/test_gate_scope_safety.py::TestMilestoneScopeDefaults::test_milestone_configurable_to_blocking PASSED [ 85%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/smoke/test_gate_scope_safety.py::TestMilestoneScopeDefaults::test_milestone_ignores_grace_period PASSED [ 90%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/smoke/test_gate_scope_safety.py::TestGateScopeEnum::test_scope_members PASSED [ 95%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/smoke/test_gate_scope_safety.py::TestGateScopeEnum::test_scope_values PASSED [100%]
+
+============================== 21 passed in 0.10s ==============================

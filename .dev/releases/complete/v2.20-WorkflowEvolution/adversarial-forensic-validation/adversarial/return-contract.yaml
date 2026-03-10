@@ -1,0 +1,18 @@
+merged_output_path: "/config/workspace/SuperClaude_Framework/.dev/releases/backlog/v2.20-WorkflowEvolution/adversarial-forensic-validation/forensic-foundation-validated.md"
+convergence_score: 0.77
+artifacts_dir: "/config/workspace/SuperClaude_Framework/.dev/releases/backlog/v2.20-WorkflowEvolution/adversarial-forensic-validation/adversarial"
+status: "success"
+base_variant: "original:forensic-diagnostic-report"
+unresolved_conflicts: 3
+fallback_mode: false
+failure_stage: null
+invocation_method: "skill-direct"
+unaddressed_invariants:
+  - id: "INV-002"
+    category: "guard_conditions"
+    assumption: "Strong evidence density alone guarantees minority-insight preservation"
+    severity: "MEDIUM"
+  - id: "INV-004"
+    category: "interaction_effects"
+    assumption: "Combining Variant 3 evidence chains with Variant 1 epistemic taxonomy will not create over-complexity or duplicated claims"
+    severity: "MEDIUM"

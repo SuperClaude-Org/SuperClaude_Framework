@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "spec_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.22-RoadmapRemediate/spec-roadmap-remediate.md",
+  "spec_hash": "9a1f9b3687d9abb7a6d3b7d34f23bd2a3917b033db7eebb69dd5c20ad2cfdd10",
+  "agents": [
+    {
+      "model": "opus",
+      "persona": "architect"
+    },
+    {
+      "model": "haiku",
+      "persona": "analyzer"
+    }
+  ],
+  "depth": "deep",
+  "last_run": "2026-03-09T20:07:56.411672+00:00",
+  "steps": {
+    "extract": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.22-RoadmapRemediate/extraction.md",
+      "started_at": "2026-03-09T19:44:11.178326+00:00",
+      "completed_at": "2026-03-09T19:45:59.193841+00:00"
+    },
+    "generate-opus-architect": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.22-RoadmapRemediate/roadmap-opus-architect.md",
+      "started_at": "2026-03-09T19:45:59.195400+00:00",
+      "completed_at": "2026-03-09T19:47:36.208409+00:00"
+    },
+    "generate-haiku-analyzer": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.22-RoadmapRemediate/roadmap-haiku-analyzer.md",
+      "started_at": "2026-03-09T19:45:59.195528+00:00",
+      "completed_at": "2026-03-09T19:47:21.206892+00:00"
+    },
+    "diff": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.22-RoadmapRemediate/diff-analysis.md",
+      "started_at": "2026-03-09T19:47:36.208850+00:00",
+      "completed_at": "2026-03-09T19:48:43.220023+00:00"
+    },
+    "debate": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.22-RoadmapRemediate/debate-transcript.md",
+      "started_at": "2026-03-09T19:48:43.220288+00:00",
+      "completed_at": "2026-03-09T19:50:28.237168+00:00"
+    },
+    "score": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.22-RoadmapRemediate/base-selection.md",
+      "started_at": "2026-03-09T19:50:28.237732+00:00",
+      "completed_at": "2026-03-09T19:51:35.250977+00:00"
+    },
+    "merge": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.22-RoadmapRemediate/roadmap.md",
+      "started_at": "2026-03-09T19:51:35.251272+00:00",
+      "completed_at": "2026-03-09T19:54:11.275535+00:00"
+    },
+    "test-strategy": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.22-RoadmapRemediate/test-strategy.md",
+      "started_at": "2026-03-09T19:54:11.276336+00:00",
+      "completed_at": "2026-03-09T19:58:30.314837+00:00"
+    },
+    "spec-fidelity": {
+      "status": "FAIL",
+      "attempt": 2,
+      "output_file": "/config/workspace/SuperClaude_Framework/.dev/releases/current/v2.22-RoadmapRemediate/spec-fidelity.md",
+      "started_at": "2026-03-09T20:00:11.332917+00:00",
+      "completed_at": "2026-03-09T20:07:56.410753+00:00"
+    }
+  },
+  "fidelity_status": "fail"
+}

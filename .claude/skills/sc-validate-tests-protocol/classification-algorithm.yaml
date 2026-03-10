@@ -1,0 +1,503 @@
+# Tier Classification Algorithm Reference
+# Version: 1.0.0
+# Used by /sc:validate-tests for behavioral validation
+
+# =============================================================================
+# PRIORITY ORDER
+# =============================================================================
+priority_order:
+  STRICT: 1    # Highest - safety critical
+  EXEMPT: 2    # Read-only operations
+  LIGHT: 3     # Trivial changes
+  STANDARD: 4  # Default for code modifications
+
+# =============================================================================
+# PHASE 1: COMPOUND PHRASE DETECTION (Check First)
+# =============================================================================
+compound_phrases:
+  # LIGHT overrides - these phrases make a task LIGHT regardless of other keywords
+  light_overrides:
+    - phrase: "quick fix"
+      tier: LIGHT
+      confidence_boost: 0.15
+      overrides: ["fix"]
+
+    - phrase: "minor change"
+      tier: LIGHT
+      confidence_boost: 0.15
+      overrides: ["change"]
+
+    - phrase: "fix typo"
+      tier: LIGHT
+      confidence_boost: 0.15
+      overrides: ["fix"]
+
+    - phrase: "fix typos"
+      tier: LIGHT
+      confidence_boost: 0.15
+      overrides: ["fix"]
+
+    - phrase: "small update"
+      tier: LIGHT
+      confidence_boost: 0.15
+      overrides: ["update"]
+
+    - phrase: "simple update"
+      tier: LIGHT
+      confidence_boost: 0.10
+      overrides: ["update"]
+
+    - phrase: "update comment"
+      tier: LIGHT
+      confidence_boost: 0.15
+      overrides: ["update"]
+
+    - phrase: "update comments"
+      tier: LIGHT
+      confidence_boost: 0.15
+      overrides: ["update"]
+
+    - phrase: "refactor comment"
+      tier: LIGHT
+      confidence_boost: 0.15
+      overrides: ["refactor"]
+
+    - phrase: "refactor comments"
+      tier: LIGHT
+      confidence_boost: 0.15
+      overrides: ["refactor"]
+
+    - phrase: "fix spacing"
+      tier: LIGHT
+      confidence_boost: 0.15
+      overrides: ["fix"]
+
+    - phrase: "fix lint"
+      tier: LIGHT
+      confidence_boost: 0.15
+      overrides: ["fix"]
+
+    - phrase: "fix formatting"
+      tier: LIGHT
+      confidence_boost: 0.15
+      overrides: ["fix"]
+
+    - phrase: "rename variable"
+      tier: LIGHT
+      confidence_boost: 0.15
+      overrides: []
+
+    - phrase: "minor fix"
+      tier: LIGHT
+      confidence_boost: 0.15
+      overrides: ["fix"]
+
+  # STRICT overrides - security/data keywords ALWAYS win
+  strict_overrides:
+    - phrase: "fix security"
+      tier: STRICT
+      confidence_boost: 0.20
+      rationale: "Security fixes are critical"
+
+    - phrase: "add authentication"
+      tier: STRICT
+      confidence_boost: 0.20
+      rationale: "Auth changes are security-critical"
+
+    - phrase: "update database"
+      tier: STRICT
+      confidence_boost: 0.20
+      rationale: "Database changes affect data integrity"
+
+    - phrase: "change api"
+      tier: STRICT
+      confidence_boost: 0.15
+      rationale: "API changes may be breaking"
+
+    - phrase: "modify schema"
+      tier: STRICT
+      confidence_boost: 0.20
+      rationale: "Schema changes affect data integrity"
+
+    - phrase: "update schema"
+      tier: STRICT
+      confidence_boost: 0.20
+      rationale: "Schema changes affect data integrity"
+
+  # Security keywords that override ANY light modifier
+  security_always_wins:
+    modifiers: [quick, minor, small, simple, trivial, tiny]
+    security_keywords: [security, auth, authentication, token, password, credential, encrypt, session, permission]
+    result: STRICT
+    rationale: "Security changes are never trivial"
+
+# =============================================================================
+# PHASE 2: KEYWORD MATCHING
+# =============================================================================
+keywords:
+  STRICT:
+    base_score: 0.85
+
+    security_domain:
+      score: 0.90
+      words:
+        - security
+        - auth
+        - authentication
+        - authorization
+        - password
+        - credential
+        - token
+        - secret
+        - encrypt
+        - encryption
+        - decrypt
+        - permission
+        - access control
+        - session
+        - oauth
+        - jwt
+        - api key
+        - certificate
+
+    data_integrity:
+      score: 0.85
+      words:
+        - database
+        - migration
+        - schema
+        - model
+        - transaction
+        - query
+        - sql
+        - orm
+
+    scope_indicators:
+      score: 0.80
+      words:
+        - refactor
+        - remediate
+        - restructure
+        - overhaul
+        - multi-file
+        - system-wide
+        - cross-module
+        - breaking change
+        - api contract
+        - public interface
+
+    api_domain:
+      score: 0.75
+      words:
+        - api
+        - endpoint
+        - route
+        - middleware
+
+  EXEMPT:
+    base_score: 0.80
+
+    questions:
+      score: 0.85
+      words:
+        - what
+        - how
+        - why
+        - explain
+        - understand
+        - describe
+        - clarify
+        - tell me
+      patterns:
+        - "^what (is|are|does|do)"
+        - "^how (do|does|can|to)"
+        - "^why (is|are|does|do)"
+        - "^explain"
+        - "^can you explain"
+
+    exploration:
+      score: 0.80
+      words:
+        - explore
+        - investigate
+        - analyze
+        - review
+        - check
+        - look at
+        - show me
+        - find
+        - search
+        - list
+
+    planning:
+      score: 0.80
+      words:
+        - plan
+        - design
+        - brainstorm
+        - consider
+        - think about
+        - evaluate
+        - propose
+        - suggest
+
+    git_operations:
+      score: 0.90
+      words:
+        - commit
+        - push
+        - pull
+        - merge
+        - rebase
+        - branch
+        - checkout
+        - stash
+        - git status
+        - git diff
+        - git log
+
+  LIGHT:
+    base_score: 0.75
+
+    trivial_changes:
+      score: 0.85
+      words:
+        - typo
+        - spelling
+        - grammar
+        - format
+        - formatting
+        - whitespace
+        - indent
+        - indentation
+        - comment
+        - lint
+        - style
+        - spacing
+
+    modifiers:
+      score: 0.70
+      words:
+        - minor
+        - small
+        - quick
+        - trivial
+        - simple
+        - tiny
+        - brief
+        - slight
+
+    simple_operations:
+      score: 0.75
+      words:
+        - rename
+        - move
+        - copy
+
+  STANDARD:
+    base_score: 0.75
+
+    code_modifications:
+      score: 0.80
+      words:
+        - add
+        - create
+        - implement
+        - build
+        - develop
+        - make
+
+    updates:
+      score: 0.75
+      words:
+        - update
+        - modify
+        - change
+        - edit
+        - adjust
+        - revise
+
+    fixes:
+      score: 0.80
+      words:
+        - fix
+        - repair
+        - correct
+        - resolve
+        - patch
+        - debug
+
+    removals:
+      score: 0.75
+      words:
+        - remove
+        - delete
+        - deprecate
+        - drop
+
+# =============================================================================
+# PHASE 3: CONTEXT BOOSTERS
+# =============================================================================
+context_boosters:
+  file_count:
+    - condition: "files > 2"
+      tier: STRICT
+      boost: 0.30
+      rationale: "Multi-file changes need careful coordination"
+
+    - condition: "files == 1"
+      tier: LIGHT
+      boost: 0.10
+      rationale: "Single file slightly favors simpler tier"
+
+    - condition: "files == 0"
+      tier: EXEMPT
+      boost: 0.20
+      rationale: "No files suggests read-only"
+
+  path_patterns:
+    critical_paths:
+      boost: 0.40
+      tier: STRICT
+      patterns:
+        - "auth/"
+        - "security/"
+        - "crypto/"
+        - "models/"
+        - "migrations/"
+        - "api/v*/endpoints/"
+        - "services/payment"
+        - "**/credentials*"
+        - "**/secrets*"
+
+    test_paths:
+      boost: 0.20
+      tier: STANDARD
+      patterns:
+        - "tests/"
+        - "__tests__/"
+        - "test/"
+        - "*test*.py"
+        - "*.test.*"
+        - "**/fixtures/"
+
+    doc_paths:
+      boost: 0.50
+      tier: EXEMPT
+      patterns:
+        - "docs/"
+        - "*.md"
+        - "*.txt"
+        - "*.rst"
+        - "README*"
+        - "CHANGELOG*"
+        - "comments/"
+
+  operation_type:
+    - condition: "is_read_only"
+      tier: EXEMPT
+      boost: 0.40
+      rationale: "Read-only operations don't modify code"
+
+    - condition: "is_git_operation"
+      tier: EXEMPT
+      boost: 0.50
+      rationale: "Git operations are metadata, not code"
+
+# =============================================================================
+# PHASE 4: CONFIDENCE CALCULATION
+# =============================================================================
+confidence_calculation:
+  base_from_keyword_match:
+    description: "Start with score from highest-matching keyword category"
+    formula: "max(keyword_scores)"
+
+  ambiguity_penalty:
+    description: "Reduce confidence when top scores are close"
+    threshold: 0.10
+    penalty: 0.85  # multiply by this factor
+
+  compound_phrase_bonus:
+    description: "Boost confidence when compound phrase matches"
+    bonus: 0.15
+
+  vague_input_penalty:
+    description: "Reduce confidence for vague/unclear input"
+    conditions:
+      - "no keywords matched"
+      - "input too short (< 3 words)"
+      - "no action verb"
+    penalty: 0.70  # multiply by this factor
+
+  context_clarity_bonus:
+    description: "Boost when context strongly supports tier"
+    conditions:
+      - "path pattern matches clearly"
+      - "file count strongly indicates tier"
+    bonus: 0.10
+
+  maximum_confidence: 0.95
+  minimum_confidence: 0.50
+
+# =============================================================================
+# PHASE 5: CONFLICT RESOLUTION
+# =============================================================================
+conflict_resolution:
+  # When multiple tiers have high scores
+  priority_wins:
+    description: "Higher priority tier wins when scores are within threshold"
+    threshold: 0.10
+    rule: "STRICT > EXEMPT > LIGHT > STANDARD"
+
+  # Special cases
+  special_rules:
+    - name: "Security Always Wins"
+      condition: "Any security keyword present"
+      result: "STRICT, regardless of modifiers"
+
+    - name: "Questions Are Exempt"
+      condition: "Question pattern detected AND no modification keywords"
+      result: "EXEMPT"
+
+    - name: "Git Operations Exempt"
+      condition: "Git operation keyword"
+      result: "EXEMPT, regardless of what's being committed"
+
+# =============================================================================
+# PHASE 6: CONFIRMATION RULES
+# =============================================================================
+confirmation_rules:
+  confidence_threshold: 0.70
+
+  requires_confirmation_when:
+    - "confidence < 0.70"
+    - "ambiguous classification (top scores within 0.05)"
+    - "user override differs from auto-detection by 2+ tiers"
+
+  no_confirmation_when:
+    - "compound phrase matches with high specificity"
+    - "single clear keyword category matches"
+    - "user explicitly specifies tier with --compliance flag"
+
+# =============================================================================
+# VALIDATION TEST EXPECTATIONS
+# =============================================================================
+test_validation:
+  tier_match:
+    type: "exact"
+    description: "Actual tier must match expected tier"
+
+  confidence_match:
+    type: "range"
+    formats:
+      - ">= 0.85"      # At least 0.85
+      - "< 0.70"       # Less than 0.70
+      - "0.65-0.75"    # Between 0.65 and 0.75
+
+  confirmation_match:
+    type: "boolean"
+    rule: "If expected_confidence indicates < 0.70, requires_confirmation should be true"
+
+  keyword_detection:
+    type: "partial"
+    rule: "At least one expected keyword should be detected"

@@ -1,0 +1,30 @@
+warning: `VIRTUAL_ENV=/lsiopy` does not match the project environment path `/config/workspace/SuperClaude_Framework/.venv` and will be ignored; use `--active` to target the active environment instead
+============================= test session starts ==============================
+collecting ... collected 24 items
+
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_error_max_turns_detection.py::TestErrorMaxTurnsPattern::test_matches_compact_json PASSED [  4%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_error_max_turns_detection.py::TestErrorMaxTurnsPattern::test_matches_spaced_json PASSED [  8%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_error_max_turns_detection.py::TestErrorMaxTurnsPattern::test_matches_extra_whitespace PASSED [ 12%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_error_max_turns_detection.py::TestErrorMaxTurnsPattern::test_no_match_on_success PASSED [ 16%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_error_max_turns_detection.py::TestErrorMaxTurnsPattern::test_no_match_on_init PASSED [ 20%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_error_max_turns_detection.py::TestErrorMaxTurnsPattern::test_no_match_on_plain_text PASSED [ 25%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_error_max_turns_detection.py::TestErrorMaxTurnsPattern::test_no_match_on_partial_key PASSED [ 29%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_error_max_turns_detection.py::TestDetectErrorMaxTurns::test_detects_error_max_turns_in_last_line PASSED [ 33%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_error_max_turns_detection.py::TestDetectErrorMaxTurns::test_no_detection_on_normal_completion PASSED [ 37%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_error_max_turns_detection.py::TestDetectErrorMaxTurns::test_no_detection_when_error_only_mid_stream PASSED [ 41%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_error_max_turns_detection.py::TestDetectErrorMaxTurns::test_detects_with_trailing_blank_lines PASSED [ 45%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_error_max_turns_detection.py::TestDetectErrorMaxTurns::test_returns_false_for_empty_file PASSED [ 50%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_error_max_turns_detection.py::TestDetectErrorMaxTurns::test_returns_false_for_whitespace_only_file PASSED [ 54%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_error_max_turns_detection.py::TestDetectErrorMaxTurns::test_returns_false_for_missing_file PASSED [ 58%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_error_max_turns_detection.py::TestDeterminePhaseStatusReclassification::test_exit0_no_result_with_error_max_turns_yields_incomplete PASSED [ 62%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_error_max_turns_detection.py::TestDeterminePhaseStatusReclassification::test_exit0_no_result_normal_completion_yields_pass_no_report PASSED [ 66%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_error_max_turns_detection.py::TestDeterminePhaseStatusReclassification::test_exit0_with_result_file_ignores_error_max_turns PASSED [ 70%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_error_max_turns_detection.py::TestDeterminePhaseStatusReclassification::test_nonzero_exit_yields_error_regardless PASSED [ 75%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_error_max_turns_detection.py::TestDeterminePhaseStatusReclassification::test_timeout_exit_yields_timeout_regardless PASSED [ 79%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_error_max_turns_detection.py::TestDeterminePhaseStatusReclassification::test_no_output_no_result_yields_error PASSED [ 83%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_error_max_turns_detection.py::TestPhaseStatusIncompleteProperties::test_incomplete_is_terminal PASSED [ 87%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_error_max_turns_detection.py::TestPhaseStatusIncompleteProperties::test_incomplete_is_failure PASSED [ 91%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_error_max_turns_detection.py::TestPhaseStatusIncompleteProperties::test_incomplete_is_not_success PASSED [ 95%]
+releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_error_max_turns_detection.py::TestPhaseStatusIncompleteProperties::test_pass_no_report_is_success PASSED [100%]
+
+============================== 24 passed in 0.13s ==============================

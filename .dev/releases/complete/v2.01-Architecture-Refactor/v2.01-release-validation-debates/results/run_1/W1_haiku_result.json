@@ -1,0 +1,19 @@
+{
+  "test_id": "W1",
+  "test_type": "wiring",
+  "sc": "SC-002",
+  "run": 1,
+  "model": "haiku",
+  "timestamp": "2026-02-25T07:45:46.556958+00:00",
+  "duration_ms": 125918,
+  "command": "/sc:task \"implement JWT authentication system\"",
+  "expected_protocol": "sc:task-unified-protocol",
+  "scores": {
+    "skill_invoked": 1.0,
+    "protocol_flow": 0.625,
+    "no_raw_dump": 1.0,
+    "tool_engagement": 0.5,
+    "weighted_total": 0.79375
+  },
+  "score": 0.79375
+}

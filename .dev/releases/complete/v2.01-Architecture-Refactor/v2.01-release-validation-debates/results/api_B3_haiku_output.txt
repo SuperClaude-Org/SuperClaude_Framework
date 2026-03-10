@@ -1,0 +1,7 @@
+<!-- SC:TASK-UNIFIED:CLASSIFICATION -->
+TIER: LIGHT
+CONFIDENCE: 0.95
+KEYWORDS: typo, error message, fix
+OVERRIDE: false
+RATIONALE: Minor documentation/text correction with no security, safety, or compliance implications.
+<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->

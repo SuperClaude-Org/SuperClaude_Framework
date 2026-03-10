@@ -1,13 +1,23 @@
 ---
-name: task
+name: task-legacy
 description: "Execute complex tasks with intelligent workflow management and delegation"
 category: special
 complexity: advanced
 mcp-servers: [sequential, context7, magic, playwright, morphllm, serena]
 personas: [architect, analyzer, frontend, backend, security, devops, project-manager]
+deprecated: true
+deprecated_by: "task-unified"
+migration_guide: "Use /sc:task (task-unified.md) with --compliance and --strategy flags instead"
 ---
 
-# /sc:task - Enhanced Task Management
+# /sc:task - Enhanced Task Management (DEPRECATED)
+
+> **DEPRECATION NOTICE**: This command is deprecated as of v2.0.0.
+> Its capabilities have been merged into the unified `/sc:task` command (`task-unified.md`).
+> The unified command provides the same orchestration features plus compliance tier enforcement.
+>
+> **Migration**: Use `/sc:task [description] --strategy [systematic|agile|enterprise]` instead.
+> See `task-unified.md` for full documentation.
 
 ## Triggers
 - Complex tasks requiring multi-agent coordination and delegation

@@ -1,0 +1,7 @@
+<!-- SC:TASK-UNIFIED:CLASSIFICATION -->
+TIER: EXEMPT
+CONFIDENCE: 0.97
+KEYWORDS: explain, how, works
+OVERRIDE: false
+RATIONALE: Pure explanatory/educational request with no code generation, modification, or destructive actions involved.
+<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->

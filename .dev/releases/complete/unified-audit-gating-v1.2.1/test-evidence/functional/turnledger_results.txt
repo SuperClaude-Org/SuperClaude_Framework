@@ -1,0 +1,28 @@
+warning: `VIRTUAL_ENV=/lsiopy` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.2, pluggy-1.6.0 -- /config/workspace/SuperClaude_Framework/.venv/bin/python
+cachedir: .pytest_cache
+SuperClaude: 4.2.0
+benchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
+hypothesis profile 'default'
+rootdir: /config/workspace/SuperClaude_Framework
+configfile: pyproject.toml
+plugins: superclaude-4.2.0, benchmark-5.2.3, anyio-4.12.1, hypothesis-6.151.9, cov-7.0.0
+collecting ... collected 14 items
+
+.dev/releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_turnledger_economics.py::TestBudgetDecay::test_monotonic_decay_over_cycles[0.5] PASSED [  7%]
+.dev/releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_turnledger_economics.py::TestBudgetDecay::test_monotonic_decay_over_cycles[0.9] PASSED [ 14%]
+.dev/releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_turnledger_economics.py::TestBudgetDecay::test_budget_reaches_zero_with_default_rate PASSED [ 21%]
+.dev/releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_turnledger_economics.py::TestBudgetDecay::test_net_loss_per_cycle PASSED [ 28%]
+.dev/releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_turnledger_economics.py::TestPreLaunchGuard::test_can_launch_with_sufficient_budget PASSED [ 35%]
+.dev/releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_turnledger_economics.py::TestPreLaunchGuard::test_cannot_launch_below_minimum_allocation PASSED [ 42%]
+.dev/releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_turnledger_economics.py::TestPreLaunchGuard::test_cannot_launch_at_zero PASSED [ 50%]
+.dev/releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_turnledger_economics.py::TestPreLaunchGuard::test_can_launch_at_exact_threshold PASSED [ 57%]
+.dev/releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_turnledger_economics.py::TestPreLaunchGuard::test_can_remediate_with_sufficient_budget PASSED [ 64%]
+.dev/releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_turnledger_economics.py::TestPreLaunchGuard::test_cannot_remediate_below_threshold PASSED [ 71%]
+.dev/releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_turnledger_economics.py::TestPreLaunchGuard::test_guard_halts_after_economic_decay PASSED [ 78%]
+.dev/releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_turnledger_economics.py::TestInputValidation::test_negative_debit_raises PASSED [ 85%]
+.dev/releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_turnledger_economics.py::TestInputValidation::test_negative_credit_raises PASSED [ 92%]
+.dev/releases/current/unified-audit-gating-v1.2.1/test-evidence/functional/test_turnledger_economics.py::TestAccountingIdentity::test_identity_holds_after_mixed_operations PASSED [100%]
+
+============================== 14 passed in 0.09s ==============================

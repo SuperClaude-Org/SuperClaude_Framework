@@ -1,0 +1,7 @@
+<!-- SC:TASK-UNIFIED:CLASSIFICATION -->
+TIER: STANDARD
+CONFIDENCE: 0.82
+KEYWORDS: endpoint, user list, pagination, API
+OVERRIDE: false
+RATIONALE: Adding pagination to an API endpoint is a moderate-complexity feature change requiring implementation across multiple layers (query params, DB query, response format) with standard risk profile.
+<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->

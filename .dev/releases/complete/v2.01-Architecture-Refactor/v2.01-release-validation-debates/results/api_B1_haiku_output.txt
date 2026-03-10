@@ -1,0 +1,7 @@
+<!-- SC:TASK-UNIFIED:CLASSIFICATION -->
+TIER: STRICT
+CONFIDENCE: 0.95
+KEYWORDS: security vulnerability, auth module, fix
+OVERRIDE: false
+RATIONALE: Security vulnerability fixes require strict handling due to potential impact on system integrity and user safety.
+<!-- /SC:TASK-UNIFIED:CLASSIFICATION -->
