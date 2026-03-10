@@ -6,7 +6,7 @@ complexity: high
 allowed-tools: Read, Glob, Grep, Edit, Write, Bash, TodoWrite, Task
 mcp-servers: [sequential, serena, context7, auggie-mcp]
 personas: [architect, analyzer, backend]
-argument-hint: "--workflow <skill-name-or-path> [--name <cli-name>] [--output <dir>] [--dry-run] [--skip-integration]"
+argument-hint: "--workflow <skill-name-or-path> [--name <cli-name>] [--output <dir>] [--dry-run]"
 ---
 
 # sc:cli-portify — Workflow-to-CLI Pipeline Compiler
@@ -47,7 +47,7 @@ A CLI subcommand package under `src/superclaude/cli/<name>/`:
 | `inventory.py` | Pure-programmatic file discovery/classification | If workflow has discovery steps |
 | `filtering.py` | Pure-programmatic inter-step data filtering | If workflow has filtering between steps |
 
-Plus integration patches for `main.py`.
+These file definitions inform the pipeline specification produced in Phase 2.
 
 ## Required Input
 
@@ -60,8 +60,7 @@ Plus integration patches for `main.py`.
 | `--workflow` | Yes | Skill directory path or `sc-*` name to portify |
 | `--name` | No | CLI subcommand name (default: derived from workflow) |
 | `--output` | No | Output directory (default: `src/superclaude/cli/<name>/`) |
-| `--dry-run` | No | Show decomposition plan without generating code |
-| `--skip-integration` | No | Generate module only, skip main.py wiring |
+| `--dry-run` | No | Execute Phases 0-2 only — emit Phase 0-2 contracts only. No spec synthesis (Phase 3) or panel review (Phase 4) artifacts are produced. |
 
 **STOP** if `--workflow` is not provided or the path doesn't resolve to a valid skill.
 
@@ -152,18 +151,234 @@ Load `refs/pipeline-spec.md` before this phase. It contains Step definition patt
 
 **Present to user for approval before Phase 3.**
 
-### Phase 3: Code Generation
+### Phase 3: Release Spec Synthesis
 
-Load `refs/code-templates.md` before this phase. It contains parameterized file templates for every module.
+**Phase 2→3 Entry Gate**: Before beginning Phase 3, verify ALL of the following:
+- Phase 2 contract `status: completed`
+- All blocking checks passed (no unresolved BLOCKING gate failures)
+- Phase 2 `step_mapping` contains ≥1 entry
 
-Generate files in dependency order (models → gates → prompts → config → monitor → process → executor → tui → logging → diagnostics → commands → __init__). Each file imports from `superclaude.cli.pipeline` for shared base types and follows sprint/roadmap naming conventions.
+**STOP** if any entry gate condition fails. Report which condition failed and emit the return contract with `failure_phase: 3, failure_type: prerequisite_failed`.
 
-### Phase 4: Integration
+**Goal**: Generate a complete, reviewed release specification from Phase 1 and Phase 2 outputs. Record the wall clock start time for `phase_3_seconds` timing instrumentation.
 
-1. Patch `main.py` — Add import and `app.add_command()`
-2. Verify imports — Quick check for circular dependencies
-3. Generate structural test — Validates step graph, gate definitions, and model consistency
-4. Write `portify-summary.md` — File inventory, CLI usage, step graph, known limitations
+**Timing**: Record `phase_3_start = current_time()` at the beginning of this phase. NFR-001 advisory target: Phase 3 should complete within 10 minutes wall clock (non-blocking; exceeding this target emits a warning but does not halt the pipeline).
+
+#### Step 3a: Template Instantiation
+
+1. Load the release spec template from `src/superclaude/examples/release-spec-template.md`
+2. Create a working copy at `{work_dir}/portify-release-spec.md`
+3. Verify the working copy was created successfully and contains the template content
+
+#### Step 3b: Content Population
+
+Fill template sections from Phase 1 (workflow analysis) and Phase 2 (pipeline specification) outputs using the following mapping table. For each template section, replace `{{SC_PLACEHOLDER:*}}` sentinels with content derived from the specified source:
+
+| # | Template Section | Source |
+|---|-----------------|--------|
+| 1 | Problem Statement | Derive from source workflow's purpose + why portification is needed |
+| 2 | Solution Overview | Phase 2 pipeline architecture (step graph, executor design) |
+| 2.2 | Workflow / Data Flow | Phase 1 data flow diagram, adapted for the target pipeline |
+| 3 | Functional Requirements | One FR per generated pipeline step from Phase 2 `step_mapping` — every `step_mapping` entry MUST produce a corresponding FR (SC-004) |
+| 4 | Architecture | Phase 2 `module_plan` (new files), Phase 0 prerequisites (modified files) |
+| 4.5 | Data Models | Phase 2 model designs (Config, Status, Result, MonitorState) |
+| 4.6 | Implementation Order | Phase 2 module dependency order |
+| 5.2 | Gate Criteria | Phase 2 `gate_definitions` |
+| 5.3 | Phase Contracts | Phase 1+2 contract schemas |
+| 6 | NFRs | Standard portification NFRs (sync execution, gate signatures, runner-authored truth) |
+| 7 | Risk Assessment | Derived from Phase 1 classification confidence scores + unsupported patterns |
+| 8 | Test Plan | Structural test plan from Phase 2 pattern coverage matrix |
+| 10 | Downstream Inputs | Themes for sc:roadmap, tasks for sc:tasklist |
+
+After populating all sections, run SC-003 self-validation: verify zero remaining `{{SC_PLACEHOLDER:*}}` sentinels in the working copy. If any remain, resolve them before proceeding.
+
+#### Step 3c: Automated Brainstorm Pass
+
+Apply embedded brainstorm behavioral patterns as a non-interactive automated pass against the draft spec. This is NOT an invocation of the `sc:brainstorm` command (which is interactive/Socratic); instead, cycle through each of three personas to analyze the draft spec for gaps:
+
+**Persona perspectives** (apply each in sequence):
+
+1. **Architect persona**: Analyze for structural gaps — missing dependencies, incomplete module boundaries, scaling concerns, cross-module interaction gaps, missing error handling paths
+2. **Analyzer persona**: Analyze for logical gaps — uncovered edge cases, ambiguous requirements, missing acceptance criteria, inconsistent cross-references, untestable requirements
+3. **Backend persona**: Analyze for implementation gaps — missing data models, incomplete API contracts, undefined error states, missing retry/timeout specifications, resource lifecycle gaps
+
+**Structured output format**: Each finding uses the schema:
+```
+{gap_id, description, severity(high|medium|low), affected_section, persona}
+```
+
+Example:
+```
+{GAP-001, "No retry policy defined for failed gate checks", medium, "5.2 Gate Criteria", architect}
+```
+
+**Zero-gap handling**: If no gaps are identified across all three personas, produce an explicit summary:
+> "No gaps identified by architect, analyzer, and backend personas. Spec coverage assessed as complete."
+
+Set `gaps_identified: 0` in the return contract. Zero gaps is a valid outcome — it does not block the pipeline.
+
+**Output**: Append a `## Brainstorm Gap Analysis` section (Section 12) to the draft spec containing all findings in the structured format, or the zero-gap summary.
+
+#### Step 3d: Gap Incorporation
+
+Review each brainstorm finding and route it:
+
+- **Actionable findings** (findings that can be directly addressed): Incorporate into the relevant spec body section identified by `affected_section`. Mark the finding as `[INCORPORATED]` in the gap analysis table.
+- **Unresolvable items** (findings that require external input, are out of scope, or cannot be resolved within the spec): Route to Section 11 (Open Items) with the gap ID, question, impact, and resolution target. Mark the finding as `[OPEN]` in the gap analysis table.
+
+After incorporation, update the gap analysis summary with counts: `{total_gaps, incorporated, open, severity_distribution}`.
+
+**Timing**: Record `phase_3_end = current_time()`. Compute `phase_3_seconds = phase_3_end - phase_3_start`. Populate `phase_timing.phase_3_seconds` in the return contract. If `phase_3_seconds > 600`, emit warning: "Phase 3 exceeded 10-minute advisory target (NFR-001)".
+
+**Output**: `{work_dir}/portify-release-spec.md` — Complete draft spec with brainstorm gap analysis section and incorporated findings.
+
+**Phase 3→4 automatic gate**: Draft spec populated (no `{{SC_PLACEHOLDER:*}}` values remain) AND brainstorm section (Section 12) present in draft spec.
+
+### Phase 4: Spec Panel Review
+
+Embed `sc:spec-panel` behavioral patterns in a convergent review loop. Like Phase 3's brainstorm, this embeds spec-panel behavioral patterns directly rather than invoking the `sc:spec-panel` command (Constraint 1: no inter-skill command invocation).
+
+**Timing**: Record `phase_4_start = current_time()` at the beginning of this phase. NFR-002 advisory target: Phase 4 should complete within 15 minutes wall clock (non-blocking; exceeding this target emits a warning but does not halt the pipeline).
+
+#### Step 4a: Focus Pass
+
+Apply spec-panel behavioral patterns with `--focus correctness,architecture` against `portify-release-spec.md`. This pass embeds four expert analysis patterns inline:
+
+**Expert analysis patterns** (apply each in sequence, building on prior context):
+
+1. **Fowler (Architecture)**: Analyze interface design quality, bounded context boundaries, module coupling/cohesion, dependency direction, and design pattern appropriateness. Annotate data flows with count divergence analysis — for each transformation, document input count, output count, and whether the spec accounts for count differences.
+
+2. **Nygard (Reliability/Failure Modes)**: Analyze failure mode coverage, circuit breaker patterns, timeout specifications, retry policies, and recovery mechanisms. Extend guard boundary analysis to include zero/empty cases — for every guard condition, verify the spec defines behavior for zero, empty, null, and negative inputs.
+
+3. **Whittaker (Adversarial)**: Apply five attack methodologies (Zero/Empty, Divergence, Sentinel Collision, Sequence, Accumulation) against each identified invariant. Produce concrete attack scenarios with state traces demonstrating specification gaps.
+
+4. **Crispin (Testing)**: Analyze testing strategy coverage, acceptance criteria quality, edge case identification, and quality attribute specifications. Generate boundary value test cases for every guard condition and state variable covering: below minimum, at minimum, typical, at maximum, above maximum, and degenerate (zero/empty/null).
+
+**Focus dimensions**: `correctness` and `architecture` — findings must address both dimensions (SC-006).
+
+**Output format**: Each finding uses the structured schema:
+```
+{finding_id, severity(CRITICAL|MAJOR|MINOR), expert, location, issue, recommendation}
+```
+
+Where:
+- `finding_id`: Unique identifier (e.g., `F-001`, `F-002`)
+- `severity`: One of `CRITICAL` (spec provably wrong), `MAJOR` (spec ambiguous/incomplete), `MINOR` (spec could be clearer)
+- `expert`: One of `Fowler`, `Nygard`, `Whittaker`, `Crispin`
+- `location`: Section/requirement reference in the spec
+- `issue`: Description of the identified problem
+- `recommendation`: Specific actionable fix
+
+Additionally produce, if applicable:
+- Guard Condition Boundary Table (Nygard leads, Crispin validates, Whittaker attacks)
+- Pipeline Quantity Flow Diagram (Fowler leads, if pipeline stages detected)
+- State Variable Registry (if 3+ mutable state variables identified)
+
+#### Step 4b: Focus Incorporation
+
+Review focus findings from step 4a. Route each finding by severity level. All modifications MUST be additive-only — append or extend spec sections only, do not rewrite existing content (Constraint 2, NFR-008).
+
+**Severity routing**:
+
+- **CRITICAL findings**: MUST be addressed. Either:
+  - Incorporate the fix into the relevant spec body section identified by `location`, OR
+  - Document a written justification for dismissal in the panel report (Constraint 7). Dismissal justification must include: `finding_id`, reason for dismissal, and assessment of downstream impact.
+- **MAJOR findings**: Incorporate into the corresponding spec body section identified by `location`. Modifications use append/extend only.
+- **MINOR findings**: Append to Section 11 (Open Items) with the `finding_id`, issue summary, and recommended resolution target.
+
+All modifications are traceable by `finding_id` from step 4a output. Mark each finding as `[INCORPORATED]`, `[DISMISSED]`, or `[OPEN]` in the focus findings table.
+
+#### Step 4c: Critique Pass
+
+Apply spec-panel behavioral patterns with `--mode critique` against the updated spec (after step 4b incorporation). Run the full expert panel in critique review sequence:
+
+1. Fowler — Architecture and interface design
+2. Nygard — Reliability and failure mode analysis
+3. Whittaker — Adversarial attack-based specification probing
+4. Crispin — Testing strategy and acceptance criteria
+
+Each expert produces quality dimension scores and prioritized improvement recommendations.
+
+**Quality score output** (SC-007):
+```
+{clarity: float, completeness: float, testability: float, consistency: float}
+```
+
+Where each dimension is a float in the 0-10 range:
+- `clarity` (0.0-10.0): Language precision, unambiguous requirements, clear behavioral definitions
+- `completeness` (0.0-10.0): Coverage of essential elements, no missing requirements, all edge cases addressed
+- `testability` (0.0-10.0): Measurable acceptance criteria, verifiable requirements, concrete test scenarios
+- `consistency` (0.0-10.0): Internal coherence, no contradictions, aligned cross-references
+
+Each expert also produces prioritized improvement recommendations as new findings using the same structured schema from step 4a.
+
+#### Step 4d: Critique Incorporation and Scoring
+
+1. **Record quality scores**: Write all 4 quality dimension scores from step 4c into the spec frontmatter:
+   ```yaml
+   quality_scores:
+     clarity: <float>
+     completeness: <float>
+     testability: <float>
+     consistency: <float>
+     overall: <float>
+   ```
+
+2. **Compute overall score**: `overall = mean(clarity, completeness, testability, consistency)` — that is, `overall = (clarity + completeness + testability + consistency) / 4` (Constraint 6, SC-010).
+
+3. **Append panel report**: Generate `panel-report.md` in the working directory containing:
+   - All focus findings from step 4a with incorporation status
+   - All critique findings from step 4c with scores
+   - Guard Condition Boundary Table (if produced)
+   - Quality dimension scores and overall score
+   - Convergence status
+
+#### Convergence Loop
+
+Steps 4a through 4d execute within a bounded convergence loop using state machine semantics.
+
+**States**:
+- `REVIEWING` — Executing focus pass (4a) or critique pass (4c)
+- `INCORPORATING` — Executing incorporation (4b or 4d)
+- `SCORING` — Evaluating convergence after scoring (4d)
+- `CONVERGED` — Terminal state: zero unaddressed CRITICALs, `status: success`
+- `ESCALATED` — Terminal state: 3 iterations exhausted, `status: partial`
+
+**Transitions**:
+```
+REVIEWING → INCORPORATING (findings produced)
+INCORPORATING → SCORING (incorporation complete, scores computed)
+SCORING → CONVERGED (zero unaddressed CRITICALs remaining)
+SCORING → REVIEWING (unaddressed CRITICALs remain, iteration < 3)
+SCORING → ESCALATED (unaddressed CRITICALs remain, iteration >= 3)
+```
+
+**Iteration counter**: Initialize `iteration = 1` before first pass. Increment after each SCORING → REVIEWING transition. Hard cap: `max_iterations = 3` (SC-008).
+
+**Convergence predicate**: After SCORING, check if any findings with `severity: CRITICAL` have status other than `[INCORPORATED]` or `[DISMISSED]`. If zero unaddressed CRITICALs → transition to CONVERGED. Otherwise → check iteration counter.
+
+**Terminal states**:
+- **CONVERGED**: `status: success` — all CRITICALs addressed, spec is review-complete
+- **ESCALATED**: `status: partial` — 3 iterations exhausted with unaddressed CRITICALs remaining. Escalate to user with: remaining CRITICAL findings, iteration history, and recommendation for manual resolution.
+
+#### Downstream Ready Gate
+
+After convergence loop terminates (either CONVERGED or ESCALATED):
+
+1. Evaluate `downstream_ready` gate: `if overall >= 7.0 then downstream_ready = true else downstream_ready = false` (Constraint 8, SC-012).
+   - Boundary: `overall = 7.0` → `downstream_ready: true`
+   - Boundary: `overall = 6.9` → `downstream_ready: false`
+
+2. **Timing**: Record `phase_4_end = current_time()`. Compute `phase_4_seconds = phase_4_end - phase_4_start`. Populate `phase_timing.phase_4_seconds` in the return contract (SC-013). If `phase_4_seconds > 900`, emit warning: "Phase 4 exceeded 15-minute advisory target (NFR-002)".
+
+3. Populate the return contract with:
+   - `convergence_state`: `CONVERGED` or `ESCALATED`
+   - `convergence_iterations`: number of iterations completed
+   - `quality_scores`: all 4 dimensions + overall
+   - `downstream_ready`: boolean
+   - `phase_timing.phase_4_seconds`: elapsed seconds
+
+**Present final spec to user for approval before delivering.**
 
 ## Decision Framework: What Becomes Programmatic
 
@@ -186,9 +401,9 @@ The value of portification is moving orchestration out of inference. Here are co
 ### Rule of Thumb
 If you can write a Python function for it with clear input→output types and no ambiguity, make it programmatic. If it requires reading natural language, making judgments, or synthesizing information, use Claude with a gate to verify the output.
 
-## Code Generation Principles
+## Pipeline Design Principles
 
-These align with the unified-audit-gating architecture in `pipeline/`.
+These inform Phase 2 pipeline specification and align with the unified-audit-gating architecture in `pipeline/`.
 
 ### Critical Constraints
 1. **Synchronous execution** — Sprint uses `threading` + `time.sleep()` polling. Use `concurrent.futures.ThreadPoolExecutor` for batch parallelism. Do NOT use async/await.
@@ -215,16 +430,129 @@ These align with the unified-audit-gating architecture in `pipeline/`.
 ### Will Do
 - Analyze any SuperClaude skill/command/agent workflow
 - Decompose into structured pipeline specification
-- Generate complete CLI subcommand module
-- Wire module into CLI infrastructure
-- Generate structural tests for pipeline
+- Generate a complete release specification via template instantiation and brainstorm pass
+- Run spec panel review for quality validation
+- Produce a downstream-ready spec for sc:roadmap and sc:tasklist
 
 ### Will Not Do
+- Generate code files directly (use the release spec with sc:implement instead)
 - Execute the generated pipeline
 - Modify original skill/command/agent files
 - Create new skills or agents
 - Make architectural decisions about the workflow's logic
-- Generate LLM content quality tests (only structural)
+
+## Return Contract Schema
+
+The return contract is emitted on **every invocation** including success, partial completion, failure, and dry-run (SC-009). All fields are always present; default values apply on failure paths.
+
+### Contract Fields
+
+```yaml
+# --- Identity ---
+contract_version: "2.0"            # Schema version for downstream compatibility
+spec_file: "<path>"                 # Path to generated release spec (empty string on failure)
+panel_report: "<path>"              # Path to panel-report.md (empty string if not produced)
+output_directory: "<path>"          # Working directory for all artifacts
+
+# --- Quality Scores (SC-007, SC-010) ---
+quality_scores:
+  clarity: <float>                  # 0.0-10.0 — Language precision, unambiguous requirements
+  completeness: <float>             # 0.0-10.0 — Coverage of essential elements
+  testability: <float>              # 0.0-10.0 — Measurable acceptance criteria
+  consistency: <float>              # 0.0-10.0 — Internal coherence, no contradictions
+  overall: <float>                  # mean(clarity, completeness, testability, consistency) (SC-010)
+
+# --- Convergence ---
+convergence_iterations: <int>       # Number of review loop iterations completed (0 on failure)
+convergence_state: "<state>"        # CONVERGED | ESCALATED | NOT_STARTED
+
+# --- Timing (SC-013) ---
+phase_timing:
+  phase_3_seconds: <float>          # Wall clock seconds for Phase 3 (0.0 if not reached)
+  phase_4_seconds: <float>          # Wall clock seconds for Phase 4 (0.0 if not reached)
+
+# --- Pipeline Metadata ---
+source_step_count: <int>            # Number of steps identified in Phase 1 analysis
+spec_fr_count: <int>                # Number of functional requirements in generated spec
+api_snapshot_hash: "<hash>"         # SHA-256 of the pipeline-spec.md at time of spec generation
+
+# --- Downstream Readiness (SC-012) ---
+downstream_ready: <bool>            # true if overall >= 7.0, false otherwise
+                                    # Boundary: overall = 7.0 → true; overall = 6.9 → false
+
+# --- Phase Contracts ---
+phase_contracts:
+  phase_0: "<status>"               # completed | skipped | failed
+  phase_1: "<status>"               # completed | skipped | failed
+  phase_2: "<status>"               # completed | skipped | failed
+  phase_3: "<status>"               # completed | skipped | failed
+  phase_4: "<status>"               # completed | skipped | failed
+
+# --- Warnings ---
+warnings: []                        # List of advisory messages (e.g., timing threshold exceeded)
+
+# --- Failure Information ---
+status: "<status>"                  # success | partial | failed | dry_run
+failure_phase: <int|null>           # Phase number where failure occurred (null on success)
+failure_type: "<type|null>"         # Failure type enumeration value (null on success)
+
+# --- Resume Support ---
+resume_phase: <int|null>            # Phase to resume from (null if not resumable)
+resume_substep: "<substep|null>"    # Substep within phase to resume from (null if not resumable)
+resume_command: "<command|null>"    # Full CLI command to resume execution (null if not resumable)
+```
+
+### Failure Type Enumeration
+
+The `failure_type` field uses the following enumeration to classify failures:
+
+| Value | Description | Resumable | Resume Point |
+|-------|-------------|-----------|--------------|
+| `template_failed` | Release spec template could not be loaded or instantiated | No | — |
+| `brainstorm_failed` | Automated brainstorm pass failed to produce findings | Yes | `3c` |
+| `brainstorm_timeout` | Brainstorm pass exceeded time budget | Yes | `3c` |
+| `focus_failed` | Spec panel focus pass failed to produce findings | Yes | `4a` |
+| `critique_failed` | Spec panel critique pass failed to produce scores | Yes | `4a` |
+| `convergence_exhausted` | Maximum convergence iterations (3) reached with unresolved CRITICALs | No | — |
+| `user_rejected` | User rejected spec at an approval gate | No | — |
+| `prerequisite_failed` | Phase entry gate condition not met | No | — |
+
+### Failure Path Defaults (NFR-009)
+
+On any failure path, the contract is emitted with these defaults:
+- All `quality_scores` fields default to `0.0` (NOT null)
+- `downstream_ready` defaults to `false`
+- `convergence_iterations` defaults to `0`
+- `convergence_state` defaults to `NOT_STARTED`
+- `spec_file` and `panel_report` default to `""` (empty string)
+- `resume_substep` is populated for resumable failure types; null otherwise
+- All `phase_contracts` entries for incomplete phases default to `failed`
+- `phase_timing` entries default to `0.0` for phases not reached
+
+### Resume Behavior Semantics
+
+**Phase 3 Resume** (`resume_substep=3c`):
+- Preserves the populated spec from Step 3b (template instantiation + content population)
+- Brainstorm pass (Step 3c) re-runs from scratch against the preserved draft
+- Gap incorporation (Step 3d) re-runs after brainstorm completes
+- All Phase 1 and Phase 2 artifacts are preserved unchanged
+
+**Phase 4 Resume** (`resume_substep=4a`):
+- Preserves the complete draft spec from Phase 3 (including brainstorm findings)
+- Focus pass (Step 4a) re-runs from scratch against the preserved spec
+- All subsequent steps (4b, 4c, 4d) re-run in sequence
+- Convergence loop resets iteration counter to 1
+- All Phase 1, Phase 2, and Phase 3 artifacts are preserved unchanged
+
+### Contract Emission on Dry Run
+
+When `--dry-run` is active, the contract is emitted with:
+- `status: dry_run`
+- Phases 0-2 contracts populated; Phases 3-4 marked as `skipped`
+- All quality scores set to `0.0`
+- `downstream_ready: false`
+- `convergence_state: NOT_STARTED`
+- No spec synthesis or panel review artifacts produced
 
 ## Related Commands
 

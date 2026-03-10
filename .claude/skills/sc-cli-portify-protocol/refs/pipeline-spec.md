@@ -2,6 +2,16 @@
 
 Loaded during Phase 2 of portification. This ref provides the detailed specification patterns for converting a workflow analysis into concrete code designs.
 
+## Phase 2→3 Bridge
+
+Phase 2 outputs (`portify-spec.md` and optional `portify-prompts.md`) flow into Phase 3 (Release Spec Synthesis), NOT into code generation. The bridge works as follows:
+
+1. **Phase 2 produces**: Step graph, model designs, gate definitions, executor patterns, pure-programmatic implementations, and integration plan — all as specification documents.
+2. **Phase 3 consumes**: Phase 2 outputs are mapped into a release specification template. Each Phase 2 step becomes a functional requirement (FR). Model designs populate the data models section. Gate definitions populate the gate criteria section.
+3. **Phase 3→4 gate**: The synthesized spec must have zero remaining `{{SC_PLACEHOLDER:*}}` sentinels and a brainstorm gap analysis section before entering Phase 4 (Spec Panel Review).
+
+Phase 2 does NOT produce runnable code. It produces code-ready specifications that inform the release spec, which is then reviewed by the panel in Phase 4 and ultimately consumed by `sc:roadmap` and `sc:tasklist` for implementation planning.
+
 ## Step Graph Design
 
 ### Step Definition Pattern

@@ -1,6 +1,10 @@
+<!-- INACTIVE: Reference-only. Not loaded by any workflow phase. Preserved per debate R9 mitigation (v2.23). -->
+
 # Code Templates Reference
 
-Loaded during Phase 3 of portification. Contains the actual file templates used to generate each module in the CLI pipeline package.
+> **Status: INACTIVE** — This file is preserved as a historical reference only. No workflow phase loads or reads this file. The code generation phases (old Phase 3/4) were replaced by Release Spec Synthesis and Spec Panel Review in v2.23.
+
+~~Loaded during Phase 3 of portification. Contains the actual file templates used to generate each module in the CLI pipeline package.~~
 
 These templates are parameterized. Placeholders use `{PARAM}` syntax. The skill fills these based on the pipeline specification from Phase 2.
 

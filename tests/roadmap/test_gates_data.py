@@ -32,8 +32,8 @@ class TestGateInstances:
         for name, gate in ALL_GATES:
             assert isinstance(gate, GateCriteria), f"{name} is not GateCriteria"
 
-    def test_nine_gates_defined(self):
-        assert len(ALL_GATES) == 9
+    def test_eleven_gates_defined(self):
+        assert len(ALL_GATES) == 11
 
     def test_extract_gate_fields(self):
         assert "functional_requirements" in EXTRACT_GATE.required_frontmatter_fields

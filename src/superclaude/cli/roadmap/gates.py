@@ -178,6 +178,51 @@ def _high_severity_count_zero(content: str) -> bool:
     return count == 0
 
 
+def _has_per_finding_table(content: str) -> bool:
+    """Verify the certification report contains a per-finding results table.
+
+    Checks for a markdown table with the required columns:
+    Finding | Severity | Result | Justification
+    """
+    import re
+    # Look for the table header row with required columns
+    has_header = bool(re.search(
+        r"\|\s*Finding\s*\|\s*Severity\s*\|\s*Result\s*\|\s*Justification\s*\|",
+        content,
+        re.IGNORECASE,
+    ))
+    # Also check for at least one data row (| F-XX | ... |)
+    has_data = bool(re.search(
+        r"\|\s*F-\d+\s*\|",
+        content,
+    ))
+    return has_header and has_data
+
+
+def _all_actionable_have_status(content: str) -> bool:
+    """Verify all non-SKIPPED entries in remediation tasklist have FIXED or FAILED status.
+
+    Scans for checklist entries matching `- [ ] F-XX | file | STATUS -- desc`
+    and ensures STATUS is one of FIXED or FAILED (not PENDING).
+    SKIPPED entries (marked `- [x]`) are excluded from the check.
+
+    Returns True if all actionable entries have terminal status, or if there
+    are no actionable entries. Returns False if any PENDING entry is found.
+    """
+    import re
+
+    # Match actionable (unchecked) entries: - [ ] F-XX | file | STATUS -- desc
+    actionable_pattern = re.compile(
+        r"^-\s+\[ \]\s+F-\d+\s*\|[^|]*\|\s*(\w+)\s*--",
+        re.MULTILINE,
+    )
+    for match in actionable_pattern.finditer(content):
+        status = match.group(1).upper()
+        if status not in ("FIXED", "FAILED"):
+            return False
+    return True
+
+
 def _tasklist_ready_consistent(content: str) -> bool:
     """Validate tasklist_ready is consistent with severity counts.
 
@@ -387,6 +432,55 @@ SPEC_FIDELITY_GATE = GateCriteria(
     ],
 )
 
+REMEDIATE_GATE = GateCriteria(
+    required_frontmatter_fields=[
+        "type",
+        "source_report",
+        "source_report_hash",
+        "total_findings",
+        "actionable",
+        "skipped",
+    ],
+    min_lines=10,
+    enforcement_tier="STRICT",
+    semantic_checks=[
+        SemanticCheck(
+            name="frontmatter_values_non_empty",
+            check_fn=_frontmatter_values_non_empty,
+            failure_message="One or more required frontmatter fields have empty values",
+        ),
+        SemanticCheck(
+            name="all_actionable_have_status",
+            check_fn=_all_actionable_have_status,
+            failure_message="Not all actionable findings have FIXED or FAILED status",
+        ),
+    ],
+)
+
+CERTIFY_GATE = GateCriteria(
+    required_frontmatter_fields=[
+        "findings_verified",
+        "findings_passed",
+        "findings_failed",
+        "certified",
+        "certification_date",
+    ],
+    min_lines=15,
+    enforcement_tier="STRICT",
+    semantic_checks=[
+        SemanticCheck(
+            name="frontmatter_values_non_empty",
+            check_fn=_frontmatter_values_non_empty,
+            failure_message="One or more required frontmatter fields have empty values",
+        ),
+        SemanticCheck(
+            name="per_finding_table_present",
+            check_fn=_has_per_finding_table,
+            failure_message="Certification report missing per-finding results table",
+        ),
+    ],
+)
+
 # All gates in pipeline order for reference
 ALL_GATES = [
     ("extract", EXTRACT_GATE),
@@ -398,4 +492,6 @@ ALL_GATES = [
     ("merge", MERGE_GATE),
     ("test-strategy", TEST_STRATEGY_GATE),
     ("spec-fidelity", SPEC_FIDELITY_GATE),
+    ("remediate", REMEDIATE_GATE),
+    ("certify", CERTIFY_GATE),
 ]

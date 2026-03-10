@@ -1,26 +1,40 @@
 # Release Spec Template
 
-> **Usage**: Copy this template when creating a new release specification. Fill in all `{PLACEHOLDER}` values. Remove sections marked `[CONDITIONAL]` if not applicable. Delete this usage block from your final spec.
+> **Usage**: Copy this template when creating a new release specification. Fill in all `{{SC_PLACEHOLDER:*}}` values. Remove sections marked `[CONDITIONAL: ...]` if not applicable to your spec type. Delete this usage block from your final spec.
 >
 > **Spec types supported**: New feature, refactoring, portification, infrastructure
 >
+> **Conditional sections by spec type**:
+> - **Portification**: Include Section 9 (Migration & Rollout), Section 5 (Interface Contracts)
+> - **Refactoring**: Include Section 4.3 (Removed Files), Section 9 (Migration & Rollout)
+> - **New feature**: Include Section 4.5 (Data Models), Section 5.1 (CLI Surface)
+> - **Infrastructure**: Include Section 5.3 (Phase Contracts), Section 8.3 (Manual/E2E Tests)
+>
 > **Quality gate**: Before this spec is considered complete, it should pass `/sc:spec-panel --focus correctness,architecture` and `/sc:spec-panel --mode critique`.
+>
+> **Sentinel self-check**: After populating, verify zero remaining sentinels: `grep -c '{{SC_PLACEHOLDER:' <output-file>` should return 0.
 
 ---
 
 ```yaml
 ---
-title: "{SPEC_TITLE}"
+title: "{{SC_PLACEHOLDER:spec_title}}"
 version: "1.0.0"
 status: draft
-feature_id: {FR_ID}
-parent_feature: {PARENT_FEATURE_OR_NULL}
-spec_type: {new_feature|refactoring|portification|infrastructure}
-complexity_score: {0.0-1.0}
-complexity_class: {simple|moderate|high}
-target_release: {VERSION}
+feature_id: {{SC_PLACEHOLDER:fr_id}}
+parent_feature: {{SC_PLACEHOLDER:parent_feature_or_null}}
+spec_type: {{SC_PLACEHOLDER:new_feature_or_refactoring_or_portification_or_infrastructure}}
+complexity_score: {{SC_PLACEHOLDER:0.0_to_1.0}}
+complexity_class: {{SC_PLACEHOLDER:simple_or_moderate_or_high}}
+target_release: {{SC_PLACEHOLDER:version}}
 authors: [user, claude]
-created: {YYYY-MM-DD}
+created: {{SC_PLACEHOLDER:yyyy_mm_dd}}
+quality_scores:
+  clarity: {{SC_PLACEHOLDER:0.0_to_10.0}}
+  completeness: {{SC_PLACEHOLDER:0.0_to_10.0}}
+  testability: {{SC_PLACEHOLDER:0.0_to_10.0}}
+  consistency: {{SC_PLACEHOLDER:0.0_to_10.0}}
+  overall: {{SC_PLACEHOLDER:0.0_to_10.0}}
 ---
 ```
 
@@ -28,7 +42,7 @@ created: {YYYY-MM-DD}
 
 > What problem does this work solve? Why does it matter? What fails or is suboptimal today?
 
-{PROBLEM_DESCRIPTION}
+{{SC_PLACEHOLDER:problem_description}}
 
 ### 1.1 Evidence
 
@@ -36,21 +50,21 @@ created: {YYYY-MM-DD}
 
 | Evidence | Source | Impact |
 |----------|--------|--------|
-| {EVIDENCE_1} | {SOURCE} | {IMPACT} |
+| {{SC_PLACEHOLDER:evidence_1}} | {{SC_PLACEHOLDER:source}} | {{SC_PLACEHOLDER:impact}} |
 
 ### 1.2 Scope Boundary
 
 > What this spec addresses and explicitly does NOT address.
 
-**In scope**: {IN_SCOPE}
+**In scope**: {{SC_PLACEHOLDER:in_scope}}
 
-**Out of scope**: {OUT_OF_SCOPE}
+**Out of scope**: {{SC_PLACEHOLDER:out_of_scope}}
 
 ## 2. Solution Overview
 
 > High-level description of the approach. What changes, what stays the same.
 
-{SOLUTION_OVERVIEW}
+{{SC_PLACEHOLDER:solution_overview}}
 
 ### 2.1 Key Design Decisions
 
@@ -58,33 +72,33 @@ created: {YYYY-MM-DD}
 
 | Decision | Choice | Alternatives Considered | Rationale |
 |----------|--------|------------------------|-----------|
-| {DECISION_1} | {CHOICE} | {ALTERNATIVES} | {RATIONALE} |
+| {{SC_PLACEHOLDER:decision_1}} | {{SC_PLACEHOLDER:choice}} | {{SC_PLACEHOLDER:alternatives}} | {{SC_PLACEHOLDER:rationale}} |
 
 ### 2.2 Workflow / Data Flow
 
 > How the system works end-to-end after this change. Use ASCII diagrams for pipeline flows.
 
 ```
-{FLOW_DIAGRAM}
+{{SC_PLACEHOLDER:flow_diagram}}
 ```
 
 ## 3. Functional Requirements
 
 > Numbered requirements. Each must be testable and traceable.
 
-### FR-{ID}.1: {REQUIREMENT_TITLE}
+### FR-{{SC_PLACEHOLDER:id}}.1: {{SC_PLACEHOLDER:requirement_title}}
 
-**Description**: {WHAT_IT_DOES}
+**Description**: {{SC_PLACEHOLDER:what_it_does}}
 
 **Acceptance Criteria**:
-- [ ] {CRITERION_1}
-- [ ] {CRITERION_2}
+- [ ] {{SC_PLACEHOLDER:criterion_1}}
+- [ ] {{SC_PLACEHOLDER:criterion_2}}
 
-**Dependencies**: {DEPENDENCIES_OR_NONE}
+**Dependencies**: {{SC_PLACEHOLDER:dependencies_or_none}}
 
-### FR-{ID}.2: {REQUIREMENT_TITLE}
+### FR-{{SC_PLACEHOLDER:id}}.2: {{SC_PLACEHOLDER:requirement_title}}
 
-{REPEAT_PATTERN}
+{{SC_PLACEHOLDER:repeat_pattern}}
 
 ## 4. Architecture
 
@@ -94,7 +108,7 @@ created: {YYYY-MM-DD}
 
 | File | Purpose | Dependencies |
 |------|---------|-------------|
-| {FILE_PATH} | {PURPOSE} | {DEPS} |
+| {{SC_PLACEHOLDER:file_path}} | {{SC_PLACEHOLDER:purpose}} | {{SC_PLACEHOLDER:deps}} |
 
 ### 4.2 Modified Files
 
@@ -102,28 +116,28 @@ created: {YYYY-MM-DD}
 
 | File | Change | Rationale |
 |------|--------|-----------|
-| {FILE_PATH} | {CHANGE_DESCRIPTION} | {WHY} |
+| {{SC_PLACEHOLDER:file_path}} | {{SC_PLACEHOLDER:change_description}} | {{SC_PLACEHOLDER:why}} |
 
-### 4.3 Removed Files [CONDITIONAL]
+### 4.3 Removed Files [CONDITIONAL: refactoring, portification]
 
 > Files or sections removed. Include migration notes.
 
 | File/Section | Reason | Migration |
 |-------------|--------|-----------|
-| {TARGET} | {REASON} | {MIGRATION_NOTES} |
+| {{SC_PLACEHOLDER:target}} | {{SC_PLACEHOLDER:reason}} | {{SC_PLACEHOLDER:migration_notes}} |
 
 ### 4.4 Module Dependency Graph
 
 ```
-{DEPENDENCY_DIAGRAM}
+{{SC_PLACEHOLDER:dependency_diagram}}
 ```
 
-### 4.5 Data Models [CONDITIONAL]
+### 4.5 Data Models [CONDITIONAL: new_feature, portification]
 
 > New or modified data structures. Include field definitions.
 
 ```python
-{DATA_MODEL_CODE}
+{{SC_PLACEHOLDER:data_model_code}}
 ```
 
 ### 4.6 Implementation Order
@@ -131,53 +145,53 @@ created: {YYYY-MM-DD}
 > Dependency-respecting order for implementation. Include parallelization opportunities.
 
 ```
-1. {FIRST_STEP}     — {RATIONALE}
-2. {SECOND_STEP}    — {RATIONALE}
-   {PARALLEL_STEP}  — [parallel with step 2]
-3. {THIRD_STEP}     — depends on 1, 2
+1. {{SC_PLACEHOLDER:first_step}}     -- {{SC_PLACEHOLDER:rationale}}
+2. {{SC_PLACEHOLDER:second_step}}    -- {{SC_PLACEHOLDER:rationale}}
+   {{SC_PLACEHOLDER:parallel_step}}  -- [parallel with step 2]
+3. {{SC_PLACEHOLDER:third_step}}     -- depends on 1, 2
 ```
 
-## 5. Interface Contracts [CONDITIONAL]
+## 5. Interface Contracts [CONDITIONAL: portification, new_feature]
 
 > API contracts, gate criteria, prompt specifications, CLI surface changes.
 
-### 5.1 CLI Surface [CONDITIONAL]
+### 5.1 CLI Surface [CONDITIONAL: new_feature, portification]
 
 ```
-{CLI_USAGE}
+{{SC_PLACEHOLDER:cli_usage}}
 ```
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| {OPTION} | {TYPE} | {DEFAULT} | {DESC} |
+| {{SC_PLACEHOLDER:option}} | {{SC_PLACEHOLDER:type}} | {{SC_PLACEHOLDER:default}} | {{SC_PLACEHOLDER:desc}} |
 
-### 5.2 Gate Criteria [CONDITIONAL]
+### 5.2 Gate Criteria [CONDITIONAL: portification]
 
 > For pipeline-based work. Define validation gates.
 
 | Step | Gate Tier | Frontmatter | Min Lines | Semantic Checks |
 |------|-----------|-------------|-----------|-----------------|
-| {STEP} | {TIER} | {FIELDS} | {N} | {CHECKS} |
+| {{SC_PLACEHOLDER:step}} | {{SC_PLACEHOLDER:tier}} | {{SC_PLACEHOLDER:fields}} | {{SC_PLACEHOLDER:n}} | {{SC_PLACEHOLDER:checks}} |
 
-### 5.3 Phase Contracts [CONDITIONAL]
+### 5.3 Phase Contracts [CONDITIONAL: portification, infrastructure]
 
 > For multi-phase workflows. Define inter-phase contracts.
 
 ```yaml
-{CONTRACT_SCHEMA}
+{{SC_PLACEHOLDER:contract_schema}}
 ```
 
 ## 6. Non-Functional Requirements
 
 | ID | Requirement | Target | Measurement |
 |----|-------------|--------|-------------|
-| NFR-{ID}.1 | {REQUIREMENT} | {TARGET} | {HOW_MEASURED} |
+| NFR-{{SC_PLACEHOLDER:id}}.1 | {{SC_PLACEHOLDER:requirement}} | {{SC_PLACEHOLDER:target}} | {{SC_PLACEHOLDER:how_measured}} |
 
 ## 7. Risk Assessment
 
 | Risk | Probability | Impact | Mitigation |
 |------|-------------|--------|------------|
-| {RISK_1} | {LOW/MED/HIGH} | {LOW/MED/HIGH} | {MITIGATION} |
+| {{SC_PLACEHOLDER:risk_1}} | {{SC_PLACEHOLDER:low_med_high}} | {{SC_PLACEHOLDER:low_med_high}} | {{SC_PLACEHOLDER:mitigation}} |
 
 ## 8. Test Plan
 
@@ -185,37 +199,37 @@ created: {YYYY-MM-DD}
 
 | Test | File | Validates |
 |------|------|-----------|
-| {TEST_NAME} | {FILE_PATH} | {WHAT_IT_VALIDATES} |
+| {{SC_PLACEHOLDER:test_name}} | {{SC_PLACEHOLDER:file_path}} | {{SC_PLACEHOLDER:what_it_validates}} |
 
 ### 8.2 Integration Tests
 
 | Test | Validates |
 |------|-----------|
-| {TEST_NAME} | {WHAT_IT_VALIDATES} |
+| {{SC_PLACEHOLDER:test_name}} | {{SC_PLACEHOLDER:what_it_validates}} |
 
-### 8.3 Manual / E2E Tests [CONDITIONAL]
+### 8.3 Manual / E2E Tests [CONDITIONAL: infrastructure, portification]
 
 | Scenario | Steps | Expected Outcome |
 |----------|-------|-----------------|
-| {SCENARIO} | {STEPS} | {EXPECTED} |
+| {{SC_PLACEHOLDER:scenario}} | {{SC_PLACEHOLDER:steps}} | {{SC_PLACEHOLDER:expected}} |
 
-## 9. Migration & Rollout
+## 9. Migration & Rollout [CONDITIONAL: refactoring, portification]
 
 > How to transition from current state to new state. Breaking changes, backwards compatibility.
 
-- **Breaking changes**: {YES_NO_DETAILS}
-- **Backwards compatibility**: {STRATEGY}
-- **Rollback plan**: {PLAN}
+- **Breaking changes**: {{SC_PLACEHOLDER:yes_no_details}}
+- **Backwards compatibility**: {{SC_PLACEHOLDER:strategy}}
+- **Rollback plan**: {{SC_PLACEHOLDER:plan}}
 
 ## 10. Downstream Inputs
 
 > What this spec feeds into. How downstream consumers (sc:roadmap, sc:tasklist, etc.) use the output.
 
 ### For sc:roadmap
-{THEMES_AND_MILESTONES}
+{{SC_PLACEHOLDER:themes_and_milestones}}
 
 ### For sc:tasklist
-{TASK_BREAKDOWN_GUIDANCE}
+{{SC_PLACEHOLDER:task_breakdown_guidance}}
 
 ## 11. Open Items
 
@@ -223,18 +237,28 @@ created: {YYYY-MM-DD}
 
 | Item | Question | Impact | Resolution Target |
 |------|----------|--------|-------------------|
-| {ITEM} | {QUESTION} | {IMPACT} | {TARGET} |
+| {{SC_PLACEHOLDER:item}} | {{SC_PLACEHOLDER:question}} | {{SC_PLACEHOLDER:impact}} | {{SC_PLACEHOLDER:target}} |
+
+## 12. Brainstorm Gap Analysis
+
+> Auto-populated by `sc:cli-portify` Phase 3c embedded brainstorm pass. For manually created specs, use `/sc:brainstorm` to identify gaps.
+
+| Gap ID | Description | Severity | Affected Section | Persona |
+|--------|-------------|----------|-----------------|---------|
+| {{SC_PLACEHOLDER:gap_id}} | {{SC_PLACEHOLDER:description}} | {{SC_PLACEHOLDER:high_medium_low}} | {{SC_PLACEHOLDER:affected_section}} | {{SC_PLACEHOLDER:persona}} |
+
+{{SC_PLACEHOLDER:gap_analysis_summary}}
 
 ---
 
-## Appendix A: Glossary [CONDITIONAL]
+## Appendix A: Glossary [CONDITIONAL: all types -- include if domain-specific terminology used]
 
 | Term | Definition |
 |------|-----------|
-| {TERM} | {DEFINITION} |
+| {{SC_PLACEHOLDER:term}} | {{SC_PLACEHOLDER:definition}} |
 
-## Appendix B: Reference Documents [CONDITIONAL]
+## Appendix B: Reference Documents [CONDITIONAL: all types -- include if external references needed]
 
 | Document | Relevance |
 |----------|-----------|
-| {DOC_PATH} | {WHY_RELEVANT} |
+| {{SC_PLACEHOLDER:doc_path}} | {{SC_PLACEHOLDER:why_relevant}} |

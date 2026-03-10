@@ -47,3 +47,77 @@ decisions:
     resolution: "Already documented in refs/analysis-protocol.md under 'Step Decomposition Algorithm' → 'Identify Step Boundaries'. No additional extraction needed."
     evidence: "File exists at src/superclaude/skills/sc-cli-portify/refs/analysis-protocol.md lines 42-55"
     impact: "Phase 3 step decomposition references this algorithm directly"
+
+# v2.23 Architectural Decisions
+# Source: spec-cli-portify-workflow-evolution.md §2.1, roadmap.md §Constraints Reference
+# Task: T06.02 (Phase 6)
+
+  ADR-C01:
+    title: "Inline behavioral pattern embedding (Constraint 1)"
+    blocking: false
+    resolution: "No inter-skill command invocation. Embed sc:brainstorm and sc:spec-panel behavioral patterns inline within the cli-portify protocol rather than invoking them as commands."
+    evidence: "spec-cli-portify-workflow-evolution.md §2.1 Decision 1; roadmap.md Constraint 1"
+    impact: "Keeps the pipeline non-interactive and automatable; avoids fragile inter-skill coupling"
+
+  ADR-C02:
+    title: "Additive-only incorporation (Constraint 2)"
+    blocking: false
+    resolution: "All spec modifications during Phase 4 incorporation MUST be additive-only — append or extend spec sections only, never rewrite existing content."
+    evidence: "spec-cli-portify-workflow-evolution.md §2.1 Decision 2; SKILL.md Step 4b; debate D-05"
+    impact: "Mechanically prevents incorporation from introducing new issues that trigger convergence loops"
+
+  ADR-C04:
+    title: "Template canonical location (Constraint 4)"
+    blocking: false
+    resolution: "Release spec template lives at src/superclaude/examples/release-spec-template.md. Examples directory is the canonical location for reusable reference files."
+    evidence: "spec-cli-portify-workflow-evolution.md §2.1 Decision 4; roadmap.md Constraint 4"
+    impact: "Phase 3a loads template from this fixed path"
+
+  ADR-C05:
+    title: "Placeholder sentinel format (Constraint 5)"
+    blocking: false
+    resolution: "Use {{SC_PLACEHOLDER:name}} sentinel format for template placeholders. Unique sentinel avoids collision with legitimate template content in specs about templates."
+    evidence: "spec-cli-portify-workflow-evolution.md §2.1 Decision 5; roadmap.md Constraint 5"
+    impact: "SC-003 validation checks for zero remaining sentinels after population"
+
+  ADR-C06:
+    title: "Quality score formula (Constraint 6)"
+    blocking: false
+    resolution: "overall = mean(clarity, completeness, testability, consistency) — simple arithmetic mean of four 0-10 dimension scores. No weighting."
+    evidence: "spec-cli-portify-workflow-evolution.md §2.1 Decision 6; SKILL.md Step 4d; SC-010"
+    impact: "Transparent and auditable scoring; feeds downstream_ready gate"
+
+  ADR-C07:
+    title: "CRITICAL finding disposition (Constraint 7)"
+    blocking: false
+    resolution: "CRITICAL findings must be either (a) incorporated into the spec body or (b) documented with a written justification for dismissal in the panel report. Both count as 'addressed'."
+    evidence: "spec-cli-portify-workflow-evolution.md §2.1 Decision 7; SKILL.md Step 4b; roadmap.md Constraint 7"
+    impact: "Allows handling false positives without bypassing quality gates; convergence predicate checks for unaddressed CRITICALs"
+
+  ADR-C08:
+    title: "Downstream-ready threshold (Constraint 8)"
+    blocking: false
+    resolution: "downstream_ready gate: if overall >= 7.0 then downstream_ready = true, else false. Boundary: 7.0 → true, 6.9 → false."
+    evidence: "spec-cli-portify-workflow-evolution.md §2.1 Decision 8; SKILL.md Downstream Ready Gate; SC-012"
+    impact: "Gates whether reviewed spec can feed into sc:roadmap pipeline"
+
+  ADR-C09:
+    title: "Implementation order per dependency chain (Constraint 9)"
+    blocking: false
+    resolution: "Phases 1→2→3→4→5→6 fully sequential due to dependency chain. Phase 1 (template), Phase 2 (SKILL.md Phase 3 rewrite), Phase 3 (Phase 4 rewrite), Phase 4 (contract schema), Phase 5 (tests + validation), Phase 6 (sync + docs)."
+    evidence: "roadmap.md §Implementation Dependencies; Constraint 9"
+    impact: "Critical path is fully sequential; parallelization opportunity noted but not used"
+
+  ADR-C10:
+    title: "Component sync via make sync-dev (Constraint 10)"
+    blocking: false
+    resolution: "Run make sync-dev to propagate src/superclaude/ changes to .claude/ after all code changes are complete. Run make verify-sync to confirm both sides match."
+    evidence: "roadmap.md Constraint 10; CLAUDE.md §Component Sync"
+    impact: "Ensures .claude/ development copies stay in sync with src/ source of truth"
+
+  ADR-SM01:
+    title: "State machine convergence model"
+    blocking: false
+    resolution: "Phase 4 convergence loop uses state machine terminology: REVIEWING → INCORPORATING → SCORING → CONVERGED|ESCALATED. Max 3 iterations. Implemented as bounded conditional loop in SKILL.md, documented with state machine semantics for edge-case reasoning."
+    evidence: "spec-cli-portify-workflow-evolution.md §FR-060.2; SKILL.md §Convergence Loop; debate D-03 synthesis; roadmap.md line 125"
+    impact: "Provides formal semantics for loop behavior; CONVERGED = all CRITICALs addressed, ESCALATED = 3 iterations exhausted with unaddressed CRITICALs"

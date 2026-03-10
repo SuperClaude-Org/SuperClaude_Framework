@@ -13,6 +13,36 @@ from typing import Literal
 from ..pipeline.models import PipelineConfig
 
 
+VALID_FINDING_STATUSES = frozenset({"PENDING", "FIXED", "FAILED", "SKIPPED"})
+
+
+@dataclass
+class Finding:
+    """A single validation finding extracted from a report.
+
+    Fields align with spec §2.3.1. Status lifecycle defined in D-0003:
+    PENDING -> FIXED | FAILED | SKIPPED (all terminal).
+    """
+
+    id: str
+    severity: str
+    dimension: str
+    description: str
+    location: str
+    evidence: str
+    fix_guidance: str
+    files_affected: list[str] = field(default_factory=list)
+    status: str = "PENDING"
+    agreement_category: str = ""
+
+    def __post_init__(self) -> None:
+        if self.status not in VALID_FINDING_STATUSES:
+            raise ValueError(
+                f"Invalid Finding status {self.status!r}. "
+                f"Must be one of: {', '.join(sorted(VALID_FINDING_STATUSES))}"
+            )
+
+
 @dataclass
 class AgentSpec:
     """Represents a model:persona pair for a generate step.

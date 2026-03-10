@@ -24,6 +24,7 @@ from ..pipeline.executor import execute_pipeline
 from ..pipeline.models import Deliverable, PipelineConfig, Step, StepResult, StepStatus
 from ..pipeline.process import ClaudeProcess
 from .gates import (
+    CERTIFY_GATE,
     DEBATE_GATE,
     DIFF_GATE,
     EXTRACT_GATE,
@@ -45,6 +46,7 @@ from .prompts import (
     build_spec_fidelity_prompt,
     build_test_strategy_prompt,
 )
+from .certify_prompts import build_certification_prompt
 
 _log = logging.getLogger("superclaude.roadmap.executor")
 
@@ -257,6 +259,46 @@ def roadmap_run_step(
     )
 
 
+def build_certify_step(
+    config: RoadmapConfig,
+    findings: list | None = None,
+    context_sections: dict[str, str] | None = None,
+) -> Step:
+    """Build a certify Step for execution via execute_pipeline().
+
+    The certify step runs as a standard Step (not ClaudeProcess directly)
+    per spec section 2.5. It uses CERTIFY_GATE for output validation.
+
+    Parameters
+    ----------
+    config:
+        RoadmapConfig with output_dir.
+    findings:
+        List of Finding objects to certify. If None, an empty prompt is built.
+    context_sections:
+        Pre-extracted context sections per finding location (NFR-011).
+    """
+    from .models import Finding
+
+    out = config.output_dir
+    certification_report = out / "certification-report.md"
+
+    prompt = build_certification_prompt(
+        findings=findings or [],
+        context_sections=context_sections or {},
+    )
+
+    return Step(
+        id="certify",
+        prompt=prompt,
+        output_file=certification_report,
+        gate=CERTIFY_GATE,
+        timeout_seconds=300,
+        inputs=[out / "remediation-tasklist.md"],
+        retry_limit=1,
+    )
+
+
 def _build_steps(config: RoadmapConfig) -> list[Step | list[Step]]:
     """Build the 9-step pipeline with parallel generate group.
 
@@ -463,6 +505,8 @@ def _get_all_step_ids(config: RoadmapConfig) -> list[str]:
         "merge",
         "test-strategy",
         "spec-fidelity",
+        "remediate",
+        "certify",
     ]
 
 
@@ -520,18 +564,27 @@ def _print_step_plan(num: int, step: Step, parallel: bool = False) -> None:
     print()
 
 
-def _save_state(config: RoadmapConfig, results: list[StepResult]) -> None:
+def _save_state(
+    config: RoadmapConfig,
+    results: list[StepResult],
+    remediate_metadata: dict | None = None,
+    certify_metadata: dict | None = None,
+) -> None:
     """Write .roadmap-state.json to output_dir via atomic tmp + os.replace().
 
-    Preserves existing ``validation`` and ``fidelity_status`` keys if present.
+    Preserves existing ``validation``, ``fidelity_status``, ``remediate``,
+    and ``certify`` keys if present. Accepts optional remediate/certify
+    metadata dicts for Phase 6 state finalization.
     """
     state_file = config.output_dir / ".roadmap-state.json"
     spec_hash = hashlib.sha256(config.spec_file.read_bytes()).hexdigest()
 
-    # Preserve existing validation and fidelity status across state rewrites
+    # Preserve existing keys across state rewrites
     existing = read_state(state_file)
     existing_validation = existing.get("validation") if existing else None
     existing_fidelity = existing.get("fidelity_status") if existing else None
+    existing_remediate = existing.get("remediate") if existing else None
+    existing_certify = existing.get("certify") if existing else None
 
     state = {
         "schema_version": 1,
@@ -565,6 +618,18 @@ def _save_state(config: RoadmapConfig, results: list[StepResult]) -> None:
         state["fidelity_status"] = _derive_fidelity_status(fidelity_result)
     elif existing_fidelity is not None:
         state["fidelity_status"] = existing_fidelity
+
+    # Remediate metadata (spec §3.1)
+    if remediate_metadata is not None:
+        state["remediate"] = remediate_metadata
+    elif existing_remediate is not None:
+        state["remediate"] = existing_remediate
+
+    # Certify metadata (spec §3.1)
+    if certify_metadata is not None:
+        state["certify"] = certify_metadata
+    elif existing_certify is not None:
+        state["certify"] = existing_certify
 
     write_state(state, state_file)
 
@@ -631,6 +696,89 @@ def generate_degraded_report(
     )
     output_file.parent.mkdir(parents=True, exist_ok=True)
     output_file.write_text(report, encoding="utf-8")
+
+
+def build_remediate_metadata(
+    status: str,
+    scope: str,
+    findings_total: int,
+    findings_actionable: int,
+    findings_fixed: int,
+    findings_failed: int,
+    findings_skipped: int,
+    agents_spawned: int,
+    tasklist_file: str,
+) -> dict:
+    """Build remediate metadata dict for state schema §3.1.
+
+    Parameters map 1:1 to .roadmap-state.json ``remediate`` entry fields.
+    """
+    return {
+        "status": status,
+        "scope": scope,
+        "findings_total": findings_total,
+        "findings_actionable": findings_actionable,
+        "findings_fixed": findings_fixed,
+        "findings_failed": findings_failed,
+        "findings_skipped": findings_skipped,
+        "agents_spawned": agents_spawned,
+        "tasklist_file": tasklist_file,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+def build_certify_metadata(
+    status: str,
+    findings_verified: int,
+    findings_passed: int,
+    findings_failed: int,
+    certified: bool,
+    report_file: str,
+) -> dict:
+    """Build certify metadata dict for state schema §3.1.
+
+    Parameters map 1:1 to .roadmap-state.json ``certify`` entry fields.
+    """
+    return {
+        "status": status,
+        "findings_verified": findings_verified,
+        "findings_passed": findings_passed,
+        "findings_failed": findings_failed,
+        "certified": certified,
+        "report_file": report_file,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+def derive_pipeline_status(state: dict) -> str:
+    """Derive the overall pipeline status from state transitions.
+
+    State transitions at each boundary:
+    - post-validate: validated | validated-with-issues
+    - post-remediate: remediated
+    - post-certify: certified | certified-with-caveats
+
+    Returns one of: 'pending', 'validated', 'validated-with-issues',
+    'remediated', 'certified', 'certified-with-caveats'.
+    """
+    certify = state.get("certify")
+    if certify is not None:
+        if certify.get("certified", False):
+            return "certified"
+        return "certified-with-caveats"
+
+    remediate = state.get("remediate")
+    if remediate is not None:
+        return "remediated"
+
+    validation = state.get("validation")
+    if validation is not None:
+        if validation.get("status") == "pass":
+            return "validated"
+        if validation.get("status") == "fail":
+            return "validated-with-issues"
+
+    return "pending"
 
 
 def write_state(state: dict, path: Path) -> None:
@@ -806,6 +954,102 @@ def _auto_invoke_validate(config: RoadmapConfig) -> None:
         _log.error("Validation skipped: %s", exc)
         print(f"[validate] Skipped: {exc}", file=sys.stderr, flush=True)
         _save_validation_status(config, "skipped")
+
+
+def check_remediate_resume(
+    config: RoadmapConfig,
+    gate_fn: Callable,
+) -> bool:
+    """Check if the remediate step can be skipped on --resume.
+
+    Returns True (skip) when:
+    1. remediation-tasklist.md exists
+    2. Passes REMEDIATE_GATE
+    3. source_report_hash matches current validation report SHA-256
+
+    Returns False (re-run needed) otherwise.
+    """
+    from .gates import REMEDIATE_GATE
+
+    tasklist_file = config.output_dir / "remediation-tasklist.md"
+    if not tasklist_file.exists():
+        return False
+
+    passed, _reason = gate_fn(tasklist_file, REMEDIATE_GATE)
+    if not passed:
+        return False
+
+    # Hash check: verify tasklist was generated from current validation report
+    if not _check_tasklist_hash_current(tasklist_file, config.output_dir):
+        print(
+            "[roadmap] Remediation tasklist stale (hash mismatch), will re-run remediate",
+            flush=True,
+        )
+        return False
+
+    return True
+
+
+def check_certify_resume(
+    config: RoadmapConfig,
+    gate_fn: Callable,
+) -> bool:
+    """Check if the certify step can be skipped on --resume.
+
+    Returns True (skip) when:
+    1. certification-report.md exists
+    2. Passes CERTIFY_GATE
+
+    Returns False (re-run needed) otherwise.
+    """
+    from .gates import CERTIFY_GATE
+
+    report_file = config.output_dir / "certification-report.md"
+    if not report_file.exists():
+        return False
+
+    passed, _reason = gate_fn(report_file, CERTIFY_GATE)
+    return passed
+
+
+def _check_tasklist_hash_current(
+    tasklist_file: Path,
+    output_dir: Path,
+) -> bool:
+    """Check if remediation tasklist's source_report_hash matches current report.
+
+    Reads the YAML frontmatter source_report_hash and compares against
+    SHA-256 of the validation report file. Returns False on mismatch
+    (fail closed).
+    """
+    from .gates import _parse_frontmatter
+
+    content = tasklist_file.read_text(encoding="utf-8")
+    fm = _parse_frontmatter(content)
+    if fm is None:
+        return False
+
+    saved_hash = fm.get("source_report_hash", "")
+    if not saved_hash:
+        return False
+
+    # Find the validation report (source_report field)
+    source_report = fm.get("source_report", "")
+    if source_report:
+        report_path = Path(source_report)
+        if not report_path.is_absolute():
+            report_path = output_dir / report_path
+    else:
+        # Default to reflect-merged.md or merged-validation-report.md
+        report_path = output_dir / "reflect-merged.md"
+        if not report_path.exists():
+            report_path = output_dir / "merged-validation-report.md"
+
+    if not report_path.exists():
+        return False
+
+    current_hash = hashlib.sha256(report_path.read_bytes()).hexdigest()
+    return saved_hash == current_hash
 
 
 def _apply_resume(

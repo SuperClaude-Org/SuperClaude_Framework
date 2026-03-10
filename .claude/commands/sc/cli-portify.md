@@ -20,7 +20,7 @@ When the user requests workflow portification, CLI pipeline conversion, or progr
 ## Usage
 
 ```
-/sc:cli-portify --workflow <skill-name-or-path> [--name <cli-name>] [--output <dir>] [--dry-run] [--skip-integration]
+/sc:cli-portify --workflow <skill-name-or-path> [--name <cli-name>] [--output <dir>] [--dry-run]
 ```
 
 Both `@file` syntax and explicit file paths are supported for `--workflow`.
@@ -32,8 +32,7 @@ Both `@file` syntax and explicit file paths are supported for `--workflow`.
 | `--workflow` | Yes | -- | Skill directory path or `sc-*` name to portify. |
 | `--name` | No | Derived from workflow name | CLI subcommand name (kebab-case). |
 | `--output` | No | `src/superclaude/cli/<derived-name>/` | Output directory for the generated CLI module. |
-| `--dry-run` | No | false | Execute Phases 0-2 only — emit contracts, no code generation. |
-| `--skip-integration` | No | false | Generate module only, skip main.py wiring (Phase 4). |
+| `--dry-run` | No | false | Execute Phases 0-2 only — emit Phase 0-2 contracts only. No spec synthesis (Phase 3) or panel review (Phase 4) artifacts are produced. |
 
 ### Name Derivation
 
@@ -84,7 +83,6 @@ Pass the following context:
 - CLI name: resolved name (derived or from --name)
 - Output directory: resolved output path
 - Dry run: boolean flag value
-- Skip integration: boolean flag value
 
 Do NOT attempt to execute portification using only this command file.
 The full portification protocol is in the protocol skill.
@@ -98,11 +96,8 @@ The full portification protocol is in the protocol skill.
 # With explicit name
 /sc:cli-portify --workflow sc-cleanup-audit --name cleanup-audit
 
-# Dry run (analysis only, no code generation)
+# Dry run (analysis only, no spec synthesis)
 /sc:cli-portify --workflow sc-adversarial --dry-run
-
-# Skip main.py integration
-/sc:cli-portify --workflow sc-roadmap --skip-integration
 
 # Full invocation
 /sc:cli-portify --workflow src/superclaude/skills/sc-tasklist-protocol/ --name tasklist --output src/superclaude/cli/tasklist/
