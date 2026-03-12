@@ -51,7 +51,7 @@ from .certify_prompts import build_certification_prompt
 _log = logging.getLogger("superclaude.roadmap.executor")
 
 # Threshold above which inline embedding falls back to --file flags
-_EMBED_SIZE_LIMIT = 100 * 1024  # 100 KB
+_EMBED_SIZE_LIMIT = 200 * 1024  # 100 KB
 
 
 def _embed_inputs(input_paths: list[Path]) -> str:
