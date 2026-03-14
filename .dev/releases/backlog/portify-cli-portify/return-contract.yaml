@@ -1,0 +1,45 @@
+# Return Contract: cli-portify portification
+# Generated: 2026-03-14
+# Schema version: 2.0
+
+contract_version: "2.0"
+spec_file: ".dev/releases/backlog/2.25-roadmap-v5/portify-cli-portify/portify-release-spec.md"
+panel_report: ".dev/releases/backlog/2.25-roadmap-v5/portify-cli-portify/panel-report.md"
+output_directory: ".dev/releases/backlog/2.25-roadmap-v5/portify-cli-portify/"
+
+quality_scores:
+  clarity: 8.5
+  completeness: 8.0
+  testability: 7.5
+  consistency: 8.0
+  overall: 8.0
+
+convergence_iterations: 1
+convergence_state: "CONVERGED"
+
+phase_timing:
+  phase_3_seconds: 0.0    # Executed inline, not as timed subprocess
+  phase_4_seconds: 0.0    # Executed inline, not as timed subprocess
+
+source_step_count: 12
+spec_fr_count: 14
+api_snapshot_hash: ""      # Not computed for inline execution
+
+downstream_ready: true
+
+phase_contracts:
+  phase_0: "completed"
+  phase_1: "completed"
+  phase_2: "completed"
+  phase_3: "completed"
+  phase_4: "completed"
+
+warnings: []
+
+status: "success"
+failure_phase: null
+failure_type: null
+
+resume_phase: null
+resume_substep: null
+resume_command: null
