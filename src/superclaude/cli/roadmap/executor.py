@@ -819,7 +819,12 @@ def apply_decomposition_pass(deliverables: list[Deliverable]) -> list[Deliverabl
     return decompose_deliverables(deliverables)
 
 
-def execute_roadmap(config: RoadmapConfig, resume: bool = False, no_validate: bool = False) -> None:
+def execute_roadmap(
+    config: RoadmapConfig,
+    resume: bool = False,
+    no_validate: bool = False,
+    auto_accept: bool = False,
+) -> None:
     """Execute the roadmap generation pipeline.
 
     Builds the step list, handles --dry-run and --resume, then
@@ -831,8 +836,20 @@ def execute_roadmap(config: RoadmapConfig, resume: bool = False, no_validate: bo
     Note: --no-validate does NOT skip the spec-fidelity step
     (FR-010, AC-005). It only skips the post-pipeline validation
     subsystem.
+
+    Args:
+        auto_accept: When True, the spec-patch resume cycle skips the
+            interactive prompt and proceeds automatically if evidence is
+            found. When False (default), the cycle prompts the user.
+            This is an internal parameter, not exposed on the CLI.
     """
     config.output_dir.mkdir(parents=True, exist_ok=True)
+
+    # FR-2.24.1.11: Recursion guard — local variable, per-invocation
+    _spec_patch_cycle_count = 0
+
+    # FR-2.24.1.9 Condition 3: Capture spec hash at function entry
+    initial_spec_hash = hashlib.sha256(config.spec_file.read_bytes()).hexdigest()
 
     steps = _build_steps(config)
 
@@ -862,6 +879,28 @@ def execute_roadmap(config: RoadmapConfig, resume: bool = False, no_validate: bo
     # Check for failures
     failures = [r for r in results if r.status in (StepStatus.FAIL, StepStatus.TIMEOUT)]
     if failures:
+        # FR-2.24.1.9: Check if spec-fidelity failed and auto-resume is possible
+        spec_fidelity_failed = any(
+            r.step and r.step.id == "spec-fidelity"
+            and r.status in (StepStatus.FAIL, StepStatus.TIMEOUT)
+            for r in results
+        )
+
+        if spec_fidelity_failed:
+            resumed = _apply_resume_after_spec_patch(
+                config=config,
+                results=results,
+                auto_accept=auto_accept,
+                initial_spec_hash=initial_spec_hash,
+                cycle_count=_spec_patch_cycle_count,
+            )
+            if resumed:
+                _spec_patch_cycle_count += 1
+                # Cycle complete — resumed pipeline ran to completion or failure
+                # inside _apply_resume_after_spec_patch. If it returned True,
+                # we're done (either success or failure was handled internally).
+                return
+
         halt_msg = _format_halt_output(results, config)
         print(halt_msg, file=sys.stderr)
         sys.exit(1)
@@ -889,6 +928,181 @@ def execute_roadmap(config: RoadmapConfig, resume: bool = False, no_validate: bo
 
     _auto_invoke_validate(config)
 
+
+
+def _find_qualifying_deviation_files(
+    config: RoadmapConfig,
+    results: list[StepResult],
+) -> list:
+    """Find deviation files written after spec-fidelity started.
+
+    Returns qualifying DeviationRecord objects, or empty list if
+    conditions are not met.
+
+    Implementation detail — not specified in the spec. Extracted for
+    testability of the three-condition detection gate.
+    """
+    from .spec_patch import scan_accepted_deviation_records
+
+    state_file = config.output_dir / ".roadmap-state.json"
+    state = read_state(state_file)
+    if state is None:
+        return []
+
+    # Get spec-fidelity started_at timestamp
+    steps_state = state.get("steps", {})
+    fidelity_state = steps_state.get("spec-fidelity", {})
+    started_at_str = fidelity_state.get("started_at")
+
+    # Fail-closed: if started_at is absent, condition not met
+    if not started_at_str:
+        return []
+
+    try:
+        started_at_ts = datetime.fromisoformat(started_at_str).timestamp()
+    except (ValueError, TypeError):
+        return []
+
+    # Scan all deviation records
+    all_records = scan_accepted_deviation_records(config.output_dir)
+    if not all_records:
+        return []
+
+    # Filter to records written AFTER spec-fidelity started (strict >)
+    qualifying = [r for r in all_records if r.mtime > started_at_ts]
+    return qualifying
+
+
+def _apply_resume_after_spec_patch(
+    config: RoadmapConfig,
+    results: list[StepResult],
+    auto_accept: bool,
+    initial_spec_hash: str,
+    cycle_count: int,
+) -> bool:
+    """Attempt a single spec-patch auto-resume cycle after spec-fidelity FAIL.
+
+    Evaluates the three-condition detection gate (FR-2.24.1.9):
+      1. Recursion guard: cycle_count == 0
+      2. Qualifying deviation files exist with mtime > started_at
+      3. Spec file hash changed since run started (initial_spec_hash)
+
+    If all conditions pass, executes the six-step disk-reread sequence
+    (FR-2.24.1.10) and re-runs the pipeline via _apply_resume.
+
+    Single-writer assumption: no concurrent writer modifies
+    .roadmap-state.json between the reread and write steps.
+
+    Returns True if the cycle was attempted (regardless of outcome),
+    False if conditions were not met.
+    """
+    # FR-2.24.1.11: Recursion guard
+    if cycle_count >= 1:
+        print(
+            "[roadmap] Spec-patch cycle already exhausted "
+            f"(cycle_count={cycle_count}). Proceeding to normal failure.",
+            flush=True,
+        )
+        return False
+
+    # FR-2.24.1.9 Condition 2: Qualifying deviation files
+    qualifying = _find_qualifying_deviation_files(config, results)
+    if not qualifying:
+        return False
+
+    # FR-2.24.1.9 Condition 3: Spec hash changed since run started
+    current_hash = hashlib.sha256(config.spec_file.read_bytes()).hexdigest()
+    if current_hash == initial_spec_hash:
+        return False
+
+    # All three conditions met — enter the cycle
+    # FR-2.24.1.12: Cycle entry logging
+    print(
+        f"[roadmap] Spec patched by subprocess. "
+        f"Found {len(qualifying)} accepted deviation record(s).",
+        flush=True,
+    )
+    print(
+        "[roadmap] Triggering spec-hash sync and resume (cycle 1/1).",
+        flush=True,
+    )
+
+    # FR-2.24.1.10: Six-step disk-reread sequence
+    state_file = config.output_dir / ".roadmap-state.json"
+
+    # Step 1: Re-read state from disk
+    _fresh_state = read_state(state_file)  # noqa: F841
+
+    # Step 2: Recompute spec hash
+    new_hash = hashlib.sha256(config.spec_file.read_bytes()).hexdigest()
+
+    # Step 3: Atomic write of new hash
+    try:
+        # Read again for fresh copy, update only spec_hash, write atomically
+        fresh_for_write = read_state(state_file) or {}
+        fresh_for_write["spec_hash"] = new_hash
+        write_state(fresh_for_write, state_file)
+    except OSError as exc:
+        print(
+            f"[roadmap] ERROR: Failed to update spec_hash during "
+            f"auto-resume cycle: {exc}. Falling through to normal failure.",
+            file=sys.stderr,
+            flush=True,
+        )
+        return True  # Cycle was attempted but failed — don't retry
+
+    # Step 4: Re-read state from disk AGAIN (this is what _apply_resume gets)
+    post_write_state = read_state(state_file)
+    if post_write_state is None:
+        print(
+            "[roadmap] ERROR: Could not re-read state after write. "
+            "Falling through to normal failure.",
+            file=sys.stderr,
+            flush=True,
+        )
+        return True
+
+    # Step 5: Rebuild steps
+    steps = _build_steps(config)
+
+    # Step 6: Apply resume with post-write state
+    from ..pipeline.gates import gate_passed
+
+    steps = _apply_resume(steps, config, gate_passed)
+
+    # Re-execute pipeline from the resumed point
+    resumed_results = execute_pipeline(
+        steps=steps,
+        config=config,
+        run_step=roadmap_run_step,
+        on_step_start=_print_step_start,
+        on_step_complete=_print_step_complete,
+    )
+
+    # Save state from resumed run
+    _save_state(config, resumed_results)
+
+    # FR-2.24.1.12: Cycle completion logging
+    print("[roadmap] Spec-patch resume cycle complete.", flush=True)
+
+    # Check if resumed pipeline also failed
+    resumed_failures = [
+        r for r in resumed_results
+        if r.status in (StepStatus.FAIL, StepStatus.TIMEOUT)
+    ]
+    if resumed_failures:
+        # FR-2.24.1.13: Normal failure on cycle exhaustion
+        # Use second-run results only
+        halt_msg = _format_halt_output(resumed_results, config)
+        print(halt_msg, file=sys.stderr)
+        sys.exit(1)
+
+    # Resumed pipeline succeeded
+    print(
+        f"\n[roadmap] Pipeline complete: {len(resumed_results)} steps passed",
+        flush=True,
+    )
+    return True
 
 def _save_validation_status(
     config: RoadmapConfig,

@@ -367,6 +367,10 @@ from superclaude.cli.tasklist import tasklist_group
 
 main.add_command(tasklist_group, name="tasklist")
 
+from superclaude.cli.cli_portify import cli_portify_group
+
+main.add_command(cli_portify_group, name="cli-portify")
+
 
 if __name__ == "__main__":
     main()

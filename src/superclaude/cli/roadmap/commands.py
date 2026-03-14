@@ -5,6 +5,7 @@ Defines the ``superclaude roadmap`` command with all flags per spec FR-009.
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 import click
@@ -147,6 +148,28 @@ def run(
     )
 
     execute_roadmap(config, resume=resume, no_validate=no_validate)
+
+
+@roadmap_group.command("accept-spec-change")
+@click.argument("output_dir", type=click.Path(exists=True, path_type=Path))
+def accept_spec_change(output_dir: Path) -> None:
+    """Update spec_hash after accepted deviation records.
+
+    When the spec file is edited to formalize an accepted deviation
+    (documentation sync, not a functional change), this command updates
+    the stored spec_hash so --resume can proceed without a full cascade.
+
+    Requires at least one dev-*-accepted-deviation.md file with
+    disposition: ACCEPTED and spec_update_required: true as evidence.
+
+    OUTPUT_DIR is the directory containing .roadmap-state.json.
+
+    Examples:
+        superclaude roadmap accept-spec-change ./output
+    """
+    from .spec_patch import prompt_accept_spec_change
+
+    sys.exit(prompt_accept_spec_change(output_dir.resolve()))
 
 
 @roadmap_group.command()
