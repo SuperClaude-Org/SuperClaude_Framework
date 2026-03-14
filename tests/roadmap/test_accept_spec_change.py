@@ -1,6 +1,7 @@
-"""Unit tests for spec_patch.py — the accept-spec-change leaf module.
+"""Unit and integration tests for spec_patch.py — the accept-spec-change leaf module.
 
 Covers FR-2.24.1.1 through FR-2.24.1.7, AC-1 through AC-5a, AC-11, AC-14.
+Integration tests use click.testing.CliRunner per T02.03.
 """
 
 from __future__ import annotations
@@ -8,12 +9,15 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import sys
 import textwrap
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+from click.testing import CliRunner
 
+from superclaude.cli.roadmap.commands import roadmap_group
 from superclaude.cli.roadmap.spec_patch import (
     DeviationRecord,
     _extract_frontmatter,
@@ -21,7 +25,6 @@ from superclaude.cli.roadmap.spec_patch import (
     scan_accepted_deviation_records,
     update_spec_hash,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -133,10 +136,24 @@ class TestHashMismatchCheck:
         result = prompt_accept_spec_change(output_dir)
         assert result == 0
 
+    def test_absent_spec_hash_key_treated_as_mismatch(
+        self, output_dir: Path, deviation_file: Path
+    ) -> None:
+        """Absent spec_hash key → mismatch → proceed to scan (not crash)."""
+        _modify_spec(output_dir)
+        state = json.loads((output_dir / ".roadmap-state.json").read_text())
+        del state["spec_hash"]
+        (output_dir / ".roadmap-state.json").write_text(
+            json.dumps(state, indent=2), encoding="utf-8"
+        )
+        with patch("builtins.input", return_value="y"):
+            result = prompt_accept_spec_change(output_dir)
+        assert result == 0
+
     def test_missing_spec_hash_treated_as_mismatch(
         self, output_dir: Path, deviation_file: Path
     ) -> None:
-        """Null/empty spec_hash → mismatch → proceed to scan."""
+        """Null spec_hash → mismatch → proceed to scan."""
         _modify_spec(output_dir)
         state = json.loads((output_dir / ".roadmap-state.json").read_text())
         state["spec_hash"] = None
@@ -150,6 +167,7 @@ class TestHashMismatchCheck:
     def test_empty_spec_hash_treated_as_mismatch(
         self, output_dir: Path, deviation_file: Path
     ) -> None:
+        """Empty string spec_hash → mismatch → proceed to scan."""
         _modify_spec(output_dir)
         state = json.loads((output_dir / ".roadmap-state.json").read_text())
         state["spec_hash"] = ""
@@ -218,7 +236,7 @@ class TestScanDeviationRecords:
 
     @pytest.mark.parametrize(
         "yaml_value",
-        ["yes", "on", "Yes", "YES", "true", "True", "TRUE"],
+        ["yes", "on", "Yes", "YES", "true", "True", "TRUE", "1"],
     )
     def test_yaml_boolean_coercion_accepted(
         self, output_dir: Path, yaml_value: str
@@ -300,7 +318,7 @@ class TestPromptBehavior:
             result = prompt_accept_spec_change(output_dir)
         assert result == 0
 
-    def test_answer_Y_uppercase_confirms(self, output_dir: Path, deviation_file: Path) -> None:
+    def test_answer_uppercase_y_confirms(self, output_dir: Path, deviation_file: Path) -> None:
         _modify_spec(output_dir)
         with patch("builtins.input", return_value="Y"), \
              patch("superclaude.cli.roadmap.spec_patch.sys.stdin") as mock_stdin:
@@ -341,7 +359,7 @@ class TestAtomicWrite:
         tmp_path = state_path.with_suffix(".tmp")
         tmp_path.write_text("stale tmp content", encoding="utf-8")
 
-        state = json.loads(state_path.read_text(encoding="utf-8"))
+        json.loads(state_path.read_text(encoding="utf-8"))  # verify valid JSON
         update_spec_hash(state_path, "newhash123")
         updated = json.loads(state_path.read_text(encoding="utf-8"))
         assert updated["spec_hash"] == "newhash123"
@@ -427,3 +445,164 @@ class TestDeviationRecord:
         )
         with pytest.raises(AttributeError):
             rec.id = "DEV-002"  # type: ignore[misc]
+
+
+# ---------------------------------------------------------------------------
+# Integration tests (T02.03) — CLI invocation via click.testing.CliRunner
+# ---------------------------------------------------------------------------
+
+class TestCLIIntegration:
+    """Integration tests using CliRunner with real file fixtures."""
+
+    @pytest.fixture
+    def cli_output_dir(self, tmp_path: Path) -> Path:
+        """Create a full output directory with state, spec, and deviation files."""
+        spec_file = tmp_path / "spec.md"
+        spec_file.write_text("# Integration Spec\nOriginal content.", encoding="utf-8")
+        spec_hash = hashlib.sha256(spec_file.read_bytes()).hexdigest()
+
+        state = {
+            "schema_version": 1,
+            "spec_file": str(spec_file),
+            "spec_hash": spec_hash,
+            "agents": [{"model": "opus", "persona": "architect"}],
+            "depth": "standard",
+            "last_run": "2026-03-13T10:00:00+00:00",
+            "steps": {},
+        }
+        (tmp_path / ".roadmap-state.json").write_text(
+            json.dumps(state, indent=2), encoding="utf-8"
+        )
+        return tmp_path
+
+    @pytest.fixture
+    def cli_deviation_file(self, cli_output_dir: Path) -> Path:
+        """Create a valid deviation file in the CLI output directory."""
+        dev_file = cli_output_dir / "dev-001-accepted-deviation.md"
+        dev_file.write_text(
+            textwrap.dedent("""\
+            ---
+            id: DEV-001
+            disposition: ACCEPTED
+            spec_update_required: true
+            affects_spec_sections:
+              - "4.1"
+            acceptance_rationale: cli-integration-test
+            ---
+
+            ## DEV-001: CLI integration test deviation
+            """),
+            encoding="utf-8",
+        )
+        return dev_file
+
+    def _modify_cli_spec(self, cli_output_dir: Path) -> str:
+        """Modify the spec file and return the new hash."""
+        state = json.loads(
+            (cli_output_dir / ".roadmap-state.json").read_text(encoding="utf-8")
+        )
+        spec_file = Path(state["spec_file"])
+        spec_file.write_text("# Modified Spec\nCLI integration test.", encoding="utf-8")
+        return hashlib.sha256(spec_file.read_bytes()).hexdigest()
+
+    def test_cli_help_shows_usage(self) -> None:
+        """CLI --help displays OUTPUT_DIR argument and correct usage."""
+        runner = CliRunner()
+        result = runner.invoke(roadmap_group, ["accept-spec-change", "--help"])
+        assert result.exit_code == 0
+        assert "OUTPUT_DIR" in result.output
+        assert "spec_hash" in result.output
+
+    def test_cli_missing_directory_exits_nonzero(self, tmp_path: Path) -> None:
+        """CLI with nonexistent directory exits with error."""
+        runner = CliRunner()
+        result = runner.invoke(
+            roadmap_group,
+            ["accept-spec-change", str(tmp_path / "nonexistent")],
+        )
+        assert result.exit_code != 0
+
+    def test_cli_missing_state_file_exits_1(self, tmp_path: Path) -> None:
+        """CLI with directory that has no .roadmap-state.json exits 1."""
+        runner = CliRunner()
+        result = runner.invoke(
+            roadmap_group,
+            ["accept-spec-change", str(tmp_path)],
+        )
+        assert result.exit_code == 1
+
+    def test_cli_hash_current_exits_0(self, cli_output_dir: Path) -> None:
+        """CLI with unchanged spec exits 0 (nothing to do)."""
+        runner = CliRunner()
+        result = runner.invoke(
+            roadmap_group,
+            ["accept-spec-change", str(cli_output_dir)],
+        )
+        assert result.exit_code == 0
+        assert "already current" in result.output
+
+    def test_cli_no_deviation_files_exits_1(self, cli_output_dir: Path) -> None:
+        """CLI with changed spec but no deviation files exits 1."""
+        self._modify_cli_spec(cli_output_dir)
+        runner = CliRunner()
+        result = runner.invoke(
+            roadmap_group,
+            ["accept-spec-change", str(cli_output_dir)],
+        )
+        assert result.exit_code == 1
+
+    def test_cli_happy_path_with_input_y(
+        self, cli_output_dir: Path, cli_deviation_file: Path
+    ) -> None:
+        """CLI happy path: changed spec + deviation + 'y' input → exit 0, hash updated."""
+        self._modify_cli_spec(cli_output_dir)
+        runner = CliRunner()
+        # CliRunner replaces sys.stdin with a non-tty stream. The code checks
+        # sys.stdin.isatty() before calling input(). Mock both to simulate
+        # an interactive session via CliRunner.
+        with patch("builtins.input", return_value="y"), \
+             patch("superclaude.cli.roadmap.spec_patch.sys") as mock_sys:
+            mock_sys.stdin.isatty.return_value = True
+            mock_sys.stderr = sys.stderr
+            mock_sys.exit = sys.exit
+            result = runner.invoke(
+                roadmap_group,
+                ["accept-spec-change", str(cli_output_dir)],
+            )
+        assert result.exit_code == 0
+        assert "spec_hash updated" in result.output
+
+        # Verify hash was actually updated in state file
+        state = json.loads(
+            (cli_output_dir / ".roadmap-state.json").read_text(encoding="utf-8")
+        )
+        spec_file = Path(state["spec_file"])
+        expected_hash = hashlib.sha256(spec_file.read_bytes()).hexdigest()
+        assert state["spec_hash"] == expected_hash
+
+    def test_cli_happy_path_idempotent(
+        self, cli_output_dir: Path, cli_deviation_file: Path
+    ) -> None:
+        """CLI run twice: first succeeds, second says 'already current'."""
+        self._modify_cli_spec(cli_output_dir)
+        runner = CliRunner()
+
+        # First run: accept
+        with patch("builtins.input", return_value="y"), \
+             patch("superclaude.cli.roadmap.spec_patch.sys") as mock_sys:
+            mock_sys.stdin.isatty.return_value = True
+            mock_sys.stderr = sys.stderr
+            mock_sys.exit = sys.exit
+            result1 = runner.invoke(
+                roadmap_group,
+                ["accept-spec-change", str(cli_output_dir)],
+            )
+        assert result1.exit_code == 0
+
+        # Second run: already current
+        result2 = runner.invoke(
+            roadmap_group,
+            ["accept-spec-change", str(cli_output_dir)],
+        )
+        assert result2.exit_code == 0
+        assert "already current" in result2.output

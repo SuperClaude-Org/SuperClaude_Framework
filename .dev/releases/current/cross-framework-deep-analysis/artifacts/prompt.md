@@ -8,19 +8,11 @@
 
 You have access to two repositories:
 
-1. **SuperClaude Framework** (`/config/workspace/SuperClaude_Framework`) — A Claude Code enhancement framework with skills, agents, personas, and CLI tooling. Key components to analyze:
+1. **SuperClaude Framework** (`/config/workspace/IronClaudek`) — A Claude Code enhancement framework with skills, agents, personas, and CLI tooling. Key components to analyze:
 
    | Component | Location | Purpose |
    |-----------|----------|---------|
-   | Unified Audit Gating v1.2.1 | `.dev/releases/current/unified-audit-gating-v1.2.1/` | Quality gates with state machines, GateResult schema, rollout phases |
-   | sc:task-unified | `src/superclaude/skills/sc-task-unified-protocol/SKILL.md` + `src/superclaude/commands/task-unified.md` | Tiered compliance task execution (STRICT/STANDARD/LIGHT/EXEMPT) |
-   | Sprint CLI v2.05 | `src/superclaude/cli/sprint/` + `.dev/releases/complete/v2.05-sprint-cli-specification/` | CLI orchestrator for multi-phase task execution |
-   | sc:adversarial | `src/superclaude/skills/sc-adversarial-protocol/SKILL.md` | Adversarial debate and merge pipeline |
-   | sc:cleanup-audit | `src/superclaude/skills/sc-cleanup-audit-protocol/SKILL.md` | Multi-pass repository audit |
-   | Persona system | `.claude/PERSONAS.md` | 11 domain-specific AI behavior patterns |
-   | Agent definitions | `src/superclaude/agents/` | 20+ specialist agents (audit-*, quality-engineer, debate-orchestrator, etc.) |
-   | PM Agent | `src/superclaude/pm_agent/` | Confidence checker, self-check, reflexion patterns |
-   | Parallel execution | `src/superclaude/execution/parallel.py` | Wave→Checkpoint→Wave pattern |
+
 
 2. **llm-workflows** (`/config/workspace/llm-workflows`) — A battle-hardened QA pipeline (Rigorflow/PABLOV). Bloated, slow, expensive but incredibly rigorous and reliable. Key components:
 

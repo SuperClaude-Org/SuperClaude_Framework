@@ -4,7 +4,7 @@ description: "Port inference-based SuperClaude workflows into programmatic CLI p
 category: development
 complexity: high
 allowed-tools: Read, Glob, Grep, Write, Bash, TodoWrite, Skill
-mcp-servers: [sequential, serena, context7]
+mcp-servers: [sequential, serena, context7,auggie-mcp]
 personas: [architect, analyzer, backend]
 version: "1.0.0"
 ---

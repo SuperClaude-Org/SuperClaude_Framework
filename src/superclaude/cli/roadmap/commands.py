@@ -162,6 +162,10 @@ def accept_spec_change(output_dir: Path) -> None:
     Requires at least one dev-*-accepted-deviation.md file with
     disposition: ACCEPTED and spec_update_required: true as evidence.
 
+    Note: .roadmap-state.json requires exclusive write access during
+    execution. Do not run concurrent roadmap operations on the same
+    output directory.
+
     OUTPUT_DIR is the directory containing .roadmap-state.json.
 
     Examples:

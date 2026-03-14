@@ -116,10 +116,15 @@ def scan_accepted_deviation_records(output_dir: Path) -> list[DeviationRecord]:
             continue
 
         # Check spec_update_required: must be YAML boolean true, NOT string "true"
+        # Also accept YAML 1.1 integer-as-boolean (1 → truthy)
         spec_update_required = data.get("spec_update_required", False)
-        if not isinstance(spec_update_required, bool):
-            continue
-        if not spec_update_required:
+        if isinstance(spec_update_required, bool):
+            if not spec_update_required:
+                continue
+        elif isinstance(spec_update_required, int) and spec_update_required == 1:
+            # YAML 1.1: unquoted 1 is a boolean-like truthy value
+            pass
+        else:
             continue
 
         # Build record
@@ -265,13 +270,13 @@ def prompt_accept_spec_change(
 
     # FR-2.24.1.7: Confirmation output
     deviation_ids = ", ".join(rec.id for rec in records)
-    print(f"[roadmap] spec_hash updated.")
+    print("[roadmap] spec_hash updated.")
     print(f"  Old: {old_hash[:12]}...")
     print(f"  New: {current_hash[:12]}...")
     print(f"  Accepted deviations: {deviation_ids}")
     print(
-        f"Run `superclaude roadmap run <spec_file> --resume` to continue "
-        f"from the failing step."
+        "Run `superclaude roadmap run <spec_file> --resume` to continue "
+        "from the failing step."
     )
     return 0
 

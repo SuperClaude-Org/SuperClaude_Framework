@@ -968,7 +968,11 @@ def _find_qualifying_deviation_files(
     if not all_records:
         return []
 
-    # Filter to records written AFTER spec-fidelity started (strict >)
+    # Filter to records written AFTER spec-fidelity started.
+    # Strict > (not >=): a record with mtime == started_at was written before
+    # or exactly at step start, so it cannot be evidence of a subprocess fix.
+    # Caveat: HFS+ and some NFS mounts have 1-second mtime resolution, so
+    # records created within the same second as started_at may be missed.
     qualifying = [r for r in all_records if r.mtime > started_at_ts]
     return qualifying
 
