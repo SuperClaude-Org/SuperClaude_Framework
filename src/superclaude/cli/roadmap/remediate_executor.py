@@ -36,6 +36,11 @@ _AGENT_TIMEOUT_SECONDS = 300
 # T04.06: Retry limit per NFR-002
 _AGENT_RETRY_LIMIT = 1
 
+# Inline embedding size limit (mirrors executor.py; --file is broken per Phase 1)
+_MAX_ARG_STRLEN = 128 * 1024
+_PROMPT_TEMPLATE_OVERHEAD = 8 * 1024
+_EMBED_SIZE_LIMIT = _MAX_ARG_STRLEN - _PROMPT_TEMPLATE_OVERHEAD
+
 
 # ═══════════════════════════════════════════════════════════════
 # T04.03 -- Pre-Remediate File Snapshots
@@ -161,7 +166,26 @@ def _run_agent_for_file(
 
     Returns (target_file, exit_code) tuple.
     """
-    prompt = build_remediation_prompt(target_file, findings)
+    base_prompt = build_remediation_prompt(target_file, findings)
+
+    # Inline embedding: read target file content into the prompt.
+    # --file is broken (cloud download mechanism, not local file injector).
+    try:
+        file_content = Path(target_file).read_text(encoding="utf-8")
+        file_block = f"## Current File Content\n\n```\n{file_content}\n```"
+        composed = base_prompt + "\n\n" + file_block
+        if len(composed.encode("utf-8")) > _EMBED_SIZE_LIMIT:
+            _log.warning(
+                "remediate_executor: composed prompt for '%s' exceeds %d bytes;"
+                " embedding inline anyway (--file fallback is unavailable)",
+                target_file,
+                _EMBED_SIZE_LIMIT,
+            )
+        prompt = composed
+    except OSError as exc:
+        _log.warning("remediate_executor: could not read '%s': %s; using base prompt", target_file, exc)
+        prompt = base_prompt
+
     output_file = output_dir / f"remediate-{Path(target_file).stem}.md"
     error_file = output_file.with_suffix(".err")
 
@@ -174,7 +198,6 @@ def _run_agent_for_file(
         permission_flag=config.permission_flag,
         timeout_seconds=_AGENT_TIMEOUT_SECONDS,
         output_format="text",
-        extra_args=["--file", target_file],
     )
 
     proc.start()

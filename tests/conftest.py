@@ -7,6 +7,11 @@ shared fixtures available to all test modules.
 
 import pytest
 
+# Exclude tests that require optional dependencies not in the project's declared deps.
+collect_ignore = [
+    "sprint/test_property_based.py",  # requires 'hypothesis' (not a declared dependency)
+]
+
 
 @pytest.fixture
 def sample_context():

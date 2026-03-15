@@ -6,7 +6,8 @@ applies the TASKLIST_FIDELITY_GATE, and writes a fidelity report.
 Reuses ``execute_pipeline()`` and ``ClaudeProcess`` from the pipeline module.
 No new subprocess abstractions.
 
-Context isolation: each subprocess receives only its prompt and --file inputs.
+Context isolation: each subprocess receives only its prompt via inline embedding.
+--file is a cloud download mechanism and does not inject local file content.
 """
 
 from __future__ import annotations
@@ -29,7 +30,7 @@ from .prompts import build_tasklist_fidelity_prompt
 
 _log = logging.getLogger("superclaude.tasklist.executor")
 
-# Threshold above which inline embedding falls back to --file flags
+# Threshold above which inline embedding logs a warning (--file fallback removed)
 _EMBED_SIZE_LIMIT = 100 * 1024  # 100 KB
 
 
@@ -108,18 +109,19 @@ def tasklist_run_step(
             finished_at=datetime.now(timezone.utc),
         )
 
-    # Inline embedding
+    # Inline embedding: --file is broken (cloud download mechanism, not local
+    # file injector) so inline embedding is always used regardless of size.
     embedded = _embed_inputs(step.inputs)
-    if embedded and len(embedded.encode("utf-8")) <= _EMBED_SIZE_LIMIT:
-        effective_prompt = step.prompt + "\n\n" + embedded
+    if embedded:
+        composed = step.prompt + "\n\n" + embedded
+        if len(composed.encode("utf-8")) > _EMBED_SIZE_LIMIT:
+            _log.warning(
+                "tasklist executor: composed prompt exceeds %d bytes;"
+                " embedding inline anyway (--file fallback is unavailable)",
+                _EMBED_SIZE_LIMIT,
+            )
+        effective_prompt = composed
         extra_args: list[str] = []
-    elif embedded:
-        effective_prompt = step.prompt
-        extra_args = [
-            arg
-            for input_path in step.inputs
-            for arg in ("--file", str(input_path))
-        ]
     else:
         effective_prompt = step.prompt
         extra_args = []

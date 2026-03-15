@@ -126,6 +126,8 @@ markers = [
     "property_based: Property-based tests using hypothesis (T09.03)",
     "nfr_benchmark: Non-functional requirement benchmark tests (T09.04)",
     "gate_performance: Gate evaluation performance benchmarks",
+    "context_injection_test: Context injection and task summary tests",
+    "thread_safety: Thread safety and concurrency tests",
 ]
 
 [tool.coverage.run]

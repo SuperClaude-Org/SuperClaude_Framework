@@ -6,6 +6,7 @@ Covers:
 - T04.05: parallel agent execution (mocked ClaudeProcess)
 - T04.06: timeout and retry logic
 - T04.07: failure handling with full rollback
+- T05.02: inline embedding replaces --file (FR-ATL.5, Phase 5)
 - T04.08: success handling with snapshot cleanup
 - T04.09: update_remediation_tasklist (two-write model)
 - T04.10: step registration (REMEDIATE_GATE integration)
@@ -22,8 +23,10 @@ from superclaude.cli.roadmap.models import Finding
 from superclaude.cli.roadmap.remediate_executor import (
     EDITABLE_FILES,
     _AGENT_TIMEOUT_SECONDS,
+    _EMBED_SIZE_LIMIT,
     _handle_failure,
     _handle_success,
+    _run_agent_for_file,
     _update_finding_entries,
     _update_frontmatter_counts,
     cleanup_snapshots,
@@ -504,3 +507,87 @@ class TestRemediateStepRegistration:
         prompt = build_remediation_prompt("roadmap.md", [f])
         assert "Preserve YAML frontmatter" in prompt
         assert "Preserve heading hierarchy" in prompt
+
+
+# ── T05.02: Inline embedding replaces --file (FR-ATL.5) ─────────────────────
+
+
+class TestRemediateInlineEmbedReplacesFileFlag:
+    """FR-ATL.5: remediate_executor delivers target file content via inline embedding.
+
+    --file is broken (cloud download mechanism, not local file injector).
+    All content must arrive via the prompt; extra_args must never contain --file.
+    """
+
+    def test_remediate_inline_embed_replaces_file_flag(self, tmp_path):
+        """Target file content appears in captured prompt; no --file in extra_args."""
+        target = tmp_path / "roadmap.md"
+        target.write_text("# Roadmap\n\nOriginal content for remediation.\n")
+
+        finding = _make_finding("F-01", files_affected=[str(target)])
+        config_obj = MagicMock()
+        config_obj.max_turns = 5
+        config_obj.model = None
+        config_obj.permission_flag = "--dangerously-skip-permissions"
+
+        from superclaude.cli.pipeline.models import PipelineConfig
+        config = PipelineConfig(max_turns=5, dry_run=False)
+
+        captured: dict = {}
+
+        with patch("superclaude.cli.roadmap.remediate_executor.ClaudeProcess") as MockProc:
+            instance = MagicMock()
+            instance._process = None
+            instance.wait.return_value = 0
+
+            def capture_and_return(**kw):
+                captured["prompt"] = kw.get("prompt", "")
+                captured["extra_args"] = kw.get("extra_args", ["SENTINEL"])
+                return instance
+
+            MockProc.side_effect = capture_and_return
+
+            _run_agent_for_file(str(target), [finding], config, tmp_path)
+
+        # File content must appear in the prompt (inline embedding)
+        assert "Original content for remediation." in captured["prompt"]
+        # extra_args must be absent or empty (no --file)
+        assert "--file" not in captured.get("extra_args", [])
+        # The prompt should contain the fenced block header
+        assert "Current File Content" in captured["prompt"]
+
+    def test_remediate_inline_embed_oversized_still_no_file_flag(self, tmp_path, caplog):
+        """Oversized target file embeds inline with a warning; --file never used."""
+        import logging
+
+        target = tmp_path / "roadmap.md"
+        target.write_text("X" * (_EMBED_SIZE_LIMIT + 2048))
+
+        finding = _make_finding("F-01", files_affected=[str(target)])
+
+        from superclaude.cli.pipeline.models import PipelineConfig
+        config = PipelineConfig(max_turns=5, dry_run=False)
+
+        captured: dict = {}
+
+        with patch("superclaude.cli.roadmap.remediate_executor.ClaudeProcess") as MockProc:
+            instance = MagicMock()
+            instance._process = None
+            instance.wait.return_value = 0
+
+            def capture_and_return(**kw):
+                captured["prompt"] = kw.get("prompt", "")
+                captured["extra_args"] = kw.get("extra_args", ["SENTINEL"])
+                return instance
+
+            MockProc.side_effect = capture_and_return
+
+            with caplog.at_level(logging.WARNING, logger="superclaude.roadmap.remediate_executor"):
+                _run_agent_for_file(str(target), [finding], config, tmp_path)
+
+        # Even oversized content must be embedded inline
+        assert "X" * 100 in captured["prompt"]
+        # No --file in extra_args
+        assert "--file" not in captured.get("extra_args", [])
+        # Warning logged for oversized prompt
+        assert any("embedding inline anyway" in r.message for r in caplog.records)
