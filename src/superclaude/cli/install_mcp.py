@@ -94,7 +94,10 @@ MCP_SERVERS = {
 
 def _run_command(cmd: List[str], **kwargs) -> subprocess.CompletedProcess:
     """
-    Run a command with proper cross-platform shell handling.
+    Run a command with proper cross-platform handling.
+
+    Uses shell=False (list-based execution) on all platforms to prevent
+    command injection via environment variables like $SHELL.
 
     Args:
         cmd: Command as list of strings
@@ -112,16 +115,8 @@ def _run_command(cmd: List[str], **kwargs) -> subprocess.CompletedProcess:
     if platform.system() == "Windows":
         # On Windows, wrap command in 'cmd /c' to properly handle commands like npx
         cmd = ["cmd", "/c"] + cmd
-        return subprocess.run(cmd, **kwargs)
-    else:
-        # macOS/Linux: Use string format with proper shell to support aliases
-        cmd_str = " ".join(shlex.quote(str(arg)) for arg in cmd)
 
-        # Use the user's shell to execute the command, supporting aliases
-        user_shell = os.environ.get("SHELL", "/bin/bash")
-        return subprocess.run(
-            cmd_str, shell=True, env=os.environ, executable=user_shell, **kwargs
-        )
+    return subprocess.run(cmd, **kwargs)
 
 
 def check_docker_available() -> bool:
