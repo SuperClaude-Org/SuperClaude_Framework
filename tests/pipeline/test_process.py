@@ -44,6 +44,8 @@ class TestClaudeProcessCommand:
         assert "--print" in cmd
         assert "--verbose" in cmd
         assert "--no-session-persistence" in cmd
+        assert "--tools" in cmd
+        assert "default" in cmd
         assert "--dangerously-skip-permissions" in cmd
         assert "-p" in cmd
         assert "hello" in cmd
@@ -91,6 +93,16 @@ class TestClaudeProcessCommand:
         idx = cmd.index("--max-turns")
         assert cmd[idx + 1] == "100"
 
+    def test_tools_default_in_command(self, tmp_path):
+        p = ClaudeProcess(
+            prompt="test",
+            output_file=tmp_path / "out.txt",
+            error_file=tmp_path / "err.txt",
+        )
+        cmd = p.build_command()
+        assert "--tools" in cmd
+        assert cmd[cmd.index("--tools") + 1] == "default"
+
 
 class TestClaudeProcessEnv:
     def test_removes_claudecode_env(self, tmp_path):
@@ -125,6 +137,8 @@ class TestClaudeProcessStreamJsonCompat:
         assert "--verbose" in cmd
         assert "--dangerously-skip-permissions" in cmd
         assert "--no-session-persistence" in cmd
+        assert "--tools" in cmd
+        assert "default" in cmd
         assert "--output-format" in cmd
         idx = cmd.index("--output-format")
         assert cmd[idx + 1] == "stream-json"

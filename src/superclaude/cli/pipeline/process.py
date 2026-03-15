@@ -74,6 +74,8 @@ class ClaudeProcess:
             "--verbose",
             self.permission_flag,
             "--no-session-persistence",
+            "--tools",
+            "default",
             "--max-turns",
             str(self.max_turns),
             "--output-format",
