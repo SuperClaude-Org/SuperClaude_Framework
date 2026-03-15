@@ -4,8 +4,9 @@ Builds the step list with parallel generate group, defines
 ``roadmap_run_step`` as the StepRunner, and delegates to
 ``execute_pipeline()`` from the pipeline module.
 
-Context isolation: each subprocess receives only its prompt and --file inputs.
-No --continue, --session, or --resume flags are passed (FR-003, FR-023).
+Context isolation: each subprocess receives only its prompt via inline embedding.
+No --continue, --session, --resume, or --file flags are passed (FR-003, FR-023).
+--file is a cloud download mechanism and does not inject local file content.
 """
 
 from __future__ import annotations
@@ -50,8 +51,16 @@ from .certify_prompts import build_certification_prompt
 
 _log = logging.getLogger("superclaude.roadmap.executor")
 
-# Threshold above which inline embedding falls back to --file flags
-_EMBED_SIZE_LIMIT = 200 * 1024  # 100 KB
+# Linux kernel compile-time constant (arch/arm64, x86_64, etc.)
+_MAX_ARG_STRLEN = 128 * 1024
+# 2.3x safety factor; measured template peak ~3.4 KB
+_PROMPT_TEMPLATE_OVERHEAD = 8 * 1024
+# Derivation: MAX_ARG_STRLEN - PROMPT_TEMPLATE_OVERHEAD = 120 KB = 122,880 bytes
+_EMBED_SIZE_LIMIT = _MAX_ARG_STRLEN - _PROMPT_TEMPLATE_OVERHEAD
+assert _PROMPT_TEMPLATE_OVERHEAD >= 4096, (
+    "Kernel margin violated: _PROMPT_TEMPLATE_OVERHEAD must be >=4096 bytes "
+    "to stay safely below MAX_ARG_STRLEN=128 KB; measured template peak ~3.4 KB"
+)
 
 
 def _embed_inputs(input_paths: list[Path]) -> str:
@@ -171,22 +180,21 @@ def roadmap_run_step(
         )
 
     # Inline embedding: read input files into the prompt instead of --file flags
+    # --file is broken (cloud download mechanism, not local file injector) so
+    # inline embedding is always used regardless of composed prompt size.
     embedded = _embed_inputs(step.inputs)
-    if embedded and len(embedded.encode("utf-8")) <= _EMBED_SIZE_LIMIT:
-        effective_prompt = step.prompt + "\n\n" + embedded
+    if embedded:
+        composed = step.prompt + "\n\n" + embedded
+        if len(composed.encode("utf-8")) > _EMBED_SIZE_LIMIT:
+            # <= is intentional; _EMBED_SIZE_LIMIT = 120 KB is safely below MAX_ARG_STRLEN = 128 KB
+            _log.warning(
+                "Step '%s': composed prompt exceeds %d bytes; embedding inline anyway"
+                " (--file fallback is unavailable)",
+                step.id,
+                _EMBED_SIZE_LIMIT,
+            )
+        effective_prompt = composed
         extra_args: list[str] = []
-    elif embedded:
-        _log.warning(
-            "Step '%s': embedded inputs exceed %d bytes, falling back to --file flags",
-            step.id,
-            _EMBED_SIZE_LIMIT,
-        )
-        effective_prompt = step.prompt
-        extra_args = [
-            arg
-            for input_path in step.inputs
-            for arg in ("--file", str(input_path))
-        ]
     else:
         effective_prompt = step.prompt
         extra_args = []
