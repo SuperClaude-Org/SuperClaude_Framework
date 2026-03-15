@@ -48,6 +48,7 @@ from superclaude.cli.cli_portify.steps.discover_components import (
     extract_agents,
     render_enriched_inventory,
     run_discover_components,
+    _write_inventory_artifact,
 )
 from superclaude.cli.cli_portify.utils import parse_frontmatter
 
@@ -782,3 +783,111 @@ class TestRenderEnrichedInventory:
         assert fm["has_command"] is False
         assert fm["has_skill"] is False
         assert "No components discovered." in md
+
+
+# ---------------------------------------------------------------------------
+# T02.05 acceptance criteria: test_inventory
+# ---------------------------------------------------------------------------
+
+
+class TestInventory:
+    """T02.05 — Component discovery produces component-inventory with correct structure.
+
+    These tests satisfy the validation command:
+        uv run pytest tests/ -k "test_inventory"
+    """
+
+    def test_inventory_contains_skill_md(self, tmp_path):
+        """Inventory contains at least one component referencing SKILL.md."""
+        from superclaude.cli.cli_portify.config import load_portify_config
+        from superclaude.cli.cli_portify.steps.discover_components import run_discover_components
+
+        wf = tmp_path / "sc-test-proto"
+        wf.mkdir()
+        (wf / "SKILL.md").write_text("# Test\nContent here.\n")
+
+        config = load_portify_config(workflow_path=wf, output_dir=tmp_path / "out")
+        inventory, step_result = run_discover_components(config)
+        skill_types = [c.component_type for c in inventory.components]
+        assert "skill" in skill_types
+
+    def test_inventory_component_has_required_fields(self, tmp_path):
+        """Each component has: path, lines, purpose, type."""
+        from superclaude.cli.cli_portify.config import load_portify_config
+        from superclaude.cli.cli_portify.steps.discover_components import run_discover_components
+
+        wf = tmp_path / "sc-test-proto"
+        wf.mkdir()
+        (wf / "SKILL.md").write_text("# Skill\n\nContent.\n")
+
+        config = load_portify_config(workflow_path=wf, output_dir=tmp_path / "out")
+        inventory, _ = run_discover_components(config)
+        for comp in inventory.components:
+            assert hasattr(comp, "path"), "ComponentEntry missing 'path'"
+            assert hasattr(comp, "line_count"), "ComponentEntry missing 'line_count'"
+            assert hasattr(comp, "component_type"), "ComponentEntry missing 'component_type'"
+            assert hasattr(comp, "purpose"), "ComponentEntry missing 'purpose'"
+
+    def test_inventory_source_skill_populated(self, tmp_path):
+        """Inventory source_skill reflects the scanned skill directory name."""
+        from superclaude.cli.cli_portify.config import load_portify_config
+        from superclaude.cli.cli_portify.steps.discover_components import run_discover_components
+
+        wf = tmp_path / "sc-my-skill-protocol"
+        wf.mkdir()
+        (wf / "SKILL.md").write_text("# My Skill\n\nContent.\n")
+
+        config = load_portify_config(workflow_path=wf, output_dir=tmp_path / "out")
+        inventory, _ = run_discover_components(config)
+        assert inventory.source_skill == "sc-my-skill-protocol"
+
+    def test_inventory_line_count_accurate(self, tmp_path):
+        """Line counts in inventory accurately reflect file contents."""
+        from superclaude.cli.cli_portify.config import load_portify_config
+        from superclaude.cli.cli_portify.steps.discover_components import run_discover_components
+
+        wf = tmp_path / "sc-line-count-proto"
+        wf.mkdir()
+        lines = "\n".join(f"line {i}" for i in range(1, 11))  # 10 lines
+        (wf / "SKILL.md").write_text(lines + "\n")
+
+        config = load_portify_config(workflow_path=wf, output_dir=tmp_path / "out")
+        inventory, _ = run_discover_components(config)
+        skill_comps = [c for c in inventory.components if c.component_type == "skill"]
+        assert len(skill_comps) >= 1
+        assert skill_comps[0].line_count >= 10
+
+    def test_inventory_discovers_subdirs(self, tmp_path):
+        """Inventory discovers components in refs/, rules/, templates/, scripts/."""
+        from superclaude.cli.cli_portify.config import load_portify_config
+        from superclaude.cli.cli_portify.steps.discover_components import run_discover_components
+
+        wf = tmp_path / "sc-subdir-proto"
+        wf.mkdir()
+        (wf / "SKILL.md").write_text("# Skill\n")
+        for subdir in ("refs", "rules", "templates", "scripts"):
+            d = wf / subdir
+            d.mkdir()
+            (d / f"{subdir}-file.md").write_text(f"# {subdir} content\n")
+
+        config = load_portify_config(workflow_path=wf, output_dir=tmp_path / "out")
+        inventory, _ = run_discover_components(config)
+        discovered_types = {c.component_type for c in inventory.components}
+        assert "ref" in discovered_types or "rule" in discovered_types or "template" in discovered_types or "script" in discovered_types or len(inventory.components) > 1
+
+    def test_inventory_artifact_written_to_output_dir(self, tmp_path):
+        """run_discover_components writes artifact to output directory."""
+        from superclaude.cli.cli_portify.config import load_portify_config
+        from superclaude.cli.cli_portify.steps.discover_components import run_discover_components
+
+        wf = tmp_path / "sc-artifact-proto"
+        wf.mkdir()
+        (wf / "SKILL.md").write_text("# Skill\n")
+        out_dir = tmp_path / "out"
+        out_dir.mkdir()
+
+        config = load_portify_config(workflow_path=wf, output_dir=out_dir)
+        _, step_result = run_discover_components(config)
+        assert step_result.artifact_path != ""
+        artifact = Path(step_result.artifact_path)
+        assert artifact.exists()

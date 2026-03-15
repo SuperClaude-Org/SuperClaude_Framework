@@ -175,3 +175,54 @@ class TestTuiDashboard:
         dashboard = TuiDashboard()
         # In non-terminal test env, _live is always None
         assert dashboard.is_live is False
+
+
+# ---------------------------------------------------------------------------
+# T03.12 acceptance criteria: test_tui_lifecycle
+# ---------------------------------------------------------------------------
+
+
+class TestTuiLifecycle:
+    """T03.12 — PortifyTUI start/stop lifecycle using rich (NFR-008).
+
+    Validation command: uv run pytest tests/ -k "test_tui_lifecycle"
+    """
+
+    def test_tui_lifecycle_start_stop_no_crash(self):
+        dashboard = TuiDashboard()
+        dashboard.start()
+        dashboard.stop()
+        # No crash = pass
+
+    def test_tui_lifecycle_is_not_live_in_test_env(self):
+        dashboard = TuiDashboard()
+        dashboard.start()
+        # Non-terminal environment → _live is None
+        assert dashboard.is_live is False
+        dashboard.stop()
+
+    def test_tui_lifecycle_stop_is_idempotent(self):
+        dashboard = TuiDashboard()
+        dashboard.start()
+        dashboard.stop()
+        dashboard.stop()  # second stop should not crash
+
+    def test_tui_lifecycle_step_start_updates_state(self):
+        dashboard = TuiDashboard()
+        dashboard.start()
+        dashboard.step_start("validate-config")
+        assert dashboard.state.steps[0].status == "running"
+        dashboard.stop()
+
+    def test_tui_lifecycle_step_complete_updates_state(self):
+        dashboard = TuiDashboard()
+        dashboard.start()
+        dashboard.step_start("validate-config")
+        dashboard.step_complete("validate-config", "pass", 1.2, "pass")
+        assert dashboard.state.steps[0].status == "pass"
+        assert dashboard.state.steps[0].duration_seconds == 1.2
+        dashboard.stop()
+
+    def test_tui_lifecycle_initializes_seven_steps(self):
+        dashboard = TuiDashboard()
+        assert len(dashboard.state.steps) == 7

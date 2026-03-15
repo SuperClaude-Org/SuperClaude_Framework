@@ -41,6 +41,7 @@ class TestPhaseStatus:
             "PASS",
             "PASS_NO_SIGNAL",
             "PASS_NO_REPORT",
+            "PASS_RECOVERED",
             "INCOMPLETE",
             "HALT",
             "TIMEOUT",

@@ -209,6 +209,7 @@ class PhaseStatus(Enum):
     PASS = "pass"
     PASS_NO_SIGNAL = "pass_no_signal"
     PASS_NO_REPORT = "pass_no_report"
+    PASS_RECOVERED = "pass_recovered"  # non-zero exit but evidence of success
     INCOMPLETE = "incomplete"
     HALT = "halt"
     TIMEOUT = "timeout"
@@ -221,6 +222,7 @@ class PhaseStatus(Enum):
             PhaseStatus.PASS,
             PhaseStatus.PASS_NO_SIGNAL,
             PhaseStatus.PASS_NO_REPORT,
+            PhaseStatus.PASS_RECOVERED,
             PhaseStatus.INCOMPLETE,
             PhaseStatus.HALT,
             PhaseStatus.TIMEOUT,
@@ -234,6 +236,7 @@ class PhaseStatus(Enum):
             PhaseStatus.PASS,
             PhaseStatus.PASS_NO_SIGNAL,
             PhaseStatus.PASS_NO_REPORT,
+            PhaseStatus.PASS_RECOVERED,
         )
 
     @property

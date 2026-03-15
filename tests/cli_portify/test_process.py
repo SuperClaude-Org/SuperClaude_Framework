@@ -19,6 +19,7 @@ from superclaude.cli.cli_portify.process import (
     PortifyProcess,
     ProcessResult,
     consolidate_dirs,
+    detect_claude_binary,
 )
 from superclaude.cli.pipeline.process import ClaudeProcess
 
@@ -457,3 +458,48 @@ class TestBackwardCompatibilitySC11:
             additional_dirs=None,
         )
         assert proc_omitted.build_command() == proc_none.build_command()
+
+
+# ---------------------------------------------------------------------------
+# T03.05 acceptance criteria: test_claude_binary
+# ---------------------------------------------------------------------------
+
+
+class TestClaudeBinaryDetection:
+    """T03.05 — detect_claude_binary() uses shutil.which (FR-036, AC-008).
+
+    Validation command: uv run pytest tests/ -k "test_claude_binary"
+    """
+
+    def test_claude_binary_found_returns_path(self):
+        """When claude binary exists, detect_claude_binary() returns its path."""
+        with patch("superclaude.cli.cli_portify.process.shutil.which", return_value="/usr/bin/claude"):
+            result = detect_claude_binary()
+        assert result == "/usr/bin/claude"
+
+    def test_claude_binary_not_found_raises_runtime_error(self):
+        """When claude binary is missing, RuntimeError is raised."""
+        with patch("superclaude.cli.cli_portify.process.shutil.which", return_value=None):
+            with pytest.raises(RuntimeError) as exc_info:
+                detect_claude_binary()
+        assert "claude" in str(exc_info.value).lower()
+
+    def test_claude_binary_error_includes_installation_hint(self):
+        """Error message includes installation guidance."""
+        with patch("superclaude.cli.cli_portify.process.shutil.which", return_value=None):
+            with pytest.raises(RuntimeError) as exc_info:
+                detect_claude_binary()
+        assert "install" in str(exc_info.value).lower() or "path" in str(exc_info.value).lower()
+
+    def test_claude_binary_uses_shutil_which(self):
+        """detect_claude_binary calls shutil.which('claude')."""
+        with patch("superclaude.cli.cli_portify.process.shutil.which") as mock_which:
+            mock_which.return_value = "/usr/bin/claude"
+            detect_claude_binary()
+            mock_which.assert_called_once_with("claude")
+
+    def test_claude_binary_early_failure_before_steps(self):
+        """Binary check raises before pipeline steps run (can be called pre-execution)."""
+        with patch("superclaude.cli.cli_portify.process.shutil.which", return_value=None):
+            with pytest.raises(RuntimeError):
+                detect_claude_binary()

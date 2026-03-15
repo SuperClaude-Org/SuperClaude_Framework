@@ -18,16 +18,34 @@ import pytest
 
 from superclaude.cli.cli_portify.models import (
     AgentEntry,
+    AmbiguousPathError,
     CommandEntry,
     ComponentEntry,
     ComponentInventory,
     ComponentTree,
+    ConvergenceState,
+    DerivationFailedError,
     ERR_AMBIGUOUS_TARGET,
     ERR_BROKEN_ACTIVATION,
     ERR_TARGET_NOT_FOUND,
+    InvalidPathError,
+    MonitorState,
+    NameCollisionError,
+    OutputNotWritableError,
+    PortifyOutcome,
+    PortifyPhaseType,
+    PortifyStep,
+    PortifyStatus,
+    PortifyValidationError,
+    AMBIGUOUS_PATH,
+    DERIVATION_FAILED,
+    INVALID_PATH,
+    NAME_COLLISION,
+    OUTPUT_NOT_WRITABLE,
     ResolvedTarget,
     SkillEntry,
     TargetInputType,
+    TurnLedger,
     WARN_MISSING_AGENTS,
 )
 
@@ -246,3 +264,233 @@ class TestErrorConstants:
 
     def test_warn_missing_agents(self) -> None:
         assert WARN_MISSING_AGENTS == "WARN_MISSING_AGENTS"
+
+
+# ---------------------------------------------------------------------------
+# T02.07 acceptance criteria: test_error_codes
+# ---------------------------------------------------------------------------
+
+
+class TestErrorCodes:
+    """T02.07 — All 5 Phase 2 error codes defined, importable, and raiseable.
+
+    These tests satisfy the validation command:
+        uv run pytest tests/ -k "test_error_codes"
+    """
+
+    def test_error_codes_name_collision_constant(self) -> None:
+        """NAME_COLLISION constant has correct string value."""
+        assert NAME_COLLISION == "NAME_COLLISION"
+
+    def test_error_codes_output_not_writable_constant(self) -> None:
+        """OUTPUT_NOT_WRITABLE constant has correct string value."""
+        assert OUTPUT_NOT_WRITABLE == "OUTPUT_NOT_WRITABLE"
+
+    def test_error_codes_ambiguous_path_constant(self) -> None:
+        """AMBIGUOUS_PATH constant has correct string value."""
+        assert AMBIGUOUS_PATH == "AMBIGUOUS_PATH"
+
+    def test_error_codes_invalid_path_constant(self) -> None:
+        """INVALID_PATH constant has correct string value."""
+        assert INVALID_PATH == "INVALID_PATH"
+
+    def test_error_codes_derivation_failed_constant(self) -> None:
+        """DERIVATION_FAILED constant has correct string value."""
+        assert DERIVATION_FAILED == "DERIVATION_FAILED"
+
+    def test_error_codes_all_five_are_importable(self) -> None:
+        """All 5 error codes are importable from models.py."""
+        codes = [NAME_COLLISION, OUTPUT_NOT_WRITABLE, AMBIGUOUS_PATH, INVALID_PATH, DERIVATION_FAILED]
+        assert len(codes) == 5
+        assert all(isinstance(c, str) for c in codes)
+
+    def test_error_codes_name_collision_raises(self) -> None:
+        """NameCollisionError is a PortifyValidationError with NAME_COLLISION code."""
+        with pytest.raises(PortifyValidationError) as exc_info:
+            raise NameCollisionError("my-module")
+        assert exc_info.value.error_code == NAME_COLLISION
+
+    def test_error_codes_output_not_writable_raises(self) -> None:
+        """OutputNotWritableError is a PortifyValidationError with OUTPUT_NOT_WRITABLE code."""
+        with pytest.raises(PortifyValidationError) as exc_info:
+            raise OutputNotWritableError("/some/path")
+        assert exc_info.value.error_code == OUTPUT_NOT_WRITABLE
+
+    def test_error_codes_ambiguous_path_raises(self) -> None:
+        """AmbiguousPathError is a PortifyValidationError with AMBIGUOUS_PATH code."""
+        with pytest.raises(PortifyValidationError) as exc_info:
+            raise AmbiguousPathError("my-skill", ["skill-a", "skill-b"])
+        assert exc_info.value.error_code == AMBIGUOUS_PATH
+
+    def test_error_codes_invalid_path_raises(self) -> None:
+        """InvalidPathError is a PortifyValidationError with INVALID_PATH code."""
+        with pytest.raises(PortifyValidationError) as exc_info:
+            raise InvalidPathError("/not/a/skill")
+        assert exc_info.value.error_code == INVALID_PATH
+
+    def test_error_codes_derivation_failed_raises(self) -> None:
+        """DerivationFailedError is a PortifyValidationError with DERIVATION_FAILED code."""
+        with pytest.raises(PortifyValidationError) as exc_info:
+            raise DerivationFailedError("---")
+        assert exc_info.value.error_code == DERIVATION_FAILED
+
+    def test_error_codes_all_are_subclasses_of_base(self) -> None:
+        """All 5 error exception classes are subclasses of PortifyValidationError."""
+        assert issubclass(NameCollisionError, PortifyValidationError)
+        assert issubclass(OutputNotWritableError, PortifyValidationError)
+        assert issubclass(AmbiguousPathError, PortifyValidationError)
+        assert issubclass(InvalidPathError, PortifyValidationError)
+        assert issubclass(DerivationFailedError, PortifyValidationError)
+
+    def test_error_codes_caught_as_base_exception(self) -> None:
+        """Any error code exception can be caught via the base PortifyValidationError."""
+        for exc_cls, args in [
+            (NameCollisionError, ("test",)),
+            (OutputNotWritableError, ("/path",)),
+            (AmbiguousPathError, ("x", ["a", "b"])),
+            (InvalidPathError, ("/path",)),
+            (DerivationFailedError, ("name",)),
+        ]:
+            with pytest.raises(PortifyValidationError):
+                raise exc_cls(*args)
+
+
+# ---------------------------------------------------------------------------
+# T03.01 acceptance criteria: test_domain_models
+# ---------------------------------------------------------------------------
+
+
+class TestDomainModels:
+    """T03.01 — All 9 domain models defined and importable.
+
+    Validation command: uv run pytest tests/ -k "test_domain_models"
+    """
+
+    def test_domain_models_portify_phase_type_enum_exists(self) -> None:
+        assert issubclass(PortifyPhaseType, type(PortifyPhaseType.PREREQUISITES).__mro__[0])
+
+    def test_domain_models_portify_phase_type_members(self) -> None:
+        expected = {"PREREQUISITES", "ANALYSIS", "USER_REVIEW", "SPECIFICATION", "SYNTHESIS", "CONVERGENCE"}
+        actual = {m.name for m in PortifyPhaseType}
+        assert actual == expected
+
+    def test_domain_models_convergence_state_enum_exists(self) -> None:
+        assert issubclass(ConvergenceState, type(ConvergenceState.NOT_STARTED).__mro__[0])
+
+    def test_domain_models_convergence_state_members(self) -> None:
+        expected = {"NOT_STARTED", "REVIEWING", "INCORPORATING", "SCORING", "CONVERGED", "ESCALATED"}
+        actual = {m.name for m in ConvergenceState}
+        assert actual == expected
+
+    def test_domain_models_portify_outcome_enum_members(self) -> None:
+        expected = {"SUCCESS", "FAILURE", "TIMEOUT", "INTERRUPTED", "HALTED", "DRY_RUN"}
+        actual = {m.name for m in PortifyOutcome}
+        assert actual == expected
+
+    def test_domain_models_portify_step_instantiates(self) -> None:
+        step = PortifyStep(step_id="s1", phase_type=PortifyPhaseType.ANALYSIS)
+        assert step.step_id == "s1"
+        assert step.phase_type == PortifyPhaseType.ANALYSIS
+        assert step.status == PortifyStatus.PENDING
+
+    def test_domain_models_portify_step_default_status_pending(self) -> None:
+        step = PortifyStep()
+        assert step.status == PortifyStatus.PENDING
+
+    def test_domain_models_monitor_state_instantiates(self) -> None:
+        ms = MonitorState()
+        assert ms.output_bytes == 0
+        assert ms.growth_rate_bps == 0.0
+        assert ms.stall_seconds == 0.0
+        assert ms.events == 0
+        assert ms.line_count == 0
+        assert ms.convergence_iteration == 0
+        assert ms.findings_count == 0
+        assert ms.placeholder_count == 0
+
+    def test_domain_models_monitor_state_has_all_fields(self) -> None:
+        fields = set(MonitorState.__dataclass_fields__.keys())
+        expected = {
+            "output_bytes", "growth_rate_bps", "stall_seconds", "events",
+            "line_count", "convergence_iteration", "findings_count", "placeholder_count",
+        }
+        assert expected.issubset(fields)
+
+    def test_domain_models_turn_ledger_instantiates(self) -> None:
+        ledger = TurnLedger(total_budget=10)
+        assert ledger.total_budget == 10
+        assert ledger.consumed == 0
+        assert ledger.remaining == 10
+
+    def test_domain_models_turn_ledger_can_launch_true(self) -> None:
+        ledger = TurnLedger(total_budget=5)
+        assert ledger.can_launch() is True
+
+    def test_domain_models_turn_ledger_can_launch_false_when_exhausted(self) -> None:
+        ledger = TurnLedger(total_budget=2)
+        ledger.consume(2)
+        assert ledger.can_launch() is False
+
+    def test_domain_models_nine_models_importable(self) -> None:
+        """All 9 domain models are importable."""
+        from superclaude.cli.cli_portify.models import PortifyConfig, PortifyStepResult
+        models = [
+            PortifyPhaseType, ConvergenceState, PortifyConfig, PortifyStep,
+            PortifyStepResult, PortifyOutcome, PortifyStatus, MonitorState, TurnLedger,
+        ]
+        assert len(models) == 9
+        for m in models:
+            assert m is not None
+
+
+# ---------------------------------------------------------------------------
+# T03.03 acceptance criteria: test_step_order
+# ---------------------------------------------------------------------------
+
+
+class TestStepOrder:
+    """T03.03 — Step registration in mandated order (NFR-006, AC-012).
+
+    Validation command: uv run pytest tests/ -k "test_step_order"
+    """
+
+    def test_step_order_mandated_sequence(self) -> None:
+        """MANDATED_STEP_ORDER matches the exact 13-step mandated sequence."""
+        from superclaude.cli.cli_portify.registry import MANDATED_STEP_ORDER
+        expected = [
+            "models", "gates", "prompts", "config", "inventory", "monitor",
+            "process", "executor", "tui", "logging_", "diagnostics", "commands", "__init__",
+        ]
+        assert list(MANDATED_STEP_ORDER) == expected
+
+    def test_step_order_is_immutable_tuple(self) -> None:
+        """MANDATED_STEP_ORDER is a tuple (immutable at runtime)."""
+        from superclaude.cli.cli_portify.registry import MANDATED_STEP_ORDER
+        assert isinstance(MANDATED_STEP_ORDER, tuple)
+
+    def test_step_order_has_thirteen_entries(self) -> None:
+        from superclaude.cli.cli_portify.registry import MANDATED_STEP_ORDER
+        assert len(MANDATED_STEP_ORDER) == 13
+
+    def test_step_order_get_step_order_returns_tuple(self) -> None:
+        from superclaude.cli.cli_portify.registry import get_step_order
+        order = get_step_order()
+        assert isinstance(order, tuple)
+        assert len(order) == 13
+
+    def test_step_order_assert_step_order_passes_on_correct_order(self) -> None:
+        from superclaude.cli.cli_portify.registry import assert_step_order, MANDATED_STEP_ORDER
+        assert_step_order(list(MANDATED_STEP_ORDER))  # should not raise
+
+    def test_step_order_assert_step_order_fails_on_wrong_order(self) -> None:
+        from superclaude.cli.cli_portify.registry import assert_step_order
+        with pytest.raises(AssertionError):
+            assert_step_order(["executor", "models"])  # wrong order
+
+    def test_step_order_models_is_first(self) -> None:
+        from superclaude.cli.cli_portify.registry import MANDATED_STEP_ORDER
+        assert MANDATED_STEP_ORDER[0] == "models"
+
+    def test_step_order_init_is_last(self) -> None:
+        from superclaude.cli.cli_portify.registry import MANDATED_STEP_ORDER
+        assert MANDATED_STEP_ORDER[-1] == "__init__"

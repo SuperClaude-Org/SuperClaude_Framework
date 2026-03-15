@@ -272,3 +272,21 @@ For each checkpoint, execution must produce one report at the path specified in 
 - TASKLIST_ROOT derived via Rule 1 match: `.dev/releases/current/cross-framework-deep-analysis/` found in roadmap text
 - Gate SC-001 through SC-008 from roadmap are reflected as acceptance criteria in corresponding phase end-of-phase checkpoints
 - Open Questions OQ-001 through OQ-008 are each represented as EXEMPT tasks or embedded within STANDARD/STRICT tasks
+
+### Patch Regeneration: Phase 8 and Phase 9 (2026-03-14)
+
+`phase-8-tasklist.md` and `phase-9-tasklist.md` regenerated from scratch with all ValidationReport patches applied. Phases 1-7 unchanged.
+
+**Phase 8 patches applied:**
+- H10: T08.03 Dimension 4 — corrected "Phase 2 components" to "Phase 1 components" (roadmap Key Action 3 item 4)
+- H11: T08.03 — added four Disqualifying Conditions to steps and AC: (1) evidence unverifiable, (2) copied mass in adoption, (3) broken cross-artifact lineage, (4) implementation-scope drift; any triggered condition = Fail-Rework
+- H12: T08.05 — added Auggie MCP file path verification step and AC criterion (Gate Criteria SC-007: "all file paths verified")
+- M11: T08.01 — replaced invented "AC-010 schema" identifier with "schema expectations from the `/sc:roadmap` command definition"
+- M12: T08.01 — added AC criterion: D-0030 findings are referenced in validation-report.md (D-0033) per Gate Criteria requirement
+- M13: T08.04 — replaced "list of reworked items with corrections" in AC with "failed items listed with Fail classification and Disqualifying Condition reference for T08.05 consumption"
+- M14: T08.05 — added AC criterion: final-improve-plan.md confirmed schema-compliant with `/sc:roadmap` expectations from D-0030
+- L12: T08.02 — expanded AC gate scope to explicitly state "formal architecture review, not a formatting pass or compliance scan"
+
+**Phase 9 patches applied:**
+- H13: T09.02 — replaced failure branch AC with unconditional block: sprint completion blocked on failure; test MUST be re-executed and pass before T09.03/T09.04 proceed; removed language permitting sprint completion with a documented failure
+- L13: T09.04 — added step 2 preference statement: script is the strongly preferred path; fallback to manual protocol requires explicit documentation of why script was not viable

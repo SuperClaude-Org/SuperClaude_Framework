@@ -1,0 +1,36 @@
+status: complete
+recommendation: 2a
+recommendation_label: "Skip entirely"
+confidence: 0.85
+convergence_score: 0.72
+
+scoring:
+  variant_2a: 8.40
+  variant_2b: 6.60
+  variant_2c: 7.20
+  weights:
+    correctness: 0.25
+    cost: 0.20
+    trust: 0.20
+    complexity: 0.20
+    user_experience: 0.15
+
+artifacts:
+  diff_analysis: /config/workspace/IronClaude/docs/generated/preflight-debate/diff-analysis.md
+  debate_transcript: /config/workspace/IronClaude/docs/generated/preflight-debate/debate-transcript.md
+  base_selection: /config/workspace/IronClaude/docs/generated/preflight-debate/base-selection.md
+  refactor_plan: /config/workspace/IronClaude/docs/generated/preflight-debate/refactor-plan.md
+
+unresolved_conflicts:
+  - dimension: trust
+    description: "Irreducible disagreement on whether AI verification adds value for mechanical tasks with deterministic exit codes"
+    mitigation: "Monitor production sprint runs for cases where preflight-passed phases later reveal issues"
+  - dimension: contract_evolution
+    description: "If result contract evolves to require semantic fields, Python writer must be updated"
+    mitigation: "Shared test fixture verifies writer output satisfies parser expectations"
+
+key_mitigations:
+  - "Add PhaseStatus.PREFLIGHT_PASS enum value for TUI/log differentiation"
+  - "Add source: preflight YAML field to result files"
+  - "Shared contract consistency test between writer and parser"
+  - "Future escape hatch to 2c is additive (no breaking changes)"

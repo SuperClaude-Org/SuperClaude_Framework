@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "spec_file": "/config/workspace/IronClaude/.dev/releases/current/v2.24.5/v2.25.1-release-spec.md",
+  "spec_hash": "b9dbc3767428f67cf12818e3099c96a6461756725e77757550c9a15d48e5369f",
+  "agents": [
+    {
+      "model": "opus",
+      "persona": "architect"
+    },
+    {
+      "model": "haiku",
+      "persona": "analyzer"
+    }
+  ],
+  "depth": "deep",
+  "last_run": "2026-03-15T04:15:38.527210+00:00",
+  "steps": {
+    "extract": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/IronClaude/.dev/releases/current/v2.24.5/extraction.md",
+      "started_at": "2026-03-15T04:01:29.370117+00:00",
+      "completed_at": "2026-03-15T04:03:03.384882+00:00"
+    },
+    "generate-opus-architect": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/IronClaude/.dev/releases/current/v2.24.5/roadmap-opus-architect.md",
+      "started_at": "2026-03-15T04:03:03.386011+00:00",
+      "completed_at": "2026-03-15T04:04:15.398314+00:00"
+    },
+    "generate-haiku-analyzer": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/IronClaude/.dev/releases/current/v2.24.5/roadmap-haiku-analyzer.md",
+      "started_at": "2026-03-15T04:03:03.386389+00:00",
+      "completed_at": "2026-03-15T04:04:39.401302+00:00"
+    },
+    "diff": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/IronClaude/.dev/releases/current/v2.24.5/diff-analysis.md",
+      "started_at": "2026-03-15T04:04:39.401716+00:00",
+      "completed_at": "2026-03-15T04:05:55.413767+00:00"
+    },
+    "debate": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/IronClaude/.dev/releases/current/v2.24.5/debate-transcript.md",
+      "started_at": "2026-03-15T04:05:55.414022+00:00",
+      "completed_at": "2026-03-15T04:07:34.432073+00:00"
+    },
+    "score": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/IronClaude/.dev/releases/current/v2.24.5/base-selection.md",
+      "started_at": "2026-03-15T04:07:34.432350+00:00",
+      "completed_at": "2026-03-15T04:08:31.443064+00:00"
+    },
+    "merge": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/IronClaude/.dev/releases/current/v2.24.5/roadmap.md",
+      "started_at": "2026-03-15T04:08:31.443307+00:00",
+      "completed_at": "2026-03-15T04:10:13.460606+00:00"
+    },
+    "test-strategy": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/IronClaude/.dev/releases/current/v2.24.5/test-strategy.md",
+      "started_at": "2026-03-15T04:10:13.461798+00:00",
+      "completed_at": "2026-03-15T04:11:40.478365+00:00"
+    },
+    "spec-fidelity": {
+      "status": "FAIL",
+      "attempt": 2,
+      "output_file": "/config/workspace/IronClaude/.dev/releases/current/v2.24.5/spec-fidelity.md",
+      "started_at": "2026-03-15T04:13:30.498810+00:00",
+      "completed_at": "2026-03-15T04:15:38.526771+00:00"
+    }
+  },
+  "fidelity_status": "fail"
+}

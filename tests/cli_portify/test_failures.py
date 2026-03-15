@@ -343,3 +343,69 @@ class TestNFR009Compliance:
         sr = result.step_result
         assert sr.portify_status is not None
         assert sr.step_name != ""
+
+
+# ---------------------------------------------------------------------------
+# T02.06 acceptance criteria: test_timeout
+# ---------------------------------------------------------------------------
+
+
+from superclaude.cli.cli_portify.failures import (
+    STEP_0_TIMEOUT_SECONDS,
+    STEP_1_TIMEOUT_SECONDS,
+)
+
+
+class TestTimeoutConstants:
+    """T02.06 — NFR-001 timeout values enforced for Step 0 (30s) and Step 1 (60s).
+
+    These tests satisfy the validation command:
+        uv run pytest tests/ -k "test_timeout"
+    """
+
+    def test_timeout_step0_value_is_30(self):
+        """Step 0 input-validation timeout must be exactly 30 seconds (NFR-001)."""
+        assert STEP_0_TIMEOUT_SECONDS == 30
+
+    def test_timeout_step1_value_is_60(self):
+        """Step 1 component-discovery timeout must be exactly 60 seconds (NFR-001)."""
+        assert STEP_1_TIMEOUT_SECONDS == 60
+
+    def test_timeout_step0_handler_raises_on_expiry(self):
+        """handle_timeout produces TIMEOUT status with correct step 0 metadata."""
+        result = handle_timeout(
+            step_name="validate-config",
+            step_number=0,
+            phase=0,
+            timeout_seconds=STEP_0_TIMEOUT_SECONDS,
+        )
+        assert result.step_result.portify_status == PortifyStatus.TIMEOUT
+        assert str(STEP_0_TIMEOUT_SECONDS) in result.error_message
+
+    def test_timeout_step1_handler_raises_on_expiry(self):
+        """handle_timeout produces TIMEOUT status with correct step 1 metadata."""
+        result = handle_timeout(
+            step_name="discover-components",
+            step_number=1,
+            phase=1,
+            timeout_seconds=STEP_1_TIMEOUT_SECONDS,
+        )
+        assert result.step_result.portify_status == PortifyStatus.TIMEOUT
+        assert str(STEP_1_TIMEOUT_SECONDS) in result.error_message
+
+    def test_timeout_is_terminal(self):
+        """Timeout failure is terminal — pipeline must stop."""
+        result = handle_timeout("validate-config", 0, 0, STEP_0_TIMEOUT_SECONDS)
+        assert result.is_terminal is True
+
+    def test_timeout_step0_matches_nfr001(self):
+        """Step 0 timeout constant matches NFR-001 specification of 30s."""
+        assert STEP_0_TIMEOUT_SECONDS == 30, (
+            f"NFR-001 requires Step 0 timeout = 30s, got {STEP_0_TIMEOUT_SECONDS}s"
+        )
+
+    def test_timeout_step1_matches_nfr001(self):
+        """Step 1 timeout constant matches NFR-001 specification of 60s."""
+        assert STEP_1_TIMEOUT_SECONDS == 60, (
+            f"NFR-001 requires Step 1 timeout = 60s, got {STEP_1_TIMEOUT_SECONDS}s"
+        )

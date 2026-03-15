@@ -32,6 +32,40 @@ def sprint_group():
     pass
 
 
+def _check_fidelity(index_path: Path) -> tuple[bool, str]:
+    """Check sprint dir for spec-fidelity fail state.
+
+    Returns (blocked, message). blocked=True means execution should be blocked.
+    """
+    import json as _json
+
+    sprint_dir = index_path.parent
+    state_file = sprint_dir / ".roadmap-state.json"
+    if not state_file.exists():
+        return False, ""
+    try:
+        state = _json.loads(state_file.read_text())
+    except (ValueError, OSError):
+        return False, ""
+    if state.get("fidelity_status") != "fail":
+        return False, ""
+    deviations_summary = ""
+    fidelity_output = state.get("steps", {}).get("spec-fidelity", {}).get("output_file")
+    if fidelity_output:
+        fidelity_file = Path(fidelity_output)
+        if fidelity_file.exists():
+            lines = fidelity_file.read_text(errors="replace").splitlines()
+            high_lines = [ln for ln in lines if "HIGH" in ln or "### DEV-" in ln][:20]
+            deviations_summary = "\n".join(high_lines)
+    msg = (
+        f"Sprint blocked: spec-fidelity check FAILED.\n"
+        f"The tasklist was generated from a spec with unresolved HIGH severity deviations:\n"
+        f"{deviations_summary or '(see spec-fidelity.md for details)'}\n\n"
+        f"To override: add --force-fidelity-fail '<justification>' to your command."
+    )
+    return True, msg
+
+
 @sprint_group.command()
 @click.argument("index_path", type=click.Path(exists=True, path_type=Path))
 @click.option(
@@ -111,6 +145,23 @@ def sprint_group():
     default=False,
     help="Enable shadow mode: trailing gates run in parallel, results are metrics-only",
 )
+@click.option(
+    "--force-fidelity-fail",
+    "force_fidelity_fail",
+    default="",
+    metavar="JUSTIFICATION",
+    help=(
+        "Override fidelity block with a justification string, "
+        "e.g. --force-fidelity-fail 'reason here'. "
+        "Use --force-fidelity to override without a justification."
+    ),
+)
+@click.option(
+    "--force-fidelity",
+    "force_fidelity_fail",
+    flag_value="no justification provided",
+    help="Override fidelity block without providing a justification string.",
+)
 def run(
     index_path: Path,
     start_phase: int,
@@ -125,6 +176,7 @@ def run(
     stall_timeout: int,
     stall_action: str,
     shadow_gates: bool,
+    force_fidelity_fail: str,
 ):
     """Execute a sprint from a tasklist index.
 
@@ -158,6 +210,18 @@ def run(
     # Thread tmux session name into config when relaunched by launch_in_tmux
     if tmux_session_name:
         config.tmux_session_name = tmux_session_name
+
+    # Preflight: fidelity block
+    blocked, fidelity_msg = _check_fidelity(index_path)
+    if blocked:
+        if not force_fidelity_fail:
+            click.echo(fidelity_msg, err=True)
+            raise SystemExit(1)
+        else:
+            click.echo(
+                f"[WARN] Fidelity block overridden: {force_fidelity_fail}",
+                err=True,
+            )
 
     if dry_run:
         _print_dry_run(config)

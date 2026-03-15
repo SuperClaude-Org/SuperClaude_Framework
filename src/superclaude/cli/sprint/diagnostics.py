@@ -24,6 +24,7 @@ class FailureCategory(Enum):
     CRASH = "crash"
     ERROR = "error"
     UNKNOWN = "unknown"
+    CONTEXT_EXHAUSTION = "context_exhaustion"
 
 
 @dataclass
@@ -175,6 +176,15 @@ class FailureClassifier:
             evidence.append(f"Process timeout (exit code {exit_code})")
             bundle.classification_evidence = evidence
             return FailureCategory.TIMEOUT
+
+        # 2.5. Context exhaustion (prompt too long)
+        from .monitor import detect_prompt_too_long
+
+        output_file = bundle.phase_result.phase.file.parent.parent / "results" / f"phase-{bundle.phase_result.phase.number}-output.txt"
+        if exit_code != 0 and detect_prompt_too_long(output_file):
+            evidence.append(f"Context exhaustion detected (exit code {exit_code})")
+            bundle.classification_evidence = evidence
+            return FailureCategory.CONTEXT_EXHAUSTION
 
         # 3. Crash (non-zero exit, not timeout, low stall)
         if exit_code != 0 and bundle.stall_duration < 30:

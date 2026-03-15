@@ -15,6 +15,7 @@ from .logging_ import SprintLogger
 from .models import (
     GateOutcome,
     MonitorState,
+    Phase,
     PhaseResult,
     PhaseStatus,
     SprintConfig,
@@ -25,7 +26,7 @@ from .models import (
     TaskStatus,
     TurnLedger,
 )
-from .monitor import OutputMonitor, detect_error_max_turns
+from .monitor import OutputMonitor, detect_error_max_turns, detect_prompt_too_long
 from .notify import notify_phase_complete, notify_sprint_complete
 from .process import ClaudeProcess, SignalHandler
 from .tmux import update_tail_pane
@@ -660,6 +661,22 @@ def execute_sprint(config: SprintConfig):
                 exit_code=exit_code,
                 result_file=config.result_file(phase),
                 output_file=config.output_file(phase),
+                config=config,
+                phase=phase,
+                started_at=started_at.timestamp(),
+            )
+
+            # Write executor result file for downstream consumers.
+            # Written AFTER status determination to avoid circularity.
+            # Overwrites any agent-written file — executor is authoritative.
+            _write_executor_result_file(
+                config=config,
+                phase=phase,
+                status=status,
+                exit_code=exit_code,
+                monitor_state=monitor.state,
+                started_at=started_at,
+                finished_at=finished_at,
             )
 
             # Collect stderr size for telemetry
@@ -762,10 +779,152 @@ def execute_sprint(config: SprintConfig):
         raise SystemExit(_exitcode)
 
 
+def _classify_from_result_file(
+    result_file: Path,
+    started_at: float,
+) -> PhaseStatus | None:
+    """Classify phase outcome from the agent-written result file.
+
+    Returns a PhaseStatus if the result file exists, is fresh (mtime > started_at),
+    and contains a recognizable EXIT_RECOMMENDATION. Returns None if the file is
+    missing, stale, or unreadable.
+    """
+    if not result_file.exists():
+        return None
+    try:
+        mtime = result_file.stat().st_mtime
+    except OSError:
+        return None
+    if started_at > 0 and mtime < started_at:
+        # Stale file from a previous run — do not trust
+        return None
+    try:
+        content = result_file.read_text(errors="replace")
+    except OSError:
+        return None
+    upper = content.upper()
+    if "EXIT_RECOMMENDATION: HALT" in upper:
+        return PhaseStatus.HALT
+    if "EXIT_RECOMMENDATION: CONTINUE" in upper:
+        return PhaseStatus.PASS_RECOVERED
+    if re.search(r"status:\s*PASS\b", content, re.IGNORECASE):
+        return PhaseStatus.PASS_RECOVERED
+    if re.search(r"status:\s*FAIL(?:ED|URE)?\b", content, re.IGNORECASE):
+        return PhaseStatus.HALT
+    if re.search(r"status:\s*PARTIAL\b", content, re.IGNORECASE):
+        return PhaseStatus.INCOMPLETE
+    return None
+
+
+def _check_checkpoint_pass(config: SprintConfig, phase: Phase) -> bool:
+    """Return True if the end-of-phase checkpoint file exists with status PASS."""
+    checkpoint_path = config.release_dir / "checkpoints" / f"CP-P{phase.number:02d}-END.md"
+    if not checkpoint_path.exists():
+        return False
+    try:
+        content = checkpoint_path.read_text(errors="replace").upper()
+        return "STATUS: PASS" in content or "**RESULT**: PASS" in content
+    except OSError:
+        return False
+
+
+def _check_contamination(config: SprintConfig, phase: Phase) -> list[str]:
+    """Return list of artifact files containing cross-phase task ID patterns."""
+    import re as _re
+
+    contaminated: list[str] = []
+    artifacts_dir = config.release_dir / "artifacts"
+    if not artifacts_dir.exists():
+        return contaminated
+    next_phase = phase.number + 1
+    pattern = _re.compile(rf"T{next_phase:02d}\.\d{{2}}", _re.IGNORECASE)
+    for md_file in artifacts_dir.rglob("*.md"):
+        try:
+            if pattern.search(md_file.read_text(errors="replace")):
+                contaminated.append(str(md_file.relative_to(config.release_dir)))
+        except OSError:
+            pass
+    return contaminated
+
+
+def _write_crash_recovery_log(
+    config: SprintConfig,
+    phase: Phase,
+    contaminated: list[str],
+) -> None:
+    """Append crash recovery entry to results/crash_recovery_log.md."""
+    log_path = config.results_dir / "crash_recovery_log.md"
+    entry = (
+        f"\n## Phase {phase.number} — PASS_RECOVERED Recovery\n"
+        f"**Timestamp**: {datetime.now(timezone.utc).isoformat()}\n"
+        f"**Checkpoint**: checkpoints/CP-P{phase.number:02d}-END.md (PASS)\n"
+        f"**Contamination check**: "
+        + ("CLEAN" if not contaminated else f"WARNING — {len(contaminated)} file(s): {contaminated}")
+        + "\n"
+        "**Action**: Phase reclassified ERROR→PASS_RECOVERED.\n"
+    )
+    try:
+        with open(log_path, "a") as f:
+            f.write(entry)
+    except OSError:
+        pass
+
+
+def _write_executor_result_file(
+    config: SprintConfig,
+    phase: Phase,
+    status: PhaseStatus,
+    exit_code: int,
+    monitor_state: MonitorState,
+    started_at: datetime,
+    finished_at: datetime,
+) -> None:
+    """Write executor-sourced result file for downstream consumers.
+
+    This is written AFTER _determine_phase_status returns, so it does not
+    create circularity. It provides a deterministic result file even when
+    the agent failed to write one.
+    """
+    duration = (finished_at - started_at).total_seconds()
+    recommendation = "CONTINUE" if status.is_success else "HALT"
+    content = (
+        "---\n"
+        f"phase: {phase.number}\n"
+        f"status: {'PASS' if status.is_success else 'FAIL'}\n"
+        f"tasks_total: 1\n"
+        f"tasks_passed: {1 if status.is_success else 0}\n"
+        f"tasks_failed: {0 if status.is_success else 1}\n"
+        "---\n"
+        "\n"
+        f"# Phase {phase.number} — Executor Result Report\n"
+        "\n"
+        f"| Phase | Status | Exit Code | Duration |\n"
+        f"|-------|--------|-----------|----------|\n"
+        f"| {phase.number} | {status.value} | {exit_code} | {duration:.1f}s |\n"
+        "\n"
+        f"**Source**: executor (not agent self-report)\n"
+        f"**Output bytes**: {monitor_state.output_bytes}\n"
+        f"**Last task ID**: {monitor_state.last_task_id or 'n/a'}\n"
+        f"**Files changed**: {monitor_state.files_changed}\n"
+        "\n"
+        f"EXIT_RECOMMENDATION: {recommendation}\n"
+    )
+    result_path = config.result_file(phase)
+    try:
+        result_path.parent.mkdir(parents=True, exist_ok=True)
+        result_path.write_text(content)
+    except OSError:
+        pass  # Non-fatal — best effort
+
+
 def _determine_phase_status(
     exit_code: int,
     result_file: Path,
     output_file: Path,
+    *,
+    config: SprintConfig | None = None,
+    phase: Phase | None = None,
+    started_at: float = 0.0,
 ) -> PhaseStatus:
     """Parse result file and exit code to determine phase status.
 
@@ -781,6 +940,26 @@ def _determine_phase_status(
     if exit_code == 124:
         return PhaseStatus.TIMEOUT
     if exit_code != 0:
+        # Path 1 — Specific: context exhaustion (Spec B S2)
+        # detect_prompt_too_long reads NDJSON output for "Prompt is too long"
+        if detect_prompt_too_long(output_file):
+            # Check if the agent managed to write a result file before exhaustion
+            result_status = _classify_from_result_file(result_file, started_at)
+            if result_status is not None:
+                return result_status
+            # No valid result file — context exhausted without completing
+            return PhaseStatus.INCOMPLETE
+
+        # Path 2 — General: checkpoint inference (Spec A SOL-C)
+        # Reads agent-written checkpoint files (pre-crash evidence)
+        if config is not None and phase is not None:
+            if _check_checkpoint_pass(config, phase):
+                contaminated = _check_contamination(config, phase)
+                _write_crash_recovery_log(config, phase, contaminated)
+                if not contaminated:
+                    return PhaseStatus.PASS_RECOVERED
+
+        # Path 3 — Default: unchanged
         return PhaseStatus.ERROR
 
     if result_file.exists():

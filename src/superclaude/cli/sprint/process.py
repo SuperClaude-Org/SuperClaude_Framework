@@ -115,7 +115,6 @@ class ClaudeProcess(_PipelineClaudeProcess):
     def build_prompt(self) -> str:
         """Build the /sc:task-unified prompt for this phase."""
         pn = self.phase.number
-        result_file = self.config.result_file(self.phase)
         phase_file = self.phase.file
 
         return (
@@ -134,20 +133,9 @@ class ClaudeProcess(_PipelineClaudeProcess):
             f"do not continue to next task\n"
             f"- For all other tier failures, log the failure and continue\n"
             f"\n"
-            f"## Completion Protocol\n"
-            f"When ALL tasks in this phase are complete "
-            f"(or halted on STRICT failure):\n"
-            f"1. Write a phase completion report to {result_file} containing:\n"
-            f"   - YAML frontmatter with: phase, status (PASS|FAIL|PARTIAL), "
-            f"tasks_total, tasks_passed, tasks_failed\n"
-            f"   - Per-task status table: Task ID, Title, Tier, Status "
-            f"(pass/fail/skip), Evidence\n"
-            f"   - Files modified (list all paths)\n"
-            f"   - Blockers for next phase (if any)\n"
-            f"   - The literal string EXIT_RECOMMENDATION: CONTINUE "
-            f"or EXIT_RECOMMENDATION: HALT\n"
-            f"2. If any task produced file changes, list them under "
-            f"## Files Modified\n"
+            f"## Scope Boundary\n"
+            f"- After completing all tasks, STOP immediately.\n"
+            f"- Do not read, open, or act on any subsequent phase file.\n"
             f"\n"
             f"## Important\n"
             f"- This is Phase {pn} of a multi-phase sprint\n"

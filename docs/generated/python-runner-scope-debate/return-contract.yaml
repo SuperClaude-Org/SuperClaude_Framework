@@ -1,0 +1,66 @@
+---
+# Adversarial Debate Return Contract
+# Topic: Python Runner Task Execution Scope (Q4)
+
+status: COMPLETE
+convergence_score: 0.76
+selected_variant: B3
+selected_label: "Full mini-executor"
+
+artifacts:
+  diff_analysis: /config/workspace/IronClaude/docs/generated/python-runner-scope-debate/diff-analysis.md
+  debate_transcript: /config/workspace/IronClaude/docs/generated/python-runner-scope-debate/debate-transcript.md
+  base_selection: /config/workspace/IronClaude/docs/generated/python-runner-scope-debate/base-selection.md
+  refactor_plan: /config/workspace/IronClaude/docs/generated/python-runner-scope-debate/refactor-plan.md
+  return_contract: /config/workspace/IronClaude/docs/generated/python-runner-scope-debate/return-contract.yaml
+
+scoring_summary:
+  B1_weighted: 6.55
+  B2_weighted: 6.80
+  B3_weighted: 8.15
+  qualitative_winner: B3
+  margin: 1.35  # B3 - B2
+
+recommendation: |
+  B3 (Full mini-executor) is the clear winner across both quantitative and
+  qualitative evaluation. It scores highest on reliability (deterministic
+  classification), token efficiency (zero Claude API calls for EXEMPT tasks),
+  and architectural fit (fully populates existing TaskResult model).
+
+  Its only weakness is complexity (~360 LoC vs B1's ~90), but this is
+  mitigated by the trivial nature of the conditional logic (exit code +
+  output presence check) and the comprehensive test suite in the refactoring
+  plan.
+
+  Key design decisions from the debate:
+  1. Adopt B2's structured artifact template for evidence files
+  2. Adopt B1's fallback path for non-EXEMPT tasks
+  3. Route via _is_exempt_empirical() gate in _run_task_subprocess()
+  4. Single-line rollback possible by removing the routing gate
+
+integrations_from_other_variants:
+  from_B1:
+    - "Fallback to ClaudeProcess for non-EXEMPT tasks"
+    - "Raw stdout/stderr capture alongside structured evidence"
+  from_B2:
+    - "Structured evidence.md artifact template"
+
+unresolved_conflicts:
+  - id: UC-1
+    description: "Whether future task types will require more complex conditional logic beyond exit_code + output checks"
+    resolution: "Deferred -- will be addressed if/when such tasks appear. Fallback path to ClaudeProcess covers this case."
+  - id: UC-2
+    description: "Whether B2's artifact-only approach has independent value as a stepping stone"
+    resolution: "Resolved by adopting B2's artifact template INTO B3. B2 as a standalone variant is not recommended."
+
+new_files:
+  - src/superclaude/cli/sprint/shell_runner.py
+  - tests/sprint/test_shell_runner.py
+
+modified_files:
+  - src/superclaude/cli/sprint/executor.py
+
+estimated_loc:
+  new: 270-350
+  modified: 30-40
+  tests: 150-200

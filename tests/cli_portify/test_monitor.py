@@ -309,3 +309,70 @@ class TestDiagnosticReport:
         )
         assert "Phase Timings" in report
         assert "Phase 1" in report
+
+
+# ---------------------------------------------------------------------------
+# T03.11 acceptance criteria: test_output_monitor
+# ---------------------------------------------------------------------------
+
+
+class TestOutputMonitor:
+    """T03.11 — OutputMonitor tracks all 8 metrics and detects stalls.
+
+    Validation command: uv run pytest tests/ -k "test_output_monitor"
+    """
+
+    def test_output_monitor_instantiates(self):
+        from superclaude.cli.cli_portify.monitor import OutputMonitor
+        mon = OutputMonitor()
+        assert mon.state.output_bytes == 0
+        assert mon.state.growth_rate_bps == 0.0
+
+    def test_output_monitor_tracks_output_bytes(self):
+        from superclaude.cli.cli_portify.monitor import OutputMonitor
+        mon = OutputMonitor()
+        mon.update(1024)
+        assert mon.state.output_bytes == 1024
+
+    def test_output_monitor_tracks_events(self):
+        from superclaude.cli.cli_portify.monitor import OutputMonitor
+        mon = OutputMonitor()
+        mon.update(100)
+        mon.update(200)
+        assert mon.state.events == 2
+
+    def test_output_monitor_tracks_line_count(self):
+        from superclaude.cli.cli_portify.monitor import OutputMonitor
+        mon = OutputMonitor()
+        mon.update(100, new_lines=5)
+        mon.update(200, new_lines=3)
+        assert mon.state.line_count == 8
+
+    def test_output_monitor_stall_detection_triggers_kill(self):
+        from superclaude.cli.cli_portify.monitor import OutputMonitor
+        killed = [False]
+
+        def kill():
+            killed[0] = True
+
+        import time
+        mon = OutputMonitor(
+            stall_threshold_bps=1000.0,  # High threshold → immediate stall
+            stall_timeout_seconds=0.0,   # Zero timeout → trigger immediately
+            kill_fn=kill,
+        )
+        # First call establishes baseline
+        mon.update(0)
+        # Second call with no byte growth triggers stall → kill
+        time.sleep(0.01)
+        mon.update(0)
+        assert killed[0] is True
+
+    def test_output_monitor_has_all_eight_fields(self):
+        from superclaude.cli.cli_portify.models import MonitorState
+        fields = set(MonitorState.__dataclass_fields__.keys())
+        expected = {
+            "output_bytes", "growth_rate_bps", "stall_seconds", "events",
+            "line_count", "convergence_iteration", "findings_count", "placeholder_count",
+        }
+        assert expected == fields

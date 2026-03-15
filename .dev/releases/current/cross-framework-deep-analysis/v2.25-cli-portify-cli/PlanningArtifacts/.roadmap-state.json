@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "spec_file": "/config/workspace/IronClaude/.dev/releases/backlog/portify-cli-portify/portify-spec.md",
+  "spec_hash": "927f9ad971ccdc0b164576f6e3e2ac8b0430355f2d9d9d604303619d2eda959e",
+  "agents": [
+    {
+      "model": "opus",
+      "persona": "architect"
+    },
+    {
+      "model": "haiku",
+      "persona": "analyzer"
+    }
+  ],
+  "depth": "deep",
+  "last_run": "2026-03-14T07:52:11.231344+00:00",
+  "steps": {
+    "extract": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/IronClaude/.dev/releases/backlog/portify-cli-portify/extraction.md",
+      "started_at": "2026-03-14T07:32:50.071841+00:00",
+      "completed_at": "2026-03-14T07:35:33.093321+00:00"
+    },
+    "generate-opus-architect": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/IronClaude/.dev/releases/backlog/portify-cli-portify/roadmap-opus-architect.md",
+      "started_at": "2026-03-14T07:35:33.094073+00:00",
+      "completed_at": "2026-03-14T07:37:45.111815+00:00"
+    },
+    "generate-haiku-analyzer": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/IronClaude/.dev/releases/backlog/portify-cli-portify/roadmap-haiku-analyzer.md",
+      "started_at": "2026-03-14T07:35:33.094285+00:00",
+      "completed_at": "2026-03-14T07:37:20.109116+00:00"
+    },
+    "diff": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/IronClaude/.dev/releases/backlog/portify-cli-portify/diff-analysis.md",
+      "started_at": "2026-03-14T07:37:45.112341+00:00",
+      "completed_at": "2026-03-14T07:39:05.124090+00:00"
+    },
+    "debate": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/IronClaude/.dev/releases/backlog/portify-cli-portify/debate-transcript.md",
+      "started_at": "2026-03-14T07:39:05.124343+00:00",
+      "completed_at": "2026-03-14T07:41:02.139093+00:00"
+    },
+    "score": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/IronClaude/.dev/releases/backlog/portify-cli-portify/base-selection.md",
+      "started_at": "2026-03-14T07:41:02.139412+00:00",
+      "completed_at": "2026-03-14T07:42:12.149131+00:00"
+    },
+    "merge": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/IronClaude/.dev/releases/backlog/portify-cli-portify/roadmap.md",
+      "started_at": "2026-03-14T07:42:12.149648+00:00",
+      "completed_at": "2026-03-14T07:45:27.174479+00:00"
+    },
+    "test-strategy": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/IronClaude/.dev/releases/backlog/portify-cli-portify/test-strategy.md",
+      "started_at": "2026-03-14T07:45:27.175389+00:00",
+      "completed_at": "2026-03-14T07:48:52.201578+00:00"
+    },
+    "spec-fidelity": {
+      "status": "FAIL",
+      "attempt": 2,
+      "output_file": "/config/workspace/IronClaude/.dev/releases/backlog/portify-cli-portify/spec-fidelity.md",
+      "started_at": "2026-03-14T07:50:36.217687+00:00",
+      "completed_at": "2026-03-14T07:52:11.230472+00:00"
+    }
+  },
+  "fidelity_status": "fail"
+}
