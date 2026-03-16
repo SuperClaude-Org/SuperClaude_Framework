@@ -6,7 +6,7 @@
 
 # Adversarial Validation: Cross-Spec Overlap & Conflict Analysis
 
-**Document validated**: `docs/generated/Phase8-SprintContext-cross-spec-overlap-analysis.md`
+**Document validated**: `config/workspace/IronClaude/.dev/releases/current/v2.25.7-Phase8HaltFix/Phase8-SprintContext-cross-spec-overlap-analysis.md`
 **Validation method**: Dual-agent adversarial review (architect + analyzer) against live codebase
 **Branch**: `v2.25-Roadmap-v5` (commit `8b70fd5`)
 **Convergence**: 95% (threshold: 80%)
@@ -257,9 +257,9 @@ Tests for `detect_prompt_too_long()`, PASS_RECOVERED properties, checkpoint infe
 
 ```yaml
 return_contract:
-  merged_output_path: "docs/generated/Phase8-SprintContext-cross-spec-overlap-analysis-adversarial/cross-spec-overlap-validation.md"
+  merged_output_path: "config/workspace/IronClaude/.dev/releases/current/v2.25.7-Phase8HaltFix/Phase8-SprintContext-cross-spec-overlap-analysis-adversarial/cross-spec-overlap-validation.md"
   convergence_score: 0.95
-  artifacts_dir: "docs/generated/Phase8-SprintContext-cross-spec-overlap-analysis-adversarial/adversarial/"
+  artifacts_dir: "config/workspace/IronClaude/.dev/releases/current/v2.25.7-Phase8HaltFix/Phase8-SprintContext-cross-spec-overlap-analysis-adversarial/adversarial/"
   status: "success"
   base_variant: "variant-2-architectural-validation"
   unresolved_conflicts: 0

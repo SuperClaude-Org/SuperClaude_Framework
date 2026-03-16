@@ -1,6 +1,6 @@
 # Implementation Workflow: Phase 8 Sprint Halt Fix
 
-**Source Analysis**: `docs/generated/phase8-halt-analysis.md`
+**Source Analysis**: `config/workspace/IronClaude/.dev/releases/current/v2.25.7-Phase8HaltFix/phase8-halt-analysis.md`
 **Generated**: 2026-03-15
 **Strategy**: Systematic — ordered by dependency, lowest-risk first
 **Scope**: `src/superclaude/cli/sprint/` subsystem only

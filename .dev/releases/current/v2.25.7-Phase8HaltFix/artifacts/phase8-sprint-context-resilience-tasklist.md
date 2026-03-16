@@ -719,7 +719,7 @@ T05.01 → T05.02 (lint check)
 | `src/superclaude/cli/sprint/diagnostics.py` | T06.05 | Fix output_file path in `FailureClassifier.classify()` |
 | `src/superclaude/cli/pipeline/process.py` | T06.02 | Add `env_vars` parameter to `build_env()` |
 | `tests/sprint/test_phase8_halt_fix.py` | T04.01–T04.09, T06.06 | Add new test classes |
-| `docs/generated/artifact-batching-architecture-spec.md` | T06.07 | New document (S4 design spec) |
+| `config/workspace/IronClaude/.dev/releases/current/v2.25.7-Phase8HaltFix/artifact-batching-architecture-spec.md` | T06.07 | New document (S4 design spec) |
 
 ---
 
@@ -1026,7 +1026,7 @@ class TestPassRecoveredContinuation:
 ### T06.07 — Write S4 artifact batching architecture spec document
 
 **Tier**: STANDARD
-**File**: `docs/generated/artifact-batching-architecture-spec.md` (new document)
+**File**: `config/workspace/IronClaude/.dev/releases/current/v2.25.7-Phase8HaltFix/artifact-batching-architecture-spec.md` (new document)
 **Source**: PRD Section 3.4, S4-R01 through S4-R05 — "Design-only. No implementation."
 
 **Content requirements** (from PRD S4-R01 through S4-R05):
@@ -1044,7 +1044,7 @@ class TestPassRecoveredContinuation:
 **Format**: Write as a design specification document with sections for motivation, proposed architecture, interface definitions, and implementation trigger criteria. Include Python pseudocode for the class interfaces.
 
 **Acceptance criteria**:
-- Document exists at `docs/generated/artifact-batching-architecture-spec.md`
+- Document exists at `config/workspace/IronClaude/.dev/releases/current/v2.25.7-Phase8HaltFix/artifact-batching-architecture-spec.md`
 - Covers all 5 S4 requirements
 - Marked clearly as "Design Only — Not Implemented" in the header
 - Links back to the PRD section 3.4 for context
@@ -1054,7 +1054,7 @@ class TestPassRecoveredContinuation:
 ### T06.08 — Document S3 empirical validation requirement as pre-merge gate
 
 **Tier**: LIGHT
-**File**: `docs/generated/artifact-batching-architecture-spec.md` OR a new `docs/generated/s3-empirical-validation-gate.md`
+**File**: `config/workspace/IronClaude/.dev/releases/current/v2.25.7-Phase8HaltFix/artifact-batching-architecture-spec.md` OR a new `config/workspace/IronClaude/.dev/releases/current/v2.25.7-Phase8HaltFix/s3-empirical-validation-gate.md`
 **Source**: PRD S3 convergence note — "Pre-merge validation requirement: Measure context consumption for at least one phase execution with and without the index accessible."
 
 **Requirement**: Before merging the S3 directory isolation changes (T01.01–T01.04, T02.01–T02.02), validate empirically that the `tasklist-index.md` is actually being loaded by the agent subprocess. If context delta is <5K tokens, the S3 changes provide less benefit than the ~14K estimate.

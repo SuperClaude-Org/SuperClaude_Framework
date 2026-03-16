@@ -1,7 +1,7 @@
 # Cross-Spec Overlap & Conflict Analysis
 
-**Spec A**: [`docs/generated/phase8-halt-fix.md`](../../docs/generated/phase8-halt-fix.md) — Phase 8 Halt Fix
-**Spec B**: [`docs/generated/sprint-context-exhaustion-prd.md`](../../docs/generated/sprint-context-exhaustion-prd.md) — Context Exhaustion PRD
+**Spec A**: [`config/workspace/IronClaude/.dev/releases/current/v2.25.7-Phase8HaltFix/phase8-halt-fix.md`](../../config/workspace/IronClaude/.dev/releases/current/v2.25.7-Phase8HaltFix/phase8-halt-fix.md) — Phase 8 Halt Fix
+**Spec B**: [`config/workspace/IronClaude/.dev/releases/current/v2.25.7-Phase8HaltFix/sprint-context-exhaustion-prd.md`](../../config/workspace/IronClaude/.dev/releases/current/v2.25.7-Phase8HaltFix/sprint-context-exhaustion-prd.md) — Context Exhaustion PRD
 **Subsystem**: `src/superclaude/cli/sprint/`
 **Generated**: 2026-03-15
 **Method**: Symbol-grounded analysis against current codebase state (commit `8b70fd5`)

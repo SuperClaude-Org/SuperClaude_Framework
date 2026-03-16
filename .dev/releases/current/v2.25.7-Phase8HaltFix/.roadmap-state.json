@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "spec_file": "/config/workspace/IronClaude/docs/generated/v2.25.7-phase8-sprint-context-resilience-prd.md",
+  "spec_hash": "f2cb833578f0a1f36e5049293bd040860ba3b5392ee87552abd8f78f84deb088",
+  "agents": [
+    {
+      "model": "opus",
+      "persona": "architect"
+    },
+    {
+      "model": "haiku",
+      "persona": "architect"
+    }
+  ],
+  "depth": "standard",
+  "last_run": "2026-03-16T02:24:03.642369+00:00",
+  "steps": {
+    "extract": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/IronClaude/docs/generated/extraction.md",
+      "started_at": "2026-03-16T02:07:02.441590+00:00",
+      "completed_at": "2026-03-16T02:08:39.459832+00:00"
+    },
+    "generate-opus-architect": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/IronClaude/docs/generated/roadmap-opus-architect.md",
+      "started_at": "2026-03-16T02:08:39.460593+00:00",
+      "completed_at": "2026-03-16T02:09:58.474267+00:00"
+    },
+    "generate-haiku-architect": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/IronClaude/docs/generated/roadmap-haiku-architect.md",
+      "started_at": "2026-03-16T02:08:39.460812+00:00",
+      "completed_at": "2026-03-16T02:10:15.476870+00:00"
+    },
+    "diff": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/IronClaude/docs/generated/diff-analysis.md",
+      "started_at": "2026-03-16T02:10:15.477407+00:00",
+      "completed_at": "2026-03-16T02:11:29.489692+00:00"
+    },
+    "debate": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/IronClaude/docs/generated/debate-transcript.md",
+      "started_at": "2026-03-16T02:11:29.490168+00:00",
+      "completed_at": "2026-03-16T02:13:04.508636+00:00"
+    },
+    "score": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/IronClaude/docs/generated/base-selection.md",
+      "started_at": "2026-03-16T02:13:04.509231+00:00",
+      "completed_at": "2026-03-16T02:14:12.523693+00:00"
+    },
+    "merge": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/IronClaude/docs/generated/roadmap.md",
+      "started_at": "2026-03-16T02:14:12.523942+00:00",
+      "completed_at": "2026-03-16T02:16:15.546360+00:00"
+    },
+    "test-strategy": {
+      "status": "PASS",
+      "attempt": 1,
+      "output_file": "/config/workspace/IronClaude/docs/generated/test-strategy.md",
+      "started_at": "2026-03-16T02:16:15.547034+00:00",
+      "completed_at": "2026-03-16T02:20:59.601852+00:00"
+    },
+    "spec-fidelity": {
+      "status": "FAIL",
+      "attempt": 2,
+      "output_file": "/config/workspace/IronClaude/docs/generated/spec-fidelity.md",
+      "started_at": "2026-03-16T02:22:33.622669+00:00",
+      "completed_at": "2026-03-16T02:24:03.641785+00:00"
+    }
+  },
+  "fidelity_status": "fail"
+}

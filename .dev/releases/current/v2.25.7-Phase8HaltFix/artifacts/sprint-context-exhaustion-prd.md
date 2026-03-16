@@ -136,7 +136,7 @@ Three changes implemented together provide defense in depth:
 | S4-R04 | Design manifest capture (lightweight YAML per task: task_id, status, key_decision) for decision record preservation | P2 |
 | S4-R05 | Define implementation trigger: second context exhaustion occurrence OR phase spec with >8 deliverables OR `(artifact_count * 1500) > remaining_budget * 0.5` | P2 |
 
-**Output**: Architecture spec document at `docs/generated/artifact-batching-architecture-spec.md`
+**Output**: Architecture spec document at `config/workspace/IronClaude/.dev/releases/current/v2.25.7-Phase8HaltFix/artifact-batching-architecture-spec.md`
 
 **Convergence**: 82.5% (debate agreed on design-now-defer-implementation; contested default mode and quality gap magnitude)
 
@@ -230,12 +230,12 @@ Phase 3 — Triggered by recurrence:
 
 | Document | Path |
 |----------|------|
-| Solution #2 Brainstorm | `docs/generated/sprint-context-exhaustion-solution2-brainstorm.md` |
-| Solution #3 Brainstorm | `docs/generated/solution-3-split-phase-prompts-brainstorm.md` |
-| Solution #4 Brainstorm | `docs/generated/solution-4-artifact-batching-brainstorm.md` |
-| Solution #2 Adversarial Debate | `docs/generated/adversarial-solution2-debate.md` |
-| Solution #3 Adversarial Debate | `docs/generated/adversarial-solution3-debate.md` |
-| Solution #4 Adversarial Debate | `docs/generated/adversarial-solution4-debate.md` |
+| Solution #2 Brainstorm | `config/workspace/IronClaude/.dev/releases/current/v2.25.7-Phase8HaltFix/sprint-context-exhaustion-solution2-brainstorm.md` |
+| Solution #3 Brainstorm | `config/workspace/IronClaude/.dev/releases/current/v2.25.7-Phase8HaltFix/solution-3-split-phase-prompts-brainstorm.md` |
+| Solution #4 Brainstorm | `config/workspace/IronClaude/.dev/releases/current/v2.25.7-Phase8HaltFix/solution-4-artifact-batching-brainstorm.md` |
+| Solution #2 Adversarial Debate | `config/workspace/IronClaude/.dev/releases/current/v2.25.7-Phase8HaltFix/adversarial-solution2-debate.md` |
+| Solution #3 Adversarial Debate | `config/workspace/IronClaude/.dev/releases/current/v2.25.7-Phase8HaltFix/adversarial-solution3-debate.md` |
+| Solution #4 Adversarial Debate | `config/workspace/IronClaude/.dev/releases/current/v2.25.7-Phase8HaltFix/adversarial-solution4-debate.md` |
 
 ---
 
