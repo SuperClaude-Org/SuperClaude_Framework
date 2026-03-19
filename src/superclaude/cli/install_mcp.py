@@ -202,8 +202,17 @@ def install_airis_gateway(dry_run: bool = False) -> bool:
         click.echo(f"   ❌ Error downloading: {e}", err=True)
         return False
 
-    # Download mcp-config.json (backend server definitions for the gateway)
+    # Fix: mcp-config.json might have been incorrectly created as a directory by Docker
     mcp_config_file = install_dir / "mcp-config.json"
+    if mcp_config_file.is_dir():
+        click.echo(
+            "   🔧 Fixing mcp-config.json (was directory, converting to file)..."
+        )
+        import shutil
+
+        shutil.rmtree(mcp_config_file)
+
+    # Download mcp-config.json (backend server definitions for the gateway)
     if not mcp_config_file.exists():
         click.echo("   📥 Downloading MCP server configuration...")
         try:
@@ -268,6 +277,46 @@ def install_airis_gateway(dry_run: bool = False) -> bool:
             mcp_config_file.write_text('{"mcpServers": {}}')
     else:
         click.echo("   ✅ MCP server configuration already exists")
+
+    # Fix: config/gateway-config.yaml might have been incorrectly created as a directory
+    config_dir = install_dir / "config"
+    config_dir.mkdir(exist_ok=True)
+    gateway_config_file = config_dir / "gateway-config.yaml"
+    if gateway_config_file.is_dir():
+        click.echo(
+            "   🔧 Fixing gateway-config.yaml (was directory, converting to file)..."
+        )
+        import shutil
+
+        shutil.rmtree(gateway_config_file)
+
+    # Download config/gateway-config.yaml (capability-driven configuration)
+    if not gateway_config_file.exists():
+        click.echo("   📥 Downloading gateway configuration...")
+        try:
+            result = _run_command(
+                [
+                    "curl",
+                    "-fsSL",
+                    "-o",
+                    str(gateway_config_file),
+                    "https://raw.githubusercontent.com/agiletec-inc/airis-mcp-gateway/main/config/gateway-config.yaml",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
+            if result.returncode != 0:
+                click.echo(
+                    "   ⚠️  Could not download gateway-config.yaml, creating minimal config"
+                )
+                gateway_config_file.write_text('version: "1.0"\ncapabilities: {}')
+            else:
+                click.echo("   ✅ Gateway configuration downloaded")
+        except Exception:
+            gateway_config_file.write_text('version: "1.0"\ncapabilities: {}')
+    else:
+        click.echo("   ✅ Gateway configuration already exists")
 
     # Create .env file if it doesn't exist
     env_file = install_dir / ".env"

@@ -109,8 +109,12 @@ poetry.lock
 *.backup
 *.bak
 
+# Test-generated artifacts
+docs/mistakes/
+docs/memory/solutions_learned.jsonl
+docs/memory/patterns_learned.jsonl
+
 # Project specific
-Tests/
 temp/
 tmp/
 .cache/
