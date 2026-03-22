@@ -1,52 +1,52 @@
 # Pull Request
 
-## 概要
+## Summary
 
-<!-- このPRの目的を簡潔に説明 -->
+<!-- Briefly describe the purpose of this PR -->
 
-## 変更内容
+## Changes
 
-<!-- 主な変更点をリストアップ -->
+<!-- List the main changes -->
 -
 
-## 関連Issue
+## Related Issue
 
-<!-- 関連するIssue番号があれば記載 -->
+<!-- Reference related issue numbers if applicable -->
 Closes #
 
-## チェックリスト
+## Checklist
 
 ### Git Workflow
-- [ ] 外部貢献の場合: Fork → topic branch → upstream PR の流れに従った
-- [ ] コラボレーターの場合: topic branch使用（main直コミットしていない）
-- [ ] `git rebase upstream/main` 済み（コンフリクトなし）
-- [ ] コミットメッセージは Conventional Commits に準拠（`feat:`, `fix:`, `docs:` など）
+- [ ] External contributors: Followed Fork → topic branch → upstream PR flow
+- [ ] Collaborators: Used topic branch (no direct commits to main)
+- [ ] Rebased on upstream/main (`git rebase upstream/main`, no conflicts)
+- [ ] Commit messages follow Conventional Commits (`feat:`, `fix:`, `docs:`, etc.)
 
 ### Code Quality
-- [ ] 変更は1目的に限定（巨大PRでない、目安: ~200行差分以内）
-- [ ] 既存のコード規約・パターンに従っている
-- [ ] 新機能/修正には適切なテストを追加
-- [ ] Lint/Format/Typecheck すべてパス
-- [ ] CI/CD パイプライン成功（グリーン状態）
+- [ ] Changes are limited to a single purpose (not a mega-PR; aim for ~200 lines diff)
+- [ ] Follows existing code conventions and patterns
+- [ ] Added appropriate tests for new features/fixes
+- [ ] Lint/Format/Typecheck all pass
+- [ ] CI/CD pipeline succeeds (green status)
 
 ### Security
-- [ ] シークレット・認証情報をコミットしていない
-- [ ] `.gitignore` で必要なファイルを除外済み
-- [ ] 破壊的変更なし／ある場合は `!` 付きコミット + MIGRATION.md 記載
+- [ ] No secrets or credentials committed
+- [ ] Necessary files excluded via `.gitignore`
+- [ ] No breaking changes, or if so: `!` commit + MIGRATION.md documented
 
 ### Documentation
-- [ ] 必要に応じてドキュメントを更新（README, CLAUDE.md, docs/など）
-- [ ] 複雑なロジックにコメント追加
-- [ ] APIの変更がある場合は適切に文書化
+- [ ] Updated documentation as needed (README, CLAUDE.md, docs/, etc.)
+- [ ] Added comments for complex logic
+- [ ] API changes are properly documented
 
-## テスト方法
+## How to Test
 
-<!-- このPRの動作確認方法 -->
+<!-- Describe how to verify this PR works -->
 
-## スクリーンショット（該当する場合）
+## Screenshots (if applicable)
 
-<!-- UIの変更がある場合はスクリーンショットを添付 -->
+<!-- Attach screenshots for UI changes -->
 
-## 備考
+## Notes
 
-<!-- レビュワーに伝えたいこと、技術的な判断の背景など -->
+<!-- Anything you want reviewers to know, technical decisions, etc. -->

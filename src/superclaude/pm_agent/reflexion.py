@@ -165,14 +165,53 @@ class ReflexionPattern:
         """
         Search for similar error in mindbase (semantic search)
 
+        Attempts to query the mindbase MCP server for semantically similar
+        error patterns. Falls back gracefully if mindbase is unavailable.
+
         Args:
             error_signature: Error signature to search
 
         Returns:
             Solution dict if found, None if mindbase unavailable or no match
         """
-        # TODO: Implement mindbase integration
-        # For now, return None (fallback to file search)
+        import subprocess
+
+        try:
+            # Query mindbase via its HTTP API (default port from AIRIS config)
+            result = subprocess.run(
+                [
+                    "curl", "-sf", "--max-time", "3",
+                    "-X", "POST",
+                    "http://localhost:18003/api/search",
+                    "-H", "Content-Type: application/json",
+                    "-d", json.dumps({"query": error_signature, "limit": 1}),
+                ],
+                capture_output=True,
+                text=True,
+                timeout=5,
+            )
+
+            if result.returncode != 0:
+                return None
+
+            response = json.loads(result.stdout)
+            results = response.get("results", [])
+
+            if results and results[0].get("score", 0) > 0.7:
+                match = results[0]
+                return {
+                    "solution": match.get("solution"),
+                    "root_cause": match.get("root_cause"),
+                    "prevention": match.get("prevention"),
+                    "source": "mindbase",
+                    "similarity": match.get("score"),
+                }
+
+        except (subprocess.TimeoutExpired, subprocess.SubprocessError, json.JSONDecodeError):
+            pass  # Mindbase unavailable, fall through to local search
+        except FileNotFoundError:
+            pass  # curl not available
+
         return None
 
     def _search_local_files(self, error_signature: str) -> Optional[Dict[str, Any]]:

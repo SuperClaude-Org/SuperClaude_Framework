@@ -17,7 +17,7 @@
 <a href="https://github.com/SuperClaude-Org/SuperQwen_Framework" target="_blank">
   <img src="https://img.shields.io/badge/Try-SuperQwen_Framework-orange" alt="Try SuperQwen Framework"/>
 </a>
-  <img src="https://img.shields.io/badge/version-4.2.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-4.3.0-blue" alt="Version">
   <a href="https://github.com/SuperClaude-Org/SuperClaude_Framework/actions/workflows/test.yml">
     <img src="https://github.com/SuperClaude-Org/SuperClaude_Framework/actions/workflows/test.yml/badge.svg" alt="Tests">
   </a>
@@ -70,7 +70,7 @@
 
 | **Commands** | **Agents** | **Modes** | **MCP Servers** |
 |:------------:|:----------:|:---------:|:---------------:|
-| **30** | **16** | **7** | **8** |
+| **30** | **20** | **7** | **8** |
 | Slash Commands | Specialized AI | Behavioral | Integrations |
 
 30 slash commands covering the complete development lifecycle from brainstorming to deployment.
@@ -113,7 +113,7 @@ Claude Code is a product built and maintained by [Anthropic](https://www.anthrop
 > not yet available (planned for v5.0). For current installation
 > instructions, please follow the steps below for v4.x.
 
-### **Current Stable Version (v4.2.0)**
+### **Current Stable Version (v4.3.0)**
 
 SuperClaude currently uses slash commands.
 
@@ -260,7 +260,7 @@ For **2-3x faster** execution and **30-50% fewer tokens**, optionally install MC
 <td width="50%">
 
 ### 🤖 **Smarter Agent System**
-**16 specialized agents** with domain expertise:
+**20 specialized agents** with domain expertise:
 - PM Agent ensures continuous learning through systematic documentation
 - Deep Research agent for autonomous web research
 - Security engineer catches real vulnerabilities
@@ -471,7 +471,7 @@ The Deep Research system intelligently coordinates multiple tools:
   *All 30 commands organized by category*
 
 - 🤖 [**Agents Guide**](docs/user-guide/agents.md)  
-  *16 specialized agents*
+  *20 specialized agents*
 
 - 🎨 [**Behavioral Modes**](docs/user-guide/modes.md)  
   *7 adaptive modes*

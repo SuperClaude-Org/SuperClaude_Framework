@@ -98,10 +98,12 @@ Pipfile.lock
 # Poetry
 poetry.lock
 
-# Claude Code - only ignore user-specific files
+# Claude Code - only ignore user-specific files, keep settings.json and skills/
 .claude/history/
 .claude/cache/
 .claude/*.lock
+!.claude/settings.json
+!.claude/skills/
 
 # SuperClaude specific
 .serena/
@@ -110,7 +112,6 @@ poetry.lock
 *.bak
 
 # Project specific
-Tests/
 temp/
 tmp/
 .cache/
@@ -166,30 +167,8 @@ release-notes/
 changelog-temp/
 
 # Build artifacts (additional)
-*.deb
-*.rpm
-*.dmg
-*.pkg
 *.msi
 *.exe
-
-# IDE & Editor specific
-.vscode/settings.json
-.vscode/launch.json
-.idea/workspace.xml
-.idea/tasks.xml
-*.sublime-project
-*.sublime-workspace
-
-# System & OS
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-Desktop.ini
 $RECYCLE.BIN/
 
 # Personal files

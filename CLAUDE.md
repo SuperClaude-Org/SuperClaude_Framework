@@ -18,32 +18,61 @@ uv run python script.py          # Execute scripts
 
 ## 📂 Project Structure
 
-**Current v4.2.0 Architecture**: Python package with slash commands
+**Current v4.3.0 Architecture**: Python package with 30 commands, 20 agents, 7 modes
 
 ```
-# Claude Code Configuration (v4.2.0)
-.claude/
-├── settings.json        # User settings
-└── commands/            # Slash commands (installed via `superclaude install`)
-    ├── pm.md
-    ├── research.md
-    └── index-repo.md
+# Claude Code Configuration (v4.3.0)
+# Installed via `superclaude install` to user's home directory
+~/.claude/
+├── settings.json
+├── commands/sc/         # 30 slash commands (/sc:research, /sc:implement, etc.)
+│   ├── pm.md
+│   ├── research.md
+│   ├── implement.md
+│   └── ... (30 total)
+├── agents/              # 20 domain-specialist agents (@pm-agent, @system-architect, etc.)
+│   ├── pm-agent.md
+│   ├── system-architect.md
+│   └── ... (20 total)
+└── skills/              # Skills (confidence-check, etc.)
 
 # Python Package
-src/superclaude/         # Pytest plugin + CLI tools
-├── pytest_plugin.py     # Auto-loaded pytest integration
-├── pm_agent/            # confidence.py, self_check.py, reflexion.py
+src/superclaude/
+├── __init__.py          # Public API: ConfidenceChecker, SelfCheckProtocol, ReflexionPattern
+├── pytest_plugin.py     # Auto-loaded pytest integration (5 fixtures, 9 markers)
+├── pm_agent/            # confidence.py, self_check.py, reflexion.py, token_budget.py
 ├── execution/           # parallel.py, reflection.py, self_correction.py
-└── cli/                 # main.py, doctor.py, install_skill.py
+├── cli/                 # main.py, doctor.py, install_commands.py, install_mcp.py, install_skill.py
+├── commands/            # 30 slash command definitions (.md files)
+├── agents/              # 20 agent definitions (.md files)
+├── modes/               # 7 behavioral modes (.md files)
+├── skills/              # Installable skills (confidence-check, etc.)
+├── hooks/               # Claude Code hook definitions
+├── mcp/                 # MCP server configurations (10 servers)
+└── core/                # Core utilities
 
 # Project Files
-tests/                   # Python test suite
+tests/                   # Python test suite (136 tests)
+├── unit/                # Unit tests (auto-marked @pytest.mark.unit)
+└── integration/         # Integration tests (auto-marked @pytest.mark.integration)
 docs/                    # Documentation
 scripts/                 # Analysis tools (workflow metrics, A/B testing)
+plugins/                 # Exported plugin artefacts for distribution
 PLANNING.md              # Architecture, absolute rules
 TASK.md                  # Current tasks
 KNOWLEDGE.md             # Accumulated insights
 ```
+
+### Claude Code Integration Points
+
+SuperClaude integrates with Claude Code through these mechanisms:
+- **Slash Commands**: 30 commands installed to `~/.claude/commands/sc/` (e.g., `/sc:pm`, `/sc:research`)
+- **Agents**: 20 agents installed to `~/.claude/agents/` (e.g., `@pm-agent`, `@system-architect`)
+- **Skills**: Installed to `~/.claude/skills/` (e.g., confidence-check)
+- **Hooks**: Session lifecycle hooks in `src/superclaude/hooks/`
+- **Settings**: Project settings in `.claude/settings.json`
+- **Pytest Plugin**: Auto-loaded via entry point, provides fixtures and markers
+- **MCP Servers**: 8+ servers configurable via `superclaude mcp`
 
 ## 🔧 Development Workflow
 
@@ -115,11 +144,13 @@ Registered via `pyproject.toml` entry point, automatically available after insta
 - Automatic dependency analysis
 - Example: [Read files in parallel] → Analyze → [Edit files in parallel]
 
-### Slash Commands (v4.2.0)
+### Slash Commands, Agents & Modes (v4.3.0)
 
 - Install via: `pipx install superclaude && superclaude install`
-- Commands installed to: `~/.claude/commands/`
-- Available: `/pm`, `/research`, `/index-repo`, and 27 others
+- **30 Commands** installed to `~/.claude/commands/sc/` (e.g., `/sc:pm`, `/sc:research`, `/sc:implement`)
+- **20 Agents** installed to `~/.claude/agents/` (e.g., `@pm-agent`, `@system-architect`, `@deep-research`)
+- **7 Behavioral Modes**: Brainstorming, Business Panel, Deep Research, Introspection, Orchestration, Task Management, Token Efficiency
+- **Skills**: Installable to `~/.claude/skills/` (e.g., confidence-check)
 
 > **Note**: TypeScript plugin system planned for v5.0 ([#419](https://github.com/SuperClaude-Org/SuperClaude_Framework/issues/419))
 
@@ -241,7 +272,7 @@ superclaude mcp  # Interactive install, gateway is default (requires Docker)
 
 ## 🚀 Development & Installation
 
-### Current Installation Method (v4.2.0)
+### Current Installation Method (v4.3.0)
 
 **Standard Installation**:
 ```bash
@@ -275,7 +306,7 @@ See `docs/plugin-reorg.md` for details.
 ## 📊 Package Information
 
 **Package name**: `superclaude`
-**Version**: 4.2.0
+**Version**: 4.3.0
 **Python**: >=3.10
 **Build system**: hatchling (PEP 517)
 
@@ -287,3 +318,24 @@ See `docs/plugin-reorg.md` for details.
 - pytest>=7.0.0
 - click>=8.0.0
 - rich>=13.0.0
+
+## 🔌 Claude Code Native Features (for developers)
+
+SuperClaude extends Claude Code through its native extension points. When developing SuperClaude features, use these Claude Code capabilities:
+
+### Extension Points We Use
+- **Custom Commands** (`~/.claude/commands/sc/*.md`): 30 `/sc:*` commands
+- **Custom Agents** (`~/.claude/agents/*.md`): 20 domain-specialist agents
+- **Skills** (`~/.claude/skills/`): confidence-check skill
+- **Settings** (`.claude/settings.json`): Permission rules, hooks
+- **MCP Servers**: 8 pre-configured + AIRIS gateway
+- **Pytest Plugin**: Auto-loaded via entry point
+
+### Extension Points We Should Use More
+- **Hooks** (28 events): `SessionStart`, `Stop`, `PostToolUse`, `TaskCompleted` — ideal for PM Agent auto-restore, self-check validation, and reflexion triggers
+- **Skills System**: Commands should migrate to proper skills with YAML frontmatter for auto-triggering, tool restrictions, and effort overrides
+- **Plan Mode**: Could integrate with confidence checks (block implementation when < 70%)
+- **Settings Profiles**: Could provide recommended permission/hook configs per workflow
+- **Native Session Persistence**: `--continue`/`--resume` instead of custom memory files
+
+See `docs/user-guide/claude-code-integration.md` for the full gap analysis.

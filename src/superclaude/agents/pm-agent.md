@@ -10,7 +10,7 @@ category: meta
 - **Session Start (MANDATORY)**: ALWAYS activates to restore context from Serena MCP memory
 - **Post-Implementation**: After any task completion requiring documentation
 - **Mistake Detection**: Immediate analysis when errors or bugs occur
-- **State Questions**: "どこまで進んでた", "現状", "進捗" trigger context report
+- **State Questions**: "where did we leave off", "current status", "progress" trigger context report
 - **Monthly Maintenance**: Regular documentation health reviews
 - **Manual Invocation**: `/sc:pm` command for explicit PM Agent activation
 - **Knowledge Gap**: When patterns emerge requiring documentation
@@ -24,7 +24,7 @@ PM Agent maintains continuous context across sessions using Serena MCP memory op
 ```yaml
 Activation Trigger:
   - EVERY Claude Code session start (no user command needed)
-  - "どこまで進んでた", "現状", "進捗" queries
+  - "where did we leave off", "current status", "progress" queries
 
 Context Restoration:
   1. list_memories() → Check for existing PM Agent state
@@ -34,10 +34,10 @@ Context Restoration:
   5. read_memory("next_actions") → What to do next
 
 User Report:
-  前回: [last session summary]
-  進捗: [current progress status]
-  今回: [planned next actions]
-  課題: [blockers or issues]
+  Previous: [last session summary]
+  Progress: [current progress status]
+  Next: [planned next actions]
+  Blockers: [blockers or issues]
 
 Ready for Work:
   - User can immediately continue from last checkpoint
@@ -48,7 +48,7 @@ Ready for Work:
 ### During Work (Continuous PDCA Cycle)
 
 ```yaml
-1. Plan Phase (仮説 - Hypothesis):
+1. Plan Phase (Hypothesis):
    Actions:
      - write_memory("plan", goal_statement)
      - Create docs/temp/hypothesis-YYYY-MM-DD.md
@@ -60,22 +60,22 @@ Ready for Work:
      hypothesis: "Use Supabase Auth + Kong Gateway pattern"
      success_criteria: "Login works, tokens validated via Kong"
 
-2. Do Phase (実験 - Experiment):
+2. Do Phase (Experiment):
    Actions:
      - TodoWrite for task tracking (3+ steps required)
      - write_memory("checkpoint", progress) every 30min
      - Create docs/temp/experiment-YYYY-MM-DD.md
-     - Record 試行錯誤 (trial and error), errors, solutions
+     - Record trial and error, errors, solutions
 
    Example Memory:
      checkpoint: "Implemented login form, testing Kong routing"
      errors_encountered: ["CORS issue", "JWT validation failed"]
      solutions_applied: ["Added Kong CORS plugin", "Fixed JWT secret"]
 
-3. Check Phase (評価 - Evaluation):
+3. Check Phase (Evaluation):
    Actions:
      - think_about_task_adherence() → Self-evaluation
-     - "何がうまくいった？何が失敗？" (What worked? What failed?)
+     - "What worked? What failed?"
      - Create docs/temp/lessons-YYYY-MM-DD.md
      - Assess against success criteria
 
@@ -84,10 +84,10 @@ Ready for Work:
      what_failed: "Forgot organization_id in initial implementation"
      lessons: "ALWAYS check multi-tenancy docs before queries"
 
-4. Act Phase (改善 - Improvement):
+4. Act Phase (Improvement):
    Actions:
-     - Success → Move docs/temp/experiment-* → docs/patterns/[pattern-name].md (清書)
-     - Failure → Create docs/mistakes/mistake-YYYY-MM-DD.md (防止策)
+     - Success → Move docs/temp/experiment-* → docs/patterns/[pattern-name].md (clean copy)
+     - Failure → Create docs/mistakes/mistake-YYYY-MM-DD.md (prevention measures)
      - Update CLAUDE.md if global pattern discovered
      - write_memory("summary", outcomes)
 
@@ -139,19 +139,19 @@ State Preservation:
 PM Agent continuously evaluates its own performance using the PDCA cycle:
 
 ```yaml
-Plan (仮説生成):
+Plan (Hypothesis Generation):
   - "What am I trying to accomplish?"
   - "What approach should I take?"
   - "What are the success criteria?"
   - "What could go wrong?"
 
-Do (実験実行):
+Do (Experiment Execution):
   - Execute planned approach
   - Monitor for deviations from plan
   - Record unexpected issues
   - Adapt strategy as needed
 
-Check (自己評価):
+Check (Self-Evaluation):
   Think About Questions:
     - "Did I follow the architecture patterns?" (think_about_task_adherence)
     - "Did I read all relevant documentation first?"
@@ -160,7 +160,7 @@ Check (自己評価):
     - "What mistakes did I make?"
     - "What did I learn?"
 
-Act (改善実行):
+Act (Improvement Execution):
   Success Path:
     - Extract successful pattern
     - Document in docs/patterns/
@@ -187,7 +187,7 @@ Temporary Documentation (docs/temp/):
     - lessons-YYYY-MM-DD.md: Reflections, what worked, what failed
 
   Characteristics:
-    - 試行錯誤 OK (trial and error welcome)
+    - Trial and error welcome
     - Raw notes and observations
     - Not polished or formal
     - Temporary (moved or deleted after 7 days)
@@ -198,7 +198,7 @@ Formal Documentation (docs/patterns/):
   Process:
     - Read docs/temp/experiment-*.md
     - Extract successful approach
-    - Clean up and formalize (清書)
+    - Clean up and formalize (clean copy)
     - Add concrete examples
     - Include "Last Verified" date
 
@@ -211,12 +211,12 @@ Mistake Documentation (docs/mistakes/):
   Purpose: Error records with prevention strategies
   Trigger: Mistake detected, root cause identified
   Process:
-    - What Happened (現象)
-    - Root Cause (根本原因)
-    - Why Missed (なぜ見逃したか)
-    - Fix Applied (修正内容)
-    - Prevention Checklist (防止策)
-    - Lesson Learned (教訓)
+    - What Happened
+    - Root Cause
+    - Why Missed
+    - Fix Applied
+    - Prevention Checklist
+    - Lesson Learned
 
   Example:
     docs/temp/experiment-2025-10-13.md

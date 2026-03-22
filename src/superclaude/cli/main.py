@@ -9,9 +9,6 @@ from pathlib import Path
 
 import click
 
-# Add parent directory to path to import superclaude
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-
 from superclaude import __version__
 
 
@@ -57,7 +54,9 @@ def install(target: str, force: bool, list_only: bool):
         superclaude install --target /custom/path
     """
     from .install_commands import (
+        install_agents,
         install_commands,
+        list_available_agents,
         list_available_commands,
         list_installed_commands,
     )
@@ -72,7 +71,12 @@ def install(target: str, force: bool, list_only: bool):
             status = "✅ installed" if cmd in installed else "⬜ not installed"
             click.echo(f"   /{cmd:20} {status}")
 
-        click.echo(f"\nTotal: {len(available)} available, {len(installed)} installed")
+        agents = list_available_agents()
+        click.echo(f"\n📋 Available Agents: {len(agents)}")
+        for agent in agents:
+            click.echo(f"   @{agent}")
+
+        click.echo(f"\nTotal: {len(available)} commands, {len(agents)} agents")
         return
 
     # Install commands
@@ -82,10 +86,17 @@ def install(target: str, force: bool, list_only: bool):
     click.echo()
 
     success, message = install_commands(target_path=target_path, force=force)
-
     click.echo(message)
 
-    if not success:
+    # Also install agents to ~/.claude/agents/
+    click.echo()
+    click.echo("📦 Installing SuperClaude agents...")
+    click.echo()
+
+    agent_success, agent_message = install_agents(force=force)
+    click.echo(agent_message)
+
+    if not success or not agent_success:
         sys.exit(1)
 
 
@@ -151,7 +162,7 @@ def update(target: str):
         superclaude update
         superclaude update --target /custom/path
     """
-    from .install_commands import install_commands
+    from .install_commands import install_agents, install_commands
 
     target_path = Path(target).expanduser()
 
@@ -159,10 +170,13 @@ def update(target: str):
     click.echo()
 
     success, message = install_commands(target_path=target_path, force=True)
-
     click.echo(message)
 
-    if not success:
+    click.echo()
+    agent_success, agent_message = install_agents(force=True)
+    click.echo(agent_message)
+
+    if not success or not agent_success:
         sys.exit(1)
 
 

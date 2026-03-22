@@ -5,22 +5,28 @@ Installs and manages MCP servers using the latest Claude Code API.
 Based on the installer logic from commit d4a17fc but adapted for modern Claude Code.
 """
 
+import hashlib
 import os
 import platform
 import shlex
 import subprocess
+from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 import click
 
 # AIRIS MCP Gateway - Unified MCP solution (recommended)
+# NOTE: SHA-256 hashes should be updated when upgrading to a new pinned commit.
+# To update: download the file and run `sha256sum <file>` to get the new hash.
 AIRIS_GATEWAY = {
     "name": "airis-mcp-gateway",
     "description": "Unified MCP gateway with 60+ tools, HOT/COLD management, 98% token reduction",
     "transport": "sse",
     "endpoint": "http://localhost:9400/sse",
     "docker_compose_url": "https://raw.githubusercontent.com/agiletec-inc/airis-mcp-gateway/main/docker-compose.dist.yml",
+    "docker_compose_sha256": None,  # Set to pin integrity; None skips check
     "mcp_config_url": "https://raw.githubusercontent.com/agiletec-inc/airis-mcp-gateway/main/config/mcp-config.template.json",
+    "mcp_config_sha256": None,  # Set to pin integrity; None skips check
     "repository": "https://github.com/agiletec-inc/airis-mcp-gateway",
 }
 
@@ -94,7 +100,11 @@ MCP_SERVERS = {
 
 def _run_command(cmd: List[str], **kwargs) -> subprocess.CompletedProcess:
     """
-    Run a command with proper cross-platform shell handling.
+    Run a command safely without shell=True.
+
+    Uses list-based subprocess.run to avoid shell injection risks.
+    Does not pass the full os.environ to child processes — only
+    inherits the default environment.
 
     Args:
         cmd: Command as list of strings
@@ -110,18 +120,42 @@ def _run_command(cmd: List[str], **kwargs) -> subprocess.CompletedProcess:
         kwargs["errors"] = "replace"  # Replace undecodable bytes instead of raising
 
     if platform.system() == "Windows":
-        # On Windows, wrap command in 'cmd /c' to properly handle commands like npx
         cmd = ["cmd", "/c"] + cmd
-        return subprocess.run(cmd, **kwargs)
-    else:
-        # macOS/Linux: Use string format with proper shell to support aliases
-        cmd_str = " ".join(shlex.quote(str(arg)) for arg in cmd)
 
-        # Use the user's shell to execute the command, supporting aliases
-        user_shell = os.environ.get("SHELL", "/bin/bash")
-        return subprocess.run(
-            cmd_str, shell=True, env=os.environ, executable=user_shell, **kwargs
+    return subprocess.run(cmd, **kwargs)
+
+
+def _verify_file_integrity(filepath: Path, expected_sha256: Optional[str]) -> bool:
+    """
+    Verify a downloaded file's SHA-256 hash.
+
+    Args:
+        filepath: Path to the file to verify
+        expected_sha256: Expected SHA-256 hex digest, or None to skip verification
+
+    Returns:
+        True if hash matches or verification is skipped, False on mismatch
+    """
+    if expected_sha256 is None:
+        return True
+
+    sha256 = hashlib.sha256()
+    with open(filepath, "rb") as f:
+        for chunk in iter(lambda: f.read(8192), b""):
+            sha256.update(chunk)
+
+    actual = sha256.hexdigest()
+    if actual != expected_sha256:
+        click.echo(
+            f"   ❌ Integrity check failed!\n"
+            f"      Expected: {expected_sha256}\n"
+            f"      Got:      {actual}",
+            err=True,
         )
+        return False
+
+    click.echo("   ✅ Integrity check passed (SHA-256)")
+    return True
 
 
 def check_docker_available() -> bool:
@@ -144,8 +178,6 @@ def install_airis_gateway(dry_run: bool = False) -> bool:
     Returns:
         True if successful, False otherwise
     """
-    from pathlib import Path
-
     click.echo("\n🚀 Installing AIRIS MCP Gateway (Recommended)")
     click.echo(
         "   This provides 60+ tools through a single endpoint with 98% token reduction.\n"
@@ -200,6 +232,13 @@ def install_airis_gateway(dry_run: bool = False) -> bool:
             return False
     except Exception as e:
         click.echo(f"   ❌ Error downloading: {e}", err=True)
+        return False
+
+    # Verify integrity of downloaded docker-compose file
+    if not _verify_file_integrity(
+        compose_file, AIRIS_GATEWAY.get("docker_compose_sha256")
+    ):
+        compose_file.unlink(missing_ok=True)
         return False
 
     # Download mcp-config.json (backend server definitions for the gateway)
@@ -520,10 +559,11 @@ def install_mcp_server(
         )
 
         if api_key:
-            env_args = ["--env", f"{api_key_env}={api_key}"]
+            # Each env var needs its own -e flag: -e KEY1=value1 -e KEY2=value2
+            env_args = ["-e", f"{api_key_env}={api_key}"]
 
     # Build installation command using modern Claude Code API
-    # Format: claude mcp add --transport <transport> [--scope <scope>] [--env KEY=VALUE] <name> -- <command>
+    # Format: claude mcp add --transport <transport> [--scope <scope>] [-e KEY=VALUE] <name> -- <command>
 
     cmd = ["claude", "mcp", "add", "--transport", transport]
 

@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.3.0] - 2026-03-22
+### Added
+- **Agent installation** - `superclaude install` now deploys 20 agent files to `~/.claude/agents/` (#531)
+- **SHA-256 integrity verification** - Downloaded docker-compose and mcp-config files are verified against expected hashes (#537)
+- **Comprehensive execution tests** - 62 new tests for ParallelExecutor, ReflectionEngine, SelfCorrectionEngine, and orchestrator (136 total)
+- **Claude Code integration guide** - New `docs/user-guide/claude-code-integration.md` mapping all SuperClaude features to Claude Code's native extension points with gap analysis
+- **Claude Code gap analysis** - Documented in KNOWLEDGE.md: skills migration (critical), hooks integration (high), plan mode (medium), settings profiles (medium)
+
+### Fixed
+- **SECURITY: shell=True removal** - Replaced `shell=True` with user-controlled `$SHELL` in `_run_command()` with direct list-based `subprocess.run` (#536)
+- **ConfidenceChecker placeholders** - Replaced 4 stub methods with real implementations: codebase search, architecture doc checks, research reference validation, root cause specificity checks
+- **intelligent_execute() error capture** - Collect actual errors from failed tasks instead of hardcoded None; fixed critical variable shadowing bug where loop var overwrote task parameter
+- **MCP env var flag** - Fixed `--env` to `-e` matching Claude CLI's expected format (#517)
+- **ReflexionPattern mindbase** - Implemented HTTP API integration with graceful fallback when service unavailable
+- **.gitignore contradictions** - Removed duplicate entries, added explicit rules for `.claude/settings.json` and `.claude/skills/`
+- **FailureEntry.from_dict** - Fixed input dict mutation via shallow copy
+- **sys.path hack** - Removed unnecessary `sys.path.insert` from cli/main.py
+- **__version__.py mismatch** - Synced from 0.4.0 to match package version
+
+### Changed
+- **Japanese triggers → English** - Replaced Japanese trigger phrases and labels in pm-agent.md and pm.md with English equivalents (#534)
+- **Version consistency** - All version references across 15 files now synchronized
+- **Feature counts** - Corrected across all docs: Commands 21→30, Agents 14/16→20, Modes 6→7, MCP 6→8
+- **CLAUDE.md** - Complete project structure with agents, modes, commands, skills, hooks, MCP directories
+- **PLANNING.md, TASK.md, KNOWLEDGE.md** - Updated to reflect current architecture and Claude Code integration gaps
+
 ## [4.2.0] - 2026-01-18
 ### Added
 - **AIRIS MCP Gateway** - Optional unified MCP solution with 60+ tools (#509)

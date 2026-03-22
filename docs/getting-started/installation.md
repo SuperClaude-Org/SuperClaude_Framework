@@ -2,10 +2,10 @@
 
 # 📦 SuperClaude Installation Guide
 
-### **Transform Claude Code with 21 Commands, 14 Agents & 6 MCP Servers**
+### **Transform Claude Code with 30 Commands, 20 Agents, 7 Modes & 8 MCP Servers**
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-4.1.5-blue?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/version-4.3.0-blue?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/Python-3.8+-green?style=for-the-badge" alt="Python">
   <img src="https://img.shields.io/badge/Platform-Linux%20|%20macOS%20|%20Windows-orange?style=for-the-badge" alt="Platform">
 </p>
@@ -270,7 +270,7 @@ SuperClaude install --dry-run
 ```bash
 # Verify SuperClaude version
 python3 -m SuperClaude --version
-# Expected: SuperClaude 4.1.5
+# Expected: SuperClaude 4.3.0
 
 # List installed components
 SuperClaude install --list-components
@@ -504,7 +504,7 @@ brew install python3
 You now have access to:
 
 <p align="center">
-  <b>21 Commands</b> • <b>14 AI Agents</b> • <b>6 Behavioral Modes</b> • <b>6 MCP Servers</b>
+  <b>30 Commands</b> • <b>20 AI Agents</b> • <b>7 Behavioral Modes</b> • <b>8 MCP Servers</b>
 </p>
 
 **Ready to start?** Try `/sc:brainstorm` in Claude Code for your first SuperClaude experience!

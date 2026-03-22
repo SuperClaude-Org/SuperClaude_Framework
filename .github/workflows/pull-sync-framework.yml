@@ -64,7 +64,7 @@ jobs:
         if: steps.check-updates.outputs.has-updates == 'true'
         working-directory: plugin-repo
         run: |
-          # 修正: plugin.json はスクリプトによってMCPマージとして更新されるため、リストから削除しました
+          # Note: plugin.json removed from list as it is updated by the MCP merge script
           PROTECTED=(
             "README.md" "README-ja.md" "README-zh.md"
             "BACKUP_GUIDE.md" "MIGRATION_GUIDE.md" "SECURITY.md"
