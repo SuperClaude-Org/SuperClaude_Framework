@@ -1,3 +1,3 @@
 """Version information for SuperClaude"""
 
-__version__ = "0.4.0"
+__version__ = "4.3.0"

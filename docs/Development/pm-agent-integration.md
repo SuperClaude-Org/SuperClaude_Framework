@@ -1,7 +1,7 @@
 # PM Agent Mode Integration Guide
 
 **Last Updated**: 2025-10-14
-**Target Version**: 4.2.0
+**Target Version**: 4.3.0
 **Status**: Implementation Guide
 
 ---

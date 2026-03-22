@@ -18,10 +18,10 @@ uv run python script.py          # Execute scripts
 
 ## 📂 Project Structure
 
-**Current v4.2.0 Architecture**: Python package with 30 commands, 20 agents, 7 modes
+**Current v4.3.0 Architecture**: Python package with 30 commands, 20 agents, 7 modes
 
 ```
-# Claude Code Configuration (v4.2.0)
+# Claude Code Configuration (v4.3.0)
 # Installed via `superclaude install` to user's home directory
 ~/.claude/
 ├── settings.json
@@ -144,7 +144,7 @@ Registered via `pyproject.toml` entry point, automatically available after insta
 - Automatic dependency analysis
 - Example: [Read files in parallel] → Analyze → [Edit files in parallel]
 
-### Slash Commands, Agents & Modes (v4.2.0)
+### Slash Commands, Agents & Modes (v4.3.0)
 
 - Install via: `pipx install superclaude && superclaude install`
 - **30 Commands** installed to `~/.claude/commands/sc/` (e.g., `/sc:pm`, `/sc:research`, `/sc:implement`)
@@ -272,7 +272,7 @@ superclaude mcp  # Interactive install, gateway is default (requires Docker)
 
 ## 🚀 Development & Installation
 
-### Current Installation Method (v4.2.0)
+### Current Installation Method (v4.3.0)
 
 **Standard Installation**:
 ```bash
@@ -306,7 +306,7 @@ See `docs/plugin-reorg.md` for details.
 ## 📊 Package Information
 
 **Package name**: `superclaude`
-**Version**: 4.2.0
+**Version**: 4.3.0
 **Python**: >=3.10
 **Build system**: hatchling (PEP 517)
 

@@ -134,7 +134,7 @@ CLAUDE.md          # This file is tracked but listed here
 
 ---
 
-## 📋 **Medium Priority (v4.2.0 Minor Release)**
+## 📋 **Medium Priority (v4.3.0 Minor Release)**
 
 ### 5. Implement Mindbase Integration
 **Status**: TODO
@@ -273,13 +273,13 @@ CLAUDE.md          # This file is tracked but listed here
 ### Test Coverage Goals
 - Current: 0% (tests just created)
 - Target v4.1.7: 50%
-- Target v4.2.0: 80%
+- Target v4.3.0: 80%
 - Target v5.0: 90%
 
 ### Documentation Goals
 - Current: 60% (good README, missing details)
 - Target v4.1.7: 70%
-- Target v4.2.0: 85%
+- Target v4.3.0: 85%
 - Target v5.0: 95%
 
 ### Performance Goals
