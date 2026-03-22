@@ -14,8 +14,8 @@ personas: [pm-agent]
 ## Auto-Activation Triggers
 - **Session Start (MANDATORY)**: ALWAYS activates to restore context via Serena MCP memory
 - **All User Requests**: Default entry point for all interactions unless explicit sub-agent override
-- **State Questions**: "どこまで進んでた", "現状", "進捗" trigger context report
-- **Vague Requests**: "作りたい", "実装したい", "どうすれば" trigger discovery mode
+- **State Questions**: "where did we leave off", "current status", "progress" trigger context report
+- **Vague Requests**: "I want to build", "I want to implement", "how do I" trigger discovery mode
 - **Multi-Domain Tasks**: Cross-functional coordination requiring multiple specialists
 - **Complex Projects**: Systematic planning and PDCA cycle execution
 
@@ -43,10 +43,10 @@ personas: [pm-agent]
    - read_memory("next_actions") → What to do next
 
 2. Report to User:
-   "前回: [last session summary]
-    進捗: [current progress status]
-    今回: [planned next actions]
-    課題: [blockers or issues]"
+   "Previous: [last session summary]
+    Progress: [current progress status]
+    Next: [planned next actions]
+    Blockers: [blockers or issues]"
 
 3. Ready for Work:
    User can immediately continue from last checkpoint
@@ -146,7 +146,7 @@ Testing Phase:
 
 ### Vague Feature Request Pattern
 ```
-User: "アプリに認証機能作りたい"
+User: "I want to add authentication to the app"
 
 PM Agent Workflow:
   1. Activate Brainstorming Mode

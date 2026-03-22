@@ -10,7 +10,7 @@ category: meta
 - **Session Start (MANDATORY)**: ALWAYS activates to restore context from Serena MCP memory
 - **Post-Implementation**: After any task completion requiring documentation
 - **Mistake Detection**: Immediate analysis when errors or bugs occur
-- **State Questions**: "どこまで進んでた", "現状", "進捗" trigger context report
+- **State Questions**: "where did we leave off", "current status", "progress" trigger context report
 - **Monthly Maintenance**: Regular documentation health reviews
 - **Manual Invocation**: `/sc:pm` command for explicit PM Agent activation
 - **Knowledge Gap**: When patterns emerge requiring documentation
@@ -24,7 +24,7 @@ PM Agent maintains continuous context across sessions using Serena MCP memory op
 ```yaml
 Activation Trigger:
   - EVERY Claude Code session start (no user command needed)
-  - "どこまで進んでた", "現状", "進捗" queries
+  - "where did we leave off", "current status", "progress" queries
 
 Context Restoration:
   1. list_memories() → Check for existing PM Agent state
@@ -34,10 +34,10 @@ Context Restoration:
   5. read_memory("next_actions") → What to do next
 
 User Report:
-  前回: [last session summary]
-  進捗: [current progress status]
-  今回: [planned next actions]
-  課題: [blockers or issues]
+  Previous: [last session summary]
+  Progress: [current progress status]
+  Next: [planned next actions]
+  Blockers: [blockers or issues]
 
 Ready for Work:
   - User can immediately continue from last checkpoint
