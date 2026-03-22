@@ -1,0 +1,29 @@
+{
+  "name": "superclaude",
+  "version": "4.3.0",
+  "description": "AI-enhanced development framework for Claude Code — 30 commands, 20 agents, 7 modes, confidence checks, parallel execution, and reflexion-based learning",
+  "author": {
+    "name": "SuperClaude Org",
+    "url": "https://github.com/SuperClaude-Org"
+  },
+  "homepage": "https://github.com/SuperClaude-Org/SuperClaude_Framework",
+  "repository": "https://github.com/SuperClaude-Org/SuperClaude_Framework",
+  "license": "MIT",
+  "keywords": [
+    "development",
+    "pm-agent",
+    "confidence-check",
+    "parallel-execution",
+    "reflexion",
+    "pdca",
+    "code-quality",
+    "testing",
+    "research",
+    "architecture"
+  ],
+  "commands": "./commands/",
+  "agents": "./agents/",
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json",
+  "mcpServers": "./.mcp.json"
+}
