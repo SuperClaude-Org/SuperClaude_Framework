@@ -19,7 +19,7 @@ Usage:
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
-from .parallel import ExecutionPlan, ParallelExecutor, Task, should_parallelize
+from .parallel import ExecutionPlan, ParallelExecutor, Task, TaskStatus, should_parallelize
 from .reflection import ConfidenceScore, ReflectionEngine, reflect_before_execution
 from .self_correction import RootCause, SelfCorrectionEngine, learn_from_failure
 
@@ -127,12 +127,14 @@ def intelligent_execute(
     try:
         results = executor.execute(plan)
 
-        # Check for failures
-        failures = [
-            (task_id, None)  # Placeholder - need actual error
-            for task_id, result in results.items()
-            if result is None
-        ]
+        # Check for failures - collect actual error info from tasks
+        failures = []
+        for group in plan.groups:
+            for t in group.tasks:
+                if t.status == TaskStatus.FAILED:
+                    failures.append((t.id, t.error))
+                elif t.id in results and results[t.id] is None and t.error:
+                    failures.append((t.id, t.error))
 
         if failures and auto_correct:
             # Phase 4: Self-Correction
@@ -142,10 +144,20 @@ def intelligent_execute(
             correction_engine = SelfCorrectionEngine(repo_path)
 
             for task_id, error in failures:
+                error_msg = str(error) if error else "Operation failed with no error details"
+                import traceback as tb_module
+
+                stack_trace = ""
+                if error and error.__traceback__:
+                    stack_trace = "".join(
+                        tb_module.format_exception(type(error), error, error.__traceback__)
+                    )
+
                 failure_info = {
-                    "type": "execution_error",
-                    "error": "Operation returned None",
+                    "type": type(error).__name__ if error else "execution_error",
+                    "error": error_msg,
                     "task_id": task_id,
+                    "stack_trace": stack_trace,
                 }
 
                 root_cause = correction_engine.analyze_root_cause(task, failure_info)

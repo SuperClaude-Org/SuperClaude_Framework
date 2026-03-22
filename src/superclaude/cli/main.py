@@ -9,9 +9,6 @@ from pathlib import Path
 
 import click
 
-# Add parent directory to path to import superclaude
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-
 from superclaude import __version__
 
 

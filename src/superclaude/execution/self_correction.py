@@ -61,7 +61,8 @@ class FailureEntry:
 
     @classmethod
     def from_dict(cls, data: dict) -> "FailureEntry":
-        """Create from dict"""
+        """Create from dict (does not mutate input)"""
+        data = dict(data)  # Shallow copy to avoid mutating input
         root_cause_data = data.pop("root_cause")
         root_cause = RootCause(**root_cause_data)
         return cls(**data, root_cause=root_cause)
