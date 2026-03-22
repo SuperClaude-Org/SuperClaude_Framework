@@ -318,3 +318,24 @@ See `docs/plugin-reorg.md` for details.
 - pytest>=7.0.0
 - click>=8.0.0
 - rich>=13.0.0
+
+## 🔌 Claude Code Native Features (for developers)
+
+SuperClaude extends Claude Code through its native extension points. When developing SuperClaude features, use these Claude Code capabilities:
+
+### Extension Points We Use
+- **Custom Commands** (`~/.claude/commands/sc/*.md`): 30 `/sc:*` commands
+- **Custom Agents** (`~/.claude/agents/*.md`): 20 domain-specialist agents
+- **Skills** (`~/.claude/skills/`): confidence-check skill
+- **Settings** (`.claude/settings.json`): Permission rules, hooks
+- **MCP Servers**: 8 pre-configured + AIRIS gateway
+- **Pytest Plugin**: Auto-loaded via entry point
+
+### Extension Points We Should Use More
+- **Hooks** (28 events): `SessionStart`, `Stop`, `PostToolUse`, `TaskCompleted` — ideal for PM Agent auto-restore, self-check validation, and reflexion triggers
+- **Skills System**: Commands should migrate to proper skills with YAML frontmatter for auto-triggering, tool restrictions, and effort overrides
+- **Plan Mode**: Could integrate with confidence checks (block implementation when < 70%)
+- **Settings Profiles**: Could provide recommended permission/hook configs per workflow
+- **Native Session Persistence**: `--continue`/`--resume` instead of custom memory files
+
+See `docs/user-guide/claude-code-integration.md` for the full gap analysis.

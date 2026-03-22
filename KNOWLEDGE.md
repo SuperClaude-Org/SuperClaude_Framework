@@ -595,6 +595,48 @@ Ideas worth investigating:
 
 ---
 
+## 🔌 **Claude Code Integration Gap Analysis** (March 2026)
+
+### Key Finding: SuperClaude Under-uses Claude Code's Extension Points
+
+Claude Code provides 60+ built-in commands, 28 hook events, a full skills system, 5 settings scopes, agent teams, plan mode, extended thinking, and 60+ MCP servers in its registry. SuperClaude currently uses only a fraction of these.
+
+### Biggest Gaps (High Impact)
+
+**1. Skills System (CRITICAL)**
+- Claude Code skills support YAML frontmatter with `model`, `effort`, `allowed-tools`, `context: fork`, auto-triggering via `description`, and argument substitution
+- SuperClaude has only 1 skill (confidence-check); 30 commands could be reimplemented as skills for better auto-triggering and tool restrictions
+- **Action**: Migrate key commands to skills format in v4.3+
+
+**2. Hooks System (HIGH)**
+- Claude Code has 28 hook events (`SessionStart`, `Stop`, `PostToolUse`, `TaskCompleted`, `SubagentStop`, `PreCompact`, etc.)
+- SuperClaude defines hooks but doesn't leverage most events
+- **Action**: Use `SessionStart` for PM Agent auto-restore, `Stop` for session persistence, `PostToolUse` for self-check, `TaskCompleted` for reflexion
+
+**3. Plan Mode Integration (MEDIUM)**
+- Claude Code's plan mode provides read-only exploration with visual markdown plans
+- SuperClaude's confidence checks could block transition from plan to implementation when confidence < 70%
+- **Action**: Connect confidence checker to plan mode exit gate
+
+**4. Settings Profiles (MEDIUM)**
+- Claude Code has 5 settings scopes with granular permission rules (`Bash(pattern)`, `Edit(path)`, `mcp__server__tool`)
+- SuperClaude could provide recommended settings profiles per workflow (strict security, autonomous dev, research)
+- **Action**: Create `.claude/settings.json` templates for common workflows
+
+### What's Working Well
+
+- **Commands** (30): Well-integrated as custom commands in `~/.claude/commands/sc/`
+- **Agents** (20): Properly installed to `~/.claude/agents/` as subagents
+- **MCP Servers** (8+): Good coverage of common tools, AIRIS gateway unifies them
+- **Pytest Plugin**: Clean auto-loading, good fixture/marker system
+- **Behavioral Modes** (7): Effective context injection even without native support
+
+### Reference
+
+See `docs/user-guide/claude-code-integration.md` for the complete feature mapping and gap analysis.
+
+---
+
 *This document grows with the project. Everyone who encounters a problem and finds a solution should document it here.*
 
 **Contributors**: SuperClaude development team and community
