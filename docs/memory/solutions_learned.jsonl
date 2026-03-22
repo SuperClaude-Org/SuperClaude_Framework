@@ -78,3 +78,19 @@
 {"error_type": "FileNotFoundError", "error_message": "config.json not found", "solution": "Create config.json in project root", "session": "session_1", "timestamp": "2026-03-22T16:52:51.592781"}
 {"test_name": "test_reflexion_marker_integration", "error_type": "IntegrationTestError", "error_message": "Testing reflexion integration", "timestamp": "2026-03-22T16:52:51.599514"}
 {"test_name": "test_reflexion_with_real_exception", "error_type": "ZeroDivisionError", "error_message": "division by zero", "traceback": "simulated traceback", "solution": "Check denominator is not zero before division", "timestamp": "2026-03-22T16:52:51.600215"}
+{"test_name": "test_feature", "error_type": "AssertionError", "error_message": "Expected 5, got 3", "traceback": "File test.py, line 10...", "timestamp": "2026-03-22T17:00:13.653054"}
+{"test_name": "test_database_connection", "error_type": "ConnectionError", "error_message": "Could not connect to database", "solution": "Ensure database is running and credentials are correct", "timestamp": "2026-03-22T17:00:13.653728"}
+{"error_type": "ImportError", "error_message": "No module named 'pytest'", "solution": "Install pytest: pip install pytest", "timestamp": "2026-03-22T17:00:13.654889"}
+{"error_type": "TypeError", "error_message": "expected str, got int", "solution": "Convert int to str using str()", "timestamp": "2026-03-22T17:00:13.662985"}
+{"error_type": "TypeError", "error_message": "expected int, got str", "solution": "Convert str to int using int()", "timestamp": "2026-03-22T17:00:13.663142"}
+{"error_type": "FileNotFoundError", "error_message": "config.json not found", "solution": "Create config.json in project root", "session": "session_1", "timestamp": "2026-03-22T17:00:13.671993"}
+{"test_name": "test_reflexion_marker_integration", "error_type": "IntegrationTestError", "error_message": "Testing reflexion integration", "timestamp": "2026-03-22T17:00:13.679043"}
+{"test_name": "test_reflexion_with_real_exception", "error_type": "ZeroDivisionError", "error_message": "division by zero", "traceback": "simulated traceback", "solution": "Check denominator is not zero before division", "timestamp": "2026-03-22T17:00:13.679835"}
+{"test_name": "test_feature", "error_type": "AssertionError", "error_message": "Expected 5, got 3", "traceback": "File test.py, line 10...", "timestamp": "2026-03-22T17:07:17.673419"}
+{"test_name": "test_database_connection", "error_type": "ConnectionError", "error_message": "Could not connect to database", "solution": "Ensure database is running and credentials are correct", "timestamp": "2026-03-22T17:07:17.674107"}
+{"error_type": "ImportError", "error_message": "No module named 'pytest'", "solution": "Install pytest: pip install pytest", "timestamp": "2026-03-22T17:07:17.674959"}
+{"error_type": "TypeError", "error_message": "expected str, got int", "solution": "Convert int to str using str()", "timestamp": "2026-03-22T17:07:17.683755"}
+{"error_type": "TypeError", "error_message": "expected int, got str", "solution": "Convert str to int using int()", "timestamp": "2026-03-22T17:07:17.683905"}
+{"error_type": "FileNotFoundError", "error_message": "config.json not found", "solution": "Create config.json in project root", "session": "session_1", "timestamp": "2026-03-22T17:07:17.692517"}
+{"test_name": "test_reflexion_marker_integration", "error_type": "IntegrationTestError", "error_message": "Testing reflexion integration", "timestamp": "2026-03-22T17:07:17.699298"}
+{"test_name": "test_reflexion_with_real_exception", "error_type": "ZeroDivisionError", "error_message": "division by zero", "traceback": "simulated traceback", "solution": "Check denominator is not zero before division", "timestamp": "2026-03-22T17:07:17.699998"}
