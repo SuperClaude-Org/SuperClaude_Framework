@@ -209,8 +209,10 @@ def install_airis_gateway(dry_run: bool = False) -> bool:
     install_dir.mkdir(parents=True, exist_ok=True)
     click.echo(f"   📁 Installation directory: {install_dir}")
 
-    # Download docker-compose file
+    # Download docker-compose file with integrity verification
     click.echo("   📥 Downloading docker-compose configuration...")
+    # SHA-256 of the known-good docker-compose.dist.yml
+    EXPECTED_COMPOSE_HASH = "ed87f3f86089a0f2ee0ca1ee95af89f67b0801f399215ad6482e0426412e761a"
     try:
         result = _run_command(
             [
@@ -230,6 +232,26 @@ def install_airis_gateway(dry_run: bool = False) -> bool:
                 err=True,
             )
             return False
+
+        # Verify file integrity before executing
+        actual_hash = hashlib.sha256(compose_file.read_bytes()).hexdigest()
+        if actual_hash != EXPECTED_COMPOSE_HASH:
+            click.echo(
+                "   ❌ Docker compose file integrity check failed!", err=True
+            )
+            click.echo(
+                f"   Expected SHA-256: {EXPECTED_COMPOSE_HASH}", err=True
+            )
+            click.echo(
+                f"   Actual SHA-256:   {actual_hash}", err=True
+            )
+            click.echo(
+                "   The downloaded file may have been tampered with. "
+                "Aborting installation.", err=True
+            )
+            compose_file.unlink(missing_ok=True)
+            return False
+        click.echo("   ✅ Integrity check passed (SHA-256 verified)")
     except Exception as e:
         click.echo(f"   ❌ Error downloading: {e}", err=True)
         return False
