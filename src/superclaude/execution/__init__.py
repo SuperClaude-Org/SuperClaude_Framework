@@ -19,7 +19,13 @@ Usage:
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
-from .parallel import ExecutionPlan, ParallelExecutor, Task, TaskStatus, should_parallelize
+from .parallel import (
+    ExecutionPlan,
+    ParallelExecutor,
+    Task,
+    TaskStatus,
+    should_parallelize,
+)
 from .reflection import ConfidenceScore, ReflectionEngine, reflect_before_execution
 from .self_correction import RootCause, SelfCorrectionEngine, learn_from_failure
 
