@@ -20,6 +20,7 @@ Examples:
 - `/git --pre-commit` - Setup pre-commit framework and basic hooks
 - `/git --commit "Fix validation logic" --pre-commit` - Commit with pre-commit validation
 - `/git --pre-commit --security` - Setup with security hooks included
+- `/git --commit-msg-hook` - Install the commit-msg normalizer hook
 
 Git operations:
 
@@ -31,11 +32,15 @@ Git operations:
 - feature: Feature branch workflow | hotfix: Emergency fix workflow
 - release: Release branch workflow | gitflow: Full GitFlow model
 
+**--commit-msg-hook:** Install or manage the commit-msg normalizer hook | Validates Conventional Commits format | Auto-normalizes type to lowercase, strips trailing period, wraps body at 72 chars | Install: `cp commands/shared/commit-msg-normalize.sh .git/hooks/commit-msg`
+
 **--pre-commit:** Setup and manage pre-commit hooks | Auto-install framework | Configure quality checks | Run hooks before commits
 
 @include shared/execution-patterns.yml#Git_Integration_Patterns
 
 @include shared/pre-commit-patterns.yml#Pre_Commit_Setup
+
+@include shared/pre-commit-patterns.yml#Commit_Msg_Hook
 
 @include shared/docs-patterns.yml#Standard_Notifications
 

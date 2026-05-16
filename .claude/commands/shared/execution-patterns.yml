@@ -306,12 +306,18 @@ Git_Workflows:
       - "Check approval requirements"
       
   Commit_Standards:
-    Format: "{type}: {description}\n\n{body}\n\n🤖 Generated with [Claude Code]\n\nCo-Authored-By: Claude"
-    Types: ["feat", "fix", "docs", "style", "refactor", "test", "chore"]
+    Format: "{type}[(scope)]: {description}\n\n{body}\n\n🤖 Generated with [Claude Code]\n\nCo-Authored-By: Claude"
+    Types: ["feat", "fix", "docs", "style", "refactor", "test", "chore", "perf", "ci"]
     Validation:
       - "Type matches change nature"
       - "Description < 50 chars"
       - "Body explains why, not what"
+    Normalization:
+      - "Type must be lowercase (auto-corrected by hook)"
+      - "No trailing period on subject (auto-removed by hook)"
+      - "Body lines wrapped at 72 chars (trailers and URLs preserved)"
+      - "Subject line max 72 chars"
+    Hook: "commands/shared/commit-msg-normalize.sh — enforces these rules automatically"
       
   Branch_Management:
     Strategy:

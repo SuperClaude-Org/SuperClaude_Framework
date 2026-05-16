@@ -59,6 +59,7 @@ DRY_RUN=false
 LOG_FILE=""
 VERIFICATION_FAILURES=0
 ROLLBACK_ON_FAILURE=true
+INSTALL_HOOKS=false
 BACKUP_DIR=""
 INSTALLATION_PHASE=false
 
@@ -424,6 +425,7 @@ show_usage() {
     echo "  --log <file>         Save installation log to file"
     echo "  --config <file>      Load configuration from file"
     echo "  --no-rollback        Disable automatic rollback on failure"
+    echo "  --install-hooks      Install git hooks (commit-msg normalizer) into .git/hooks"
     echo "  --check-update       Check for SuperClaude updates"
     echo "  --version            Show installer version"
     echo "  -h, --help          Show this help message"
@@ -979,6 +981,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --no-rollback)
             ROLLBACK_ON_FAILURE=false
+            shift
+            ;;
+        --install-hooks)
+            INSTALL_HOOKS=true
             shift
             ;;
         --check-update)
@@ -1715,6 +1721,26 @@ done <<< "$(get_source_files ".")"
 echo "  Files copied: $copied_count"
 echo "  Files preserved: $preserved_count"
 
+
+# Install git hooks if requested and .git directory exists
+if [[ "$INSTALL_HOOKS" = true ]] && [[ "$DRY_RUN" != true ]]; then
+    echo ""
+    echo "Installing git hooks..."
+    hook_src="$INSTALL_DIR/commands/shared/commit-msg-normalize.sh"
+    if [[ -d ".git/hooks" ]] && [[ -f "$hook_src" ]]; then
+        cp "$hook_src" ".git/hooks/commit-msg"
+        chmod +x ".git/hooks/commit-msg"
+        echo -e "${GREEN}Installed commit-msg hook${NC}"
+    elif [[ ! -d ".git" ]]; then
+        echo -e "${YELLOW}No .git directory found — skipping hook installation${NC}"
+        echo "  Run manually: cp $hook_src .git/hooks/commit-msg && chmod +x .git/hooks/commit-msg"
+    else
+        log_warning "Hook source not found: $hook_src"
+    fi
+elif [[ "$INSTALL_HOOKS" = true ]] && [[ "$DRY_RUN" = true ]]; then
+    echo ""
+    echo "Would install git hooks (commit-msg normalizer)"
+fi
 
 # Verify installation
 echo ""
