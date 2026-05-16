@@ -35,10 +35,17 @@ Commit_Msg_Hook:
   Install: "cp commands/shared/commit-msg-normalize.sh .git/hooks/commit-msg && chmod +x .git/hooks/commit-msg"
   Purpose: "Validate and normalize commit messages to Conventional Commits format"
   Enforces:
-    - "Valid type prefix: feat|fix|docs|style|refactor|test|chore"
+    - "Valid type prefix: feat|fix|docs|style|refactor|test|chore|perf|ci"
     - "Lowercase type (auto-normalized)"
     - "Subject line under 72 characters"
     - "No trailing period on subject (auto-removed)"
     - "Body lines wrapped at 72 characters"
     - "Trailers and URLs preserved during wrapping"
+  Passthrough:
+    - "Merge commits (git merge)"
+    - "Fixup/squash commits (git rebase -i)"
+    - "Amend commits"
+  Skip:
+    - "SKIP_COMMIT_MSG_HOOK=1 environment variable"
+    - "git commit --no-verify (git native)"
 ```

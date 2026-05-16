@@ -307,7 +307,7 @@ Git_Workflows:
       
   Commit_Standards:
     Format: "{type}[(scope)]: {description}\n\n{body}\n\n🤖 Generated with [Claude Code]\n\nCo-Authored-By: Claude"
-    Types: ["feat", "fix", "docs", "style", "refactor", "test", "chore"]
+    Types: ["feat", "fix", "docs", "style", "refactor", "test", "chore", "perf", "ci"]
     Validation:
       - "Type matches change nature"
       - "Description < 50 chars"
