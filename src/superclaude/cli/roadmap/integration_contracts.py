@@ -20,9 +20,17 @@ from dataclasses import dataclass, field
 DISPATCH_PATTERNS = [
     # Category 1: Dict dispatch tables
     re.compile(
-        r"\b(?:dispatch[_\s]?table|RUNNERS|_RUNNERS|HANDLERS|"
-        r"DISPATCH|routing[_\s]?table|command[_\s]?map|step[_\s]?map|"
-        r"plugin[_\s]?registry)\b",
+        r"\b(?:dispatch[_\s]?table|DISPATCH_TABLE|PROGRAMMATIC_RUNNERS|"
+        r"RUNNERS|_RUNNERS|HANDLERS|"
+        r"routing[_\s]?table|command[_\s]?map|step[_\s]?map|"
+        r"plugin[_\s]?registry|"
+        # NEW: compound dispatch nouns — keeps mechanism semantics,
+        # rejects bare "dispatch" AND bare "priority dispatch" in prose
+        # (bare `priority` removed from list per t7 design intent —
+        # Layer 3 identifier-overlap guard is the false-positive defense)
+        r"(?:[a-z]+-)?(?:class-priority|named-theme|role-keyed|"
+        r"theme|severity-keyed|module-tier|subprocess|gRPC)[\s_-]?dispatch"
+        r")\b",
         re.IGNORECASE,
     ),
     # Category 2: Plugin registry / explicit wiring
@@ -120,6 +128,11 @@ class IntegrationContract:
     spec_location: str  # line number or section heading
     description: str  # human-readable description
     requires_explicit_wiring: bool  # True if cannot be implicit
+    # NEW
+    mechanism_signature: tuple[str, frozenset[str]] = field(
+        default=(("", frozenset()))
+    )
+    # signature = (mechanism, frozenset of normalized identifiers)
 
 
 @dataclass
@@ -161,43 +174,46 @@ def extract_integration_contracts(spec_text: str) -> list[IntegrationContract]:
     """
     contracts: list[IntegrationContract] = []
     lines = spec_text.splitlines()
-    seen_evidence: set[str] = set()  # dedup by evidence line
+    seen_signatures: dict[tuple[str, frozenset[str]], int] = {}
     counter = 1
 
     for i, line in enumerate(lines):
-        # Skip markdown headings — section titles like "Testing Strategy" or
-        # "Migration Strategy" are document structure, not integration patterns.
-        # Also skip table-of-contents links (lines starting with digits + dots
-        # followed by brackets) and checkbox lines (task lists).
         stripped = line.lstrip()
         if stripped.startswith("#") or stripped.startswith("- ["):
             continue
 
         for pattern in DISPATCH_PATTERNS:
             match = pattern.search(line)
-            if match:
-                evidence = line.strip()
-                if evidence in seen_evidence:
-                    continue
-                seen_evidence.add(evidence)
+            if not match:
+                continue
 
-                # FR-MOD2.2: Context capture (3 lines before/after)
-                context_start = max(0, i - 3)
-                context_end = min(len(lines), i + 4)
-                context = "\n".join(lines[context_start:context_end])
+            evidence = line.strip()
+            context_start = max(0, i - 3)
+            context_end = min(len(lines), i + 4)
+            context = "\n".join(lines[context_start:context_end])
 
-                mechanism = _classify_mechanism(match.group(0))
-                contracts.append(
-                    IntegrationContract(
-                        id=f"IC-{counter:03d}",
-                        mechanism=mechanism,
-                        spec_evidence=context,
-                        spec_location=f"line {i + 1}",
-                        description=f"{mechanism}: {evidence}",
-                        requires_explicit_wiring=True,
-                    )
-                )
-                counter += 1
+            mechanism = _classify_mechanism(match.group(0))
+            idents = frozenset(_extract_identifiers(context))
+            signature = (mechanism, idents)
+
+            # Signature-based dedup — collapse contracts whose
+            # (mechanism, identifier-set) is identical OR is a strict
+            # subset of an already-seen signature.
+            if _signature_subsumed(signature, seen_signatures):
+                continue
+            seen_signatures[signature] = counter
+
+            contracts.append(IntegrationContract(
+                id=f"IC-{counter:03d}",
+                mechanism=mechanism,
+                spec_evidence=context,
+                spec_location=f"line {i + 1}",
+                description=f"{mechanism}: {evidence}",
+                requires_explicit_wiring=True,
+                mechanism_signature=signature,
+            ))
+            counter += 1
+            break  # one contract per line max
 
     return contracts
 
@@ -251,50 +267,99 @@ def check_roadmap_coverage(
                 if covered:
                     break
 
-        # FR-MOD2.7: Broad mechanism-term coverage check.
-        # If the contract's mechanism term (e.g., "middleware", "strategy")
-        # appears in the roadmap alongside implementation verbs (implement,
-        # configure, add, create, set up, deploy), treat it as covered.
-        # This catches natural language descriptions like "Rate limiting
-        # middleware" or "Configure CORS middleware" that the strict
-        # verb-anchored patterns miss.
+        # FR-MOD2.7: Broad mechanism-term coverage check (3-layer).
+        # Layer 1: dispatch-family-specific tolerance for adjective-compound
+        #          dispatch nouns (class-priority/named-theme/etc.).
+        # Layer 2: existing literal mechanism-term substring + impl verb
+        #          (same line or 3-line window).
+        # Layer 3: generic stem-fallback for any compound mechanism term,
+        #          constrained by identifier-overlap against the contract's
+        #          persisted mechanism_signature (defeats the
+        #          "Implement priority dispatch for logging" false-positive).
         if not covered:
             mechanism_term = contract.mechanism.replace("_", " ")
-            # Also try the raw matched text from the evidence
             raw_terms = [mechanism_term]
             if "middleware" in contract.description.lower():
                 raw_terms.append("middleware")
             if "strategy" in contract.description.lower():
                 raw_terms.append("strategy")
 
+            # Layer 1: dispatch-family-specific tolerance (Opus base).
+            # NOTE: bare `priority` removed from alternation list — Layer 3
+            # identifier-overlap guard is the design's false-positive defense
+            # for prose-level "priority dispatch" without identifier context.
+            dispatch_family = re.compile(
+                r"\b(?:[a-z]+-)?(?:class-priority|named-theme|"
+                r"role-keyed|theme|severity-keyed|module-tier|subprocess|gRPC)"
+                r"[\s_-]?dispatch(?:\s+table)?\b",
+                re.IGNORECASE,
+            )
+
             impl_verbs = re.compile(
                 r"\b(?:implement|configure|add|create|set\s*up|deploy|"
                 r"build|integrate|wire|enable|install|bound|attach|"
-                r"apply|use|route|log|emit|handle)\b",
+                r"apply|use|route|log|emit|handle|populate)\b",  # +populate (Opus)
                 re.IGNORECASE,
             )
-            for mterm in raw_terms:
-                for j, rline in enumerate(roadmap_lines):
-                    if mterm.lower() in rline.lower():
-                        # Check same line for verb
-                        if impl_verbs.search(rline):
-                            covered = True
-                            evidence = rline.strip()
-                            location = f"line {j + 1}"
-                            break
-                        # Also check within a 3-line window (mechanism on one
-                        # line, verb on an adjacent line — common in tables
-                        # and multi-line task descriptions)
-                        window_start = max(0, j - 2)
-                        window_end = min(len(roadmap_lines), j + 3)
-                        window_text = " ".join(roadmap_lines[window_start:window_end])
-                        if impl_verbs.search(window_text):
-                            covered = True
-                            evidence = rline.strip()
-                            location = f"lines {window_start + 1}-{window_end}"
-                            break
-                if covered:
+
+            # Layer 1+2: full-term and dispatch-family — same-line or 3-line window verb
+            for j, rline in enumerate(roadmap_lines):
+                hit_term = any(t.lower() in rline.lower() for t in raw_terms)
+                hit_family = (
+                    contract.mechanism == "dispatch_table"
+                    and dispatch_family.search(rline)
+                )
+                if not (hit_term or hit_family):
+                    continue
+                if impl_verbs.search(rline):
+                    covered = True
+                    evidence = rline.strip()
+                    location = f"line {j + 1}"
                     break
+                window_start = max(0, j - 2)
+                window_end = min(len(roadmap_lines), j + 3)
+                window_text = " ".join(roadmap_lines[window_start:window_end])
+                if impl_verbs.search(window_text):
+                    covered = True
+                    evidence = rline.strip()
+                    location = f"lines {window_start + 1}-{window_end}"
+                    break
+
+            # Layer 3 (NEW from Sonnet, with overlap guard from Sonnet's counter-arg
+            # mitigation): generic stem fallback for ANY compound mechanism term.
+            # SAME-LINE constraint AND identifier-overlap guard against the
+            # contract's persisted mechanism_signature.
+            if not covered:
+                stem_terms: list[str] = []
+                for mt in raw_terms:
+                    parts = mt.split()
+                    if len(parts) >= 2:
+                        stem_terms.append(parts[0])  # "dispatch" from "dispatch table"
+
+                contract_idents = contract.mechanism_signature[1]  # frozenset
+                for stem in stem_terms:
+                    for j, rline in enumerate(roadmap_lines):
+                        if stem.lower() not in rline.lower():
+                            continue
+                        if not impl_verbs.search(rline):
+                            continue
+                        # IDENTIFIER-OVERLAP GUARD: require at least one of the
+                        # contract's mechanism_signature identifiers to appear in
+                        # the matching line's 3-line window. Defeats the
+                        # "Implement priority dispatch for logging" false-positive
+                        # class (Sonnet's own counter-argument scenario).
+                        if contract_idents:
+                            window_start = max(0, j - 2)
+                            window_end = min(len(roadmap_lines), j + 3)
+                            window_text = " ".join(roadmap_lines[window_start:window_end])
+                            if not any(ident in window_text for ident in contract_idents):
+                                continue
+                        covered = True
+                        evidence = rline.strip()
+                        location = f"line {j + 1} (stem+overlap)"
+                        break
+                    if covered:
+                        break
 
         result.coverage.append(
             WiringCoverage(
@@ -354,3 +419,23 @@ def _extract_identifiers(text: str) -> list[str]:
     # PascalCase class names
     pascal = re.findall(r"\b[A-Z][a-z]+(?:[A-Z][a-z]+)+\b", text)
     return upper_snake + pascal
+
+
+def _signature_subsumed(
+    sig: tuple[str, frozenset[str]],
+    seen: dict[tuple[str, frozenset[str]], int],
+) -> bool:
+    """Subsume sig if same mechanism AND identifier-set ⊆ an existing one
+    that shares ≥1 identifier. Empty-identifier signatures dedup by exact
+    match only (preserves test_duplicate_lines_deduplicated)."""
+    mech, idents = sig
+    if not idents:
+        return sig in seen
+    for (smech, sidents) in seen:
+        if smech != mech:
+            continue
+        if idents and sidents and idents.issubset(sidents) and (idents & sidents):
+            return True
+        if idents == sidents:
+            return True
+    return False

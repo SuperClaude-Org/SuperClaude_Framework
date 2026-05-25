@@ -150,3 +150,56 @@ table that points you AT the long-form when you hit a similar symptom.
 
 Topical sections grow as the project does (e.g., `## MCP integration insights`,
 `## Pytest plugin insights`).
+
+---
+
+## Fix B Merged — Anti-Instinct Gate Mechanism-Signature Refactor (2026-05-25)
+
+**Problem framing.** `integration_contracts.py` previously conflated lexical
+evidence (raw line text) with semantic mechanism identity (the integration
+point itself). This produced three symptoms of one design flaw: over-capture
+of bare "dispatch" mentions, per-evidence-line dedup that didn't collapse
+semantically-identical contracts, and narrow FR-MOD2.7 coverage that required
+literal mechanism-term substrings valid roadmaps may not contain. Per
+merged-output.md §1, the fix was a single coherent abstraction, not three
+patches.
+
+**Key abstraction.** Introduced `mechanism_signature: tuple[str, frozenset[str]]`
+on `IntegrationContract` — a normalized `(mechanism_kind, identifier_set)`
+tuple that routes both deduplication and Layer 3 stem-fallback coverage
+matching through the same semantic primitive. A new `_signature_subsumed`
+helper collapses contracts whose `(mechanism, identifier-set)` is identical
+or a subset of an already-seen signature with ≥1 shared identifier.
+
+**Load-bearing detail.** The empty-identifier branch in `_signature_subsumed`
+(`if not idents: return sig in seen`) preserves the existing
+`test_duplicate_lines_deduplicated` test's exact-match semantics. Without
+it, identical evidence lines lacking UPPER_SNAKE/PascalCase identifiers
+would no longer dedup.
+
+**Spec-vs-implementation deviations.** Two deviations from merged-output.md
+verbatim were necessary because the spec was internally inconsistent in two
+places: (1) `PROGRAMMATIC_RUNNERS` had to be added as an explicit alternation
+to `DISPATCH_PATTERNS[0]` because `\bRUNNERS\b` and `\b_RUNNERS\b` don't
+match inside `PROGRAMMATIC_RUNNERS` (no word boundary at `_`); without this
+addition, `TestCliPortifyRegression.*` regressed despite §4 asserting they
+would pass. (2) Bare `priority` had to be removed from both §2.2 extraction
+and §2.4 Layer 1 `dispatch_family` regexes because Layer 1 matched
+"Implement priority dispatch for logging events" and short-circuited before
+Layer 3's identifier-overlap guard — directly contradicting t7's design
+intent. Both deviations are documented in the task's deviation log.
+
+**Documented limitation.** When a spec's context contains only
+single-PascalCase identifiers like `Interactive`/`Bulk` that
+`_extract_identifiers` doesn't capture (it requires UPPER_SNAKE
+`[A-Z][A-Z0-9_]{2,}` or multi-cap `[A-Z][a-z]+(?:[A-Z][a-z]+)+`),
+the Layer 3 identifier-overlap guard short-circuits to an "empty
+set = match" branch. Out of scope for this fix; logged as a Follow-Up
+Item per merged-output.md §6 secondary counter-argument.
+
+**End-to-end target.** Live re-run against
+`/config/workspace/TUIBBS-scp/.dev/releases/current/v1-MVP/{epics,roadmap}.md`
+(BEFORE the Fix A workaround in roadmap.md is reverted) yielded
+`total=5 uncovered=0` — confirming the merged Fix B alone is sufficient.
+
+**Files touched:** src/superclaude/cli/roadmap/integration_contracts.py, tests/roadmap/test_integration_contracts.py
