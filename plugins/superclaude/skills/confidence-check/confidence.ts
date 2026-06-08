@@ -18,8 +18,8 @@
  *    - Low (<70%): Investigation incomplete, unclear root cause, missing official docs
  */
 
-import { existsSync, readdirSync } from 'fs';
-import { join, dirname } from 'path';
+import { existsSync, readdirSync, readFileSync, statSync } from 'fs';
+import { join, dirname, relative } from 'path';
 
 export interface Context {
   task?: string;
@@ -32,6 +32,23 @@ export interface Context {
   oss_reference_complete?: boolean;
   root_cause_identified?: boolean;
   confidence_checks?: string[];
+  // Investigation inputs (used when the corresponding *_complete flag is absent)
+  project_root?: string;
+  feature_name?: string;
+  target_name?: string;
+  proposed_technology?: string;
+  proposed_solution?: string;
+  root_cause?: string;
+  oss_references?: string[];
+  documentation_urls?: string[];
+  references?: string[];
+  research_notes?: string;
+  // Investigation outputs populated by the checks
+  potential_duplicates?: string[];
+  detected_tech_stack?: Record<string, boolean>;
+  architecture_warnings?: string[];
+  oss_recommendation?: string;
+  root_cause_warning?: string;
   [key: string]: any;
 }
 
@@ -174,11 +191,32 @@ export class ConfidenceChecker {
    * Returns true if no duplicates found (investigation complete)
    */
   private noDuplicates(context: Context): boolean {
-    // This is a placeholder - actual implementation should:
-    // 1. Search codebase with Glob/Grep for similar patterns
-    // 2. Check project dependencies for existing solutions
-    // 3. Verify no helper modules provide this functionality
-    return context.duplicate_check_complete ?? false;
+    // Allow explicit override via context flag (testing / pre-checked scenarios)
+    if ('duplicate_check_complete' in context) {
+      return context.duplicate_check_complete ?? false;
+    }
+
+    const featureName =
+      context.feature_name || context.target_name || context.test_name || '';
+    if (!featureName) {
+      return false;
+    }
+
+    const projectRoot = this.findProjectRoot(context);
+    if (!projectRoot) {
+      return false; // Can't verify without project root
+    }
+
+    const similar = this.searchCodebase(projectRoot, featureName, [
+      'node_modules', '.venv', 'venv', '__pycache__', '.git',
+    ]);
+
+    if (similar.length > 0) {
+      context.potential_duplicates = similar.slice(0, 5);
+      return false;
+    }
+
+    return true;
   }
 
   /**
@@ -192,11 +230,36 @@ export class ConfidenceChecker {
    * Returns true if solution aligns with project architecture
    */
   private architectureCompliant(context: Context): boolean {
-    // This is a placeholder - actual implementation should:
-    // 1. Read CLAUDE.md for project tech stack
-    // 2. Verify solution uses existing infrastructure
-    // 3. Check not reinventing provided functionality
-    return context.architecture_check_complete ?? false;
+    // Allow explicit override via context flag
+    if ('architecture_check_complete' in context) {
+      return context.architecture_check_complete ?? false;
+    }
+
+    const projectRoot = this.findProjectRoot(context);
+    if (!projectRoot) {
+      return false;
+    }
+
+    const techStack = this.readTechStack(projectRoot);
+    if (Object.keys(techStack).length === 0) {
+      return false;
+    }
+
+    context.detected_tech_stack = techStack;
+
+    const proposedTech = context.proposed_technology ?? '';
+    if (!proposedTech) {
+      // Tech stack is known and nothing risky proposed -> compliant
+      return true;
+    }
+
+    const antiPatterns = this.checkArchitectureAntiPatterns(techStack, proposedTech);
+    if (antiPatterns.length > 0) {
+      context.architecture_warnings = antiPatterns;
+      return false;
+    }
+
+    return true;
   }
 
   /**
@@ -210,11 +273,37 @@ export class ConfidenceChecker {
    * Returns true if OSS reference found and analyzed
    */
   private hasOssReference(context: Context): boolean {
-    // This is a placeholder - actual implementation should:
-    // 1. Search GitHub for similar implementations
-    // 2. Read popular OSS projects solving same problem
-    // 3. Verify approach matches community patterns
-    return context.oss_reference_complete ?? false;
+    // Allow explicit override via context flag
+    if ('oss_reference_complete' in context) {
+      return context.oss_reference_complete ?? false;
+    }
+
+    // Explicit references gathered during investigation
+    if (context.oss_references?.length) return true;
+    if (context.documentation_urls?.length) return true;
+    if (context.references?.length) return true;
+
+    const notes = context.research_notes ?? '';
+    if (notes.length > 50) return true;
+
+    // Check if docs/research directory has relevant analysis
+    const projectRoot = this.findProjectRoot(context);
+    if (projectRoot) {
+      const researchDir = join(projectRoot, 'docs', 'research');
+      if (existsSync(researchDir)) {
+        try {
+          if (readdirSync(researchDir).some(f => f.endsWith('.md'))) {
+            return true;
+          }
+        } catch {
+          // ignore unreadable dir
+        }
+      }
+    }
+
+    context.oss_recommendation =
+      'Search for OSS implementations using WebSearch or Context7 MCP';
+    return false;
   }
 
   /**
@@ -228,11 +317,221 @@ export class ConfidenceChecker {
    * Returns true if root cause clearly identified
    */
   private rootCauseIdentified(context: Context): boolean {
-    // This is a placeholder - actual implementation should:
-    // 1. Verify problem analysis complete
-    // 2. Check solution addresses root cause
-    // 3. Confirm fix aligns with best practices
-    return context.root_cause_identified ?? false;
+    // Allow explicit override via context flag
+    if ('root_cause_identified' in context) {
+      return context.root_cause_identified ?? false;
+    }
+
+    const rootCause = context.root_cause ?? '';
+    if (!rootCause) {
+      context.root_cause_warning = 'Root cause not documented in context';
+      return false;
+    }
+
+    // Validate root cause is specific (not hedged with uncertainty language)
+    const uncertaintyPatterns = [
+      /\bprobably\b/, /\bmaybe\b/, /\bmight\b/, /\bcould be\b/, /\bpossibly\b/,
+      /\bnot sure\b/, /\bguess\b/, /\bthink\b/, /\bassume\b/, /\bunclear\b/, /\bunknown\b/,
+    ];
+    const lower = rootCause.toLowerCase();
+    for (const pattern of uncertaintyPatterns) {
+      if (pattern.test(lower)) {
+        context.root_cause_warning = `Root cause contains uncertainty language: '${pattern.source}'`;
+        return false;
+      }
+    }
+
+    // A credible root cause comes with a concrete proposed solution
+    const solution = context.proposed_solution ?? '';
+    if (!solution) {
+      context.root_cause_warning = 'No proposed solution documented';
+      return false;
+    }
+    if (solution.length < 20) {
+      context.root_cause_warning = 'Proposed solution too brief';
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Find the project root directory from context.
+   *
+   * Uses an explicit `project_root`, otherwise walks up from `test_file` looking
+   * for pyproject.toml / CLAUDE.md / .git / package.json.
+   */
+  private findProjectRoot(context: Context): string | null {
+    if (context.project_root) {
+      return context.project_root;
+    }
+
+    const testFile = context.test_file;
+    if (!testFile) {
+      return null;
+    }
+
+    let current: string;
+    try {
+      current = statSync(testFile).isFile() ? dirname(testFile) : testFile;
+    } catch {
+      current = dirname(testFile);
+    }
+
+    const markers = ['pyproject.toml', 'CLAUDE.md', '.git', 'package.json'];
+    while (true) {
+      if (markers.some(m => existsSync(join(current, m)))) {
+        return current;
+      }
+      const parent = dirname(current);
+      if (parent === current) break;
+      current = parent;
+    }
+    return null;
+  }
+
+  /**
+   * Recursively collect files under `root` (skipping `excludeDirs`), capped to keep
+   * the walk cheap on large trees.
+   */
+  private walkFiles(root: string, excludeDirs: string[], limit = 2000): string[] {
+    const out: string[] = [];
+    const stack = [root];
+    while (stack.length > 0 && out.length < limit) {
+      const dir = stack.pop()!;
+      let entries: string[];
+      try {
+        entries = readdirSync(dir);
+      } catch {
+        continue;
+      }
+      for (const entry of entries) {
+        const full = join(dir, entry);
+        if (excludeDirs.includes(entry)) continue;
+        let isDir = false;
+        try {
+          isDir = statSync(full).isDirectory();
+        } catch {
+          continue;
+        }
+        if (isDir) {
+          stack.push(full);
+        } else {
+          out.push(full);
+        }
+      }
+    }
+    return out;
+  }
+
+  /**
+   * Search the codebase for files related to `searchTerm`.
+   *
+   * A file matches when its name resembles the search term, or when it defines a
+   * def/class/function with that exact name. Returns project-relative paths (max 10).
+   */
+  private searchCodebase(root: string, searchTerm: string, excludeDirs: string[]): string[] {
+    const results: string[] = [];
+    const searchLower = searchTerm.toLowerCase().replace(/[_-]/g, '');
+    const exts = ['.py', '.ts', '.js'];
+
+    for (const file of this.walkFiles(root, excludeDirs)) {
+      if (!exts.some(e => file.endsWith(e))) continue;
+
+      const base = file.split('/').pop() ?? file;
+      const stem = base.replace(/\.[^.]+$/, '').toLowerCase().replace(/[_-]/g, '');
+      if (stem.includes(searchLower) || searchLower.includes(stem)) {
+        results.push(relative(root, file));
+        if (results.length >= 10) break;
+        continue;
+      }
+
+      try {
+        const content = readFileSync(file, 'utf-8');
+        if (content.length < 100000) {
+          const escaped = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          if (new RegExp(`\\b(def|class|function)\\s+${escaped}\\b`, 'i').test(content)) {
+            results.push(relative(root, file));
+            if (results.length >= 10) break;
+          }
+        }
+      } catch {
+        // ignore unreadable file
+      }
+    }
+    return results.slice(0, 10);
+  }
+
+  /**
+   * Read tech stack from CLAUDE.md and project files.
+   */
+  private readTechStack(projectRoot: string): Record<string, boolean> {
+    const techStack: Record<string, boolean> = {};
+
+    const claudeMd = join(projectRoot, 'CLAUDE.md');
+    if (existsSync(claudeMd)) {
+      try {
+        const content = readFileSync(claudeMd, 'utf-8');
+        techStack.has_claude_md = true;
+        const techPatterns: Record<string, RegExp> = {
+          supabase: /\bsupabase\b/i,
+          nextjs: /\bnext\.?js\b/i,
+          react: /\breact\b/i,
+          python: /\bpython\b/i,
+          typescript: /\btypescript\b/i,
+          turborepo: /\bturborepo\b/i,
+          uv: /\buv\b/i,
+          pytest: /\bpytest\b/i,
+        };
+        for (const [tech, pattern] of Object.entries(techPatterns)) {
+          if (pattern.test(content)) techStack[tech] = true;
+        }
+      } catch {
+        // ignore unreadable CLAUDE.md
+      }
+    }
+
+    if (existsSync(join(projectRoot, 'pyproject.toml'))) techStack.python_project = true;
+    if (existsSync(join(projectRoot, 'package.json'))) techStack.node_project = true;
+    if (existsSync(join(projectRoot, 'turbo.json'))) techStack.turborepo = true;
+
+    return techStack;
+  }
+
+  /**
+   * Check the proposed approach against the detected tech stack.
+   */
+  private checkArchitectureAntiPatterns(
+    techStack: Record<string, boolean>,
+    proposedTech: string
+  ): string[] {
+    const warnings: string[] = [];
+    const proposed = proposedTech.toLowerCase();
+
+    if (techStack.supabase) {
+      if (proposed.includes('custom api') || proposed.includes('express')) {
+        warnings.push(
+          'Supabase project detected - consider using Supabase APIs instead of custom API'
+        );
+      }
+      if (proposed.includes('custom auth')) {
+        warnings.push(
+          'Supabase project detected - consider using Supabase Auth instead of custom authentication'
+        );
+      }
+    }
+
+    if (techStack.nextjs && proposed.includes('custom routing')) {
+      warnings.push(
+        'Next.js project detected - use Next.js App Router instead of custom routing'
+      );
+    }
+
+    if (techStack.uv && proposed.includes('pip install')) {
+      warnings.push("UV project detected - use 'uv pip install' instead of 'pip install'");
+    }
+
+    return warnings;
   }
 
   /**

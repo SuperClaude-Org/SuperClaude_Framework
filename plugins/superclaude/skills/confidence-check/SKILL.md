@@ -111,11 +111,20 @@ If Total < 0.70:   ❌ STOP - Request more context
 
 ## Implementation Details
 
-The TypeScript implementation is available in `confidence.ts` for reference, containing:
+A working TypeScript implementation lives in `confidence.ts`, mirroring the Python
+`ConfidenceChecker` (`src/superclaude/pm_agent/confidence.py`):
 
-- `confidenceCheck(context)` - Main assessment function
-- Detailed check implementations
-- Context interface definitions
+- `ConfidenceChecker.assess(context)` - Main assessment function (returns 0.0–1.0)
+- All five checks are implemented, not just flag look-ups:
+  - **Duplicates**: scans the project (`*.py`/`*.ts`/`*.js`) for matching file names or
+    `def`/`class`/`function` definitions; matches are recorded in `context.potential_duplicates`
+  - **Architecture**: reads the tech stack from `CLAUDE.md` and package files, then flags
+    anti-patterns (e.g. custom API in a Supabase project) into `context.architecture_warnings`
+  - **OSS / docs / root cause**: inspect provided references and reject hedged
+    ("maybe", "probably", "assume", …) root-cause statements
+- Each check still honors an explicit `*_complete` / `*_verified` context flag override for
+  testing and pre-checked scenarios.
+- `Context` interface definitions for all inputs and outputs.
 
 ## ROI
 

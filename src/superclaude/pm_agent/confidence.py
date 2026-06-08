@@ -17,6 +17,10 @@ Required Checks:
     3. Official documentation verified
     4. Working OSS implementations referenced
     5. Root cause identified with high certainty
+
+Each check supports an explicit context flag override (e.g. ``duplicate_check_complete``)
+for testing or pre-checked scenarios; absent the flag, the check inspects the real
+project on disk.
 """
 
 import re
@@ -140,54 +144,77 @@ class ConfidenceChecker:
         - No helper functions that solve the same problem
         - No libraries that provide this functionality
 
+        Searches the project for files (any of *.py/*.ts/*.js) whose name matches
+        the feature, or that define a function/class/const of the same name. Any
+        match is recorded in ``context["potential_duplicates"]``.
+
         Returns True if no duplicates found (investigation complete)
         """
         # Allow explicit override via context flag (for testing or pre-checked scenarios)
         if "duplicate_check_complete" in context:
-            return context["duplicate_check_complete"]
+            return context.get("duplicate_check_complete", False)
 
-        # Search for duplicates in the project
+        feature_name = (
+            context.get("feature_name")
+            or context.get("target_name")
+            or context.get("test_name", "")
+        )
+        if not feature_name:
+            return False
+
         project_root = self._find_project_root(context)
         if not project_root:
             return False  # Can't verify without project root
 
-        target_name = context.get("target_name", context.get("test_name", ""))
-        if not target_name:
+        similar_files = self._search_codebase(
+            project_root,
+            feature_name,
+            patterns=["**/*.py", "**/*.ts", "**/*.js"],
+            exclude_dirs=["node_modules", ".venv", "venv", "__pycache__", ".git"],
+        )
+
+        if similar_files:
+            context["potential_duplicates"] = similar_files[:5]
             return False
 
-        # Search for similarly named files/functions in the codebase
-        duplicates = self._search_codebase(project_root, target_name)
-        return len(duplicates) == 0
+        return True
 
     def _architecture_compliant(self, context: Dict[str, Any]) -> bool:
         """
         Check architecture compliance
 
-        Verify solution uses existing tech stack by reading CLAUDE.md
-        and checking that the proposed approach aligns with the project.
+        Reads the project tech stack from CLAUDE.md / package files and verifies the
+        proposed approach does not reinvent existing infrastructure (e.g. introducing a
+        custom API in a Supabase project). Warnings are stored in
+        ``context["architecture_warnings"]``.
 
         Returns True if solution aligns with project architecture
         """
         # Allow explicit override via context flag
         if "architecture_check_complete" in context:
-            return context["architecture_check_complete"]
+            return context.get("architecture_check_complete", False)
 
         project_root = self._find_project_root(context)
         if not project_root:
             return False
 
-        # Check for architecture documentation
-        arch_files = ["CLAUDE.md", "PLANNING.md", "ARCHITECTURE.md"]
-        for arch_file in arch_files:
-            if (project_root / arch_file).exists():
-                return True
+        tech_stack = self._read_tech_stack(project_root)
+        if not tech_stack:
+            return False
 
-        # If no architecture docs found, check for standard config files
-        config_files = [
-            "pyproject.toml", "package.json", "Cargo.toml",
-            "go.mod", "pom.xml", "build.gradle",
-        ]
-        return any((project_root / cf).exists() for cf in config_files)
+        context["detected_tech_stack"] = tech_stack
+
+        proposed_tech = context.get("proposed_technology", "")
+        if not proposed_tech:
+            # Tech stack is known and nothing risky proposed -> compliant
+            return True
+
+        anti_patterns = self._check_architecture_anti_patterns(tech_stack, proposed_tech)
+        if anti_patterns:
+            context["architecture_warnings"] = anti_patterns
+            return False
+
+        return True
 
     def _has_oss_reference(self, context: Dict[str, Any]) -> bool:
         """
@@ -200,21 +227,30 @@ class ConfidenceChecker:
         """
         # Allow explicit override via context flag
         if "oss_reference_complete" in context:
-            return context["oss_reference_complete"]
+            return context.get("oss_reference_complete", False)
 
-        # Check if context contains reference URLs or documentation links
-        references = context.get("references", [])
-        if references:
+        # Explicit references gathered during investigation
+        if context.get("oss_references"):
+            return True
+        if context.get("documentation_urls"):
+            return True
+        if context.get("references"):
+            return True
+
+        research_notes = context.get("research_notes", "")
+        if research_notes and len(research_notes) > 50:
             return True
 
         # Check if docs/research directory has relevant analysis
         project_root = self._find_project_root(context)
         if project_root and (project_root / "docs" / "research").exists():
             research_dir = project_root / "docs" / "research"
-            research_files = list(research_dir.glob("*.md"))
-            if research_files:
+            if list(research_dir.glob("*.md")):
                 return True
 
+        context["oss_recommendation"] = (
+            "Search for OSS implementations using WebSearch or Context7 MCP"
+        )
         return False
 
     def _root_cause_identified(self, context: Dict[str, Any]) -> bool:
@@ -230,69 +266,184 @@ class ConfidenceChecker:
         """
         # Allow explicit override via context flag
         if "root_cause_identified" in context:
-            return context["root_cause_identified"]
+            return context.get("root_cause_identified", False)
 
         # Check for root cause analysis in context
         root_cause = context.get("root_cause", "")
         if not root_cause:
+            context["root_cause_warning"] = "Root cause not documented in context"
             return False
 
-        # Validate root cause is specific (not vague)
-        vague_indicators = ["maybe", "probably", "might", "possibly", "unclear", "unknown"]
+        # Validate root cause is specific (not hedged with uncertainty language)
+        uncertainty_patterns = [
+            r"\bprobably\b",
+            r"\bmaybe\b",
+            r"\bmight\b",
+            r"\bcould be\b",
+            r"\bpossibly\b",
+            r"\bnot sure\b",
+            r"\bguess\b",
+            r"\bthink\b",
+            r"\bassume\b",
+            r"\bunclear\b",
+            r"\bunknown\b",
+        ]
         root_cause_lower = root_cause.lower()
-        if any(indicator in root_cause_lower for indicator in vague_indicators):
+        for pattern in uncertainty_patterns:
+            if re.search(pattern, root_cause_lower):
+                context["root_cause_warning"] = (
+                    f"Root cause contains uncertainty language: '{pattern}'"
+                )
+                return False
+
+        # A credible root cause comes with a concrete proposed solution
+        solution = context.get("proposed_solution", "")
+        if not solution:
+            context["root_cause_warning"] = "No proposed solution documented"
             return False
 
-        # Root cause should have reasonable specificity (>10 chars)
-        return len(root_cause.strip()) > 10
+        if len(solution) < 20:
+            context["root_cause_warning"] = "Proposed solution too brief"
+            return False
+
+        return True
 
     def _find_project_root(self, context: Dict[str, Any]) -> Optional[Path]:
         """Find the project root directory from context"""
         # Check explicit project_root in context
         if "project_root" in context:
-            root = Path(context["project_root"])
-            if root.exists():
-                return root
+            return Path(context["project_root"])
 
         # Traverse up from test_file to find project root
         test_file = context.get("test_file")
         if not test_file:
             return None
 
-        current = Path(test_file).parent
+        path = Path(test_file)
+        current = path.parent if path.is_file() else path
         while current.parent != current:
-            if (current / "pyproject.toml").exists() or (current / ".git").exists():
+            if (current / "pyproject.toml").exists():
+                return current
+            if (current / "CLAUDE.md").exists():
+                return current
+            if (current / ".git").exists():
+                return current
+            if (current / "package.json").exists():
                 return current
             current = current.parent
+
         return None
 
-    def _search_codebase(self, project_root: Path, target_name: str) -> List[Path]:
+    def _search_codebase(
+        self,
+        root: Path,
+        search_term: str,
+        patterns: List[str],
+        exclude_dirs: List[str],
+    ) -> List[str]:
         """
-        Search for files/functions with similar names in the codebase
+        Search the codebase for files related to ``search_term``.
 
-        Returns list of paths to potential duplicates
+        A file matches when its name resembles the search term, or when it defines a
+        ``def``/``class``/``function`` with that exact name. Returns project-relative
+        paths (capped at 10) and skips ``exclude_dirs``.
         """
-        duplicates = []
+        results = []
+        search_lower = search_term.lower().replace("_", "").replace("-", "")
 
-        # Normalize target name for search
-        # Convert test_feature_name to feature_name
-        search_name = re.sub(r"^test_", "", target_name)
-        if not search_name:
-            return []
-
-        # Search for Python files with similar names
-        src_dirs = [project_root / "src", project_root / "lib", project_root]
-        for src_dir in src_dirs:
-            if not src_dir.exists():
-                continue
-            for py_file in src_dir.rglob("*.py"):
-                # Skip test files and __pycache__
-                if "test_" in py_file.name or "__pycache__" in str(py_file):
+        for pattern in patterns:
+            for file_path in root.glob(pattern):
+                if any(excluded in str(file_path) for excluded in exclude_dirs):
                     continue
-                if search_name.lower() in py_file.stem.lower():
-                    duplicates.append(py_file)
 
-        return duplicates
+                filename = file_path.stem.lower().replace("_", "").replace("-", "")
+                if search_lower in filename or filename in search_lower:
+                    results.append(str(file_path.relative_to(root)))
+                    continue
+
+                try:
+                    content = file_path.read_text(encoding="utf-8", errors="ignore")
+                    if len(content) < 100000:
+                        if re.search(
+                            rf"\b(def|class|function)\s+{re.escape(search_term)}\b",
+                            content,
+                            re.IGNORECASE,
+                        ):
+                            results.append(str(file_path.relative_to(root)))
+                except (OSError, PermissionError):
+                    pass
+
+        return results[:10]
+
+    def _read_tech_stack(self, project_root: Path) -> Dict[str, Any]:
+        """Read tech stack from CLAUDE.md and project files."""
+        tech_stack: Dict[str, Any] = {}
+
+        claude_md = project_root / "CLAUDE.md"
+        if claude_md.exists():
+            try:
+                content = claude_md.read_text(encoding="utf-8")
+                tech_stack["has_claude_md"] = True
+
+                tech_patterns = {
+                    "supabase": r"\bsupabase\b",
+                    "nextjs": r"\bnext\.?js\b",
+                    "react": r"\breact\b",
+                    "python": r"\bpython\b",
+                    "typescript": r"\btypescript\b",
+                    "turborepo": r"\bturborepo\b",
+                    "uv": r"\buv\b",
+                    "pytest": r"\bpytest\b",
+                }
+
+                for tech, pattern in tech_patterns.items():
+                    if re.search(pattern, content, re.IGNORECASE):
+                        tech_stack[tech] = True
+            except (OSError, PermissionError):
+                pass
+
+        if (project_root / "pyproject.toml").exists():
+            tech_stack["python_project"] = True
+        if (project_root / "package.json").exists():
+            tech_stack["node_project"] = True
+        if (project_root / "turbo.json").exists():
+            tech_stack["turborepo"] = True
+
+        return tech_stack
+
+    def _check_architecture_anti_patterns(
+        self, tech_stack: Dict[str, Any], proposed_tech: str
+    ) -> List[str]:
+        """Check the proposed approach against the detected tech stack."""
+        warnings = []
+        proposed_lower = proposed_tech.lower()
+
+        if tech_stack.get("supabase"):
+            if "custom api" in proposed_lower or "express" in proposed_lower:
+                warnings.append(
+                    "Supabase project detected - consider using Supabase APIs "
+                    "instead of custom API"
+                )
+            if "custom auth" in proposed_lower:
+                warnings.append(
+                    "Supabase project detected - consider using Supabase Auth "
+                    "instead of custom authentication"
+                )
+
+        if tech_stack.get("nextjs"):
+            if "custom routing" in proposed_lower:
+                warnings.append(
+                    "Next.js project detected - use Next.js App Router "
+                    "instead of custom routing"
+                )
+
+        if tech_stack.get("uv"):
+            if "pip install" in proposed_lower:
+                warnings.append(
+                    "UV project detected - use 'uv pip install' instead of 'pip install'"
+                )
+
+        return warnings
 
     def _has_existing_patterns(self, context: Dict[str, Any]) -> bool:
         """
