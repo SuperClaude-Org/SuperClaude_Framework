@@ -150,7 +150,12 @@ class TestIntelligentExecute:
 
             # May be blocked before reaching exception, fail, or partial_failure
             # (parallel executor catches exceptions per-task)
-            assert result["status"] in ["blocked", "failed", "partial_failure", "success"]
+            assert result["status"] in [
+                "blocked",
+                "failed",
+                "partial_failure",
+                "success",
+            ]
 
     def test_execution_without_auto_correct(self):
         """Test execution with auto_correct disabled"""
@@ -220,9 +225,7 @@ class TestSafeExecute:
             (Path(tmpdir) / "PROJECT_INDEX.md").write_text("# Index")
 
             # Patch to ensure high confidence
-            with patch.object(
-                ReflectionEngine, "reflect"
-            ) as mock_reflect:
+            with patch.object(ReflectionEngine, "reflect") as mock_reflect:
                 # Create high confidence result
                 from superclaude.execution.reflection import ReflectionResult
 
@@ -254,9 +257,7 @@ class TestSafeExecute:
     def test_safe_execute_blocked_raises(self):
         """Test safe execution raises when blocked"""
         with tempfile.TemporaryDirectory():
-            with patch.object(
-                ReflectionEngine, "reflect"
-            ) as mock_reflect:
+            with patch.object(ReflectionEngine, "reflect") as mock_reflect:
                 from superclaude.execution.reflection import ReflectionResult
 
                 clarity = ReflectionResult("Clarity", 0.3, [], ["Low clarity"])
@@ -287,7 +288,9 @@ class TestIntegration:
         """Test full intelligent execution workflow"""
         with tempfile.TemporaryDirectory() as tmpdir:
             # Create realistic project structure
-            (Path(tmpdir) / "PROJECT_INDEX.md").write_text("# Project Index\n## Structure")
+            (Path(tmpdir) / "PROJECT_INDEX.md").write_text(
+                "# Project Index\n## Structure"
+            )
 
             context = {
                 "project_index": "loaded",

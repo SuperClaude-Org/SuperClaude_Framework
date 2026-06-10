@@ -209,7 +209,9 @@ class ConfidenceChecker:
             # Tech stack is known and nothing risky proposed -> compliant
             return True
 
-        anti_patterns = self._check_architecture_anti_patterns(tech_stack, proposed_tech)
+        anti_patterns = self._check_architecture_anti_patterns(
+            tech_stack, proposed_tech
+        )
         if anti_patterns:
             context["architecture_warnings"] = anti_patterns
             return False

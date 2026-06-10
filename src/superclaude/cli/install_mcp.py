@@ -495,7 +495,7 @@ def check_mcp_server_installed(server_name: str) -> bool:
         # Parse output to check if server is installed
         return server_name.lower() in output.lower()
 
-    except (subprocess.TimeoutExpired, subprocess.SubprocessError):
+    except (subprocess.TimeoutExpired, subprocess.SubprocessError, FileNotFoundError):
         return False
 
 
