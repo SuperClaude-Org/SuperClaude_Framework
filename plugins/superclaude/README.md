@@ -1,6 +1,7 @@
 # SuperClaude Plugin for Claude Code
 
-AI-enhanced development framework — 30 commands, 20 agents, 7 skills, and lifecycle hooks.
+Eval-gated toolkit — a few skills that beat native behavior, deterministic hooks,
+and optional MCP integrations. Less framework, more leverage.
 
 ## Installation
 
@@ -19,47 +20,38 @@ claude --plugin-dir ./plugins/superclaude
 
 ## What's Included
 
-### 30 Slash Commands (`/superclaude:*`)
-
-Planning: `pm`, `brainstorm`, `design`, `estimate`, `spec-panel`
-Development: `implement`, `build`, `improve`, `cleanup`, `explain`
-Testing: `test`, `analyze`, `troubleshoot`, `reflect`
-Documentation: `document`, `help`
-Research: `research`, `business-panel`
-Utilities: `agent`, `index-repo`, `git`, `task`, `workflow`, `spawn`, `load`, `save`
-
-### 20 Domain-Specialist Agents
-
-`@pm-agent`, `@system-architect`, `@frontend-architect`, `@backend-architect`,
-`@security-engineer`, `@deep-research`, `@quality-engineer`, `@performance-engineer`,
-`@python-expert`, `@technical-writer`, `@devops-architect`, `@refactoring-expert`,
-`@requirements-analyst`, `@root-cause-analyst`, `@socratic-mentor`, `@learning-guide`,
-`@self-review`, `@repo-index`, `@business-panel-experts`, `@deep-research-agent`
-
-### 7 Skills
+### 4 Skills
 
 | Skill | Auto-triggers on |
 |-------|-----------------|
-| `confidence-check` | Pre-implementation confidence assessment |
-| `deep-research` | Research, investigate, explore requests |
-| `brainstorm` | Vague requests, idea exploration |
-| `troubleshoot` | Error reports, debugging |
-| `pm` | Session start, task planning |
-| `token-efficiency` | Low context, brevity requests |
+| `confidence-check` | Pre-implementation readiness gate (+ `confidence.ts`) |
+| `spec-panel` | Reviewing specs, requirements, API contracts via expert panel |
+| `socratic` | "Teach me / help me understand" — questions instead of answers |
+| `pm-reflexion` | Resuming cross-session work, post-mortems after failures |
 
-### Hooks
+### 1 Agent
 
-| Event | Behavior |
-|-------|----------|
-| `SessionStart` | Initialize session context |
-| `Stop` | Check for uncommitted changes and incomplete tasks |
-| `PostToolUse` (Write/Edit) | Verify edit correctness |
+- `explore-haiku` — cheap codebase exploration on Haiku
 
-### MCP Servers
+### 5 Hooks (`hooks/hooks.json`)
 
-- **Context7** — Official library documentation (prevents hallucination)
-- **Sequential Thinking** — Multi-step problem solving
+| Hook | Event | Behavior |
+|------|-------|----------|
+| `session-restore` | SessionStart | TASK.md excerpt, git state, mindbase probe (silent degrade) |
+| `confidence-gate` | PreToolUse (`Write\|Edit`) | Confidence criteria reminder for non-trivial work |
+| `session-summary` | Stop | Outcome + remaining-work summary |
+| `reflexion-trigger` | Stop | Failure reflexion via pm-reflexion skill |
+| `tab-title` | session lifecycle | Terminal tab state, opt-in via `SUPERCLAUDE_TAB_TITLE=1` |
+
+### MCP Servers (optional)
+
+`.mcp.json` ships optional server configs. Everything works with zero MCP
+servers; see the repository README for the transparency policy on
+Agile-Tech-maintained integrations.
+
+New components must pass the eval gate in `eval/` at the repository root —
+see `eval/preregister.yaml` for the survive rules.
 
 ## Version
 
-4.3.0
+5.0.0-alpha.1
