@@ -1,5 +1,13 @@
 # Contributing to SuperClaude Framework
 
+> **v5 note**: On the `v5` branch, any proposal for a new skill, agent, hook, or
+> command is **eval-gated**: run the A/B harness against native Claude Code and
+> attach results meeting the pre-registered survive rule
+> ([eval/README.md](eval/README.md), [eval/preregister.yaml](eval/preregister.yaml)).
+> Best-practice write-ups go to [docs/knowledge/](docs/knowledge/README.md)
+> (evidence required). The sections below otherwise describe the v4 process and
+> will be revised after the v5 RFC ([docs/rfc/v5-slim-down.md](docs/rfc/v5-slim-down.md)).
+
 SuperClaude Framework transforms Claude Code into a structured development platform through behavioral instruction injection and intelligent workflow orchestration. We welcome contributions that enhance the framework's capabilities, improve documentation, and expand the ecosystem of specialized agents and MCP server integrations.
 
 **Project Mission**: Enable systematic software development workflows with automated expert coordination, quality gates, and session persistence for Claude Code users.
@@ -54,8 +62,8 @@ SuperClaude Framework transforms Claude Code into a structured development platf
 **Feature Evaluation Criteria:**
 - Aligns with SuperClaude's systematic development workflow mission
 - Provides clear utility for software development tasks
-- Integrates well with existing command/agent/mode architecture
 - Maintains framework simplicity and discoverability
+- For v5: beats native Claude Code behavior in the A/B eval ([eval/README.md](eval/README.md)) — attach the numbers
 
 **High-Priority Features:**
 - New specialized agents for emerging domains (mobile, ML, blockchain)
