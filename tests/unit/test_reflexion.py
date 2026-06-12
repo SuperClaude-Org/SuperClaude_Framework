@@ -95,6 +95,46 @@ class TestReflexionPattern:
 
         assert solution is None or isinstance(solution, str)
 
+    def test_default_does_not_write_files(self, tmp_path, monkeypatch):
+        """Without explicit memory_dir or env var, no files are created"""
+        monkeypatch.chdir(tmp_path)
+        monkeypatch.delenv("SUPERCLAUDE_REFLEXION_OUTPUT_DIR", raising=False)
+
+        reflexion = ReflexionPattern()
+        reflexion.record_error(
+            {
+                "test_name": "test_feature",
+                "error_type": "ValueError",
+                "error_message": "Invalid input",
+                "solution": "Validate input first",
+                "root_cause": "Missing validation",
+            }
+        )
+
+        assert not (tmp_path / "docs").exists()
+
+    def test_env_var_enables_persistence(self, tmp_path, monkeypatch):
+        """SUPERCLAUDE_REFLEXION_OUTPUT_DIR opts in to file writes"""
+        monkeypatch.chdir(tmp_path)
+        output_dir = tmp_path / "reflexion-out"
+        monkeypatch.setenv("SUPERCLAUDE_REFLEXION_OUTPUT_DIR", str(output_dir))
+
+        reflexion = ReflexionPattern()
+        reflexion.record_error(
+            {
+                "test_name": "test_feature",
+                "error_type": "ValueError",
+                "error_message": "Invalid input",
+                "solution": "Validate input first",
+                "root_cause": "Missing validation",
+            }
+        )
+
+        assert (output_dir / "memory" / "solutions_learned.jsonl").exists()
+        assert list((output_dir / "mistakes").glob("test_feature-*.md"))
+        # Nothing leaks into the working directory
+        assert not (tmp_path / "docs").exists()
+
     def test_reflexion_memory_persistence(self, temp_memory_dir):
         """Test that reflexion can work with memory directory"""
         reflexion = ReflexionPattern(memory_dir=temp_memory_dir)

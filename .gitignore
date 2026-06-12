@@ -178,3 +178,6 @@ TODO.txt
 # Development artifacts (should not be in repo)
 package-lock.json
 uv.lock
+
+# Reflexion runtime output (opt-in via SUPERCLAUDE_REFLEXION_OUTPUT_DIR)
+docs/mistakes/

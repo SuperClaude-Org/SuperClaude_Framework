@@ -12,7 +12,9 @@ Performance:
     - Solution reuse rate: >90%
 
 Storage Strategy:
-    - Primary: docs/memory/solutions_learned.jsonl (local file)
+    - File persistence is OPT-IN: set SUPERCLAUDE_REFLEXION_OUTPUT_DIR or pass
+      an explicit memory_dir. Without either, record_error() keeps no files.
+    - Primary: <output_dir>/memory/solutions_learned.jsonl (local file)
     - Secondary: mindbase (if available, semantic search)
     - Fallback: grep-based text search
 
@@ -24,6 +26,7 @@ Process:
 """
 
 import json
+import os
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -58,20 +61,25 @@ class ReflexionPattern:
         Initialize reflexion pattern
 
         Args:
-            memory_dir: Directory for storing error solutions
-                       (defaults to docs/memory/ in current project)
+            memory_dir: Directory for storing error solutions. When omitted,
+                       SUPERCLAUDE_REFLEXION_OUTPUT_DIR/memory is used if the
+                       env var is set; otherwise file persistence is disabled
+                       and record_error() keeps no files.
         """
         if memory_dir is None:
-            # Default to docs/memory/ in current working directory
-            memory_dir = Path.cwd() / "docs" / "memory"
+            output_dir = os.environ.get("SUPERCLAUDE_REFLEXION_OUTPUT_DIR")
+            if output_dir:
+                memory_dir = Path(output_dir) / "memory"
+
+        if memory_dir is None:
+            self.memory_dir = None
+            self.solutions_file = None
+            self.mistakes_dir = None
+            return
 
         self.memory_dir = memory_dir
         self.solutions_file = memory_dir / "solutions_learned.jsonl"
         self.mistakes_dir = memory_dir.parent / "mistakes"
-
-        # Ensure directories exist
-        self.memory_dir.mkdir(parents=True, exist_ok=True)
-        self.mistakes_dir.mkdir(parents=True, exist_ok=True)
 
     def get_solution(self, error_info: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """
@@ -116,10 +124,15 @@ class ReflexionPattern:
                 - solution (optional): Solution applied
                 - root_cause (optional): Root cause analysis
         """
+        if self.solutions_file is None:
+            # File persistence not opted in — nothing to record
+            return
+
         # Add timestamp
         error_info["timestamp"] = datetime.now().isoformat()
 
         # Append to solutions log (JSONL format)
+        self.memory_dir.mkdir(parents=True, exist_ok=True)
         with self.solutions_file.open("a") as f:
             f.write(json.dumps(error_info) + "\n")
 
@@ -236,7 +249,7 @@ class ReflexionPattern:
         Returns:
             Solution dict if found, None otherwise
         """
-        if not self.solutions_file.exists():
+        if self.solutions_file is None or not self.solutions_file.exists():
             return None
 
         # Read JSONL file and search
@@ -305,6 +318,7 @@ class ReflexionPattern:
         test_name = error_info.get("test_name", "unknown")
         date = datetime.now().strftime("%Y-%m-%d")
         filename = f"{test_name}-{date}.md"
+        self.mistakes_dir.mkdir(parents=True, exist_ok=True)
         filepath = self.mistakes_dir / filename
 
         # Create mistake document
@@ -366,7 +380,7 @@ class ReflexionPattern:
                 - errors_with_solutions: Errors with documented solutions
                 - solution_reuse_rate: Percentage of reused solutions
         """
-        if not self.solutions_file.exists():
+        if self.solutions_file is None or not self.solutions_file.exists():
             return {
                 "total_errors": 0,
                 "errors_with_solutions": 0,
