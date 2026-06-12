@@ -1,0 +1,6 @@
+id: fix-sum-bug
+source: self
+verify_image: python:3.12-slim
+max_turns: 10
+difficulty: trivial
+tags: [smoke, bugfix]

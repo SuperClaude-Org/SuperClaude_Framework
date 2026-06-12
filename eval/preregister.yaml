@@ -1,0 +1,24 @@
+# Pre-registration — fix metrics and survive thresholds BEFORE running, so a
+# component cannot be retro-justified into "it worked". Edit this only with a
+# dated note explaining why; never tune it to make a candidate pass.
+
+null_hypothesis: "the native Claude Code baseline (arm A) is >= ours"
+
+primary_metric: pass_rate          # fraction of trials whose verify.sh exits 0
+secondary_metrics: [pass_at_1, pass_at_k, mean_output_tokens, mean_cost_usd]
+
+# A candidate SURVIVES only if BOTH hold:
+survive_rule:
+  beats_baseline: "candidate.pass_ci.low > baseline.pass_ci.high"   # disjoint 95% CIs
+  not_cost_regressed: "candidate.quality_per_1k_tokens >= baseline.quality_per_1k_tokens"
+
+# Anything whose CIs overlap the baseline is INCONCLUSIVE, not a win — gather
+# more tasks/trials before deciding, do not ship on a hunch.
+
+trials_default: 5          # smoke. Real corpus: >= 20 per (task, arm).
+min_tasks_for_decision: 20 # effect sizes are small (~2pt); a handful proves nothing.
+k_default: 3
+
+confirmed_cuts:
+  - parallel.py   # native async subagents / Agent Teams / /batch cover it; in-plugin
+                  # DAG double-schedules against native orchestration (harmful). -> airiscode.
