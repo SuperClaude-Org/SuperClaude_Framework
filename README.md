@@ -169,8 +169,9 @@ superclaude install --minimal   # confidence-check skill only, no agents
 ```
 
 Incremental adoption is the recommended path — start minimal, add pieces that
-earn their place ([official guidance](https://code.claude.com/docs/en/claude-code-on-the-web)
-applies the same principle to all Claude Code extensions).
+earn their place. Anthropic's own
+[Claude Code best practices](https://www.anthropic.com/engineering/claude-code-best-practices)
+recommend the same: small, iteratively tuned configurations over big ones.
 
 ### Verify
 
