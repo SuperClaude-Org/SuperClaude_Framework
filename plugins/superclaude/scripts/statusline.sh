@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # statusline.sh — Claude Code statusline (optional asset, not wired by hooks).
 #
+# Canonical home: https://github.com/agiletec-inc/claude-code-terminal-ux
+# (statusline module). This copy is adapted for plugin distribution; sync
+# behavioral changes from upstream rather than diverging here.
+#
 # Renders:
 #   <cwd> [<branch>] ctx:<n>% 5h:<n>% 7d:<n>% <model>        <tokens> tokens
 #

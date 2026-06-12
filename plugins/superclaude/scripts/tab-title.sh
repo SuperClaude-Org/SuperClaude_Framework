@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # tab-title.sh — Claude Code terminal tab-title hook (opt-in, cosmetic).
 #
+# Canonical home: https://github.com/agiletec-inc/claude-code-terminal-ux
+# (tab-title module). This copy is adapted for plugin distribution; sync
+# behavioral changes from upstream rather than diverging here.
+#
 # Silent no-op unless SUPERCLAUDE_TAB_TITLE=1 is set in the environment.
 #
 # Sets the tab title via the `terminalSequence` hook output — Claude Code
