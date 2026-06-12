@@ -91,29 +91,33 @@ class TestCLIDoctor:
 
 
 class TestCLIInstall:
-    """Test install command for slash commands."""
+    """Test install command for skills and agents."""
 
     def test_install_list(self):
-        """Test install --list shows available commands."""
+        """Test install --list shows available skills and agents."""
         result = run_cli("install", "--list")
         assert result.returncode == 0
         output = result.stdout + result.stderr
-        # Should list some commands
-        assert any(
-            cmd in output.lower()
-            for cmd in ["pm", "research", "implement", "test", "analyze"]
-        )
+        # Should list skills and agents
+        assert "confidence-check" in output
+        assert "explore-haiku" in output
 
     def test_install_to_temp_directory(self):
-        """Test install command installs to specified directory."""
+        """Test install command installs to specified directories."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            commands_dir = Path(tmpdir) / "commands"
-            result = run_cli("install", "--target", str(commands_dir), timeout=60)
+            skills_dir = Path(tmpdir) / "skills"
+            agents_dir = Path(tmpdir) / "agents"
+            result = run_cli(
+                "install",
+                "--skills-dir",
+                str(skills_dir),
+                "--agents-dir",
+                str(agents_dir),
+                timeout=60,
+            )
             assert result.returncode == 0
-            # Should have created some .md files
-            if commands_dir.exists():
-                md_files = list(commands_dir.glob("*.md"))
-                assert len(md_files) > 0, "No command files installed"
+            assert (skills_dir / "confidence-check" / "SKILL.md").exists()
+            assert (agents_dir / "explore-haiku.md").exists()
 
     def test_install_help(self):
         """Test install --help shows usage."""

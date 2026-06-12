@@ -5,7 +5,7 @@ Tests command-line interface functionality.
 """
 
 import tempfile
-from unittest.mock import patch
+from pathlib import Path
 
 from click.testing import CliRunner
 
@@ -54,26 +54,64 @@ class TestInstallCommand:
 
         assert result.exit_code == 0
         assert "install" in result.output.lower()
+        assert "--minimal" in result.output
 
     def test_install_list_flag(self):
-        """Test install --list flag"""
+        """Test install --list flag shows skills and agents"""
         runner = CliRunner()
         result = runner.invoke(main, ["install", "--list"])
 
         assert result.exit_code == 0
-        assert "Available" in result.output or "command" in result.output.lower()
+        assert "Skills" in result.output
+        assert "Agents" in result.output
+        assert "confidence-check" in result.output
+        assert "explore-haiku" in result.output
 
-    @patch("superclaude.cli.install_commands.install_commands")
-    def test_install_to_custom_target(self, mock_install):
-        """Test install to custom target"""
-        mock_install.return_value = (True, "Success")
-
+    def test_install_to_custom_dirs(self):
+        """Test install to custom skill/agent directories"""
         runner = CliRunner()
         with tempfile.TemporaryDirectory() as tmpdir:
-            result = runner.invoke(main, ["install", "--target", tmpdir])
+            skills_dir = Path(tmpdir) / "skills"
+            agents_dir = Path(tmpdir) / "agents"
 
-        # May succeed or fail depending on mock setup
-        assert result.exit_code in [0, 1]
+            result = runner.invoke(
+                main,
+                [
+                    "install",
+                    "--skills-dir",
+                    str(skills_dir),
+                    "--agents-dir",
+                    str(agents_dir),
+                ],
+            )
+
+            assert result.exit_code == 0
+            assert (skills_dir / "confidence-check" / "SKILL.md").exists()
+            assert (agents_dir / "explore-haiku.md").exists()
+
+    def test_install_minimal(self):
+        """Test --minimal installs only confidence-check, no agents"""
+        runner = CliRunner()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            skills_dir = Path(tmpdir) / "skills"
+            agents_dir = Path(tmpdir) / "agents"
+
+            result = runner.invoke(
+                main,
+                [
+                    "install",
+                    "--minimal",
+                    "--skills-dir",
+                    str(skills_dir),
+                    "--agents-dir",
+                    str(agents_dir),
+                ],
+            )
+
+            assert result.exit_code == 0
+            assert (skills_dir / "confidence-check").exists()
+            assert not (skills_dir / "spec-panel").exists()
+            assert not agents_dir.exists()
 
 
 class TestUpdateCommand:
@@ -86,13 +124,29 @@ class TestUpdateCommand:
 
         assert result.exit_code == 0
 
-    def test_update_executes(self):
-        """Test update executes"""
+    def test_update_force_reinstalls(self):
+        """Test update force-reinstalls skills and agents"""
         runner = CliRunner()
-        result = runner.invoke(main, ["update"])
+        with tempfile.TemporaryDirectory() as tmpdir:
+            skills_dir = Path(tmpdir) / "skills"
+            agents_dir = Path(tmpdir) / "agents"
+            args = [
+                "--skills-dir",
+                str(skills_dir),
+                "--agents-dir",
+                str(agents_dir),
+            ]
 
-        # Update may succeed or fail depending on environment
-        assert result.exit_code in [0, 1]
+            result1 = runner.invoke(main, ["install", *args])
+            assert result1.exit_code == 0
+
+            # Modify an installed file, update should overwrite it
+            skill_md = skills_dir / "confidence-check" / "SKILL.md"
+            skill_md.write_text("modified")
+
+            result2 = runner.invoke(main, ["update", *args])
+            assert result2.exit_code == 0
+            assert skill_md.read_text() != "modified"
 
 
 class TestMCPCommand:

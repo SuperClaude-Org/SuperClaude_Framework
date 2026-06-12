@@ -101,10 +101,12 @@ def _check_skills_installed() -> Dict[str, Any]:
             "details": ["No skills installed (optional)"],
         }
 
-    # Find skills (directories with implementation.md)
+    # Find skills (directories with SKILL.md or legacy implementation.md)
     skills = []
     for item in skills_dir.iterdir():
-        if item.is_dir() and (item / "implementation.md").exists():
+        if item.is_dir() and (
+            (item / "SKILL.md").exists() or (item / "implementation.md").exists()
+        ):
             skills.append(item.name)
 
     if skills:

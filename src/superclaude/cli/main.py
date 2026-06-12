@@ -23,80 +23,99 @@ def main():
     pass
 
 
+def _run_install(skills_dir: str, agents_dir: str, force: bool, minimal: bool) -> bool:
+    """Install skills (and agents unless minimal). Returns True on success."""
+    from .install_assets import install_agents
+    from .install_skill import install_all_skills
+
+    skills_path = Path(skills_dir).expanduser()
+
+    only = ["confidence-check"] if minimal else None
+
+    click.echo(f"📦 Installing SuperClaude skills to {skills_path}...")
+    click.echo()
+
+    skill_success, skill_message = install_all_skills(
+        target_path=skills_path, force=force, only=only
+    )
+    click.echo(skill_message)
+
+    if minimal:
+        return skill_success
+
+    agents_path = Path(agents_dir).expanduser()
+
+    click.echo()
+    click.echo(f"📦 Installing SuperClaude agents to {agents_path}...")
+    click.echo()
+
+    agent_success, agent_message = install_agents(target_path=agents_path, force=force)
+    click.echo(agent_message)
+
+    return skill_success and agent_success
+
+
 @main.command()
 @click.option(
-    "--target",
-    default="~/.claude/commands/sc",
-    help="Installation directory (default: ~/.claude/commands/sc)",
+    "--skills-dir",
+    default="~/.claude/skills",
+    help="Skills installation directory (default: ~/.claude/skills)",
+)
+@click.option(
+    "--agents-dir",
+    default="~/.claude/agents",
+    help="Agents installation directory (default: ~/.claude/agents)",
 )
 @click.option(
     "--force",
     is_flag=True,
-    help="Force reinstall if commands already exist",
+    help="Force reinstall if skills or agents already exist",
+)
+@click.option(
+    "--minimal",
+    is_flag=True,
+    help="Install only the confidence-check skill (no agents)",
 )
 @click.option(
     "--list",
     "list_only",
     is_flag=True,
-    help="List available commands without installing",
+    help="List available skills and agents without installing",
 )
-def install(target: str, force: bool, list_only: bool):
+def install(
+    skills_dir: str, agents_dir: str, force: bool, minimal: bool, list_only: bool
+):
     """
-    Install SuperClaude commands to Claude Code
+    Install SuperClaude skills and agents to Claude Code
 
-    Installs all slash commands (/sc:research, /sc:index-repo, etc.) to your
-    ~/.claude/commands/sc directory so you can use them in Claude Code.
+    Installs all skills (confidence-check, spec-panel, socratic, pm-reflexion)
+    to ~/.claude/skills/ and agents (explore-haiku) to ~/.claude/agents/.
 
     Examples:
         superclaude install
         superclaude install --force
+        superclaude install --minimal
         superclaude install --list
-        superclaude install --target /custom/path
     """
-    from .install_commands import (
-        install_agents,
-        install_commands,
-        list_available_agents,
-        list_available_commands,
-        list_installed_commands,
-    )
+    from .install_assets import list_available_agents
+    from .install_skill import list_available_skills
 
     # List only mode
     if list_only:
-        available = list_available_commands()
-        installed = list_installed_commands()
-
-        click.echo("📋 Available Commands:")
-        for cmd in available:
-            status = "✅ installed" if cmd in installed else "⬜ not installed"
-            click.echo(f"   /{cmd:20} {status}")
+        skills = list_available_skills()
+        click.echo(f"📋 Available Skills: {len(skills)}")
+        for skill in skills:
+            click.echo(f"   {skill}")
 
         agents = list_available_agents()
         click.echo(f"\n📋 Available Agents: {len(agents)}")
         for agent in agents:
             click.echo(f"   @{agent}")
 
-        click.echo(f"\nTotal: {len(available)} commands, {len(agents)} agents")
+        click.echo(f"\nTotal: {len(skills)} skills, {len(agents)} agents")
         return
 
-    # Install commands
-    target_path = Path(target).expanduser()
-
-    click.echo(f"📦 Installing SuperClaude commands to {target_path}...")
-    click.echo()
-
-    success, message = install_commands(target_path=target_path, force=force)
-    click.echo(message)
-
-    # Also install agents to ~/.claude/agents/
-    click.echo()
-    click.echo("📦 Installing SuperClaude agents...")
-    click.echo()
-
-    agent_success, agent_message = install_agents(force=force)
-    click.echo(agent_message)
-
-    if not success or not agent_success:
+    if not _run_install(skills_dir, agents_dir, force, minimal):
         sys.exit(1)
 
 
@@ -147,36 +166,34 @@ def mcp(servers, list_only, scope, dry_run):
 
 @main.command()
 @click.option(
-    "--target",
-    default="~/.claude/commands/sc",
-    help="Installation directory (default: ~/.claude/commands/sc)",
+    "--skills-dir",
+    default="~/.claude/skills",
+    help="Skills installation directory (default: ~/.claude/skills)",
 )
-def update(target: str):
+@click.option(
+    "--agents-dir",
+    default="~/.claude/agents",
+    help="Agents installation directory (default: ~/.claude/agents)",
+)
+@click.option(
+    "--minimal",
+    is_flag=True,
+    help="Update only the confidence-check skill (no agents)",
+)
+def update(skills_dir: str, agents_dir: str, minimal: bool):
     """
-    Update SuperClaude commands to latest version
+    Update SuperClaude skills and agents to latest version
 
-    Re-installs all slash commands to match the current package version.
+    Re-installs all skills and agents to match the current package version.
     This is a convenience command equivalent to 'install --force'.
 
     Example:
         superclaude update
-        superclaude update --target /custom/path
     """
-    from .install_commands import install_agents, install_commands
-
-    target_path = Path(target).expanduser()
-
-    click.echo(f"🔄 Updating SuperClaude commands to version {__version__}...")
+    click.echo(f"🔄 Updating SuperClaude to version {__version__}...")
     click.echo()
 
-    success, message = install_commands(target_path=target_path, force=True)
-    click.echo(message)
-
-    click.echo()
-    agent_success, agent_message = install_agents(force=True)
-    click.echo(agent_message)
-
-    if not success or not agent_success:
+    if not _run_install(skills_dir, agents_dir, force=True, minimal=minimal):
         sys.exit(1)
 
 
@@ -196,11 +213,11 @@ def install_skill(skill_name: str, target: str, force: bool):
     """
     Install a SuperClaude skill to Claude Code
 
-    SKILL_NAME: Name of the skill to install (e.g., pm-agent)
+    SKILL_NAME: Name of the skill to install (e.g., confidence-check)
 
     Example:
-        superclaude install-skill pm-agent
-        superclaude install-skill pm-agent --target ~/.claude/skills --force
+        superclaude install-skill confidence-check
+        superclaude install-skill confidence-check --target ~/.claude/skills --force
     """
     from .install_skill import install_skill_command
 

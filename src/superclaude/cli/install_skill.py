@@ -55,12 +55,30 @@ def install_skill_command(
         return False, f"Failed to install skill: {e}"
 
 
+def _get_skill_source_dirs() -> List[Path]:
+    """
+    Get candidate base directories containing skills
+
+    Skills are stored in:
+        1. package_root/skills/ (installed package)
+        2. plugins/superclaude/skills/ (source checkout)
+
+    Returns:
+        List of existing base directories
+    """
+    package_root = Path(__file__).resolve().parent.parent
+
+    candidates = [
+        package_root / "skills",
+        package_root.parent.parent / "plugins" / "superclaude" / "skills",
+    ]
+
+    return [base for base in candidates if base.exists()]
+
+
 def _get_skill_source(skill_name: str) -> Optional[Path]:
     """
     Get source directory for skill
-
-    Skills are stored in:
-        src/superclaude/skills/{skill_name}/
 
     Args:
         skill_name: Name of skill
@@ -68,26 +86,12 @@ def _get_skill_source(skill_name: str) -> Optional[Path]:
     Returns:
         Path to skill source directory
     """
-    package_root = Path(__file__).resolve().parent.parent
     skill_dirs: List[Path] = []
+    normalized = skill_name.replace("-", "_")
 
-    def _candidate_paths(base: Path) -> List[Path]:
-        if not base.exists():
-            return []
-        normalized = skill_name.replace("-", "_")
-        return [
-            base / skill_name,
-            base / normalized,
-        ]
-
-    # Packaged skills (src/superclaude/skills/…)
-    skill_dirs.extend(_candidate_paths(package_root / "skills"))
-
-    # Repository root skills/ when running from source checkout
-    repo_root = package_root.parent  # -> src/
-    if repo_root.name == "src":
-        project_root = repo_root.parent
-        skill_dirs.extend(_candidate_paths(project_root / "skills"))
+    for base in _get_skill_source_dirs():
+        skill_dirs.append(base / skill_name)
+        skill_dirs.append(base / normalized)
 
     for candidate in skill_dirs:
         if _is_valid_skill_dir(candidate):
@@ -119,21 +123,10 @@ def list_available_skills() -> list[str]:
     Returns:
         List of skill names
     """
-    package_root = Path(__file__).resolve().parent.parent
-    candidate_dirs = [
-        package_root / "skills",
-    ]
-
-    repo_root = package_root.parent
-    if repo_root.name == "src":
-        candidate_dirs.append(repo_root.parent / "skills")
-
     skills: List[str] = []
     seen: set[str] = set()
 
-    for base in candidate_dirs:
-        if not base.exists():
-            continue
+    for base in _get_skill_source_dirs():
         for item in base.iterdir():
             if not item.is_dir() or item.name.startswith("_"):
                 continue
@@ -148,3 +141,68 @@ def list_available_skills() -> list[str]:
 
     skills.sort()
     return skills
+
+
+def install_all_skills(
+    target_path: Path, force: bool = False, only: Optional[List[str]] = None
+) -> Tuple[bool, str]:
+    """
+    Install all available skills (or a subset) to target directory
+
+    Args:
+        target_path: Target installation directory (e.g., ~/.claude/skills)
+        force: Force reinstall if skills exist
+        only: Optional list of skill names to restrict installation to
+
+    Returns:
+        Tuple of (success: bool, message: str)
+    """
+    available = list_available_skills()
+
+    if only is not None:
+        missing = [name for name in only if name not in available]
+        if missing:
+            return False, f"Skill(s) not found: {', '.join(missing)}"
+        available = [name for name in available if name in only]
+
+    if not available:
+        return False, "No skills available to install"
+
+    installed = []
+    skipped = []
+    failed = []
+
+    for skill_name in available:
+        success, message = install_skill_command(skill_name, target_path, force=force)
+        if success:
+            installed.append(skill_name)
+        elif "already installed" in message:
+            skipped.append(skill_name)
+        else:
+            failed.append(f"{skill_name}: {message}")
+
+    messages = []
+
+    if installed:
+        messages.append(f"✅ Installed {len(installed)} skills:")
+        for name in installed:
+            messages.append(f"   - {name}")
+
+    if skipped:
+        messages.append(
+            f"\n⚠️  Skipped {len(skipped)} existing skills (use --force to reinstall):"
+        )
+        for name in skipped:
+            messages.append(f"   - {name}")
+
+    if failed:
+        messages.append(f"\n❌ Failed to install {len(failed)} skills:")
+        for fail in failed:
+            messages.append(f"   - {fail}")
+
+    if not installed and not skipped:
+        return False, "No skills were installed"
+
+    messages.append(f"\n📁 Installation directory: {target_path}")
+
+    return len(failed) == 0, "\n".join(messages)

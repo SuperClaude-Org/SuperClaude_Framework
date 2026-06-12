@@ -7,7 +7,7 @@
 # It performs the following steps:
 #   1. Checks prerequisites (Python 3.10+, UV package manager)
 #   2. Installs SuperClaude package in editable mode
-#   3. Installs 30 slash commands to ~/.claude/commands/
+#   3. Installs skills to ~/.claude/skills/ and agents to ~/.claude/agents/
 #   4. Verifies installation
 #   5. Provides next steps guidance
 #
@@ -197,8 +197,8 @@ install_package() {
     fi
 }
 
-install_commands() {
-    print_step "Installing slash commands..."
+install_assets() {
+    print_step "Installing skills and agents..."
 
     # Check if superclaude command is available
     if ! command -v superclaude &> /dev/null; then
@@ -207,11 +207,11 @@ install_commands() {
         exit 1
     fi
 
-    print_info "Installing 30 slash commands to ~/.claude/commands/sc/"
+    print_info "Installing skills to ~/.claude/skills/ and agents to ~/.claude/agents/"
     if superclaude install; then
-        print_success "Slash commands installed successfully"
+        print_success "Skills and agents installed successfully"
     else
-        print_error "Failed to install slash commands"
+        print_error "Failed to install skills and agents"
         print_info "Try running manually: superclaude install"
         exit 1
     fi
@@ -233,10 +233,9 @@ verify_installation() {
         print_info "You can run 'superclaude doctor' anytime to check status"
     fi
 
-    # List installed commands
-    print_info "Installed commands:"
-    superclaude install --list | head -n 10
-    echo "   ... and more (30 commands total)"
+    # List available skills and agents
+    print_info "Available skills and agents:"
+    superclaude install --list
 }
 
 ################################################################################
@@ -325,9 +324,9 @@ main() {
     install_package
     echo ""
 
-    # Phase 3: Install commands
-    print_header "⚙️  Phase 3: Installing Slash Commands"
-    install_commands
+    # Phase 3: Install skills and agents
+    print_header "⚙️  Phase 3: Installing Skills and Agents"
+    install_assets
     echo ""
 
     # Phase 4: Verify installation
@@ -342,8 +341,7 @@ main() {
     echo ""
     print_info "Next Steps:"
     echo "  1. Run health check:        superclaude doctor"
-    echo "  2. View all commands:       superclaude install --list"
-    echo "  3. Try a command:           /sc:help"
+    echo "  2. View skills and agents:  superclaude install --list"
     echo ""
     print_info "Optional - Install MCP Servers for enhanced features:"
     echo "  • List available servers:   superclaude mcp --list"

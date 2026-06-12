@@ -1,180 +1,153 @@
 """
-Unit tests for CLI install command
+Unit tests for CLI install functionality
 
-Tests the command installation functionality.
+Tests agent installation and bulk skill installation.
 """
 
-from superclaude.cli.install_commands import (
-    install_commands,
-    list_available_commands,
-    list_installed_commands,
+from superclaude.cli.install_assets import (
+    install_agents,
+    list_available_agents,
+)
+from superclaude.cli.install_skill import (
+    install_all_skills,
+    list_available_skills,
 )
 
 
-class TestInstallCommands:
-    """Test suite for install commands functionality"""
+class TestInstallAgents:
+    """Test suite for agent installation"""
 
-    def test_list_available_commands(self):
-        """Test listing available commands"""
-        commands = list_available_commands()
+    def test_list_available_agents(self):
+        """Test listing available agents"""
+        agents = list_available_agents()
 
-        assert isinstance(commands, list)
-        assert len(commands) > 0
-        assert "research" in commands
-        assert "index-repo" in commands
+        assert isinstance(agents, list)
+        assert agents == sorted(agents)
+        assert "explore-haiku" in agents
 
-    def test_install_commands_to_temp_dir(self, tmp_path):
-        """Test installing commands to a temporary directory"""
-        target_dir = tmp_path / "commands"
+    def test_install_agents_to_temp_dir(self, tmp_path):
+        """Test installing agents to a temporary directory"""
+        target_dir = tmp_path / "agents"
 
-        success, message = install_commands(target_path=target_dir, force=False)
+        success, message = install_agents(target_path=target_dir, force=False)
 
         assert success is True
         assert "Installed" in message
-        assert target_dir.exists()
+        assert (target_dir / "explore-haiku.md").exists()
 
-        # Check that command files were copied
-        command_files = list(target_dir.glob("*.md"))
-        assert len(command_files) > 0
+    def test_install_agents_skip_existing(self, tmp_path):
+        """Test that existing agents are skipped without --force"""
+        target_dir = tmp_path / "agents"
 
-        # Verify specific commands
-        assert (target_dir / "research.md").exists()
-        assert (target_dir / "index-repo.md").exists()
-
-    def test_install_commands_skip_existing(self, tmp_path):
-        """Test that existing commands are skipped without --force"""
-        target_dir = tmp_path / "commands"
-
-        # First install
-        success1, message1 = install_commands(target_path=target_dir, force=False)
+        success1, _ = install_agents(target_path=target_dir, force=False)
         assert success1 is True
 
-        # Second install without force
-        success2, message2 = install_commands(target_path=target_dir, force=False)
+        success2, message2 = install_agents(target_path=target_dir, force=False)
         assert success2 is True
         assert "Skipped" in message2
 
-    def test_install_commands_force_reinstall(self, tmp_path):
-        """Test force reinstall of existing commands"""
-        target_dir = tmp_path / "commands"
+    def test_install_agents_force_reinstall(self, tmp_path):
+        """Test force reinstall overwrites existing agents"""
+        target_dir = tmp_path / "agents"
 
-        # First install
-        success1, message1 = install_commands(target_path=target_dir, force=False)
-        assert success1 is True
+        install_agents(target_path=target_dir, force=False)
 
-        # Modify a file
-        research_file = target_dir / "research.md"
-        research_file.write_text("modified")
-        assert research_file.read_text() == "modified"
+        agent_file = target_dir / "explore-haiku.md"
+        agent_file.write_text("modified")
 
-        # Force reinstall
-        success2, message2 = install_commands(target_path=target_dir, force=True)
-        assert success2 is True
-        assert "Installed" in message2
+        success, message = install_agents(target_path=target_dir, force=True)
+        assert success is True
+        assert "Installed" in message
+        assert agent_file.read_text() != "modified"
 
-        # Verify file was overwritten
-        content = research_file.read_text()
-        assert content != "modified"
-        assert "research" in content.lower()
-
-    def test_list_installed_commands(self, tmp_path):
-        """Test listing installed commands"""
-        target_dir = tmp_path / "commands"
-
-        # Before install
-        # Note: list_installed_commands checks ~/.claude/commands by default
-        # We can't easily test this without mocking, so just verify it returns a list
-        installed = list_installed_commands()
-        assert isinstance(installed, list)
-
-        # After install to temp dir
-        install_commands(target_path=target_dir, force=False)
-
-        # Verify files exist
-        command_files = list(target_dir.glob("*.md"))
-        assert len(command_files) > 0
-
-    def test_install_commands_creates_target_directory(self, tmp_path):
+    def test_install_agents_creates_target_directory(self, tmp_path):
         """Test that target directory is created if it doesn't exist"""
-        target_dir = tmp_path / "nested" / "commands"
+        target_dir = tmp_path / "nested" / "agents"
 
         assert not target_dir.exists()
 
-        success, message = install_commands(target_path=target_dir, force=False)
+        success, _ = install_agents(target_path=target_dir, force=False)
 
         assert success is True
         assert target_dir.exists()
 
-    def test_available_commands_format(self):
-        """Test that available commands have expected format"""
-        commands = list_available_commands()
 
-        # Should be list of strings
-        assert all(isinstance(cmd, str) for cmd in commands)
+class TestInstallAllSkills:
+    """Test suite for bulk skill installation"""
 
-        # Should not include file extensions
-        assert all(not cmd.endswith(".md") for cmd in commands)
+    def test_list_available_skills(self):
+        """Test all v5 skills are available"""
+        skills = list_available_skills()
 
-        # Should be sorted
-        assert commands == sorted(commands)
+        for expected in ["confidence-check", "pm-reflexion", "socratic", "spec-panel"]:
+            assert expected in skills, f"Expected skill '{expected}' not found"
 
-    def test_research_command_exists(self, tmp_path):
-        """Test that research command specifically gets installed"""
-        target_dir = tmp_path / "commands"
+    def test_install_all_skills_to_temp_dir(self, tmp_path):
+        """Test installing all skills to a temporary directory"""
+        target_dir = tmp_path / "skills"
 
-        install_commands(target_path=target_dir, force=False)
-
-        research_file = target_dir / "research.md"
-        assert research_file.exists()
-
-        content = research_file.read_text()
-        assert "research" in content.lower()
-        assert len(content) > 100  # Should have substantial content
-
-    def test_all_expected_commands_available(self):
-        """Test that all expected commands are available"""
-        commands = list_available_commands()
-
-        expected = ["agent", "index-repo", "recommend", "research"]
-
-        for expected_cmd in expected:
-            assert expected_cmd in commands, (
-                f"Expected command '{expected_cmd}' not found"
-            )
-
-
-class TestInstallCommandsEdgeCases:
-    """Test edge cases and error handling"""
-
-    def test_install_to_nonexistent_parent(self, tmp_path):
-        """Test installation to path with nonexistent parent directories"""
-        target_dir = tmp_path / "a" / "b" / "c" / "commands"
-
-        success, message = install_commands(target_path=target_dir, force=False)
+        success, message = install_all_skills(target_path=target_dir, force=False)
 
         assert success is True
-        assert target_dir.exists()
+        assert "Installed" in message
+        assert (target_dir / "confidence-check" / "SKILL.md").exists()
+        assert (target_dir / "spec-panel" / "SKILL.md").exists()
+        assert (target_dir / "socratic" / "SKILL.md").exists()
+        assert (target_dir / "pm-reflexion" / "SKILL.md").exists()
 
-    def test_empty_target_directory_ok(self, tmp_path):
-        """Test that installation works with empty target directory"""
-        target_dir = tmp_path / "commands"
-        target_dir.mkdir()
+    def test_install_all_skills_skip_existing(self, tmp_path):
+        """Test that existing skills are skipped without force"""
+        target_dir = tmp_path / "skills"
 
-        success, message = install_commands(target_path=target_dir, force=False)
+        success1, _ = install_all_skills(target_path=target_dir, force=False)
+        assert success1 is True
+
+        success2, message2 = install_all_skills(target_path=target_dir, force=False)
+        assert success2 is True
+        assert "Skipped" in message2
+
+    def test_install_all_skills_force_reinstall(self, tmp_path):
+        """Test force reinstall overwrites existing skills"""
+        target_dir = tmp_path / "skills"
+
+        install_all_skills(target_path=target_dir, force=False)
+
+        skill_md = target_dir / "confidence-check" / "SKILL.md"
+        skill_md.write_text("modified")
+
+        success, message = install_all_skills(target_path=target_dir, force=True)
+        assert success is True
+        assert "Installed" in message
+        assert skill_md.read_text() != "modified"
+
+    def test_install_only_subset(self, tmp_path):
+        """Test installing a restricted subset of skills (--minimal path)"""
+        target_dir = tmp_path / "skills"
+
+        success, message = install_all_skills(
+            target_path=target_dir, force=False, only=["confidence-check"]
+        )
 
         assert success is True
+        assert (target_dir / "confidence-check").exists()
+        assert not (target_dir / "spec-panel").exists()
+
+    def test_install_only_unknown_skill_fails(self, tmp_path):
+        """Test that restricting to an unknown skill fails"""
+        target_dir = tmp_path / "skills"
+
+        success, message = install_all_skills(
+            target_path=target_dir, force=False, only=["nonexistent-xyz"]
+        )
+
+        assert success is False
+        assert "not found" in message.lower()
 
 
 def test_cli_integration():
-    """
-    Integration test: verify CLI can import and use install functions
+    """Integration test: verify CLI can import and use install functions"""
+    from superclaude.cli.install_assets import list_available_agents
+    from superclaude.cli.install_skill import list_available_skills
 
-    This tests that the CLI main.py can successfully import the functions
-    """
-    from superclaude.cli.install_commands import (
-        list_available_commands,
-    )
-
-    # Should not raise ImportError
-    commands = list_available_commands()
-    assert len(commands) > 0
+    assert len(list_available_agents()) > 0
+    assert len(list_available_skills()) > 0
