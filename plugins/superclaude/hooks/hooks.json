@@ -1,12 +1,79 @@
 {
+  "description": "SuperClaude v5 hooks: session-restore, confidence-gate, session-summary, reflexion-trigger, opt-in tab-title",
   "hooks": {
     "SessionStart": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/session-init.sh",
-            "timeout": 10000
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/session-restore.sh",
+            "timeout": 10,
+            "statusMessage": "Restoring session context"
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/tab-title.sh",
+            "args": ["idle", "🏃", "✋", ""],
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/tab-title.sh",
+            "args": ["running", "🏃", "✋", ""],
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "If this Write/Edit begins a non-trivial NEW implementation, the confidence-check skill criteria must already have been applied: no duplicate implementation exists, the change fits the architecture, official docs were verified, and the root cause is known. Trivial edits and test fixes are exempt. If the criteria were skipped, apply them before proceeding."
+          }
+        ]
+      },
+      {
+        "matcher": "AskUserQuestion|ExitPlanMode",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/tab-title.sh",
+            "args": ["waiting", "🏃", "✋", ""],
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/tab-title.sh",
+            "args": ["running", "🏃", "✋", ""],
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "permission_prompt|elicitation_dialog",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/tab-title.sh",
+            "args": ["waiting", "🏃", "✋", ""],
+            "timeout": 5
           }
         ]
       }
@@ -16,18 +83,17 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "Before ending, check if there are uncommitted changes or incomplete tasks. If so, briefly note what remains to be done."
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
+            "prompt": "If this session did substantive work, summarize the outcome and remaining work in 2-3 bullets. If mindbase MCP tools are available, store the summary via mindbase_store; if not, skip storage silently. If nothing substantive happened, do nothing."
+          },
           {
             "type": "prompt",
-            "prompt": "Verify the edit was correct: check for syntax errors, missing imports, or broken logic in the changed file. If issues found, fix them immediately."
+            "prompt": "If this session hit a real error or a wrong-direction attempt, apply the pm-reflexion skill's failure-reflexion before finishing. Otherwise do nothing."
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/tab-title.sh",
+            "args": ["stop", "🏃", "✋", ""],
+            "timeout": 5
           }
         ]
       }
