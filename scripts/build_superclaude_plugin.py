@@ -9,6 +9,7 @@ Usage:
 from __future__ import annotations
 
 import json
+import re
 import shutil
 from pathlib import Path
 
@@ -18,13 +19,27 @@ DIST_ROOT = ROOT / "dist" / "plugins" / "superclaude"
 MANIFEST_DIR = PLUGIN_SRC / "manifest"
 
 
+def pep440_to_semver(version: str) -> str:
+    """Normalize a PEP 440 version (5.0.0a1) to semver (5.0.0-alpha.1)."""
+    match = re.fullmatch(r"(\d+\.\d+\.\d+)(?:(a|b|rc)(\d+))?", version)
+    if not match:
+        return version
+    base, pre, num = match.groups()
+    if not pre:
+        return base
+    label = {"a": "alpha", "b": "beta", "rc": "rc"}[pre]
+    return f"{base}-{label}.{num}"
+
+
 def load_metadata() -> dict:
     with (MANIFEST_DIR / "metadata.json").open() as f:
         metadata = json.load(f)
 
+    # Single source of truth for the version is the repo VERSION file
+    # (PEP 440, shared with pyproject.toml); normalized to semver here.
     version_file = ROOT / "VERSION"
     if version_file.exists():
-        metadata["plugin_version"] = version_file.read_text().strip()
+        metadata["plugin_version"] = pep440_to_semver(version_file.read_text().strip())
     else:
         # Fall back to metadata override or default version
         metadata["plugin_version"] = metadata.get("plugin_version", "0.0.0")
@@ -75,14 +90,23 @@ def main() -> None:
     for folder in ["agents", "commands", "hooks", "scripts", "skills"]:
         copy_tree(PLUGIN_SRC / folder, DIST_ROOT / folder)
 
+    # Copy MCP server config referenced by plugin.json ("mcpServers": "./.mcp.json")
+    mcp_config = PLUGIN_SRC / ".mcp.json"
+    if mcp_config.exists():
+        shutil.copy2(mcp_config, DIST_ROOT / ".mcp.json")
+
     # Render manifests
     claude_dir = DIST_ROOT / ".claude-plugin"
     claude_dir.mkdir(parents=True, exist_ok=True)
 
-    plugin_manifest = render_template(MANIFEST_DIR / "plugin.template.json", placeholders)
+    plugin_manifest = render_template(
+        MANIFEST_DIR / "plugin.template.json", placeholders
+    )
     (claude_dir / "plugin.json").write_text(plugin_manifest + "\n")
 
-    marketplace_manifest = render_template(MANIFEST_DIR / "marketplace.template.json", placeholders)
+    marketplace_manifest = render_template(
+        MANIFEST_DIR / "marketplace.template.json", placeholders
+    )
     (claude_dir / "marketplace.json").write_text(marketplace_manifest + "\n")
 
     # Copy tests into manifest directory

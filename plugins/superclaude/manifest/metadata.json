@@ -1,0 +1,24 @@
+{
+  "_comment": "Plugin metadata for scripts/build_superclaude_plugin.py. Version is NOT defined here: the build script reads the repo VERSION file (PEP 440) and normalizes it to semver (e.g. 5.0.0a1 -> 5.0.0-alpha.1). plugin_version below is only a fallback when VERSION is missing.",
+  "plugin_name": "superclaude",
+  "plugin_version": "0.0.0",
+  "plugin_description": "Eval-gated toolkit for Claude Code — a few skills that beat native behavior, deterministic hooks, and optional MCP integrations. Less framework, more leverage.",
+  "author_name": "SuperClaude Org",
+  "homepage_url": "https://github.com/SuperClaude-Org/SuperClaude_Framework",
+  "repository_url": "https://github.com/SuperClaude-Org/SuperClaude_Framework",
+  "license": "MIT",
+  "keywords": [
+    "development",
+    "pm-agent",
+    "confidence-check",
+    "parallel-execution",
+    "reflexion",
+    "pdca",
+    "code-quality",
+    "testing",
+    "research",
+    "architecture"
+  ],
+  "marketplace_name": "superclaude",
+  "marketplace_description": "Official marketplace for the SuperClaude plugin."
+}

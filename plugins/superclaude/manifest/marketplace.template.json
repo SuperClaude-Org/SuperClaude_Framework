@@ -1,0 +1,22 @@
+{
+  "name": "{{marketplace_name}}",
+  "owner": {
+    "name": "{{author_name}}",
+    "url": "https://github.com/SuperClaude-Org"
+  },
+  "plugins": [
+    {
+      "name": "{{plugin_name}}",
+      "source": "./",
+      "description": "{{plugin_description}}",
+      "version": "{{plugin_version}}",
+      "author": {
+        "name": "{{author_name}}"
+      },
+      "homepage": "{{homepage_url}}",
+      "repository": "{{repository_url}}",
+      "license": "{{license}}",
+      "keywords": {{keywords_json}}
+    }
+  ]
+}
