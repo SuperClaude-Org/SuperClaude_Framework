@@ -1,7 +1,7 @@
 {
   "name": "superclaude",
-  "version": "4.3.0",
-  "description": "AI-enhanced development framework for Claude Code — 30 commands, 20 agents, 7 modes, confidence checks, parallel execution, and reflexion-based learning",
+  "version": "5.0.0-alpha.1",
+  "description": "Eval-gated toolkit for Claude Code — a few skills that beat native behavior, deterministic hooks, and optional MCP integrations. Less framework, more leverage.",
   "author": {
     "name": "SuperClaude Org",
     "url": "https://github.com/SuperClaude-Org"
@@ -21,7 +21,6 @@
     "research",
     "architecture"
   ],
-  "commands": "./commands/",
   "agents": "./agents/",
   "skills": "./skills/",
   "hooks": "./hooks/hooks.json",
