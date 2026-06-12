@@ -1,646 +1,333 @@
 <div align="center">
 
-# 🚀 SuperClaude Framework
+# SuperClaude v5
 
-[![Run in Smithery](https://smithery.ai/badge/skills/SuperClaude-Org)](https://smithery.ai/skills?ns=SuperClaude-Org&utm_source=github&utm_medium=badge)
-
-
-### **Transform Claude Code into a Structured Development Platform**
+### What survives is what models can't do alone
 
 <p align="center">
-  <a href="https://github.com/hesreallyhim/awesome-claude-code/">
-  <img src="https://awesome.re/mentioned-badge-flat.svg" alt="Mentioned in Awesome Claude Code">
-  </a>
-<a href="https://github.com/SuperClaude-Org/SuperGemini_Framework" target="_blank">
-  <img src="https://img.shields.io/badge/Try-SuperGemini_Framework-blue" alt="Try SuperGemini Framework"/>
-</a>
-<a href="https://github.com/SuperClaude-Org/SuperQwen_Framework" target="_blank">
-  <img src="https://img.shields.io/badge/Try-SuperQwen_Framework-orange" alt="Try SuperQwen Framework"/>
-</a>
-  <img src="https://img.shields.io/badge/version-4.3.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-5.0.0a1-blue" alt="Version">
   <a href="https://github.com/SuperClaude-Org/SuperClaude_Framework/actions/workflows/test.yml">
     <img src="https://github.com/SuperClaude-Org/SuperClaude_Framework/actions/workflows/test.yml/badge.svg" alt="Tests">
   </a>
   <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License">
-  <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome">
-</p>
-
-<p align="center">
-  <a href="https://superclaude.netlify.app/">
-    <img src="https://img.shields.io/badge/🌐_Visit_Website-blue" alt="Website">
-  </a>
   <a href="https://pypi.org/project/superclaude/">
     <img src="https://img.shields.io/pypi/v/SuperClaude.svg?" alt="PyPI">
   </a>
-  <a href="https://pepy.tech/projects/superclaude">
-    <img src="https://static.pepy.tech/personalized-badge/superclaude?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads" alt="PyPI sats">
-  </a>
-  <a href="https://www.npmjs.com/package/@bifrost_inc/superclaude">
-    <img src="https://img.shields.io/npm/v/@bifrost_inc/superclaude.svg" alt="npm">
-  </a>
 </p>
 
 <p align="center">
-  <a href="README.md">
-    <img src="https://img.shields.io/badge/🇺🇸_English-blue" alt="English">
-  </a>
-  <a href="README-zh.md">
-    <img src="https://img.shields.io/badge/🇨🇳_中文-red" alt="中文">
-  </a>
-  <a href="README-ja.md">
-    <img src="https://img.shields.io/badge/🇯🇵_日本語-green" alt="日本語">
-  </a>
-</p>
-
-<p align="center">
-  <a href="#-quick-installation">Quick Start</a> •
-  <a href="#-support-the-project">Support</a> •
-  <a href="#-whats-new-in-v4">Features</a> •
-  <a href="#-documentation">Docs</a> •
-  <a href="#-contributing">Contributing</a>
+  <a href="README.md">English</a> •
+  <a href="README-zh.md">中文</a> •
+  <a href="README-ja.md">日本語</a> •
+  <a href="README-kr.md">한국어</a>
 </p>
 
 </div>
 
----
-
-<div align="center">
-
-## 📊 **Framework Statistics**
-
-| **Commands** | **Agents** | **Modes** | **MCP Servers** |
-|:------------:|:----------:|:---------:|:---------------:|
-| **30** | **20** | **7** | **8** |
-| Slash Commands | Specialized AI | Behavioral | Integrations |
-
-30 slash commands covering the complete development lifecycle from brainstorming to deployment.
-
-</div>
+> Translations track v4 and will be updated after the v5 RFC.
 
 ---
 
-<div align="center">
+## The thesis
 
-## 🎯 **Overview**
+SuperClaude v4 shipped 30 slash commands, 20 persona agents, and 7 behavioral
+modes — 286KB of prompt content teaching Claude things it increasingly knows how
+to do by itself. Models got better. A framework that injects instructions must
+shrink as the model grows, or it becomes overhead: context cost, instruction
+conflicts, degraded trigger precision.
 
-SuperClaude is a **meta-programming configuration framework** that transforms Claude Code into a structured development platform through behavioral instruction injection and component orchestration. It provides systematic workflow automation with powerful tools and intelligent agents.
+v5 inverts the burden of proof. Every component must beat *native* Claude Code
+behavior in a pre-registered A/B eval, or it gets deleted. What survives is what
+models can't do alone: deterministic enforcement (hooks), external access (MCP),
+persistence — plus a few structured-format skills that demonstrably hold up.
 
+## v4 → v5 at a glance
 
-## Disclaimer
+| | v4.3.0 | v5 (5.0.0a1) |
+|---|---|---|
+| Slash commands | 30 | 0 — replaced by skills + native Claude Code |
+| Skills | 0 | 4 |
+| Persona agents | 20 | 1 |
+| Behavioral modes | 7 | 0 |
+| Hooks | 0 (empty directory) | 5 |
+| Prompt content | 286KB | 84KB built plugin (skills 44KB, agents 4KB, hooks 4KB) |
+| Eval harness | none | [eval/](eval/README.md), machine-scored A/B vs native |
+| Repo side effects | pytest plugin wrote `docs/mistakes/*.md` | no file writes by default (opt-in env var) |
 
-This project is not affiliated with or endorsed by Anthropic.
-Claude Code is a product built and maintained by [Anthropic](https://www.anthropic.com/).
+256 tests pass.
 
-## 📖 **For Developers & Contributors**
+## What ships in v5
 
-**Essential documentation for working with SuperClaude Framework:**
+### Skills
 
-| Document | Purpose | When to Read |
-|----------|---------|--------------|
-| **[PLANNING.md](PLANNING.md)** | Architecture, design principles, absolute rules | Session start, before implementation |
-| **[TASK.md](TASK.md)** | Current tasks, priorities, backlog | Daily, before starting work |
-| **[KNOWLEDGE.md](KNOWLEDGE.md)** | Accumulated insights, best practices, troubleshooting | When encountering issues, learning patterns |
-| **[CONTRIBUTING.md](CONTRIBUTING.md)** | Contribution guidelines, workflow | Before submitting PRs |
-| **[Commands Reference](docs/user-guide/commands.md)** | Complete reference for all 30 `/sc:*` commands with syntax, examples, workflows, and decision guides | Learning SuperClaude, choosing the right command |
+Structured-format content that holds up against just asking the model.
 
-> **💡 Pro Tip**: Claude Code reads these files at session start to ensure consistent, high-quality development aligned with project standards.
->
-> **📚 New to SuperClaude?** Start with [Commands Reference](docs/user-guide/commands.md) — it contains visual decision trees, detailed command comparisons, and workflow examples to help you understand which commands to use and when.
+#### confidence-check
 
-## ⚡ **Quick Installation**
+Pre-implementation gate (duplicate check, architecture fit, official-docs
+verification, root-cause identification) with a TypeScript scoring helper
+(`confidence.ts`). Source: [plugins/superclaude/skills](plugins/superclaude/skills/).
 
-> **IMPORTANT**: The TypeScript plugin system described in older documentation is
-> not yet available (planned for v5.0). For current installation
-> instructions, please follow the steps below for v4.x.
+#### spec-panel
 
-### **Current Stable Version (v4.3.0)**
+Multi-expert specification review in a fixed panel format.
 
-SuperClaude currently uses slash commands.
+#### socratic
 
-**Option 1: pipx (Recommended)**
+Discovery-learning dialogue with a strict question-first structure.
+
+#### pm-reflexion
+
+Failure reflexion: extract the root cause and a prevention rule after a real
+error, instead of retrying blindly.
+
+### Agent
+
+#### explore-haiku
+
+The one surviving agent. Runs codebase exploration on Haiku — cheap fan-out
+search where Opus/Sonnet reasoning is wasted. The other 19 persona agents are
+covered by native subagents and got cut.
+
+### Hooks
+
+Deterministic enforcement — the thing prompts cannot do. Defined in
+[plugins/superclaude/hooks/hooks.json](plugins/superclaude/hooks/hooks.json).
+
+#### session-restore
+
+`SessionStart` command script that restores session context.
+
+#### confidence-gate
+
+`PreToolUse` prompt on `Write|Edit`: non-trivial new implementations must have
+passed the confidence-check criteria first. Trivial edits are exempt.
+
+#### session-summary
+
+`Stop` prompt: summarize substantive sessions in 2–3 bullets (stores via
+mindbase MCP if available, skips silently if not).
+
+#### reflexion-trigger
+
+`Stop` prompt: apply pm-reflexion when the session hit a real error.
+
+#### tab-title
+
+Terminal tab status (running / waiting / idle). Opt-in: silent no-op unless
+`SUPERCLAUDE_TAB_TITLE=1`.
+
+### Eval harness
+
+[eval/](eval/README.md) is gate-zero: A/B of native Claude Code (`claude -p`)
+against a minimal plugin holding exactly one candidate component. Tasks are
+Terminal-Bench-shaped, verification runs in a network-isolated container,
+scoring is machine-only (no LLM judge). Survive thresholds are pre-registered
+in [eval/preregister.yaml](eval/preregister.yaml) before any run.
+
+### CLI
+
+Reduced to an install surface: `superclaude install [--minimal]`, `update`,
+`doctor`, `mcp`, `install-skill`, `version`.
+
+### Pytest plugin
+
+Auto-loaded fixtures and markers (`confidence_checker`, `reflexion_pattern`,
+`@pytest.mark.confidence_check`, ...). Unlike v4 it never writes files unless
+`SUPERCLAUDE_REFLEXION_OUTPUT_DIR` is set.
+
+## Status
+
+5.0.0a1 is an **alpha** on the `v5` branch. The API surface above is what
+exists today; the upstream proposal is in
+[docs/rfc/v5-slim-down.md](docs/rfc/v5-slim-down.md).
+
+## Installation
+
+### Requirements
+
+Python ≥3.10 and [Claude Code](https://code.claude.com/docs/en/overview).
+
+### pipx (recommended)
+
 ```bash
-# Install from PyPI
-pipx install superclaude
-
-# Install commands (installs all 30 slash commands)
+pipx install superclaude==5.0.0a1
 superclaude install
+```
 
-# Install MCP servers (optional, for enhanced capabilities)
-superclaude mcp --list         # List available MCP servers
-superclaude mcp                # Interactive installation
-superclaude mcp --servers tavily --servers context7  # Install specific servers
+### Plugin directory (no Python install)
 
-# Verify installation
-superclaude install --list
+```bash
+git clone https://github.com/SuperClaude-Org/SuperClaude_Framework.git
+claude --plugin-dir SuperClaude_Framework/plugins/superclaude
+```
+
+### Minimal install
+
+```bash
+superclaude install --minimal   # confidence-check skill only, no agents
+```
+
+Incremental adoption is the recommended path — start minimal, add pieces that
+earn their place ([official guidance](https://code.claude.com/docs/en/claude-code-on-the-web)
+applies the same principle to all Claude Code extensions).
+
+### Verify
+
+```bash
 superclaude doctor
 ```
 
-After installation, restart Claude Code to use 30 commands including:
-- `/sc:research` - Deep web research (enhanced with Tavily MCP)
-- `/sc:brainstorm` - Structured brainstorming
-- `/sc:implement` - Code implementation
-- `/sc:test` - Testing workflows
-- `/sc:pm` - Project management
-- `/sc` - Show all 30 available commands
+## Upgrading from v4
 
-**Option 2: Direct Installation from Git**
 ```bash
-# Clone the repository
-git clone https://github.com/SuperClaude-Org/SuperClaude_Framework.git
-cd SuperClaude_Framework
-
-# Run the installation script
-./install.sh
+pipx upgrade superclaude        # or: pipx install superclaude==5.0.0a1
+superclaude install
+rm -rf ~/.claude/commands/sc    # remove the 30 legacy slash commands
 ```
 
-### **Coming in v5.0 (In Development)**
+A cleanup script is provided: [scripts/uninstall_legacy.sh](scripts/uninstall_legacy.sh).
 
-We are actively working on a new TypeScript plugin system (see issue [#419](https://github.com/SuperClaude-Org/SuperClaude_Framework/issues/419) for details). When released, installation will be simplified to:
+### Breaking changes
+
+- Reflexion file output is opt-in (`SUPERCLAUDE_REFLEXION_OUTPUT_DIR`); default is no writes.
+- CLI: `--target` is replaced by `--skills-dir` / `--agents-dir`.
+- The pytest plugin no longer writes `docs/mistakes/*.md`.
+
+Full guide: [docs/migration/v4-to-v5.md](docs/migration/v4-to-v5.md).
+
+### v4 freeze policy
+
+v4.3.x stays on PyPI, frozen — security fixes only.
+
+### Rollback
 
 ```bash
-# This feature is not yet available
-/plugin marketplace add SuperClaude-Org/superclaude-plugin-marketplace
-/plugin install superclaude
+pipx install superclaude==4.3.0
 ```
 
-**Status**: In development. No ETA has been set.
+## The eval gate
 
-### **Enhanced Performance (Optional MCPs)**
+### How a component survives
 
-For **2-3x faster** execution and **30-50% fewer tokens**, optionally install MCP servers:
+A candidate is added only if, per [eval/preregister.yaml](eval/preregister.yaml):
+
+1. Its 95% CI on pass rate is disjoint above the native baseline's, and
+2. quality per 1k tokens does not regress.
+
+Overlapping CIs are inconclusive, not a win. Thresholds are fixed before
+running and never tuned to make a candidate pass.
+
+### Running it yourself
 
 ```bash
-# Optional MCP servers for enhanced performance (via airis-mcp-gateway):
-# - Serena: Code understanding (2-3x faster)
-# - Sequential: Token-efficient reasoning (30-50% fewer tokens)
-# - Tavily: Web search for Deep Research
-# - Context7: Official documentation lookup
-# - Mindbase: Semantic search across all conversations (optional enhancement)
-
-# Note: Error learning available via built-in ReflexionMemory (no installation required)
-# Mindbase provides semantic search enhancement (requires "recommended" profile)
-# Install MCP servers: https://github.com/agiletec-inc/airis-mcp-gateway
-# See docs/mcp/mcp-integration-policy.md for details
+cd eval
+uv run sc-eval --trials 5 --k 3                   # all tasks, all arms
+uv run sc-eval --arms B_confidence --tasks fix-x  # one candidate, one task
 ```
 
-**Performance Comparison:**
-- **Without MCPs**: Fully functional, standard performance ✅
-- **With MCPs**: 2-3x faster, 30-50% fewer tokens ⚡
+### Confirmed cuts
 
-</div>
+`parallel.py` (the v4 in-plugin parallel executor) is a confirmed cut: native
+async subagents cover it, and an in-plugin DAG double-schedules against native
+orchestration.
 
----
+## Optional integrations
 
-<div align="center">
+### Disclosure
 
-## 💖 **Support the Project**
+SuperClaude works with **zero MCP servers**. Where MCP is useful, two of the
+servers we mention — **airis-mcp-gateway** and **mindbase** — are maintained by
+**Agile Tech Inc., the company of the v5 author**. Treat their recommendation
+accordingly; they are optional, never a hard dependency, and every feature
+degrades gracefully without them.
 
-> Hey, let's be real - maintaining SuperClaude takes time and resources.
-> 
-> *The Claude Max subscription alone runs $100/month for testing, and that's before counting the hours spent on documentation, bug fixes, and feature development.*
-> *If you're finding value in SuperClaude for your daily work, consider supporting the project.*
-> *Even a few dollars helps cover the basics and keeps development active.*
-> 
-> Every contributor matters, whether through code, feedback, or support. Thanks for being part of this community! 🙏
+### Independent alternatives
 
-<table>
-<tr>
-<td align="center" width="33%">
-  
-### ☕ **Ko-fi**
-[![Ko-fi](https://img.shields.io/badge/Support_on-Ko--fi-ff5e5b?logo=ko-fi)](https://ko-fi.com/superclaude)
-
-*One-time contributions*
-
-</td>
-<td align="center" width="33%">
-
-### 🎯 **Patreon**
-[![Patreon](https://img.shields.io/badge/Become_a-Patron-f96854?logo=patreon)](https://patreon.com/superclaude)
-
-*Monthly support*
-
-</td>
-<td align="center" width="33%">
-
-### 💜 **GitHub**
-[![GitHub Sponsors](https://img.shields.io/badge/GitHub-Sponsor-30363D?logo=github-sponsors)](https://github.com/sponsors/SuperClaude-Org)
-
-*Flexible tiers*
-
-</td>
-</tr>
-</table>
-
-### **Your Support Enables:**
-
-| Item | Cost/Impact |
-|------|-------------|
-| 🔬 **Claude Max Testing** | $100/month for validation & testing |
-| ⚡ **Feature Development** | New capabilities & improvements |
-| 📚 **Documentation** | Comprehensive guides & examples |
-| 🤝 **Community Support** | Quick issue responses & help |
-| 🔧 **MCP Integration** | Testing new server connections |
-| 🌐 **Infrastructure** | Hosting & deployment costs |
-
-> **Note:** No pressure though - the framework stays open source regardless. Just knowing people use and appreciate it is motivating. Contributing code, documentation, or spreading the word helps too! 🙏
-
-</div>
-
----
-
-<div align="center">
-
-## 🎉 **What's New in v4.1**
-
-> *Version 4.1 focuses on stabilizing the slash command architecture, enhancing agent capabilities, and improving documentation.*
-
-<table>
-<tr>
-<td width="50%">
-
-### 🤖 **Smarter Agent System**
-**20 specialized agents** with domain expertise:
-- PM Agent ensures continuous learning through systematic documentation
-- Deep Research agent for autonomous web research
-- Security engineer catches real vulnerabilities
-- Frontend architect understands UI patterns
-- Automatic coordination based on context
-- Domain-specific expertise on demand
-
-</td>
-<td width="50%">
-
-### ⚡ **Optimized Performance**
-**Smaller framework, bigger projects:**
-- Reduced framework footprint
-- More context for your code
-- Longer conversations possible
-- Complex operations enabled
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-### 🔧 **MCP Server Integration**
-**8 powerful servers** with easy CLI installation:
+Install individual third-party servers instead:
 
 ```bash
-# List available MCP servers
 superclaude mcp --list
-
-# Install specific servers
-superclaude mcp --servers tavily context7
-
-# Interactive installation
-superclaude mcp
+superclaude mcp --servers context7 tavily   # docs lookup, web search
 ```
 
-**Available servers:**
-- **Tavily** → Primary web search (Deep Research)
-- **Context7** → Official documentation lookup
-- **Sequential-Thinking** → Multi-step reasoning
-- **Serena** → Session persistence & memory
-- **Playwright** → Cross-browser automation
-- **Magic** → UI component generation
-- **Morphllm-Fast-Apply** → Context-aware code modifications
-- **Chrome DevTools** → Performance analysis
-
-</td>
-<td width="50%">
-
-### 🎯 **Behavioral Modes**
-**7 adaptive modes** for different contexts:
-- **Brainstorming** → Asks right questions
-- **Business Panel** → Multi-expert strategic analysis
-- **Deep Research** → Autonomous web research
-- **Orchestration** → Efficient tool coordination
-- **Token-Efficiency** → 30-50% context savings
-- **Task Management** → Systematic organization
-- **Introspection** → Meta-cognitive analysis
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-### 📚 **Documentation Overhaul**
-**Complete rewrite** for developers:
-- Real examples & use cases
-- Common pitfalls documented
-- Practical workflows included
-- Better navigation structure
-
-</td>
-<td width="50%">
-
-### 🧪 **Enhanced Stability**
-**Focus on reliability:**
-- Bug fixes for core commands
-- Improved test coverage
-- More robust error handling
-- CI/CD pipeline improvements
-
-</td>
-</tr>
-</table>
-
-</div>
-
----
-
-<div align="center">
-
-## 🔬 **Deep Research Capabilities**
-
-### **Autonomous Web Research Aligned with DR Agent Architecture**
-
-SuperClaude v4.2 introduces comprehensive Deep Research capabilities, enabling autonomous, adaptive, and intelligent web research.
-
-<table>
-<tr>
-<td width="50%">
-
-### 🎯 **Adaptive Planning**
-**Three intelligent strategies:**
-- **Planning-Only**: Direct execution for clear queries
-- **Intent-Planning**: Clarification for ambiguous requests
-- **Unified**: Collaborative plan refinement (default)
-
-</td>
-<td width="50%">
-
-### 🔄 **Multi-Hop Reasoning**
-**Up to 5 iterative searches:**
-- Entity expansion (Paper → Authors → Works)
-- Concept deepening (Topic → Details → Examples)
-- Temporal progression (Current → Historical)
-- Causal chains (Effect → Cause → Prevention)
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-### 📊 **Quality Scoring**
-**Confidence-based validation:**
-- Source credibility assessment (0.0-1.0)
-- Coverage completeness tracking
-- Synthesis coherence evaluation
-- Minimum threshold: 0.6, Target: 0.8
+### Zero-MCP operation
 
-</td>
-<td width="50%">
+Skills, the agent, hooks, the CLI, and the pytest plugin all function without
+any MCP server configured. Hooks that reference MCP tools (session-summary)
+skip silently when the tools are absent.
 
-### 🧠 **Case-Based Learning**
-**Cross-session intelligence:**
-- Pattern recognition and reuse
-- Strategy optimization over time
-- Successful query formulations saved
-- Performance improvement tracking
+## Why not keep everything?
 
-</td>
-</tr>
-</table>
+### Doesn't more context help?
 
-### **Research Command Usage**
+No — context is a budget. Every always-loaded instruction competes with your
+code and your task. Claude Code's own design pushes the same way: progressive
+disclosure in [Skills](https://code.claude.com/docs/en/skills) (load details
+only when triggered) and keeping [CLAUDE.md](https://code.claude.com/docs/en/memory)
+lean (~200 lines) because every line is paid on every turn.
 
-```bash
-# Basic research with automatic depth
-/research "latest AI developments 2024"
+### What about trigger precision?
 
-# Controlled research depth (via options in TypeScript)
-/research "quantum computing breakthroughs"  # depth: exhaustive
+With 30 commands and 20 agents, descriptions overlap and the model picks the
+wrong tool — or none. Fewer, sharper components trigger more reliably. This is
+why Claude Code merged custom slash commands into the Skills system rather than
+growing both ([Skills docs](https://code.claude.com/docs/en/skills)).
 
-# Specific strategy selection
-/research "market analysis"  # strategy: planning-only
+### Why cut the 20 persona agents?
 
-# Domain-filtered research (Tavily MCP integration)
-/research "React patterns"  # domains: reactjs.org,github.com
-```
+They were system prompts pretending to be people. Native subagents already
+provide isolation and parallelism; "act as a security engineer" no longer needs
+3KB of persona text. The one that survived (explore-haiku) survives because it
+changes the *model*, not the personality — that's something a prompt can't do.
 
-### **Research Depth Levels**
+### Why did the pytest plugin stop writing files?
 
-| Depth | Sources | Hops | Time | Best For |
-|:-----:|:-------:|:----:|:----:|----------|
-| **Quick** | 5-10 | 1 | ~2min | Quick facts, simple queries |
-| **Standard** | 10-20 | 3 | ~5min | General research (default) |
-| **Deep** | 20-40 | 4 | ~8min | Comprehensive analysis |
-| **Exhaustive** | 40+ | 5 | ~10min | Academic-level research |
+v4's reflexion hook wrote `docs/mistakes/*.md` into every repo you tested in.
+That's pollution, not persistence. v5 writes nothing unless you set
+`SUPERCLAUDE_REFLEXION_OUTPUT_DIR`, and `docs/mistakes/` is gitignored.
 
-### **Integrated Tool Orchestration**
+### Behavior rules belong in prompts, right?
 
-The Deep Research system intelligently coordinates multiple tools:
-- **Tavily MCP**: Primary web search and discovery
-- **Playwright MCP**: Complex content extraction
-- **Sequential MCP**: Multi-step reasoning and synthesis
-- **Serena MCP**: Memory and learning persistence
-- **Context7 MCP**: Technical documentation lookup
+Enforcement belongs in [hooks](https://code.claude.com/docs/en/hooks-guide):
+a `PreToolUse` hook fires deterministically; a prompt rule fires when the model
+remembers it. v4 promised hooks and shipped an empty directory; v5 ships five.
 
-</div>
+### What if I miss a v4 command?
 
----
+Most of the 30 commands were thin wrappers around things you can just ask for.
+The [migration guide](docs/migration/v4-to-v5.md) maps every removed command,
+agent, and mode to its native replacement. If a removed piece genuinely beats
+native behavior, bring it back through the eval gate — with numbers.
 
-<div align="center">
+## Contributing
 
-## 📚 **Documentation**
+### Adding a component
 
-### **Complete Guide to SuperClaude**
+Run the eval, attach the numbers. PRs proposing new skills/agents/hooks without
+results per [eval/preregister.yaml](eval/preregister.yaml) will be redirected
+to the eval harness first. See [CLAUDE.md](CLAUDE.md) for the developer setup
+and [eval/README.md](eval/README.md) for the harness.
 
-<table>
-<tr>
-<th align="center">🚀 Getting Started</th>
-<th align="center">📖 User Guides</th>
-<th align="center">🛠️ Developer Resources</th>
-<th align="center">📋 Reference</th>
-</tr>
-<tr>
-<td valign="top">
+### Knowledge hub
 
-- 📝 [**Quick Start Guide**](docs/getting-started/quick-start.md)  
-  *Get up and running fast*
+Community best practices for Claude Code-era development live in
+[docs/knowledge/](docs/knowledge/README.md) — contributions need evidence, not
+opinions.
 
-- 💾 [**Installation Guide**](docs/getting-started/installation.md)  
-  *Detailed setup instructions*
+## Documentation
 
-</td>
-<td valign="top">
+- [Migration: v4 → v5](docs/migration/v4-to-v5.md)
+- [Eval harness](eval/README.md)
+- [Knowledge hub](docs/knowledge/README.md)
+- [Upstream RFC draft](docs/rfc/v5-slim-down.md)
+- [CLAUDE.md template](docs/Templates/CLAUDE.template.md)
 
-- 🎯 [**Slash Commands**](docs/reference/commands-list.md)
-  *All 30 commands organized by category*
+## Acknowledgements
 
-- 🤖 [**Agents Guide**](docs/user-guide/agents.md)  
-  *20 specialized agents*
+v5 stands on four major versions of community work. Thanks to every v4
+contributor — the slim-down deletes prompt text, not the lessons it encoded.
 
-- 🎨 [**Behavioral Modes**](docs/user-guide/modes.md)  
-  *7 adaptive modes*
+## License
 
-- 🚩 [**Flags Guide**](docs/user-guide/flags.md)  
-  *Control behaviors*
-
-- 🔧 [**MCP Servers**](docs/user-guide/mcp-servers.md)  
-  *8 server integrations*
-
-- 💼 [**Session Management**](docs/user-guide/session-management.md)  
-  *Save & restore state*
-
-</td>
-<td valign="top">
-
-- 🏗️ [**Technical Architecture**](docs/developer-guide/technical-architecture.md)  
-  *System design details*
-
-- 💻 [**Contributing Code**](docs/developer-guide/contributing-code.md)  
-  *Development workflow*
-
-- 🧪 [**Testing & Debugging**](docs/developer-guide/testing-debugging.md)  
-  *Quality assurance*
-
-</td>
-<td valign="top">
-- 📓 [**Examples Cookbook**](docs/reference/examples-cookbook.md)  
-  *Real-world recipes*
-
-- 🔍 [**Troubleshooting**](docs/reference/troubleshooting.md)  
-  *Common issues & fixes*
-
-</td>
-</tr>
-</table>
-
-</div>
-
----
-
-<div align="center">
-
-## 🤝 **Contributing**
-
-### **Join the SuperClaude Community**
-
-We welcome contributions of all kinds! Here's how you can help:
-
-| Priority | Area | Description |
-|:--------:|------|-------------|
-| 📝 **High** | Documentation | Improve guides, add examples, fix typos |
-| 🔧 **High** | MCP Integration | Add server configs, test integrations |
-| 🎯 **Medium** | Workflows | Create command patterns & recipes |
-| 🧪 **Medium** | Testing | Add tests, validate features |
-| 🌐 **Low** | i18n | Translate docs to other languages |
-
-<p align="center">
-  <a href="CONTRIBUTING.md">
-    <img src="https://img.shields.io/badge/📖_Read-Contributing_Guide-blue" alt="Contributing Guide">
-  </a>
-  <a href="https://github.com/SuperClaude-Org/SuperClaude_Framework/graphs/contributors">
-    <img src="https://img.shields.io/badge/👥_View-All_Contributors-green" alt="Contributors">
-  </a>
-</p>
-
-</div>
-
----
-
-<div align="center">
-
-## ⚖️ **License**
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
-<p align="center">
-  <img src="https://img.shields.io/badge/License-MIT-yellow.svg?" alt="MIT License">
-</p>
-
-</div>
-
----
-
-<div align="center">
-
-## ⭐ **Star History**
-
-<a href="https://www.star-history.com/#SuperClaude-Org/SuperClaude_Framework&Timeline">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=SuperClaude-Org/SuperClaude_Framework&type=Timeline&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=SuperClaude-Org/SuperClaude_Framework&type=Timeline" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=SuperClaude-Org/SuperClaude_Framework&type=Timeline" />
- </picture>
-</a>
-
-
-</div>
-
----
-
-<div align="center">
-
-### **🚀 Built with passion by the SuperClaude community**
-
-<p align="center">
-  <sub>Made with ❤️ for developers who push boundaries</sub>
-</p>
-
-<p align="center">
-  <a href="#-superclaude-framework">Back to Top ↑</a>
-</p>
-
-</div>
-
----
-
-## 📋 **All 30 Commands**
-
-<details>
-<summary><b>Click to expand full command list</b></summary>
-
-### 🧠 Planning & Design (4)
-- `/brainstorm` - Structured brainstorming
-- `/design` - System architecture
-- `/estimate` - Time/effort estimation
-- `/spec-panel` - Specification analysis
-
-### 💻 Development (5)
-- `/implement` - Code implementation
-- `/build` - Build workflows
-- `/improve` - Code improvements
-- `/cleanup` - Refactoring
-- `/explain` - Code explanation
-
-### 🧪 Testing & Quality (4)
-- `/test` - Test generation
-- `/analyze` - Code analysis
-- `/troubleshoot` - Debugging
-- `/reflect` - Retrospectives
-
-### 📚 Documentation (2)
-- `/document` - Doc generation
-- `/help` - Command help
-
-### 🔧 Version Control (1)
-- `/git` - Git operations
-
-### 📊 Project Management (3)
-- `/pm` - Project management
-- `/task` - Task tracking
-- `/workflow` - Workflow automation
-
-### 🔍 Research & Analysis (2)
-- `/research` - Deep web research
-- `/business-panel` - Business analysis
-
-### 🎯 Utilities (9)
-- `/agent` - AI agents
-- `/index-repo` - Repository indexing
-- `/index` - Indexing alias
-- `/recommend` - Command recommendations
-- `/select-tool` - Tool selection
-- `/spawn` - Parallel tasks
-- `/load` - Load sessions
-- `/save` - Save sessions
-- `/sc` - Show all commands
-
-[**📖 View Detailed Command Reference →**](docs/reference/commands-list.md)
-
-</details>
-
+[MIT](LICENSE)

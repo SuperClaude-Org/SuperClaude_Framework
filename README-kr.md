@@ -1,3 +1,5 @@
+> 이 번역은 v4 (4.3.0) 기준이며, v5 RFC 확정 후 업데이트됩니다. 최신 내용은 [README.md](README.md)를 참조하세요.
+
 <div align="center">
 
 # 🚀 SuperClaude 프레임워크
