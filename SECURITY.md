@@ -630,8 +630,6 @@ For critical vulnerabilities requiring immediate attention:
 ### General Security Questions
 **General Security Questions:**
 - **GitHub Discussions**: https://github.com/SuperClaude-Org/SuperClaude_Framework/discussions
-- **Community Forums**: Security-focused discussion threads
-- **Documentation**: [Security Best Practices](docs/Reference/quick-start-practices.md#security-practices)
 - **Issue Tracker**: Non-sensitive security configuration questions
 
 **Technical Security Support:**
@@ -661,30 +659,10 @@ For organizations requiring dedicated security support:
 
 ## 📚 Additional Resources
 
-### Security-Related Documentation
-**Framework Security Documentation:**
-- [Quick Start Practices Guide](docs/Reference/quick-start-practices.md) - Security-focused usage patterns
-- [Technical Architecture](docs/Developer-Guide/technical-architecture.md) - Security design principles
-- [Contributing Code Guide](docs/Developer-Guide/contributing-code.md) - Secure development practices
-- [Testing & Debugging Guide](docs/Developer-Guide/testing-debugging.md) - Security testing procedures
-
-**MCP Server Security:**
-- [MCP Servers Guide](docs/User-Guide/mcp-servers.md) - Server security configuration
-- [Troubleshooting Guide](docs/Reference/troubleshooting.md) - Security-related issue resolution
-- MCP Server Documentation - Individual server security considerations
-- Configuration Security - Secure MCP setup and credential management
-
-**Agent Security:**
-- [Agents Guide](docs/User-Guide/agents.md) - Agent security boundaries and coordination
-- Agent Development - Security considerations for agent implementation
-- Behavioral Modes - Security implications of different operational modes
-- Command Security - Security aspects of command execution and validation
-
-**Session Management Security:**
-- [Session Management Guide](docs/User-Guide/session-management.md) - Secure session handling
-- Memory Security - Secure handling of persistent session data
-- Project Isolation - Security boundaries between different projects
-- Context Security - Secure context loading and validation
+### Framework Security Documentation
+- [MCP integration policy](docs/mcp/) - How optional MCP servers are integrated, disclosed, and degraded gracefully
+- [CLAUDE.md](CLAUDE.md) - Developer setup, including the no-unconditional-file-writes rule
+- [Knowledge hub](docs/knowledge/README.md) - Evidence-based development practices
 
 ### External Security Resources
 **Security Standards and Frameworks:**
@@ -721,9 +699,7 @@ For organizations requiring dedicated security support:
 
 **Security Policy Maintenance:**
 
-**Last Updated**: December 2024 (SuperClaude Framework v4.0)
-**Next Review**: March 2025 (Quarterly review cycle)
-**Version**: 4.1.5 (Updated for v4 architectural changes)
+**Applies to**: SuperClaude v5 (active) and the frozen v4.3.x line (security fixes only).
 
 **Review Schedule:**
 - **Quarterly Reviews**: Security policy accuracy and completeness assessment

@@ -84,25 +84,6 @@ sync-plugin-repo: build-plugin ## Sync built plugin artefacts into ../SuperClaud
 	@rsync -a --delete $(PLUGIN_DIST)/.claude-plugin/ $(PLUGIN_REPO)/.claude-plugin/
 	@echo "✅ Sync complete."
 
-# Translate README to multiple languages using Neural CLI
-translate:
-	@echo "🌐 Translating README using Neural CLI (Ollama + qwen2.5:3b)..."
-	@if [ ! -f ~/.local/bin/neural-cli ]; then \
-		echo "📦 Installing neural-cli..."; \
-		mkdir -p ~/.local/bin; \
-		ln -sf ~/github/neural/src-tauri/target/release/neural-cli ~/.local/bin/neural-cli; \
-		echo "✅ neural-cli installed to ~/.local/bin/"; \
-	fi
-	@echo ""
-	@echo "🇨🇳 Translating to Simplified Chinese..."
-	@~/.local/bin/neural-cli translate README.md --from English --to "Simplified Chinese" --output README-zh.md
-	@echo ""
-	@echo "🇯🇵 Translating to Japanese..."
-	@~/.local/bin/neural-cli translate README.md --from English --to Japanese --output README-ja.md
-	@echo ""
-	@echo "✅ Translation complete!"
-	@echo "📝 Files updated: README-zh.md, README-ja.md"
-
 # Show help
 help:
 	@echo "SuperClaude Framework - Available commands:"
@@ -122,9 +103,6 @@ help:
 	@echo "🔌 Plugin Packaging:"
 	@echo "  make build-plugin    - Build SuperClaude plugin artefacts into dist/"
 	@echo "  make sync-plugin-repo - Sync artefacts into ../SuperClaude_Plugin"
-	@echo ""
-	@echo "📚 Documentation:"
-	@echo "  make translate       - Translate README to Chinese and Japanese"
 	@echo ""
 	@echo "🧹 Cleanup:"
 	@echo "  make uninstall-legacy - Remove old SuperClaude files from ~/.claude"

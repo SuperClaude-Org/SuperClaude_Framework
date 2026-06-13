@@ -8,7 +8,7 @@ All Python operations go through UV. Never use bare `python`, `pip install`, or 
 `pytest` console script (it is broken in this venv — always go through `python -m`).
 
 ```bash
-uv run python -m pytest -q                 # full test suite (256 tests)
+uv run python -m pytest -q                 # full test suite (257 tests)
 uv run python -m pytest tests/unit -v      # one directory
 uv run python -m pytest -m confidence_check
 uv pip install <package>
@@ -27,7 +27,7 @@ plugins/superclaude/      # PLUGIN SOURCE OF TRUTH
 src/superclaude/          # Python package for the wheel
   skills/, agents/        #   mirrored FROM plugins/superclaude (edit the plugin side)
   cli/                    #   superclaude CLI (install, update, doctor, mcp, install-skill)
-  pm_agent/               #   confidence.py, self_check.py, reflexion.py
+  pm_agent/               #   confidence.py, self_check.py, reflexion.py, token_budget.py
   pytest_plugin.py        #   fixtures + markers; never writes files by itself
 eval/                     # gate-zero A/B eval harness (eval/README.md, eval/preregister.yaml)
 dist/                     # built plugin artefacts — output of `make build-plugin`

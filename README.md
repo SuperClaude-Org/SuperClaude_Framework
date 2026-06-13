@@ -15,16 +15,7 @@
   </a>
 </p>
 
-<p align="center">
-  <a href="README.md">English</a> •
-  <a href="README-zh.md">中文</a> •
-  <a href="README-ja.md">日本語</a> •
-  <a href="README-kr.md">한국어</a>
-</p>
-
 </div>
-
-> Translations track v4 and will be updated after the v5 RFC.
 
 ---
 

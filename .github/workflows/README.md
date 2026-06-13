@@ -34,13 +34,9 @@ This directory contains CI/CD workflows for SuperClaude Framework.
 
 **Purpose**: Provide rapid feedback on PRs before running full test matrix.
 
-### 3. **publish-pypi.yml** (Existing)
+### 3. **publish-pypi.yml**
 **Triggers**: Manual or release tags
 **Purpose**: Publish package to PyPI
-
-### 4. **readme-quality-check.yml** (Existing)
-**Triggers**: Push/PR affecting README files
-**Purpose**: Validate README quality and consistency
 
 ## Local Testing
 
@@ -155,4 +151,4 @@ open htmlcov/index.html
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
 - [UV Documentation](https://github.com/astral-sh/uv)
 - [Pytest Documentation](https://docs.pytest.org/)
-- [SuperClaude Testing Guide](../../docs/developer-guide/testing-debugging.md)
+- [CLAUDE.md](../../CLAUDE.md) — developer setup and test commands
