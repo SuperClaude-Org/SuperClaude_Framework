@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>治理闭环 - DMZ1 Nginx 边缘治理驾驶舱</title>
+<link rel="stylesheet" href="./index.css">
+</head>
+<body data-dashboard-level="4"><div class="app">
+<header><div><div class="eyebrow">DMZ1 路 NGINX EDGE OBSERVABILITY</div><div class="title">DMZ1 Nginx 边缘治理驾驶舱</div><div class="subtitle">以全局 Request ID 串联入口、边界处理与上游转发，支撑秒级定位、调度建议和治理验证</div></div><div class="level-badge">4级 治理闭环</div><div class="live">DMZ1 数据实时接入</div></header>
+<section class="stats">
+ <div class="card green level-min-1"><div class="label">实时吞吐</div><div class="value"><span id="qps">0</span><span class="unit">req/s</span></div><div class="hint">最近 60 秒</div></div>
+ <div class="card cyan level-min-2"><div class="label">Request ID 覆盖率</div><div class="value"><span id="coverage">0</span><span class="unit">%</span></div><div class="hint">入口请求生成完整度</div></div>
+ <div class="card amber level-min-1"><div class="label">P95 响应时间</div><div class="value"><span id="p95">0</span><span class="unit">ms</span></div><div class="hint">端到端处理耗时</div></div>
+ <div class="card red level-min-1"><div class="label">5xx 错误率</div><div class="value"><span id="e5">0</span><span class="unit">%</span></div><div class="hint">上游失败与网关异常</div></div>
+ <div class="card blue level-min-3"><div class="label">Nginx 节点</div><div class="value"><span id="nodeCount">0</span><span class="unit">台</span></div><div class="hint">最近窗口活跃节点</div></div>
+ <div class="card cyan level-min-3"><div class="label">上游实例</div><div class="value"><span id="upCount">0</span><span class="unit">个</span></div><div class="hint">DMZ1 转发目标</div></div>
+</section>
+
+<section class="level-min-3 core-grid">
+ <div class="panel wide">
+  <div class="head"><h2>Request ID 链路瀑布</h2><span class="badge">入口接收 -> 边界处理 -> Upstream</span></div>
+  <div id="waterfallSummary" class="waterfall-summary"></div>
+  <div id="waterfall" class="waterfall"></div>
+ </div>
+ <div class="panel">
+  <div class="head"><h2>网络边界性能归因</h2><span class="meta">褰撳墠 60 绉掔獥台</span></div>
+  <div id="boundaryMetrics" class="perf-grid"></div>
+  <div id="attribution" class="attribution"></div>
+ </div>
+</section>
+
+<section class="level-min-4 core-grid">
+ <div class="panel">
+  <div class="head"><h2>边缘治理决策建议</h2><span class="badge">仅建议 · 需人工审批</span></div>
+  <div id="decisions" class="decision-list"></div>
+ </div>
+ <div class="panel">
+  <div class="head"><h2>治理效果验证</h2><span class="meta">前 15 秒 vs 后 15 秒</span></div>
+  <div id="verification" class="verify-grid"></div>
+  <div id="verdict" class="verdict"></div>
+ </div>
+</section>
+
+<section class="level-min-4 grid2">
+ <div class="panel"><div class="head"><h2>Nginx 集群节点健康</h2><span class="badge">流量均衡与节点水位</span></div><div class="table-wrap"><table><thead><tr><th>节点</th><th>流量占比</th><th>QPS</th><th>P95</th><th>5xx</th><th>状态</th></tr></thead><tbody id="nodes"></tbody></table></div></div>
+ <div class="panel"><div class="head"><h2>Upstream 健康与熔断候选</h2><span class="badge">超时 / 失败 / 延迟</span></div><div class="table-wrap"><table><thead><tr><th>上游地址</th><th>请求</th><th>P95</th><th>超时</th><th>5xx</th><th>状态</th></tr></thead><tbody id="upstreams"></tbody></table></div></div>
+</section>
+<section class="level-min-3 grid3">
+ <div class="panel"><div class="head"><h2>性能与流量趋势</h2><div class="tabs"><span class="tab active">平均</span><span class="tab">P95</span></div></div><div class="chart"><svg id="chart"></svg></div></div>
+ <div class="panel"><div class="head"><h2>HTTP 状态码分布</h2><span class="meta">最近 60 秒</span></div><div id="statusBars" class="status-bars"></div></div>
+ <div class="panel"><div class="head"><h2>实时告警事件</h2><span id="alertCount" class="badge">0 条</span></div><div id="alerts" class="alerts"></div></div>
+</section>
+<section class="level-min-4 grid2">
+ <div class="panel"><div class="head"><h2>Top 接口与慢请求</h2><span class="meta">路由已去除 ID 高基数</span></div><div class="table-wrap"><table><thead><tr><th>路由</th><th>请求数</th><th>P95</th><th>最大耗时</th><th>5xx</th></tr></thead><tbody id="routes"></tbody></table></div></div>
+ <div class="panel"><div class="head"><h2>Agent 采集健康</h2><span class="meta">队列、延迟、采样与丢弃</span></div><div id="agents" class="agent-grid"></div></div>
+</section>
+<section class="level-min-4 panel wide">
+ <div class="head"><h2>Request ID 排障检索</h2><span class="meta">点击请求可同步查看链路瀑布</span></div>
+ <div class="trace-tools"><input id="search" placeholder="输入完整或部分 Request ID、URL、客户端 IP"><button id="clear">清除</button></div>
+ <div id="detail" class="request-detail"></div>
+ <div class="table-wrap"><table><thead><tr><th>时间</th><th>Request ID</th><th>Nginx 节点</th><th>客户端 IP</th><th>请求</th><th>Upstream</th><th>总耗时</th><th>上游耗时</th><th>状态</th></tr></thead><tbody id="requests"></tbody></table></div>
+</section>
+</div>
+<script src="./index.js"></script></body></html>
+
