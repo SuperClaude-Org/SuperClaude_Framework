@@ -1,0 +1,9 @@
+# Python 3.7-compatible, pure-Python offline runtime.
+fastapi==0.65.2
+starlette==0.14.2
+pydantic==1.8.2
+uvicorn==0.14.0
+click==8.1.7
+h11==0.12.0
+websockets==11.0.3
+aiofiles==0.7.0

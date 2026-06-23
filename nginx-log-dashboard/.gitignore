@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+*.log
+!sample_access.log
+logs/
+run/
+
+.env
+.venv/
+venv/
+
+# Offline/runtime artifacts are generated locally and should not be managed as source.
+dist/
+pylib/
+pylib-build/
+pylib_py37/
+
+# Local editor and OS files.
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
