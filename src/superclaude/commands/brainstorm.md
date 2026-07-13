@@ -19,8 +19,14 @@ personas: [architect, analyzer, frontend, backend, security, devops, project-man
 
 ## Context Trigger Pattern
 ```
-/sc:brainstorm [topic/idea] [--strategy systematic|agile|enterprise] [--depth shallow|normal|deep] [--parallel]
+/sc:brainstorm [topic/idea] [--strategy systematic|agile|enterprise] [--depth shallow|normal|deep] [--parallel] [--bluelink]
 ```
+
+**`--bluelink`** *(optional)*: query the Bluelink MCP knowledge base for internal standards, prior
+art, and constraints relevant to the topic (based on what the repository/project needs to know), and
+ground the Socratic discovery in them — cite the source docs. **Invoked only when `--bluelink` is
+explicitly passed — never auto-activated, and not enabled by `--all-mcp`.** Requires a configured
+Bluelink server (see `mcp/MCP_Bluelink.md`); degrades gracefully if unavailable.
 **Usage**: Type this pattern in your Claude Code conversation to activate brainstorming behavioral mode with systematic exploration and multi-persona coordination.
 
 ## Behavioral Flow
@@ -43,6 +49,10 @@ Key behaviors:
 - **Playwright MCP**: User experience validation and interaction pattern testing
 - **Morphllm MCP**: Large-scale content analysis and pattern-based transformation
 - **Serena MCP**: Cross-session persistence, memory management, and project context enhancement
+- **Bluelink MCP** *(optional, `--bluelink` only)*: query the internal KB for standards, prior art,
+  and constraints relevant to the topic; ground discovery in existing docs and cite sources.
+  Read-only. **Manual-only — invoked solely via `--bluelink`; never auto-activated; not part of
+  `--all-mcp`.** Auto-degrades if the server is absent or unreachable.
 
 ## Tool Coordination
 - **Read/Write/Edit**: Requirements documentation and specification generation

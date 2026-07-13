@@ -37,6 +37,7 @@ Here is a complete list of all available SuperClaude (`/sc`) commands.
 | `/sc:explain` | Provide clear explanations of code, concepts, and system behavior with educational clarity |
 | `/sc:git` | Git operations with intelligent commit messages and workflow optimization |
 | `/sc:help` | List all available /sc commands and their functionality |
+| `/sc:identify-risk` | Standardized 7-dimension code-risk assessment; local by default, optional Bluelink via `--bluelink`/`--submit` |
 | `/sc:implement` | Feature and code implementation with intelligent persona activation and MCP integration |
 | `/sc:improve` | Apply systematic improvements to code quality, performance, and maintainability |
 | `/sc:index` | Generate comprehensive project documentation and knowledge base with intelligent organization |

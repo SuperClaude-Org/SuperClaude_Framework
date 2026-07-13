@@ -17,8 +17,14 @@ personas: []
 
 ## Usage
 ```
-/sc:load [target] [--type project|config|deps|checkpoint] [--refresh] [--analyze]
+/sc:load [target] [--type project|config|deps|checkpoint] [--refresh] [--analyze] [--bluelink]
 ```
+
+**`--bluelink`** *(optional)*: also query the Bluelink MCP knowledge base for docs relevant to the
+project being loaded — its service meta-spec, architecture, dependencies, and standards — and inject
+that need-to-know context into the session alongside Serena memory. **Invoked only when
+`--bluelink` is explicitly passed — never auto-activated, and not enabled by `--all-mcp`.** Requires
+a configured Bluelink server (see `mcp/MCP_Bluelink.md`); degrades gracefully if unavailable.
 
 ## Behavioral Flow
 1. **Initialize**: Establish Serena MCP connection and session context management
@@ -37,6 +43,10 @@ Key behaviors:
 - **Serena MCP**: Mandatory integration for project activation, memory retrieval, and session management
 - **Memory Operations**: Cross-session persistence, checkpoint loading, and context restoration
 - **Performance Critical**: <200ms for core operations, <1s for checkpoint creation
+- **Bluelink MCP** *(optional, `--bluelink` only)*: query the internal KB for context relevant to
+  this repository (service meta-spec, architecture, dependencies, standards) and inject the
+  need-to-know subset into session context. Read-only. **Manual-only — invoked solely via
+  `--bluelink`; never auto-activated; not part of `--all-mcp`.** Auto-degrades if unavailable.
 
 ## Tool Coordination
 - **activate_project**: Core project activation and context establishment

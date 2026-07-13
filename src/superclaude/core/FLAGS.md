@@ -58,13 +58,17 @@ Behavioral flags for Claude Code to enable specific execution modes and tool sel
 - Trigger: Web search requests, real-time information needs, research queries, current events
 - Behavior: Enable Tavily for web search and real-time information gathering
 
+**--bluelink** *(optional, opt-in — manual only)*
+- Activation: **Explicit flag ONLY.** Invoked solely when `--bluelink` is present, or `--submit` on `/sc:identify-risk` (which implies `--bluelink`). NEVER auto-activated by keywords, context, task type, or inferred "internal knowledge" needs. **NOT** enabled by `--all-mcp`. Disabled by `--no-mcp`.
+- Behavior: Enable the Bluelink MCP to query the internal knowledge base (KB docs, service meta-specs, standards) and inject the need-to-know subset; read-only unless `--submit` is also set. Auto-degrades to native behavior if the server is absent/unreachable (see `mcp/MCP_Bluelink.md`)
+
 **--frontend-verify**
 - Trigger: UI testing requests, frontend debugging, layout validation, component verification
 - Behavior: Enable Playwright + Chrome DevTools + Serena for comprehensive frontend verification and debugging
 
 **--all-mcp**
 - Trigger: Maximum complexity scenarios, multi-domain problems
-- Behavior: Enable all MCP servers for comprehensive capability
+- Behavior: Enable all standard MCP servers for comprehensive capability — **excludes Bluelink** (opt-in internal server; requires the explicit `--bluelink` flag)
 
 **--no-mcp**
 - Trigger: Native-only execution needs, performance priority
@@ -130,4 +134,5 @@ Behavioral flags for Claude Code to enable specific execution modes and tool sel
 **Explicit Override**: User flags > auto-detection
 **Depth Hierarchy**: --ultrathink > --think-hard > --think  
 **MCP Control**: --no-mcp overrides all individual MCP flags
+**Bluelink (opt-in)**: Bluelink is manual-only — never auto-activated, not enabled by --all-mcp, disabled by --no-mcp; requires an explicit --bluelink (or --submit on /sc:identify-risk)
 **Scope Precedence**: system > project > module > file
