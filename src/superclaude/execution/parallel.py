@@ -191,7 +191,11 @@ class ParallelExecutor:
             print(f"   Completed in {group_time:.2f}s")
 
         total_time = time.time() - start_time
-        actual_speedup = plan.sequential_time_estimate / total_time
+        # total_time can be exactly 0.0 for empty or near-instant plans (clock
+        # resolution), so guard the division rather than crash the whole run.
+        actual_speedup = (
+            plan.sequential_time_estimate / total_time if total_time > 0 else 1.0
+        )
 
         print("\n" + "=" * 60)
         print(f"✅ All tasks completed in {total_time:.2f}s")

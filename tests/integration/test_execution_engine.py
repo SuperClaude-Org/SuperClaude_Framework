@@ -28,6 +28,19 @@ class TestQuickExecute:
         results = quick_execute([])
         assert results == []
 
+    def test_execute_handles_zero_elapsed_time(self, monkeypatch):
+        """Regression: total_time can be exactly 0.0 for empty or near-instant
+        plans (clock resolution). Computing the speedup must not raise
+        ZeroDivisionError. Freeze the clock so elapsed time is deterministically
+        0.0 — this fails hard without the guard in ParallelExecutor.execute."""
+        import superclaude.execution.parallel as parallel
+
+        monkeypatch.setattr(parallel.time, "time", lambda: 1000.0)
+
+        # Both the empty and single-op paths hit the division; neither may crash.
+        assert quick_execute([]) == []
+        assert quick_execute([lambda: "ok"]) == ["ok"]
+
     def test_quick_execute_single(self):
         """Quick execute with single operation"""
         results = quick_execute([lambda: "only"])
