@@ -153,8 +153,8 @@ install_uv() {
     if curl -LsSf https://astral.sh/uv/install.sh | sh; then
         print_success "UV installed successfully"
 
-        # Add UV to PATH for current session
-        export PATH="$HOME/.cargo/bin:$PATH"
+        # Add UV to PATH for current session (installer default: ~/.local/bin, or $XDG_BIN_HOME)
+        export PATH="${XDG_BIN_HOME:-$HOME/.local/bin}:$PATH"
 
         # Verify UV is now available
         if ! command -v uv &> /dev/null; then
