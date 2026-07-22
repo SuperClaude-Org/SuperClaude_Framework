@@ -72,6 +72,7 @@ def _get_skill_source(skill_name: str) -> Optional[Path]:
     skill_dirs: List[Path] = []
 
     def _candidate_paths(base: Path) -> List[Path]:
+        """Return possible skill directories under ``base`` for both kebab-case and snake_case names."""
         if not base.exists():
             return []
         normalized = skill_name.replace("-", "_")
