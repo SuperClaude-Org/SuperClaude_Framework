@@ -10,9 +10,7 @@ import time
 import pytest
 
 from superclaude.execution.parallel import (
-    ExecutionPlan,
     ParallelExecutor,
-    ParallelGroup,
     Task,
     TaskStatus,
     parallel_file_operations,

@@ -5,7 +5,6 @@ Tests intelligent_execute, quick_execute, and safe_execute functions
 that combine reflection, parallel execution, and self-correction.
 """
 
-import pytest
 
 from superclaude.execution import intelligent_execute, quick_execute, safe_execute
 
