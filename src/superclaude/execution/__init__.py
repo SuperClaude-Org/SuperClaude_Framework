@@ -150,13 +150,17 @@ def intelligent_execute(
             correction_engine = SelfCorrectionEngine(repo_path)
 
             for task_id, error in failures:
-                error_msg = str(error) if error else "Operation failed with no error details"
+                error_msg = (
+                    str(error) if error else "Operation failed with no error details"
+                )
                 import traceback as tb_module
 
                 stack_trace = ""
                 if error and error.__traceback__:
                     stack_trace = "".join(
-                        tb_module.format_exception(type(error), error, error.__traceback__)
+                        tb_module.format_exception(
+                            type(error), error, error.__traceback__
+                        )
                     )
 
                 failure_info = {
