@@ -5,8 +5,6 @@ Tests intelligent_execute, quick_execute, and safe_execute functions
 that combine reflection, parallel execution, and self-correction.
 """
 
-import pytest
-
 from superclaude.execution import intelligent_execute, quick_execute, safe_execute
 
 
@@ -15,11 +13,13 @@ class TestQuickExecute:
 
     def test_quick_execute_simple_ops(self):
         """Quick execute should run simple operations and return results"""
-        results = quick_execute([
-            lambda: "result_a",
-            lambda: "result_b",
-            lambda: 42,
-        ])
+        results = quick_execute(
+            [
+                lambda: "result_a",
+                lambda: "result_b",
+                lambda: 42,
+            ]
+        )
 
         assert results == ["result_a", "result_b", 42]
 
