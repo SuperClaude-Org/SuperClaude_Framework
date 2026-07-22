@@ -30,8 +30,8 @@ Every claim from the v1 draft, checked against official xAI documentation (2026-
 | Endpoint `POST /v1/images/generations` | ✅ Verified | Plus `/v1/images/edits`, `/v1/videos/generations` (async + `GET /v1/videos/{request_id}` polling), `/v1/videos/edits`, `/v1/videos/extensions` |
 | Models `grok-imagine-image`, `grok-imagine-video-1.5` | ✅ Verified | Also `grok-imagine-image-quality` ($0.05 tier, used in docs examples) and `grok-imagine-video` (standard tier) |
 | `aspect_ratio: "16:9"` parameter | ✅ Verified | Valid. Images also take `n` (≤10), `resolution` (`1k`/`2k`), `response_format`. **There is no OpenAI-style `size` param** |
-| Image price $0.02–$0.05 | ✅ Verified | $0.02 (`grok-imagine-image`) / $0.05 (`-quality`), flat per image |
-| Video price $0.02–$0.05/sec | ❌ **Corrected** | **$0.050/sec** (`grok-imagine-video`) / **$0.080/sec** (`-1.5`) |
+| Image price $0.02–$0.05 | ✅ Verified | $0.02 (`grok-imagine-image`, 1K/2K) / $0.05 (`-quality` 1K; **$0.07 at 2K**), plus small per-input charges |
+| Video price $0.02–$0.05/sec | ❌ **Corrected** | **Per-resolution**: `grok-imagine-video` $0.05 (480p) / $0.07 (720p) per sec; `-1.5` $0.08 / $0.14 / **$0.25 (1080p)** per sec. Model pages quote only the 480p base rate |
 | Up to 3 reference images | ✅ Verified | Via `/v1/images/edits` — combine subjects, transfer styles, compose scenes |
 | Object swapping/editing | ⚠️ Partially | Editing is prompt-driven; "object swap" is not documented terminology — treat as an inferred use |
 | 1080p image-to-video | ✅ With caveat | **1080p only on `grok-imagine-video-1.5` image-to-video**; text-to-video maxes at 720p; default 480p |
@@ -62,7 +62,7 @@ Three protocol primitives, four workflows (extraction, normalization, localizati
 | `parse_and_localize(markdown, source_lang, target_langs[])` | → schema.org JSON in all requested languages | **Merged tool** (v1 had separate parse + translate — see §5); cross-references `smb://lexicon/*` in one pass |
 | `generate_brand_visual(business_id, kind, aspect_ratio, resolution)` | → image URL(s) | Wraps `POST /v1/images/generations`; prompt built from `smb://brand/{id}/profile`; `grok-imagine-image` for drafts ($0.02), `-quality` for client-facing ($0.05) |
 | `compose_brand_visual(business_id, reference_images[≤3], prompt)` | → image URL | Wraps `/v1/images/edits` — style transfer from the client's real product photos (≤3 refs, per docs) |
-| `generate_brand_video(business_id, image_url, duration≤15, resolution)` | → request_id → poll → video URL | Wraps async `/v1/videos/generations`; **image-to-video on `-1.5` for 1080p**; audio is automatic |
+| `generate_brand_video(business_id, image_url, duration≤15, resolution)` | → request_id → poll → video URL | Wraps async `/v1/videos/generations`; **image-to-video on `-1.5` for 1080p**; auto audio is **stripped in post** (ffmpeg mute — brand-safe default; licensed music overlay on request) |
 
 ### 3.3 Prompts (reusable workflows)
 
@@ -135,7 +135,7 @@ Value-stream comparison of one "URL in → localized catalog + visuals out" cycl
 
 - **Reads run free, writes gate on humans**: scraping, parsing, and draft generation are automatic; anything outbound (client emails, published assets, paid `-quality`/video renders above a budget threshold) requires MCP elicitation / human approval.
 - **Moderation**: xAI applies server-side moderation (`respect_moderation` response field); design for rejected generations as a normal branch, not an error.
-- **⚠️ Trademark/likeness (open legal item)**: xAI's Acceptable Use Policy prohibits IP violations, impersonation, and watermark removal in general terms, but has **no explicit rule** about generating imagery for third-party brands as a service. Generating visuals *for a client using that client's own brand* with consent is the defensible pattern; generating competitor or celebrity-adjacent imagery is not. Get counsel review before commercial launch.
+- **⚠️ Trademark/likeness (researched — pending counsel sign-off)**: full analysis in the project's Legal & API Risk Memo (maintained in the implementation repository). Key facts: the xAI **Enterprise ToS** grants output ownership with no commercial-use restriction, but its IP indemnity **excludes Output** — infringement risk from generated imagery sits on us. Client-consented use of the *client's own* marks is defensible (Lanham Act requires use "without consent"); the real residual risk is accidental resemblance to a third party's mark/trade dress. The memo's 10-point clause-level checklist goes to counsel before launch.
 - **Provenance**: keep xAI watermarks/provenance signals intact (removal is explicitly prohibited); store generation params alongside assets for auditability.
 
 ## 7. Cost Model (verified pricing)
@@ -146,10 +146,11 @@ Per business, per full refresh cycle (catalog + 3 hero images + one 10 s 1080p v
 |---|---|---|---|
 | Draft images (`grok-imagine-image`) | $0.02 | 6 | $0.12 |
 | Final images (`-quality`) | $0.05 | 3 | $0.15 |
-| Video (`grok-imagine-video-1.5`, 10 s) | $0.08/s | 10 s | $0.80 |
-| **Visual assets total** | | | **≈ $1.07** + LLM tokens |
+| Video (`grok-imagine-video-1.5`, 10 s, **1080p tier**) | $0.25/s | 10 s | $2.50 |
+| **Visual assets total (1080p hero video)** | | | **≈ $2.77** + LLM tokens |
+| *Alternative: 720p video tier* | *$0.14/s* | *10 s* | *≈ $1.67 total* |
 
-At ~$1/cycle for visuals, the marginal-cost-collapse thesis holds — but rate limits (~5 img req/s) mean 100x scale-out needs request queuing, not just parallel calls.
+At ~$1.70–$2.80/cycle for visuals, the marginal-cost-collapse thesis still holds — but 1080p costs 5x the 480p base rate, so default to 720p and reserve 1080p for hero deliverables. Rate limits (~5 img req/s) mean 100x scale-out needs request queuing, not just parallel calls. Post-generation, every video passes an ffmpeg audio-strip step (§3.2) before the approval gate.
 
 ## 8. Valuation Levers (tied to §5 metrics)
 
@@ -160,7 +161,11 @@ At ~$1/cycle for visuals, the marginal-cost-collapse thesis holds — but rate l
 
 ## 9. Open Questions
 
-- [ ] Legal: third-party trademark imagery policy (§6) — blocking for commercial launch
-- [ ] Audio: no API control surface — is automatic audio acceptable for brand videos, or is post-production muting needed?
-- [ ] Output URL expiry duration is undocumented — build immediate-download into every tool wrapper
-- [ ] Per-resolution video pricing ambiguity (overview says "varies by resolution", pricing table shows flat per-model rates) — confirm before publishing client pricing
+Status as of 2026-07-21 — research details in the project's Legal & API Risk Memo (maintained in the implementation repository):
+
+- [x] ~~Legal: third-party trademark imagery policy~~ → **Researched**: Enterprise ToS governs; output owned but xAI's IP indemnity excludes it; 10-point clause checklist drafted. **Remaining: counsel review of the checklist (launch blocker)**
+- [x] ~~Audio: no API control surface~~ → **Decided**: strip auto audio in post (ffmpeg mute); licensed music overlay as an optional service
+- [x] ~~Output URL expiry~~ → **Resolved**: batch URLs expire in 1 h (documented); sync TTL undocumented — engineering rule: download to own storage immediately, never persist xAI URLs
+- [x] ~~Per-resolution video pricing~~ → **Resolved**: pricing table is per-resolution; 1080p on `-1.5` is $0.25/sec (5x base). Cost model in §7 corrected
+- [ ] Test empirically whether outputs embed C2PA/provenance metadata (AUP forbids stripping it)
+- [ ] Counsel: verify status of any 2026 FTC AI-ad-transparency rule (blog claims unverified on ftc.gov)
