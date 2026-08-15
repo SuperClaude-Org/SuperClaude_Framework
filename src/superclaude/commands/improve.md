@@ -37,6 +37,7 @@ Key behaviors:
 - **Sequential MCP**: Auto-activated for complex multi-step improvement analysis and planning
 - **Context7 MCP**: Framework-specific best practices and optimization patterns
 - **Persona Coordination**: Architect (structure), Performance (speed), Quality (maintainability), Security (safety)
+- **Availability fallback**: The MCP servers named here are preferred tooling, not hard requirements — when one is not installed, degrade gracefully (native reasoning in place of Sequential, official docs via web lookup in place of Context7, native tools otherwise) instead of routing work to absent servers.
 
 ## Tool Coordination
 - **Read/Grep/Glob**: Code analysis and improvement opportunity identification

@@ -40,6 +40,7 @@ Key behaviors:
 - **Playwright MCP**: Testing workflow integration and validation automation
 - **Morphllm MCP**: Large-scale task transformation and pattern-based optimization
 - **Serena MCP**: Cross-session task persistence and project memory management
+- **Availability fallback**: The MCP servers named here are preferred tooling, not hard requirements — when one is not installed, degrade gracefully (native reasoning in place of Sequential, official docs via web lookup in place of Context7, native tools otherwise) instead of routing work to absent servers.
 
 ## Tool Coordination
 - **TodoWrite**: Hierarchical task breakdown and progress tracking across Epic → Story → Task levels

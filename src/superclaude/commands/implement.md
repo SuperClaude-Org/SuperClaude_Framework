@@ -41,6 +41,7 @@ Key behaviors:
 - **Magic MCP**: Auto-activated for UI component generation and design system integration
 - **Sequential MCP**: Complex multi-step analysis and implementation planning
 - **Playwright MCP**: Testing validation and quality assurance integration
+- **Availability fallback**: The MCP servers named here are preferred tooling, not hard requirements — when one is not installed, degrade gracefully (native reasoning in place of Sequential, official docs via web lookup in place of Context7, native tools otherwise) instead of routing work to absent servers.
 
 ## Tool Coordination
 - **Write/Edit/MultiEdit**: Code generation and modification for implementation

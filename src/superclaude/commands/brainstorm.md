@@ -43,6 +43,7 @@ Key behaviors:
 - **Playwright MCP**: User experience validation and interaction pattern testing
 - **Morphllm MCP**: Large-scale content analysis and pattern-based transformation
 - **Serena MCP**: Cross-session persistence, memory management, and project context enhancement
+- **Availability fallback**: The MCP servers named here are preferred tooling, not hard requirements — when one is not installed, degrade gracefully (native reasoning in place of Sequential, official docs via web lookup in place of Context7, native tools otherwise) instead of routing work to absent servers.
 
 ## Tool Coordination
 - **Read/Write/Edit**: Requirements documentation and specification generation

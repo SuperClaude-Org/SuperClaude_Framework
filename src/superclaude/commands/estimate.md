@@ -37,6 +37,7 @@ Key behaviors:
 - **Sequential MCP**: Complex multi-step estimation analysis and systematic complexity assessment
 - **Context7 MCP**: Framework-specific estimation patterns and historical benchmark data
 - **Persona Coordination**: Architect (design complexity), Performance (optimization effort), Project Manager (timeline)
+- **Availability fallback**: The MCP servers named here are preferred tooling, not hard requirements — when one is not installed, degrade gracefully (native reasoning in place of Sequential, official docs via web lookup in place of Context7, native tools otherwise) instead of routing work to absent servers.
 
 ## Tool Coordination
 - **Read/Grep/Glob**: Codebase analysis for complexity assessment and scope evaluation
