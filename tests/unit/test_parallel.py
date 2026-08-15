@@ -10,9 +10,7 @@ import time
 import pytest
 
 from superclaude.execution.parallel import (
-    ExecutionPlan,
     ParallelExecutor,
-    ParallelGroup,
     Task,
     TaskStatus,
     parallel_file_operations,
@@ -164,7 +162,10 @@ class TestParallelExecutor:
         tasks = [
             Task(id="t0", description="Return 42", execute=lambda: 42, depends_on=[]),
             Task(
-                id="t1", description="Return hello", execute=lambda: "hello", depends_on=[]
+                id="t1",
+                description="Return hello",
+                execute=lambda: "hello",
+                depends_on=[],
             ),
         ]
 
@@ -210,7 +211,12 @@ class TestParallelExecutor:
 
         executor = ParallelExecutor(max_workers=1)  # Force sequential within groups
         tasks = [
-            Task(id="first", description="First", execute=make_task("first"), depends_on=[]),
+            Task(
+                id="first",
+                description="First",
+                execute=make_task("first"),
+                depends_on=[],
+            ),
             Task(
                 id="second",
                 description="Second",

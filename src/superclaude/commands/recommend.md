@@ -45,11 +45,22 @@ language_mapping:
 
 ```python
 def detect_language_and_translate(input_text):
-    turkish_chars = ['ç', 'ğ', 'ı', 'ö', 'ş', 'ü']
+    turkish_chars = ["ç", "ğ", "ı", "ö", "ş", "ü"]
     if any(char in input_text.lower() for char in turkish_chars):
         return "tr"
 
-    english_common = ["the", "and", "is", "are", "was", "were", "will", "would", "could", "should"]
+    english_common = [
+        "the",
+        "and",
+        "is",
+        "are",
+        "was",
+        "were",
+        "will",
+        "would",
+        "could",
+        "should",
+    ]
     if any(word in input_text.lower().split() for word in english_common):
         return "en"
 

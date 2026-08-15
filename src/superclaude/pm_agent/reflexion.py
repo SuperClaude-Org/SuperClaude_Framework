@@ -180,11 +180,17 @@ class ReflexionPattern:
             # Query mindbase via its HTTP API (default port from AIRIS config)
             result = subprocess.run(
                 [
-                    "curl", "-sf", "--max-time", "3",
-                    "-X", "POST",
+                    "curl",
+                    "-sf",
+                    "--max-time",
+                    "3",
+                    "-X",
+                    "POST",
                     "http://localhost:18003/api/search",
-                    "-H", "Content-Type: application/json",
-                    "-d", json.dumps({"query": error_signature, "limit": 1}),
+                    "-H",
+                    "Content-Type: application/json",
+                    "-d",
+                    json.dumps({"query": error_signature, "limit": 1}),
                 ],
                 capture_output=True,
                 text=True,
@@ -207,7 +213,11 @@ class ReflexionPattern:
                     "similarity": match.get("score"),
                 }
 
-        except (subprocess.TimeoutExpired, subprocess.SubprocessError, json.JSONDecodeError):
+        except (
+            subprocess.TimeoutExpired,
+            subprocess.SubprocessError,
+            json.JSONDecodeError,
+        ):
             pass  # Mindbase unavailable, fall through to local search
         except FileNotFoundError:
             pass  # curl not available
