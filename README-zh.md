@@ -522,11 +522,11 @@ SuperClaude v4.2引入了全面的深度研究能力，实现自主、自适应�
 
 ## ⭐ **Star历史**
 
-<a href="https://www.star-history.com/#SuperClaude-Org/SuperClaude_Framework&Timeline">
+<a href="https://star-history.dera.page/#SuperClaude-Org/SuperClaude_Framework&Timeline">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=SuperClaude-Org/SuperClaude_Framework&type=Timeline&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=SuperClaude-Org/SuperClaude_Framework&type=Timeline" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=SuperClaude-Org/SuperClaude_Framework&type=Timeline" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://star-history.dera.page/svg?repos=SuperClaude-Org/SuperClaude_Framework&type=Timeline&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://star-history.dera.page/svg?repos=SuperClaude-Org/SuperClaude_Framework&type=Timeline" />
+   <img alt="Star History Chart" src="https://star-history.dera.page/svg?repos=SuperClaude-Org/SuperClaude_Framework&type=Timeline" />
  </picture>
 </a>
 
