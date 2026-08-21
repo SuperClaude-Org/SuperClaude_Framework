@@ -184,8 +184,12 @@ class ConfidenceChecker:
 
         # If no architecture docs found, check for standard config files
         config_files = [
-            "pyproject.toml", "package.json", "Cargo.toml",
-            "go.mod", "pom.xml", "build.gradle",
+            "pyproject.toml",
+            "package.json",
+            "Cargo.toml",
+            "go.mod",
+            "pom.xml",
+            "build.gradle",
         ]
         return any((project_root / cf).exists() for cf in config_files)
 
@@ -238,7 +242,14 @@ class ConfidenceChecker:
             return False
 
         # Validate root cause is specific (not vague)
-        vague_indicators = ["maybe", "probably", "might", "possibly", "unclear", "unknown"]
+        vague_indicators = [
+            "maybe",
+            "probably",
+            "might",
+            "possibly",
+            "unclear",
+            "unknown",
+        ]
         root_cause_lower = root_cause.lower()
         if any(indicator in root_cause_lower for indicator in vague_indicators):
             return False

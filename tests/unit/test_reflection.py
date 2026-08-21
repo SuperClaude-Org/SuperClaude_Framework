@@ -81,7 +81,11 @@ class TestReflectionEngine:
         """Specific task description should get higher clarity score"""
         result = reflection_engine.reflect(
             "Create a new REST API endpoint for /users/{id} in users.py",
-            context={"project_index": True, "current_branch": "main", "git_status": "clean"},
+            context={
+                "project_index": True,
+                "current_branch": "main",
+                "git_status": "clean",
+            },
         )
 
         assert result.requirement_clarity.score > 0.5
@@ -197,8 +201,6 @@ class TestReflectionEngine:
         result_specific = reflection_engine._reflect_clarity(
             "Create user registration endpoint", None
         )
-        result_vague = reflection_engine._reflect_clarity(
-            "improve the system", None
-        )
+        result_vague = reflection_engine._reflect_clarity("improve the system", None)
 
         assert result_specific.score > result_vague.score
