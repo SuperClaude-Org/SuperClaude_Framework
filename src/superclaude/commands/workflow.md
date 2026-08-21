@@ -40,6 +40,7 @@ Key behaviors:
 - **Playwright MCP**: Testing workflow integration and quality assurance automation
 - **Morphllm MCP**: Large-scale workflow transformation and pattern-based optimization
 - **Serena MCP**: Cross-session workflow persistence, memory management, and project context
+- **Availability fallback**: The MCP servers named here are preferred tooling, not hard requirements — when one is not installed, degrade gracefully (native reasoning in place of Sequential, official docs via web lookup in place of Context7, native tools otherwise) instead of routing work to absent servers.
 
 ## Tool Coordination
 - **Read/Write/Edit**: PRD analysis and workflow documentation generation

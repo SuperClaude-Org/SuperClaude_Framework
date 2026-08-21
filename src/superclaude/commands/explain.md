@@ -37,6 +37,7 @@ Key behaviors:
 - **Sequential MCP**: Auto-activated for complex multi-component analysis and structured reasoning
 - **Context7 MCP**: Framework documentation and official pattern explanations
 - **Persona Coordination**: Educator (learning), Architect (systems), Security (practices)
+- **Availability fallback**: The MCP servers named here are preferred tooling, not hard requirements — when one is not installed, degrade gracefully (native reasoning in place of Sequential, official docs via web lookup in place of Context7, native tools otherwise) instead of routing work to absent servers.
 
 ## Tool Coordination
 - **Read/Grep/Glob**: Code analysis and pattern identification for explanation content

@@ -100,6 +100,7 @@ Key behaviors:
 - **Technical Writer Persona**: Activated for professional specification writing and documentation quality
 - **System Architect Persona**: Activated for architectural analysis and system design validation
 - **Quality Engineer Persona**: Activated for quality assessment and testing strategy validation
+- **Availability fallback**: The MCP servers named here are preferred tooling, not hard requirements — when one is not installed, degrade gracefully (native reasoning in place of Sequential, official docs via web lookup in place of Context7, native tools otherwise) instead of routing work to absent servers.
 
 ## Analysis Modes
 

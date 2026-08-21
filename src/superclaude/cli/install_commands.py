@@ -266,6 +266,4 @@ def list_available_agents() -> List[str]:
     if not agent_source.exists():
         return []
 
-    return sorted(
-        f.stem for f in agent_source.glob("*.md") if f.stem != "README"
-    )
+    return sorted(f.stem for f in agent_source.glob("*.md") if f.stem != "README")
