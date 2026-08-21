@@ -53,6 +53,7 @@ class ParallelGroup:
     dependencies: Set[str]  # External task IDs this group depends on
 
     def __repr__(self) -> str:
+        """Return a compact one-line summary, e.g. ``Group 0: 3 tasks``."""
         return f"Group {self.group_id}: {len(self.tasks)} tasks"
 
 
@@ -67,6 +68,7 @@ class ExecutionPlan:
     speedup: float
 
     def __repr__(self) -> str:
+        """Return a multi-line summary: task count, group count, time estimates, and expected speedup."""
         return (
             f"Execution Plan:\n"
             f"  Total tasks: {self.total_tasks}\n"
@@ -98,6 +100,13 @@ class ParallelExecutor:
     """
 
     def __init__(self, max_workers: int = 10):
+        """
+        Initialize the executor.
+
+        Args:
+            max_workers: Maximum number of concurrent worker threads
+                used when executing each parallel group (default: 10).
+        """
         self.max_workers = max_workers
 
     def plan(self, tasks: List[Task]) -> ExecutionPlan:

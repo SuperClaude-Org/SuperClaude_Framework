@@ -179,7 +179,9 @@ class TestSelfCorrectionEngine:
         """Should produce a RootCause with all fields populated"""
         failure = {"error": "invalid input: expected integer", "stack_trace": ""}
 
-        root_cause = correction_engine.analyze_root_cause("validate user input", failure)
+        root_cause = correction_engine.analyze_root_cause(
+            "validate user input", failure
+        )
 
         assert isinstance(root_cause, RootCause)
         assert root_cause.category == "validation"
