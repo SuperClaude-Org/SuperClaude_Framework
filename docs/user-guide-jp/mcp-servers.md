@@ -81,7 +81,7 @@ MCP（モデルコンテキストプロトコル）サーバーは、専用ツ�
 
 [](https://github.com/khayashi4337/SuperClaude_Framework/blob/master/docs/user-guide/mcp-servers.md#magic-)
 
-**目的**: 21st.dev パターンからのモダン UI コンポーネント生成 **トリガー**: UI リクエスト、`/ui`コマンド、コンポーネント開発 **要件**: Node.js 16+、TWENTYFIRST_API_KEY()
+**目的**: 21st.dev パターンからのモダン UI コンポーネント生成 **トリガー**: UI リクエスト、`/ui`コマンド、コンポーネント開発 **要件**: Node.js 16+、TWENTY_FIRST_API_KEY()
 
 ```shell
 # Automatic activation
@@ -89,7 +89,7 @@ MCP（モデルコンテキストプロトコル）サーバーは、専用ツ�
 # → Generates accessible UI with modern patterns
 
 # API key setup
-export TWENTYFIRST_API_KEY="your_key_here"
+export TWENTY_FIRST_API_KEY="your_key_here"
 ```
 
 ### 劇作家🎭
@@ -157,7 +157,7 @@ export MORPH_API_KEY="your_key_here"
     "magic": {
       "command": "npx",
       "args": ["@21st-dev/magic"],
-      "env": {"TWENTYFIRST_API_KEY": "${TWENTYFIRST_API_KEY}"}
+      "env": {"TWENTY_FIRST_API_KEY": "${TWENTY_FIRST_API_KEY}"}
     },
     "playwright": {
       "command": "npx",
@@ -236,19 +236,19 @@ ls ~/.claude.json
 
 ```shell
 # For Magic server (required for UI generation)
-export TWENTYFIRST_API_KEY="your_key_here"
+export TWENTY_FIRST_API_KEY="your_key_here"
 
 # For Morphllm server (required for bulk transformations)
 export MORPH_API_KEY="your_key_here"
 
 # Add to shell profile for persistence
-echo 'export TWENTYFIRST_API_KEY="your_key"' >> ~/.bashrc
+echo 'export TWENTY_FIRST_API_KEY="your_key"' >> ~/.bashrc
 echo 'export MORPH_API_KEY="your_key"' >> ~/.bashrc
 ```
 
 **環境変数の使用法:**
 
-- ✅ `TWENTYFIRST_API_KEY`- Magic MCP サーバー機能に必要
+- ✅ `TWENTY_FIRST_API_KEY`- Magic MCP サーバー機能に必要
 - ✅ `MORPH_API_KEY`- Morphllm MCP サーバー機能に必要
 - ❌ ドキュメント内のその他の環境変数 - 例のみ、フレームワークでは使用されません
 - 📝 どちらも有料のサービスAPIキーですが、フレームワークはそれらなしでも動作します

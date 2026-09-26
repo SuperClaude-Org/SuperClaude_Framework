@@ -53,7 +53,7 @@ MCP_SERVERS = {
         "transport": "stdio",
         "command": "npx -y @21st-dev/magic",
         "required": False,
-        "api_key_env": "TWENTYFIRST_API_KEY",
+        "api_key_env": "TWENTY_FIRST_API_KEY",
         "api_key_description": "21st.dev API key for UI component generation",
     },
     "playwright": {

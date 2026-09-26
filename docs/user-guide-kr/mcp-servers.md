@@ -70,7 +70,7 @@ MCP (Model Context Protocol) 서버는 전문 도구를 통해 Claude Code의 �
 ### magic ✨
 **목적**: 21st.dev 패턴에서 현대적인 UI 컴포넌트 생성
 **트리거**: UI 요청, `/ui` 명령어, 컴포넌트 개발
-**요구사항**: Node.js 16+, TWENTYFIRST_API_KEY ()
+**요구사항**: Node.js 16+, TWENTY_FIRST_API_KEY ()
 
 ```bash
 # 자동 활성화
@@ -78,7 +78,7 @@ MCP (Model Context Protocol) 서버는 전문 도구를 통해 Claude Code의 �
 # → 현대적인 패턴으로 접근 가능한 UI 생성
 
 # API 키 설정
-export TWENTYFIRST_API_KEY="your_key_here"
+export TWENTY_FIRST_API_KEY="your_key_here"
 ```
 
 ### playwright 🎭
@@ -184,7 +184,7 @@ export TAVILY_API_KEY="tvly-your_api_key_here"
     "magic": {
       "command": "npx",
       "args": ["@21st-dev/magic"],
-      "env": {"TWENTYFIRST_API_KEY": "${TWENTYFIRST_API_KEY}"}
+      "env": {"TWENTY_FIRST_API_KEY": "${TWENTY_FIRST_API_KEY}"}
     },
     "playwright": {
       "command": "npx",
@@ -263,7 +263,7 @@ ls ~/.claude.json
 **API 키 구성:**
 ```bash
 # Magic 서버용 (UI 생성에 필요)
-export TWENTYFIRST_API_KEY="your_key_here"
+export TWENTY_FIRST_API_KEY="your_key_here"
 
 # Morphllm 서버용 (대량 변환에 필요)
 export MORPH_API_KEY="your_key_here"
@@ -272,13 +272,13 @@ export MORPH_API_KEY="your_key_here"
 export TAVILY_API_KEY="tvly-your_key_here"
 
 # 지속성을 위해 셸 프로필에 추가
-echo 'export TWENTYFIRST_API_KEY="your_key"' >> ~/.bashrc
+echo 'export TWENTY_FIRST_API_KEY="your_key"' >> ~/.bashrc
 echo 'export MORPH_API_KEY="your_key"' >> ~/.bashrc
 echo 'export TAVILY_API_KEY="your_key"' >> ~/.bashrc
 ```
 
 **환경 변수 사용:**
-- ✅ `TWENTYFIRST_API_KEY` - Magic MCP 서버 기능에 필요
+- ✅ `TWENTY_FIRST_API_KEY` - Magic MCP 서버 기능에 필요
 - ✅ `MORPH_API_KEY` - Morphllm MCP 서버 기능에 필요
 - ✅ `TAVILY_API_KEY` - Tavily MCP 서버 기능에 필요 (무료 티어 사용 가능)
 - ❌ 문서의 다른 환경 변수 - 예제용, 프레임워크에서 사용하지 않음

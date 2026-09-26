@@ -66,7 +66,7 @@ MCP（模型上下文协议）服务器通过专业工具扩展 Claude Code 的�
 ### magic ✨
 **目的**：从 21st.dev 模式生成现代 UI 组件
 **触发器**：UI 请求、`/ui` 命令、组件开发
-**要求**：Node.js 16+，TWENTYFIRST_API_KEY
+**要求**：Node.js 16+，TWENTY_FIRST_API_KEY
 
 ```bash
 # 自动激活
@@ -74,7 +74,7 @@ MCP（模型上下文协议）服务器通过专业工具扩展 Claude Code 的�
 # → 使用现代模式生成可访问的 UI
 
 # API 密钥设置
-export TWENTYFIRST_API_KEY="your_key_here"
+export TWENTY_FIRST_API_KEY="your_key_here"
 ```
 
 ### playwright 🎭
@@ -136,7 +136,7 @@ export MORPH_API_KEY="your_key_here"
     "magic": {
       "command": "npx",
       "args": ["@21st-dev/magic"],
-      "env": {"TWENTYFIRST_API_KEY": "${TWENTYFIRST_API_KEY}"}
+      "env": {"TWENTY_FIRST_API_KEY": "${TWENTY_FIRST_API_KEY}"}
     },
     "playwright": {
       "command": "npx",
@@ -206,18 +206,18 @@ ls ~/.claude.json
 **API 密钥配置：**
 ```bash
 # 用于 Magic 服务器（UI 生成所需）
-export TWENTYFIRST_API_KEY="your_key_here"
+export TWENTY_FIRST_API_KEY="your_key_here"
 
 # 用于 Morphllm 服务器（批量转换所需）
 export MORPH_API_KEY="your_key_here"
 
 # 添加到 shell 配置文件以保持持久
-echo 'export TWENTYFIRST_API_KEY="your_key"' >> ~/.bashrc
+echo 'export TWENTY_FIRST_API_KEY="your_key"' >> ~/.bashrc
 echo 'export MORPH_API_KEY="your_key"' >> ~/.bashrc
 ```
 
 **环境变量使用：**
-- ✅ `TWENTYFIRST_API_KEY` - Magic MCP 服务器功能所需
+- ✅ `TWENTY_FIRST_API_KEY` - Magic MCP 服务器功能所需
 - ✅ `MORPH_API_KEY` - Morphllm MCP 服务器功能所需
 - ❌ 文档中的其他环境变量 - 仅作示例，框架中不使用
 - 📝 两者都是付费服务 API 密钥，框架在没有它们的情况下也可以工作
