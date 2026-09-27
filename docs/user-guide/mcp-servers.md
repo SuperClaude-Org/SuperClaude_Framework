@@ -70,7 +70,7 @@ MCP (Model Context Protocol) servers extend Claude Code's capabilities through s
 ### magic ✨
 **Purpose**: Modern UI component generation from 21st.dev patterns
 **Triggers**: UI requests, `/ui` commands, component development
-**Requirements**: Node.js 16+, TWENTYFIRST_API_KEY ()
+**Requirements**: Node.js 16+, TWENTY_FIRST_API_KEY ()
 
 ```bash
 # Automatic activation
@@ -78,7 +78,7 @@ MCP (Model Context Protocol) servers extend Claude Code's capabilities through s
 # → Generates accessible UI with modern patterns
 
 # API key setup
-export TWENTYFIRST_API_KEY="your_key_here"
+export TWENTY_FIRST_API_KEY="your_key_here"
 ```
 
 ### playwright 🎭
@@ -224,7 +224,7 @@ docker compose restart api
     "magic": {
       "command": "npx",
       "args": ["@21st-dev/magic"],
-      "env": {"TWENTYFIRST_API_KEY": "${TWENTYFIRST_API_KEY}"}
+      "env": {"TWENTY_FIRST_API_KEY": "${TWENTY_FIRST_API_KEY}"}
     },
     "playwright": {
       "command": "npx",
@@ -303,7 +303,7 @@ ls ~/.claude.json
 **API Key Configuration:**
 ```bash
 # For Magic server (required for UI generation)
-export TWENTYFIRST_API_KEY="your_key_here"
+export TWENTY_FIRST_API_KEY="your_key_here"
 
 # For Morphllm server (required for bulk transformations)
 export MORPH_API_KEY="your_key_here"
@@ -312,13 +312,13 @@ export MORPH_API_KEY="your_key_here"
 export TAVILY_API_KEY="tvly-your_key_here"
 
 # Add to shell profile for persistence
-echo 'export TWENTYFIRST_API_KEY="your_key"' >> ~/.bashrc
+echo 'export TWENTY_FIRST_API_KEY="your_key"' >> ~/.bashrc
 echo 'export MORPH_API_KEY="your_key"' >> ~/.bashrc
 echo 'export TAVILY_API_KEY="your_key"' >> ~/.bashrc
 ```
 
 **Environment Variable Usage:**
-- ✅ `TWENTYFIRST_API_KEY` - Required for Magic MCP server functionality
+- ✅ `TWENTY_FIRST_API_KEY` - Required for Magic MCP server functionality
 - ✅ `MORPH_API_KEY` - Required for Morphllm MCP server functionality  
 - ✅ `TAVILY_API_KEY` - Required for Tavily MCP server functionality (free tier available)
 - ❌ Other env vars in docs - Examples only, not used by framework

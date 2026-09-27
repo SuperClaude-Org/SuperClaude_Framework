@@ -87,7 +87,7 @@ SuperClaude install --components mcp --force
 
 **API Key Required (Magic/Morphllm):**
 ```bash
-export TWENTYFIRST_API_KEY="your_key"
+export TWENTY_FIRST_API_KEY="your_key"
 export MORPH_API_KEY="your_key"
 # Or use: /sc:command --no-mcp
 ```

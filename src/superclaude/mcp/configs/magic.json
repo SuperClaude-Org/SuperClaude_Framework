@@ -6,7 +6,7 @@
       "@21st-dev/magic"
     ],
     "env": {
-      "TWENTYFIRST_API_KEY": ""
+      "TWENTY_FIRST_API_KEY": ""
     }
   }
 }

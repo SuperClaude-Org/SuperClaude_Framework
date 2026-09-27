@@ -24,7 +24,7 @@ superclaude mcp --servers sequential-thinking context7 magic playwright serena m
 |--------|-------------|------------------|
 | **sequential-thinking** | Multi-step problem solving and systematic analysis | No |
 | **context7** | Official library documentation and code examples | No |
-| **magic** | Modern UI component generation and design systems | Yes (`TWENTYFIRST_API_KEY`) |
+| **magic** | Modern UI component generation and design systems | Yes (`TWENTY_FIRST_API_KEY`) |
 | **playwright** | Cross-browser E2E testing and automation | No |
 | **serena** | Semantic code analysis and intelligent editing | No |
 | **morphllm-fast-apply** | Fast Apply for context-aware code modifications | Yes (`MORPH_API_KEY`) |
@@ -75,7 +75,7 @@ You can also set environment variables beforehand:
 
 ```bash
 export TAVILY_API_KEY="your-api-key-here"
-export TWENTYFIRST_API_KEY="your-api-key-here"
+export TWENTY_FIRST_API_KEY="your-api-key-here"
 export MORPH_API_KEY="your-api-key-here"
 ```
 
