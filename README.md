@@ -499,6 +499,7 @@ The Deep Research system intelligently coordinates multiple tools:
 
 </td>
 <td valign="top">
+  
 - 📓 [**Examples Cookbook**](docs/reference/examples-cookbook.md)  
   *Real-world recipes*
 
