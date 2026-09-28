@@ -4,12 +4,35 @@ SuperClaude CLI Main Entry Point
 Provides command-line interface for SuperClaude operations.
 """
 
+import os
 import sys
 from pathlib import Path
 
 import click
 
 from superclaude import __version__
+
+
+def _ensure_utf8_console() -> None:
+    """Keep emoji output from crashing on legacy Windows code pages.
+
+    On Windows, Python opens stdout/stderr with the console's active code page
+    (cp1252 on most Western locales) whenever they are redirected or run under
+    a terminal such as Git Bash. The CLI prints emoji in nearly every message,
+    so the first ``click.echo`` then raises ``UnicodeEncodeError``. Switch both
+    streams to UTF-8, replacing anything a console still cannot show instead of
+    aborting the command. An explicit ``PYTHONIOENCODING`` is left alone.
+    """
+    if sys.platform != "win32" or os.environ.get("PYTHONIOENCODING"):
+        return
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is None:
+            continue
+        try:
+            reconfigure(encoding="utf-8", errors="replace")
+        except (OSError, ValueError):
+            pass
 
 
 @click.group()
@@ -20,7 +43,7 @@ def main():
 
     A pytest plugin providing PM Agent capabilities and optional skills system.
     """
-    pass
+    _ensure_utf8_console()
 
 
 @main.command()
