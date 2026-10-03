@@ -102,6 +102,7 @@ Claude Code is a product built and maintained by [Anthropic](https://www.anthrop
 | **[KNOWLEDGE.md](KNOWLEDGE.md)** | Accumulated insights, best practices, troubleshooting | When encountering issues, learning patterns |
 | **[CONTRIBUTING.md](CONTRIBUTING.md)** | Contribution guidelines, workflow | Before submitting PRs |
 | **[Commands Reference](docs/user-guide/commands.md)** | Complete reference for all 30 `/sc:*` commands with syntax, examples, workflows, and decision guides | Learning SuperClaude, choosing the right command |
+| **[Python API Reference](docs/reference/python-api.md)** | Every public class and function in the `superclaude` package — PM Agent patterns, execution engine, pytest plugin, and CLI | Using the Python API, writing tests, extending SuperClaude |
 
 > **💡 Pro Tip**: Claude Code reads these files at session start to ensure consistent, high-quality development aligned with project standards.
 >
@@ -499,6 +500,10 @@ The Deep Research system intelligently coordinates multiple tools:
 
 </td>
 <td valign="top">
+
+- 🐍 [**Python API Reference**](docs/reference/python-api.md)  
+  *All package functions & classes*
+
 - 📓 [**Examples Cookbook**](docs/reference/examples-cookbook.md)  
   *Real-world recipes*
 

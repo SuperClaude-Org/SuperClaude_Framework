@@ -26,6 +26,7 @@ class ReflectionResult:
     concerns: List[str]
 
     def __repr__(self) -> str:
+        """Return a one-line summary with a status emoji, stage name, and percentage score."""
         emoji = "✅" if self.score > 0.7 else "⚠️" if self.score > 0.4 else "❌"
         return f"{emoji} {self.stage}: {self.score:.0%}"
 
@@ -48,6 +49,7 @@ class ConfidenceScore:
     recommendations: List[str]
 
     def __repr__(self) -> str:
+        """Return a multi-line summary: PROCEED/BLOCKED status, overall confidence, and per-stage scores."""
         status = "🟢 PROCEED" if self.should_proceed else "🔴 BLOCKED"
         return (
             f"{status} | Confidence: {self.confidence:.0%}\n"
@@ -73,6 +75,15 @@ class ReflectionEngine:
     """
 
     def __init__(self, repo_path: Path):
+        """
+        Initialize the reflection engine.
+
+        Creates the ``docs/memory/`` directory under ``repo_path`` if it
+        does not exist; reflection logs and reflexion memory live there.
+
+        Args:
+            repo_path: Root of the repository the engine operates on.
+        """
         self.repo_path = repo_path
         self.memory_path = repo_path / "docs" / "memory"
         self.memory_path.mkdir(parents=True, exist_ok=True)

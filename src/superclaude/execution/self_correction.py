@@ -31,6 +31,7 @@ class RootCause:
     validation_tests: List[str]
 
     def __repr__(self) -> str:
+        """Return a multi-line summary: category, description, prevention rule, and test count."""
         return (
             f"Root Cause: {self.category}\n"
             f"  Description: {self.description}\n"
@@ -81,6 +82,16 @@ class SelfCorrectionEngine:
     """
 
     def __init__(self, repo_path: Path):
+        """
+        Initialize the self-correction engine.
+
+        Creates ``docs/memory/`` under ``repo_path`` if needed and
+        initializes ``reflexion.json`` (the persistent failure memory)
+        on first use.
+
+        Args:
+            repo_path: Root of the repository the engine operates on.
+        """
         self.repo_path = repo_path
         self.memory_path = repo_path / "docs" / "memory"
         self.memory_path.mkdir(parents=True, exist_ok=True)

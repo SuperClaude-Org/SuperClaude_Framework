@@ -82,4 +82,5 @@ class TokenBudgetManager:
         self.used = 0
 
     def __repr__(self) -> str:
+        """Return a debug representation showing complexity, limit, and tokens used."""
         return f"TokenBudgetManager(complexity={self.complexity!r}, limit={self.limit}, used={self.used})"
