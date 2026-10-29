@@ -169,6 +169,20 @@ Core philosophy and approach
    # Create PR on GitHub
    ```
 
+### Automated Framework Sync
+
+The `Pull Sync from Framework` workflow pushes a sync branch and opens a pull
+request against the repository's default branch. If GitHub Actions is not allowed
+to create pull requests, the job emits a warning and provides a manual PR link in
+its summary. Open that link and review the changes before merging; nothing is
+merged automatically. Other PR creation errors still fail the job.
+
+For automatic PR creation, a repository administrator must enable **Allow GitHub
+Actions to create and approve pull requests** under **Settings → Actions →
+General → Workflow permissions**, if organization policy permits. The workflow's
+`pull-requests: write` permission alone does not enable this repository setting.
+See [GitHub's workflow permission documentation](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#preventing-github-actions-from-creating-or-approving-pull-requests).
+
 ### Pull Request Template
 
 ```markdown

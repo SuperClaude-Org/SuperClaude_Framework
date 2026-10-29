@@ -1,0 +1,92 @@
+name: Reusable CI
+
+# Shared CI template called by every stage workflow.
+# Callers supply python-version matrix; this runs lint + tests + plugin check.
+on:
+  workflow_call:
+    inputs:
+      python-versions:
+        description: "JSON array of Python versions to test"
+        type: string
+        default: '["3.10"]'
+      run-full-matrix:
+        description: "Run full 3.10/3.11/3.12 matrix (slower, use on integration/main)"
+        type: boolean
+        default: false
+    outputs:
+      package-version:
+        description: "Resolved package version from pyproject.toml"
+        value: ${{ jobs.ci.outputs.package-version }}
+
+jobs:
+  ci:
+    name: CI · Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ${{ fromJson(inputs.run-full-matrix && '["3.10","3.11","3.12"]' || inputs.python-versions) }}
+    outputs:
+      package-version: ${{ steps.version.outputs.version }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install UV
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: uv pip install --system -e ".[dev]"
+
+      - name: Resolve version
+        id: version
+        run: |
+          version=$(python - <<'PY'
+          try:
+              import tomllib
+          except ImportError:
+              import tomli as tomllib
+          with open("pyproject.toml", "rb") as f:
+              d = tomllib.load(f)
+          print(d["project"]["version"])
+          PY
+          )
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "Package version: $version"
+
+      - name: Lint
+        run: ruff check src/ tests/
+
+      - name: Format check
+        run: ruff format --check src/ tests/
+
+      - name: Unit tests
+        run: uv run pytest tests/unit/ -v --tb=short -x
+
+      - name: Full test suite
+        if: inputs.run-full-matrix || matrix.python-version == '3.10'
+        run: uv run --with pytest-cov pytest -v --tb=short --cov=superclaude --cov-report=xml
+
+      - name: Upload coverage
+        if: matrix.python-version == '3.10'
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: false
+
+      - name: Verify pytest plugin loads
+        run: |
+          pytest --trace-config 2>&1 | grep -q "superclaude" \
+            && echo "✅ Plugin registered" \
+            || (echo "❌ Plugin not found in trace" && exit 1)
+
+      - name: Doctor check
+        run: superclaude doctor --verbose

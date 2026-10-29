@@ -1,0 +1,81 @@
+name: "Stage: Preview"
+
+# Fires on every PR targeting integration or master.
+# Runs fast CI (3.10 only, unit tests only) and posts a status summary
+# as a PR comment so reviewers see CI results without leaving the PR page.
+# No artifact is published — this stage is CI-only.
+on:
+  pull_request:
+    branches: [master, integration]
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: preview-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    uses: ./.github/workflows/reusable-ci.yml
+    with:
+      python-versions: '["3.10"]'
+      run-full-matrix: false
+
+  preview-summary:
+    name: Post preview summary
+    runs-on: ubuntu-latest
+    needs: ci
+    if: always()
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Post PR comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const ci_result = '${{ needs.ci.result }}';
+            const version   = '${{ needs.ci.outputs.package-version }}';
+            const sha_short = context.sha.slice(0, 7);
+            const icon      = ci_result === 'success' ? '✅' : '❌';
+            const label     = ci_result === 'success' ? 'All checks passed' : 'Checks failed';
+
+            const body = [
+              `### ${icon} Preview — \`superclaude@${version}\` · \`${sha_short}\``,
+              '',
+              `**${label}**`,
+              '',
+              '| Check | Result |',
+              '|-------|--------|',
+              `| CI (Python 3.10) | ${ci_result === 'success' ? '✅ passed' : '❌ failed'} |`,
+              '',
+              ci_result === 'success'
+                ? '_Merge to `integration` to promote to the **Development** stage._'
+                : '_Fix the failures above before requesting review._',
+            ].join('\n');
+
+            // Update existing bot comment if present, otherwise create new
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existing = comments.find(c =>
+              c.user.type === 'Bot' && c.body.includes('Preview —')
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo:  context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo:  context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
