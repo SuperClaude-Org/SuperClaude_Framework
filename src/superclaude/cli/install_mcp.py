@@ -95,6 +95,13 @@ MCP_SERVERS = {
         "command": "npx -y chrome-devtools-mcp@latest",
         "required": False,
     },
+    "deja-vu": {
+        "name": "deja-vu",
+        "description": "Search past coding agent sessions already on disk (local, no LLM)",
+        "transport": "stdio",
+        "command": "npx -y @vshulcz/deja-vu mcp",
+        "required": False,
+    },
 }
 
 
