@@ -1,6 +1,6 @@
 {
   "name": "superclaude",
-  "version": "4.3.0",
+  "version": "4.3.1",
   "description": "AI-enhanced development framework for Claude Code — 30 commands, 20 agents, 7 modes, confidence checks, parallel execution, and reflexion-based learning",
   "author": {
     "name": "SuperClaude Org",

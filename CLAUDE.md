@@ -18,10 +18,10 @@ uv run python script.py          # Execute scripts
 
 ## 📂 Project Structure
 
-**Current v4.3.0 Architecture**: Python package with 30 commands, 20 agents, 7 modes
+**Current v4.3.1 Architecture**: Python package with 30 commands, 20 agents, 7 modes
 
 ```
-# Claude Code Configuration (v4.3.0)
+# Claude Code Configuration (v4.3.1)
 # Installed via `superclaude install` to user's home directory
 ~/.claude/
 ├── settings.json
@@ -306,7 +306,7 @@ See `docs/plugin-reorg.md` for details.
 ## 📊 Package Information
 
 **Package name**: `superclaude`
-**Version**: 4.3.0
+**Version**: 4.3.1
 **Python**: >=3.10
 **Build system**: hatchling (PEP 517)
 
