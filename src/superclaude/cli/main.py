@@ -12,6 +12,24 @@ import click
 from superclaude import __version__
 
 
+def _configure_console_encoding() -> None:
+    """
+    Ensure stdout and stderr streams handle UTF-8 and emoji characters without
+    crashing on legacy non-UTF-8 console encodings (e.g., Windows cp1252, cp437).
+    """
+    if sys.platform == "win32":
+        for stream in (sys.stdout, sys.stderr):
+            if stream is not None and hasattr(stream, "reconfigure"):
+                try:
+                    stream.reconfigure(encoding="utf-8", errors="replace")
+                except (AttributeError, OSError, ValueError):
+                    pass
+
+
+# Configure console encoding at module import time
+_configure_console_encoding()
+
+
 @click.group()
 @click.version_option(version=__version__, prog_name="SuperClaude")
 def main():
@@ -20,7 +38,7 @@ def main():
 
     A pytest plugin providing PM Agent capabilities and optional skills system.
     """
-    pass
+    _configure_console_encoding()
 
 
 @main.command()
