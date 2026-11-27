@@ -306,6 +306,7 @@ superclaude mcp
 - **Magic** → UI component generation
 - **Morphllm-Fast-Apply** → Context-aware code modifications
 - **Chrome DevTools** → Performance analysis
+- **deja-vu** → Search past agent sessions on disk
 
 </td>
 <td width="50%">
