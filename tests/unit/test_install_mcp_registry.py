@@ -99,4 +99,3 @@ services:
     @patch("superclaude.cli.install_mcp.check_docker_available", return_value=True)
     def test_install_airis_gateway_dry_run(self, mock_docker):
         assert install_airis_gateway(dry_run=True) is True
-
