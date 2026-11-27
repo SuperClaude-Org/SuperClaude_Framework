@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.3.1] - 2026-11-27
+### Fixed
+- **AIRIS MCP Gateway compose URL & volume mount provisioning** - Updated stale `docker_compose_url` to `compose.yaml` (fixing 404 error) and provisioned required bind-mount directories and files to prevent Docker daemon from creating them as root-owned directories (#564, #584)
+
 ## [4.3.0] - 2026-03-22
 ### Added
 - **Agent installation** - `superclaude install` now deploys 20 agent files to `~/.claude/agents/` (#531)

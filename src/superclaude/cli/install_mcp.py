@@ -23,10 +23,12 @@ AIRIS_GATEWAY = {
     "description": "Unified MCP gateway with 60+ tools, HOT/COLD management, 98% token reduction",
     "transport": "sse",
     "endpoint": "http://localhost:9400/sse",
-    "docker_compose_url": "https://raw.githubusercontent.com/agiletec-inc/airis-mcp-gateway/main/docker-compose.dist.yml",
+    "docker_compose_url": "https://raw.githubusercontent.com/agiletec-inc/airis-mcp-gateway/main/compose.yaml",
     "docker_compose_sha256": None,  # Set to pin integrity; None skips check
     "mcp_config_url": "https://raw.githubusercontent.com/agiletec-inc/airis-mcp-gateway/main/config/mcp-config.template.json",
     "mcp_config_sha256": None,  # Set to pin integrity; None skips check
+    "routing_table_url": "https://raw.githubusercontent.com/agiletec-inc/airis-mcp-gateway/main/routing-table.json",
+    "catalog_url": "https://raw.githubusercontent.com/agiletec-inc/airis-mcp-gateway/main/catalogs/airis-catalog.yaml",
     "repository": "https://github.com/agiletec-inc/airis-mcp-gateway",
 }
 
@@ -158,6 +160,50 @@ def _verify_file_integrity(filepath: Path, expected_sha256: Optional[str]) -> bo
     return True
 
 
+def _provision_compose_mounts(compose_file: Path, install_dir: Path) -> None:
+    """
+    Ensure all host paths referenced in compose volume mounts exist before
+    running `docker compose up`.
+
+    When a relative host path does not exist, the Docker daemon automatically
+    creates it as a root-owned directory. If the container expected a file mount,
+    container startup fails with 'not a directory'. Pre-creating directories
+    and touch-provisioning missing files prevents permission and mount errors.
+    """
+    if not compose_file.exists():
+        return
+
+    import re
+
+    content = compose_file.read_text(encoding="utf-8", errors="replace")
+    # Matches patterns like `- ./path/to/file.ext:/target` or `- ./path/to/dir:/target`
+    pattern = re.compile(r"^\s*-\s+([./][^:\s]+):", re.MULTILINE)
+    for match in pattern.finditer(content):
+        host_path_str = match.group(1).strip()
+        # Only handle relative paths in install_dir (e.g. ./mcp-config.json)
+        if host_path_str.startswith("./"):
+            rel_path = host_path_str[2:]
+            target_path = install_dir / rel_path
+            if target_path.exists():
+                continue
+            # If path has a known file extension, provision as an empty file
+            if target_path.suffix in (
+                ".json",
+                ".yaml",
+                ".yml",
+                ".conf",
+                ".txt",
+                ".toml",
+            ):
+                target_path.parent.mkdir(parents=True, exist_ok=True)
+                if target_path.suffix == ".json":
+                    target_path.write_text("{}", encoding="utf-8")
+                else:
+                    target_path.write_text("", encoding="utf-8")
+            else:
+                target_path.mkdir(parents=True, exist_ok=True)
+
+
 def check_docker_available() -> bool:
     """Check if Docker is available and running."""
     try:
@@ -199,14 +245,17 @@ def install_airis_gateway(dry_run: bool = False) -> bool:
 
     if dry_run:
         click.echo(f"   [DRY RUN] Would create directory: {install_dir}")
-        click.echo("   [DRY RUN] Would download docker-compose.yml")
+        click.echo("   [DRY RUN] Would download compose configuration (compose.yaml)")
+        click.echo("   [DRY RUN] Would provision config files and directories")
         click.echo("   [DRY RUN] Would create .env file with default configuration")
         click.echo("   [DRY RUN] Would run: docker compose up -d")
         click.echo("   [DRY RUN] Would register with Claude Code")
         return True
 
-    # Create installation directory
+    # Create installation directory and required subdirectories
     install_dir.mkdir(parents=True, exist_ok=True)
+    for subdir in ("config", "catalogs", "profiles", "workflows"):
+        (install_dir / subdir).mkdir(parents=True, exist_ok=True)
     click.echo(f"   📁 Installation directory: {install_dir}")
 
     # Download docker-compose file
@@ -307,6 +356,57 @@ def install_airis_gateway(dry_run: bool = False) -> bool:
             mcp_config_file.write_text('{"mcpServers": {}}')
     else:
         click.echo("   ✅ MCP server configuration already exists")
+
+    # Download routing-table.json if present upstream
+    routing_table_file = install_dir / "routing-table.json"
+    if not routing_table_file.exists():
+        if "routing_table_url" in AIRIS_GATEWAY:
+            try:
+                result = _run_command(
+                    [
+                        "curl",
+                        "-fsSL",
+                        "-o",
+                        str(routing_table_file),
+                        AIRIS_GATEWAY["routing_table_url"],
+                    ],
+                    capture_output=True,
+                    text=True,
+                    timeout=30,
+                )
+                if result.returncode != 0:
+                    routing_table_file.write_text("{}", encoding="utf-8")
+            except Exception:
+                routing_table_file.write_text("{}", encoding="utf-8")
+        else:
+            routing_table_file.write_text("{}", encoding="utf-8")
+
+    # Download airis-catalog.yaml if present upstream
+    catalog_file = install_dir / "catalogs" / "airis-catalog.yaml"
+    if not catalog_file.exists():
+        if "catalog_url" in AIRIS_GATEWAY:
+            try:
+                result = _run_command(
+                    [
+                        "curl",
+                        "-fsSL",
+                        "-o",
+                        str(catalog_file),
+                        AIRIS_GATEWAY["catalog_url"],
+                    ],
+                    capture_output=True,
+                    text=True,
+                    timeout=30,
+                )
+                if result.returncode != 0:
+                    catalog_file.write_text("# airis catalog\n", encoding="utf-8")
+            except Exception:
+                catalog_file.write_text("# airis catalog\n", encoding="utf-8")
+        else:
+            catalog_file.write_text("# airis catalog\n", encoding="utf-8")
+
+    # Ensure all volume-mounted host paths exist to prevent root-directory creation
+    _provision_compose_mounts(compose_file, install_dir)
 
     # Create .env file if it doesn't exist
     env_file = install_dir / ".env"
