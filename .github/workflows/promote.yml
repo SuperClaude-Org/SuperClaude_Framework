@@ -1,0 +1,204 @@
+name: Promote
+
+# Manual promotion workflow — moves a build between stages without
+# waiting for a tag or branch event. Useful for:
+#   dev → staging    (publish RC to TestPyPI with explicit version)
+#   staging → canary (re-tag and re-publish after staging sign-off)
+#   emergency hotfix (bypass normal tag flow with team-lead approval)
+#
+# This workflow does NOT replace the automatic stage workflows — it
+# supplements them for manual gate decisions.
+on:
+  workflow_dispatch:
+    inputs:
+      target-stage:
+        description: "Destination stage"
+        required: true
+        type: choice
+        options:
+          - staging      # TestPyPI, explicit RC version, 1-reviewer gate
+          - canary       # TestPyPI pre-release, team-lead gate
+          - production   # PyPI, multi-reviewer gate (emergency only)
+      version-override:
+        description: "Version to publish (e.g. 4.3.0rc2). Defaults to pyproject.toml version."
+        required: false
+        type: string
+      reason:
+        description: "Why this manual promotion? (logged to summary)"
+        required: true
+        type: string
+
+jobs:
+  resolve-version:
+    name: Resolve version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        run: |
+          if [ -n "${{ inputs.version-override }}" ]; then
+            echo "version=${{ inputs.version-override }}" >> $GITHUB_OUTPUT
+          else
+            version=$(python -c "import tomllib; d=tomllib.load(open('pyproject.toml','rb')); print(d['project']['version'])")
+            echo "version=$version" >> $GITHUB_OUTPUT
+          fi
+
+  ci:
+    name: Verify CI green before promote
+    uses: ./.github/workflows/reusable-ci.yml
+    with:
+      python-versions: '["3.10","3.11","3.12"]'
+      run-full-matrix: true
+
+  # ── STAGING ──────────────────────────────────────────────────────
+  promote-staging:
+    name: Promote → Staging (TestPyPI)
+    runs-on: ubuntu-latest
+    needs: [resolve-version, ci]
+    if: inputs.target-stage == 'staging'
+    environment:
+      name: staging
+      url: https://test.pypi.org/project/superclaude/
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install build tomli_w
+
+      - name: Patch version
+        run: |
+          python - <<'PY'
+          import tomllib, tomli_w, pathlib, os
+          p = pathlib.Path("pyproject.toml")
+          d = tomllib.loads(p.read_text())
+          d["project"]["version"] = os.environ["VERSION"]
+          p.write_bytes(tomli_w.dumps(d))
+          PY
+        env:
+          VERSION: ${{ needs.resolve-version.outputs.version }}
+
+      - run: python -m build
+
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          print-hash: true
+
+      - name: Summary
+        run: |
+          echo "## ⚖ Staging Promotion" >> $GITHUB_STEP_SUMMARY
+          echo "**Reason**: ${{ inputs.reason }}" >> $GITHUB_STEP_SUMMARY
+          echo "| | |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | \`${{ needs.resolve-version.outputs.version }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Promoted by | @${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Registry | TestPyPI |" >> $GITHUB_STEP_SUMMARY
+
+  # ── CANARY ───────────────────────────────────────────────────────
+  promote-canary:
+    name: Promote → Canary (TestPyPI pre-release)
+    runs-on: ubuntu-latest
+    needs: [resolve-version, ci]
+    if: inputs.target-stage == 'canary'
+    environment:
+      name: canary
+      url: https://test.pypi.org/project/superclaude/
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install build tomli_w
+
+      - name: Patch version
+        run: |
+          python - <<'PY'
+          import tomllib, tomli_w, pathlib, os
+          p = pathlib.Path("pyproject.toml")
+          d = tomllib.loads(p.read_text())
+          d["project"]["version"] = os.environ["VERSION"]
+          p.write_bytes(tomli_w.dumps(d))
+          PY
+        env:
+          VERSION: ${{ needs.resolve-version.outputs.version }}
+
+      - run: python -m build
+
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          print-hash: true
+
+      - name: Summary
+        run: |
+          echo "## 🕯 Canary Promotion (manual)" >> $GITHUB_STEP_SUMMARY
+          echo "**Reason**: ${{ inputs.reason }}" >> $GITHUB_STEP_SUMMARY
+          echo "| | |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | \`${{ needs.resolve-version.outputs.version }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Promoted by | @${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+
+  # ── PRODUCTION (emergency) ───────────────────────────────────────
+  promote-production:
+    name: "Promote → Production (PyPI) ⚠ emergency only"
+    runs-on: ubuntu-latest
+    needs: [resolve-version, ci]
+    if: inputs.target-stage == 'production'
+    environment:
+      name: production
+      url: https://pypi.org/project/superclaude/
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install build tomli_w twine
+
+      - name: Patch version
+        run: |
+          python - <<'PY'
+          import tomllib, tomli_w, pathlib, os
+          p = pathlib.Path("pyproject.toml")
+          d = tomllib.loads(p.read_text())
+          d["project"]["version"] = os.environ["VERSION"]
+          p.write_bytes(tomli_w.dumps(d))
+          PY
+        env:
+          VERSION: ${{ needs.resolve-version.outputs.version }}
+
+      - run: python -m build
+      - run: twine check dist/*
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          print-hash: true
+
+      - name: Summary
+        run: |
+          echo "## ◈ PRODUCTION Promotion (manual)" >> $GITHUB_STEP_SUMMARY
+          echo "> ⚠️ Emergency manual promotion — bypassed normal release tag flow." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Reason**: ${{ inputs.reason }}" >> $GITHUB_STEP_SUMMARY
+          echo "| | |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | \`${{ needs.resolve-version.outputs.version }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Promoted by | @${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY

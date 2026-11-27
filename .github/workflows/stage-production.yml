@@ -1,0 +1,122 @@
+name: "Stage: Production"
+
+# Fires when a GitHub Release is published from a semver tag (v4.3.0).
+# RC tags (v4.3.0-rc.1) are handled by stage-canary.yml — this workflow
+# ignores them via the tag filter.
+#
+# Required GitHub Environments:
+#   production — 2 required reviewers + 30-minute wait timer
+#
+# Required secrets (scoped to the production environment):
+#   PYPI_API_TOKEN
+on:
+  release:
+    types: [published]
+
+jobs:
+  # Guard: skip RC tags — they belong to stage-canary.yml
+  check-tag:
+    name: Verify this is a stable release
+    runs-on: ubuntu-latest
+    outputs:
+      is-stable: ${{ steps.check.outputs.is-stable }}
+    steps:
+      - id: check
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          if [[ "$tag" =~ -rc\. ]]; then
+            echo "is-stable=false" >> $GITHUB_OUTPUT
+            echo "⏭ Tag $tag is a release candidate — skipping production publish."
+          else
+            echo "is-stable=true" >> $GITHUB_OUTPUT
+            echo "✅ Tag $tag is a stable release."
+          fi
+
+  ci:
+    name: Final CI gate
+    needs: check-tag
+    if: needs.check-tag.outputs.is-stable == 'true'
+    uses: ./.github/workflows/reusable-ci.yml
+    with:
+      python-versions: '["3.10"]'
+      run-full-matrix: true
+
+  publish:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    needs: [check-tag, ci]
+    if: needs.check-tag.outputs.is-stable == 'true'
+    environment:
+      name: production
+      url: https://pypi.org/project/superclaude/
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install build tools
+        run: pip install build twine toml
+
+      - name: Verify version matches tag
+        run: |
+          tag="${GITHUB_REF_NAME#v}"   # strip leading v
+          pkg=$(python -c "import tomllib; d=tomllib.load(open('pyproject.toml','rb')); print(d['project']['version'])")
+          if [ "$tag" != "$pkg" ]; then
+            echo "❌ Tag version ($tag) does not match pyproject.toml ($pkg)"
+            exit 1
+          fi
+          echo "✅ Version match: $pkg"
+
+      - name: Verify package version matches __version__
+        run: |
+          python -c "
+          import sys, tomllib
+          sys.path.insert(0, 'src')
+          from superclaude import __version__
+          pkg = tomllib.load(open('pyproject.toml','rb'))['project']['version']
+          assert pkg == __version__, f'Mismatch: pyproject={pkg} __version__={__version__}'
+          print(f'✅ Consistent: {pkg}')
+          "
+
+      - name: Clean build
+        run: rm -rf dist/ build/
+
+      - name: Build
+        run: python -m build
+
+      - name: Validate
+        run: twine check dist/*
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          print-hash: true
+
+      - name: Smoke-test from PyPI
+        run: |
+          sleep 30
+          pip install "superclaude==${{ github.ref_name }}" --no-cache-dir
+          python -c "import superclaude; print(f'Production install OK: {superclaude.__version__}')"
+
+      - name: Summary
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          echo "## ◈ Production Release Published" >> $GITHUB_STEP_SUMMARY
+          echo "| | |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | \`$version\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Registry | PyPI (production) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Released by | @${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "pip install superclaude==$version" >> $GITHUB_STEP_SUMMARY
+          echo "pipx install superclaude==$version" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

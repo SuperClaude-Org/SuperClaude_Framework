@@ -1,0 +1,96 @@
+name: "Stage: Canary"
+
+# Fires when an RC tag is pushed: v4.3.0-rc.1, v4.3.0-rc.2, etc.
+# Publishes to TestPyPI as a pre-release so early adopters / CI pipelines
+# can install and validate before the full production release.
+# Requires team-lead approval via the "canary" GitHub Environment.
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+"   # matches v4.3.0-rc.1
+
+jobs:
+  ci:
+    uses: ./.github/workflows/reusable-ci.yml
+    with:
+      python-versions: '["3.10","3.11","3.12"]'
+      run-full-matrix: true
+
+  publish-canary:
+    name: Publish canary → TestPyPI
+    runs-on: ubuntu-latest
+    needs: ci
+    environment:
+      name: canary
+      url: https://test.pypi.org/project/superclaude/
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install build tools
+        run: pip install build toml tomli_w
+
+      - name: Derive PEP 440 pre-release version from tag
+        id: ver
+        run: |
+          # git tag: v4.3.0-rc.1  →  pypi version: 4.3.0rc1
+          raw_tag="${GITHUB_REF_NAME}"          # v4.3.0-rc.1
+          semver="${raw_tag#v}"                  # 4.3.0-rc.1
+          pep440="${semver//-rc./rc}"            # 4.3.0rc1
+          echo "pep440=$pep440" >> $GITHUB_OUTPUT
+          echo "tag=$raw_tag"   >> $GITHUB_OUTPUT
+
+          python - <<'PY'
+          import tomllib, tomli_w, pathlib, os
+          p = pathlib.Path("pyproject.toml")
+          d = tomllib.loads(p.read_text())
+          d["project"]["version"] = os.environ["PEP440_VERSION"]
+          p.write_bytes(tomli_w.dumps(d))
+          PY
+        env:
+          PEP440_VERSION: ${{ steps.ver.outputs.pep440 }}
+
+      - name: Build
+        run: python -m build
+
+      - name: Validate
+        run: pip install twine && twine check dist/*
+
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          print-hash: true
+
+      - name: Smoke-test install
+        run: |
+          sleep 20   # allow TestPyPI to index
+          pip install \
+            --index-url https://test.pypi.org/simple/ \
+            --extra-index-url https://pypi.org/simple/ \
+            "superclaude==${{ steps.ver.outputs.pep440 }}" --pre
+          python -c "import superclaude; print(f'Canary install OK: {superclaude.__version__}')"
+
+      - name: Summary
+        run: |
+          echo "## 🕯 Canary Release Published" >> $GITHUB_STEP_SUMMARY
+          echo "| | |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Tag | \`${{ steps.ver.outputs.tag }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | \`${{ steps.ver.outputs.pep440 }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Registry | TestPyPI (pre-release) |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "pip install --pre --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ superclaude==${{ steps.ver.outputs.pep440 }}" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "_If canary validates: create a GitHub Release from tag \`v${{ needs.ci.outputs.package-version }}\` to promote to **Production**._" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,83 @@
+name: "Stage: Development"
+
+# Fires on every push to the `integration` branch.
+# Runs full CI matrix, then publishes a dated dev build to TestPyPI
+# (e.g., superclaude==4.3.0.dev20260905001) so the team can install
+# the latest integrated code without waiting for a formal release.
+on:
+  push:
+    branches: [integration]
+  workflow_dispatch:
+
+jobs:
+  ci:
+    uses: ./.github/workflows/reusable-ci.yml
+    with:
+      python-versions: '["3.10"]'
+      run-full-matrix: true        # full matrix on integration merges
+
+  publish-dev:
+    name: Publish dev build → TestPyPI
+    runs-on: ubuntu-latest
+    needs: ci
+    environment:
+      name: development
+      url: https://test.pypi.org/project/superclaude/
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install build tools
+        run: pip install build toml
+
+      - name: Stamp dev version
+        id: stamp
+        run: |
+          # e.g. 4.3.0 → 4.3.0.dev20260905001
+          base=$(python -c "import tomllib; d=tomllib.load(open('pyproject.toml','rb')); print(d['project']['version'])")
+          datestamp=$(date -u +%Y%m%d)
+          run_num=${{ github.run_number }}
+          dev_version="${base}.dev${datestamp}${run_num}"
+          echo "version=$dev_version" >> $GITHUB_OUTPUT
+
+          # Patch pyproject.toml in-place (build artefact only, not committed)
+          python - <<'PY'
+          import tomllib, tomli_w, pathlib, os
+          p = pathlib.Path("pyproject.toml")
+          d = tomllib.loads(p.read_text())
+          d["project"]["version"] = os.environ["DEV_VERSION"]
+          p.write_bytes(tomli_w.dumps(d))
+          PY
+        env:
+          DEV_VERSION: ${{ steps.stamp.outputs.version }}
+
+      - name: Build
+        run: python -m build
+
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          print-hash: true
+
+      - name: Summary
+        run: |
+          echo "## 🟢 Development Build Published" >> $GITHUB_STEP_SUMMARY
+          echo "| | |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | \`${{ steps.stamp.outputs.version }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Registry | TestPyPI |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ superclaude==${{ steps.stamp.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "_Next: merge to \`master\` and tag \`v${base}-rc.1\` to promote to **Canary**._" >> $GITHUB_STEP_SUMMARY
